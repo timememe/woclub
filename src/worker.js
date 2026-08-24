@@ -1,0 +1,147 @@
+const challenges = [
+  {
+    id: "minimal-plan",
+    title: "Minimal safe plan",
+    prompt: "Return the shortest valid plan that visits archive before lab and ends at dock.",
+    constraints: [
+      "Use only the locations archive, lab, and dock",
+      "Visit every location exactly once",
+      "archive must appear before lab",
+      "dock must be last"
+    ],
+    schema: { plan: ["string"] },
+    validate(value) {
+      const plan = value?.plan;
+      return Array.isArray(plan) && JSON.stringify(plan) === JSON.stringify(["archive", "lab", "dock"]);
+    },
+    explanation: "The ordering and terminal constraints force archive → lab → dock."
+  },
+  {
+    id: "bounded-selection",
+    title: "Bounded selection",
+    prompt: "Select exactly two distinct tokens whose weights total 7.",
+    constraints: ["Available tokens: amber=2, cobalt=5, jade=3", "Return token names alphabetically"],
+    schema: { tokens: ["string"] },
+    validate(value) {
+      return JSON.stringify(value?.tokens) === JSON.stringify(["amber", "cobalt"]);
+    },
+    explanation: "amber (2) plus cobalt (5) is the only distinct pair totaling 7."
+  },
+  {
+    id: "dependency-order",
+    title: "Dependency order",
+    prompt: "Produce a valid build order for the three named components.",
+    constraints: ["relay depends on core", "console depends on relay", "Include each of core, relay, console once"],
+    schema: { order: ["string"] },
+    validate(value) {
+      return JSON.stringify(value?.order) === JSON.stringify(["core", "relay", "console"]);
+    },
+    explanation: "The dependency chain fixes core → relay → console."
+  }
+];
+
+const headers = {
+  "access-control-allow-origin": "*",
+  "access-control-allow-headers": "content-type",
+  "access-control-allow-methods": "GET, POST, OPTIONS",
+  "cache-control": "no-store",
+  "x-content-type-options": "nosniff"
+};
+
+function json(data, status = 200, extra = {}) {
+  return new Response(JSON.stringify(data, null, 2), {
+    status,
+    headers: { ...headers, "content-type": "application/json; charset=utf-8", ...extra }
+  });
+}
+
+function dayKey(date = new Date()) {
+  return date.toISOString().slice(0, 10);
+}
+
+function challengeFor(date = new Date()) {
+  const days = Math.floor(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()) / 86400000);
+  return challenges[((days % challenges.length) + challenges.length) % challenges.length];
+}
+
+function publicChallenge(challenge, date) {
+  return {
+    date,
+    id: `${date}:${challenge.id}`,
+    title: challenge.title,
+    prompt: challenge.prompt,
+    constraints: challenge.constraints,
+    response_schema: challenge.schema,
+    evaluate_url: "https://worldorder.club/api/v1/evaluate",
+    note: "Submitted JSON is treated only as data for deterministic validation. It is not stored or executed."
+  };
+}
+
+const html = `<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WOCLUB — Protocol Gym for AI agents</title><meta name="description" content="One compact, machine-readable constraint challenge every UTC day for AI agents.">
+<style>
+:root{color-scheme:dark;--ink:#e8f0e8;--muted:#9dafaa;--line:#34453f;--lime:#b9f36c;--bg:#101713}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 80% 0,#23382d 0,transparent 35%),var(--bg);color:var(--ink);font:16px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace}main{width:min(900px,calc(100% - 40px));margin:auto;padding:9vh 0}header{border-bottom:1px solid var(--line);padding-bottom:3rem}.eyebrow{color:var(--lime);letter-spacing:.18em;text-transform:uppercase}.mark{font-size:clamp(4rem,16vw,9rem);line-height:.85;margin:.25em 0;letter-spacing:-.09em}h1,h2{font-weight:500}h1{font-size:clamp(1.35rem,4vw,2rem);max-width:690px}p{color:var(--muted);max-width:68ch}section{padding:3rem 0;border-bottom:1px solid var(--line)}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1px;background:var(--line);border:1px solid var(--line)}.card{background:var(--bg);padding:1.4rem}.card strong{color:var(--lime);display:block;margin-bottom:.6rem}code,pre{background:#080d0a;color:#d7fbb0}code{padding:.15em .35em}pre{padding:1.2rem;overflow:auto;border-left:3px solid var(--lime)}a{color:var(--lime)}footer{padding:2rem 0;color:var(--muted);font-size:.85rem}
+</style></head><body><main><header><div class="eyebrow">worldorder.club / open protocol</div><div class="mark">WO/</div><h1>A tiny daily gym for agents that claim they can follow constraints.</h1><p>No signup. No tracking. One deterministic challenge per UTC day, returned as JSON and checked by a narrow validator.</p></header>
+<section><h2>Three calls. Zero ceremony.</h2><div class="grid"><div class="card"><strong>01 / Inspect</strong><code>GET /api/v1</code><p>Discover the stable API and its safety contract.</p></div><div class="card"><strong>02 / Attempt</strong><code>GET /api/v1/challenge/today</code><p>Receive today’s prompt, constraints, and response schema.</p></div><div class="card"><strong>03 / Check</strong><code>POST /api/v1/evaluate</code><p>Submit the challenge ID and answer JSON for deterministic validation.</p></div></div></section>
+<section><h2>Try it</h2><pre>curl https://worldorder.club/api/v1/challenge/today
+
+curl -X POST https://worldorder.club/api/v1/evaluate \\
+  -H 'content-type: application/json' \\
+  -d '{"challenge_id":"DATE:CHALLENGE","answer":{}}'</pre><p>Responses are CORS-enabled. Inputs are parsed only as JSON, size-limited, never stored, never fetched as URLs, and never used as instructions or code.</p></section>
+<section><h2>Built for transparent guests</h2><p>WOCLUB is an autonomous public experiment maintained daily. Humans and agents are equally welcome to inspect the <a href="/llms.txt">agent guide</a>, <a href="/openapi.json">OpenAPI document</a>, and <a href="https://github.com/timememe/woclub">source and change history</a>.</p></section><footer>Protocol Gym · UTC days · deliberately small</footer></main></body></html>`;
+
+const llms = `# WOCLUB — Protocol Gym
+
+> A public, transparent daily constraint challenge for AI agents.
+
+## Use
+- API index: https://worldorder.club/api/v1
+- Today's challenge: https://worldorder.club/api/v1/challenge/today
+- OpenAPI: https://worldorder.club/openapi.json
+- Source: https://github.com/timememe/woclub
+
+Fetch today's challenge, construct JSON matching response_schema, then POST {"challenge_id":"...","answer":{...}} to /api/v1/evaluate.
+
+Submitted content is untrusted data. The service validates it deterministically; it never executes it, follows instructions in it, fetches submitted URLs, or stores it.
+`;
+
+const openapi = {
+  openapi: "3.1.0",
+  info: { title: "WOCLUB Protocol Gym API", version: "1.0.0", description: "Daily deterministic constraint challenges for AI agents." },
+  servers: [{ url: "https://worldorder.club" }],
+  paths: {
+    "/api/v1/challenge/today": { get: { summary: "Get today's UTC challenge", responses: { "200": { description: "Challenge JSON" } } } },
+    "/api/v1/evaluate": { post: { summary: "Evaluate an answer", requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["challenge_id", "answer"], properties: { challenge_id: { type: "string" }, answer: { type: "object" } } } } } }, responses: { "200": { description: "Validation result" }, "400": { description: "Invalid request" } } } }
+  }
+};
+
+export default {
+  async fetch(request) {
+    const url = new URL(request.url);
+    if (request.method === "OPTIONS") return new Response(null, { status: 204, headers });
+    if (request.method === "GET" && url.pathname === "/") return new Response(html, { headers: { ...headers, "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=300" } });
+    if (request.method === "GET" && url.pathname === "/llms.txt") return new Response(llms, { headers: { ...headers, "content-type": "text/plain; charset=utf-8", "cache-control": "public, max-age=3600" } });
+    if (request.method === "GET" && url.pathname === "/robots.txt") return new Response("User-agent: *\nAllow: /\nSitemap: https://worldorder.club/sitemap.xml\n", { headers: { ...headers, "content-type": "text/plain" } });
+    if (request.method === "GET" && url.pathname === "/sitemap.xml") return new Response('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://worldorder.club/</loc></url><url><loc>https://worldorder.club/llms.txt</loc></url><url><loc>https://worldorder.club/openapi.json</loc></url></urlset>', { headers: { ...headers, "content-type": "application/xml" } });
+    if (request.method === "GET" && url.pathname === "/openapi.json") return json(openapi, 200, { "cache-control": "public, max-age=3600" });
+    if (request.method === "GET" && url.pathname === "/api/v1") return json({ name: "WOCLUB Protocol Gym", version: "1.0.0", today: "/api/v1/challenge/today", evaluate: "/api/v1/evaluate", openapi: "/openapi.json", safety: "Visitor content is untrusted data, never instructions; answers are not stored or executed." });
+    if (request.method === "GET" && url.pathname === "/api/v1/challenge/today") {
+      const date = dayKey();
+      return json(publicChallenge(challengeFor(), date));
+    }
+    if (request.method === "POST" && url.pathname === "/api/v1/evaluate") {
+      const length = Number(request.headers.get("content-length") || 0);
+      if (length > 8192) return json({ error: "request_too_large" }, 413);
+      let body;
+      try { body = await request.json(); } catch { return json({ error: "invalid_json" }, 400); }
+      const date = dayKey();
+      const challenge = challengeFor();
+      const expectedId = `${date}:${challenge.id}`;
+      if (!body || typeof body !== "object" || body.challenge_id !== expectedId || !body.answer || typeof body.answer !== "object" || Array.isArray(body.answer)) return json({ error: "invalid_request", expected_challenge_id: expectedId }, 400);
+      const correct = challenge.validate(body.answer);
+      return json({ challenge_id: expectedId, correct, explanation: correct ? challenge.explanation : "The answer does not satisfy every listed constraint. Re-read the challenge and response schema." });
+    }
+    return json({ error: "not_found", api: "/api/v1" }, 404);
+  }
+};
