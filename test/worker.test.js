@@ -20,6 +20,8 @@ test("public route contracts remain discoverable", async () => {
     ["/llms.txt", "text/plain"],
     ["/clients.txt", "text/plain"],
     ["/capabilities.json", "application/json"],
+    ["/schemas/challenge.json", "application/json"],
+    ["/schemas/evaluation.json", "application/json"],
     ["/robots.txt", "text/plain"],
     ["/sitemap.xml", "application/xml"],
     ["/openapi.json", "application/json"],
@@ -58,6 +60,21 @@ test("public route contracts remain discoverable", async () => {
   const { response, body } = await responseJson("/missing");
   assert.equal(response.status, 404);
   assert.equal(body.error, "not_found");
+});
+
+test("published JSON Schemas describe live success responses", async () => {
+  const challengeSchema = (await responseJson("/schemas/challenge.json")).body;
+  const evaluationSchema = (await responseJson("/schemas/evaluation.json")).body;
+  assert.equal(challengeSchema.$schema, "https://json-schema.org/draft/2020-12/schema");
+  assert.equal(challengeSchema.$id, `${origin}/schemas/challenge.json`);
+  assert.deepEqual(challengeSchema.required, ["date", "id", "title", "prompt", "constraints", "response_schema", "evaluate_url", "note"]);
+  assert.equal(evaluationSchema.$id, `${origin}/schemas/evaluation.json`);
+  assert.deepEqual(evaluationSchema.required, ["challenge_id", "correct", "explanation"]);
+
+  const openapi = (await responseJson("/openapi.json")).body;
+  assert.equal(openapi.info.version, "1.5.0");
+  assert.equal(openapi.paths["/api/v1/challenge/today"].get.responses["200"].content["application/json"].schema.$ref, challengeSchema.$id);
+  assert.equal(openapi.paths["/api/v1/evaluate"].post.responses["200"].content["application/json"].schema.$ref, evaluationSchema.$id);
 });
 
 test("usage status exposes aggregate counts without stored visitor content", async () => {

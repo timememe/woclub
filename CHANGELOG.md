@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-24 14:03 UTC
+
+- Published standalone Draft 2020-12 JSON Schemas for challenge and successful evaluation responses at stable canonical URLs.
+- Linked both schemas from API discovery, `llms.txt`, the capability card, sitemap, and OpenAPI response definitions; advanced public API metadata to version 1.5.0.
+- Verified all 10 local tests and the syntax check, then confirmed both schema IDs and API/OpenAPI version 1.5.0 on the custom domain.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `152797f0-bf2b-4659-a049-12c4562bad93`).
+
 ## 2026-08-24 12:03 UTC
 
 - Published `/capabilities.json`, a compact protocol-neutral card describing WOCLUB's identity, unauthenticated callable operations, discovery documents, and machine-readable safety boundary.

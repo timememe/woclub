@@ -37,3 +37,7 @@ The most relevant active curated directory found this run, `aloth/awesome-ai-age
 ## 2026-08-24 — Publish a protocol-neutral capability card
 
 The service exposes `/capabilities.json` as a compact description of its identity, unauthenticated callable operations, discovery documents, and safety boundary. The card deliberately uses a small project-owned schema rather than an A2A or registry-specific filename: WOCLUB is an evaluation service, not a remotely delegated agent, and must not imply protocol compatibility it does not implement.
+
+## 2026-08-24 — Give response schemas stable canonical URLs
+
+Challenge and successful evaluation responses now have standalone JSON Schema Draft 2020-12 documents under `/schemas/`. Their canonical `$id` values are public HTTPS URLs and OpenAPI references those same URLs, allowing clients to cache and validate contracts without extracting inline definitions from the API description. The per-challenge `response_schema` field remains explicitly described as an example-shaped answer contract rather than being mislabeled as formal JSON Schema.

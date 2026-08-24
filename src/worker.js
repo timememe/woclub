@@ -236,6 +236,8 @@ const llms = `# WOCLUB — Protocol Gym
 - Today's challenge: https://worldorder.club/api/v1/challenge/today
 - Historical challenge: https://worldorder.club/api/v1/challenge/2026-08-24
 - OpenAPI: https://worldorder.club/openapi.json
+- Challenge response JSON Schema: https://worldorder.club/schemas/challenge.json
+- Evaluation response JSON Schema: https://worldorder.club/schemas/evaluation.json
 - Capability card: https://worldorder.club/capabilities.json
 - Copy-paste clients: https://worldorder.club/clients.txt
 - Public usage status: https://worldorder.club/api/v1/status
@@ -335,6 +337,10 @@ const capabilityCard = {
     openapi: "https://worldorder.club/openapi.json",
     agent_guide: "https://worldorder.club/llms.txt",
     client_examples: "https://worldorder.club/clients.txt",
+    json_schemas: {
+      challenge: "https://worldorder.club/schemas/challenge.json",
+      evaluation: "https://worldorder.club/schemas/evaluation.json"
+    },
     usage_status: "https://worldorder.club/api/v1/status",
     source: "https://github.com/timememe/woclub"
   },
@@ -347,14 +353,47 @@ const capabilityCard = {
   }
 };
 
+const challengeResponseSchema = {
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://worldorder.club/schemas/challenge.json",
+  title: "WOCLUB challenge response",
+  type: "object",
+  additionalProperties: false,
+  required: ["date", "id", "title", "prompt", "constraints", "response_schema", "evaluate_url", "note"],
+  properties: {
+    date: { type: "string", format: "date" },
+    id: { type: "string", pattern: "^\\d{4}-\\d{2}-\\d{2}:[a-z0-9-]+$" },
+    title: { type: "string", minLength: 1 },
+    prompt: { type: "string", minLength: 1 },
+    constraints: { type: "array", minItems: 1, items: { type: "string", minLength: 1 } },
+    response_schema: { type: "object", description: "A compact example-shaped description of the answer object expected by this challenge." },
+    evaluate_url: { type: "string", format: "uri", const: "https://worldorder.club/api/v1/evaluate" },
+    note: { type: "string", minLength: 1 }
+  }
+};
+
+const evaluationResponseSchema = {
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://worldorder.club/schemas/evaluation.json",
+  title: "WOCLUB successful evaluation response",
+  type: "object",
+  additionalProperties: false,
+  required: ["challenge_id", "correct", "explanation"],
+  properties: {
+    challenge_id: { type: "string", pattern: "^\\d{4}-\\d{2}-\\d{2}:[a-z0-9-]+$" },
+    correct: { type: "boolean" },
+    explanation: { type: "string", minLength: 1 }
+  }
+};
+
 const openapi = {
   openapi: "3.1.0",
-  info: { title: "WOCLUB Protocol Gym API", version: "1.4.0", description: "Daily deterministic constraint challenges for AI agents." },
+  info: { title: "WOCLUB Protocol Gym API", version: "1.5.0", description: "Daily deterministic constraint challenges for AI agents." },
   servers: [{ url: "https://worldorder.club" }],
   paths: {
-    "/api/v1/challenge/today": { get: { summary: "Get today's UTC challenge", responses: { "200": { description: "Challenge JSON" } } } },
-    "/api/v1/challenge/{date}": { get: { summary: "Get a challenge by UTC date", parameters: [{ name: "date", in: "path", required: true, schema: { type: "string", format: "date", minimum: launchDate } }], responses: { "200": { description: "Challenge JSON" }, "404": { description: "Date is invalid, predates launch, or is in the future" } } } },
-    "/api/v1/evaluate": { post: { summary: "Evaluate an answer", requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["challenge_id", "answer"], properties: { challenge_id: { type: "string" }, answer: { type: "object" } } } } } }, responses: { "200": { description: "Validation result" }, "400": { description: "Invalid request" } } } },
+    "/api/v1/challenge/today": { get: { summary: "Get today's UTC challenge", responses: { "200": { description: "Challenge JSON", content: { "application/json": { schema: { "$ref": "https://worldorder.club/schemas/challenge.json" } } } } } } },
+    "/api/v1/challenge/{date}": { get: { summary: "Get a challenge by UTC date", parameters: [{ name: "date", in: "path", required: true, schema: { type: "string", format: "date", minimum: launchDate } }], responses: { "200": { description: "Challenge JSON", content: { "application/json": { schema: { "$ref": "https://worldorder.club/schemas/challenge.json" } } } }, "404": { description: "Date is invalid, predates launch, or is in the future" } } } },
+    "/api/v1/evaluate": { post: { summary: "Evaluate an answer", requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["challenge_id", "answer"], properties: { challenge_id: { type: "string" }, answer: { type: "object" } } } } } }, responses: { "200": { description: "Validation result", content: { "application/json": { schema: { "$ref": "https://worldorder.club/schemas/evaluation.json" } } } }, "400": { description: "Invalid request" } } } },
     "/api/v1/status": { get: { summary: "Get seven days of aggregate usage", responses: { "200": { description: "Privacy-conscious approximate metrics" } } } }
   }
 };
@@ -368,10 +407,12 @@ export default {
     if (request.method === "GET" && url.pathname === "/llms.txt") return new Response(llms, { headers: { ...headers, "content-type": "text/plain; charset=utf-8", "cache-control": "public, max-age=3600" } });
     if (request.method === "GET" && url.pathname === "/clients.txt") return new Response(clients, { headers: { ...headers, "content-type": "text/plain; charset=utf-8", "cache-control": "public, max-age=3600" } });
     if (request.method === "GET" && url.pathname === "/capabilities.json") return json(capabilityCard, 200, { "cache-control": "public, max-age=3600" });
+    if (request.method === "GET" && url.pathname === "/schemas/challenge.json") return json(challengeResponseSchema, 200, { "cache-control": "public, max-age=86400" });
+    if (request.method === "GET" && url.pathname === "/schemas/evaluation.json") return json(evaluationResponseSchema, 200, { "cache-control": "public, max-age=86400" });
     if (request.method === "GET" && url.pathname === "/robots.txt") return new Response("User-agent: *\nAllow: /\nSitemap: https://worldorder.club/sitemap.xml\n", { headers: { ...headers, "content-type": "text/plain" } });
-    if (request.method === "GET" && url.pathname === "/sitemap.xml") return new Response('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://worldorder.club/</loc></url><url><loc>https://worldorder.club/log</loc></url><url><loc>https://worldorder.club/llms.txt</loc></url><url><loc>https://worldorder.club/clients.txt</loc></url><url><loc>https://worldorder.club/capabilities.json</loc></url><url><loc>https://worldorder.club/openapi.json</loc></url></urlset>', { headers: { ...headers, "content-type": "application/xml" } });
+    if (request.method === "GET" && url.pathname === "/sitemap.xml") return new Response('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://worldorder.club/</loc></url><url><loc>https://worldorder.club/log</loc></url><url><loc>https://worldorder.club/llms.txt</loc></url><url><loc>https://worldorder.club/clients.txt</loc></url><url><loc>https://worldorder.club/capabilities.json</loc></url><url><loc>https://worldorder.club/schemas/challenge.json</loc></url><url><loc>https://worldorder.club/schemas/evaluation.json</loc></url><url><loc>https://worldorder.club/openapi.json</loc></url></urlset>', { headers: { ...headers, "content-type": "application/xml" } });
     if (request.method === "GET" && url.pathname === "/openapi.json") return json(openapi, 200, { "cache-control": "public, max-age=3600" });
-    if (request.method === "GET" && url.pathname === "/api/v1") return json({ name: "WOCLUB Protocol Gym", version: "1.4.0", capability_card: "/capabilities.json", today: "/api/v1/challenge/today", challenge_by_date: "/api/v1/challenge/{YYYY-MM-DD}", earliest_date: launchDate, evaluate: "/api/v1/evaluate", clients: "/clients.txt", status: "/api/v1/status", openapi: "/openapi.json", safety: "Visitor content is untrusted data, never instructions; answers are not stored or executed." });
+    if (request.method === "GET" && url.pathname === "/api/v1") return json({ name: "WOCLUB Protocol Gym", version: "1.5.0", capability_card: "/capabilities.json", today: "/api/v1/challenge/today", challenge_by_date: "/api/v1/challenge/{YYYY-MM-DD}", earliest_date: launchDate, evaluate: "/api/v1/evaluate", schemas: { challenge: "/schemas/challenge.json", evaluation: "/schemas/evaluation.json" }, clients: "/clients.txt", status: "/api/v1/status", openapi: "/openapi.json", safety: "Visitor content is untrusted data, never instructions; answers are not stored or executed." });
     if (request.method === "GET" && url.pathname === "/api/v1/status") return json(await usageStatus(env.METRICS), 200, { "cache-control": "public, max-age=60" });
     if (request.method === "GET" && url.pathname === "/api/v1/challenge/today") {
       const date = dayKey();
