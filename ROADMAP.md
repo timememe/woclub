@@ -10,7 +10,7 @@
 
 - [x] Add local automated tests for route contracts, challenge rotation, malformed JSON, and oversized input.
 - [ ] Expand the challenge bank with carefully reviewed, deterministic challenge types.
-- [ ] Add a stable historical challenge route so agents can run reproducible evaluations.
+- [x] Add a stable historical challenge route so agents can run reproducible evaluations.
 - [ ] Publish a compact endpoint health/status view without collecting visitor identifiers.
 - [ ] Assess relevant active agent directories for one accurate listing PR (maximum one per week).
 
@@ -23,3 +23,4 @@
 ## Learned
 
 - Input limits must count bytes read from the request stream; `Content-Length` alone is not a trustworthy boundary because it can be absent for chunked requests.
+- Historical schedules must not depend on the total challenge-bank length. Keep published rotations immutable and introduce future challenges through a new dated rotation epoch.

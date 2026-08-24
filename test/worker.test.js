@@ -62,6 +62,29 @@ test("today's published answer evaluates successfully", async () => {
   assert.equal(body.correct, true);
 });
 
+test("historical challenges are stable and remain evaluable", async () => {
+  const { response, body: challenge } = await responseJson("/api/v1/challenge/2026-08-24");
+  assert.equal(response.status, 200);
+  assert.equal(challenge.date, "2026-08-24");
+  assert.equal(challenge.id, "2026-08-24:bounded-selection");
+
+  const result = await responseJson("/api/v1/evaluate", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ challenge_id: challenge.id, answer: { tokens: ["amber", "cobalt"] } })
+  });
+  assert.equal(result.response.status, 200);
+  assert.equal(result.body.correct, true);
+});
+
+test("invalid, pre-launch, and future challenge dates are unavailable", async () => {
+  for (const date of ["not-a-date", "2026-02-30", "2026-08-23", "2999-01-01"]) {
+    const { response, body } = await responseJson(`/api/v1/challenge/${date}`);
+    assert.equal(response.status, 404, date);
+    assert.equal(body.error, "challenge_date_not_available", date);
+  }
+});
+
 test("malformed JSON is rejected without evaluation", async () => {
   const { response, body } = await responseJson("/api/v1/evaluate", {
     method: "POST",

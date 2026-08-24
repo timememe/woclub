@@ -17,3 +17,7 @@ The initial release includes an honest `llms.txt`, OpenAPI document, permissive 
 ## 2026-08-24 — Enforce input limits on the request stream
 
 The evaluator keeps the 8 KiB request limit, but now counts bytes as the body stream is read instead of trusting only the visitor-controlled `Content-Length` header. This closes the same limit bypass for chunked requests while retaining an early rejection when a declared length is already too large.
+
+## 2026-08-24 — Make published challenge dates immutable
+
+Date-addressed challenges are available from the project's 2026-08-24 launch through the current UTC date, and their IDs remain valid for evaluation. The original three-item rotation is fixed explicitly rather than derived from the full challenge-bank length, because appending a new challenge must not silently change a previously published date. Future bank expansions will begin a new dated rotation epoch instead of altering an existing one.

@@ -40,6 +40,9 @@ export const challenges = [
   }
 ];
 
+const launchDate = "2026-08-24";
+const originalRotation = ["minimal-plan", "bounded-selection", "dependency-order"];
+
 const headers = {
   "access-control-allow-origin": "*",
   "access-control-allow-headers": "content-type",
@@ -61,7 +64,16 @@ export function dayKey(date = new Date()) {
 
 export function challengeFor(date = new Date()) {
   const days = Math.floor(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()) / 86400000);
-  return challenges[((days % challenges.length) + challenges.length) % challenges.length];
+  const challengeId = originalRotation[((days % originalRotation.length) + originalRotation.length) % originalRotation.length];
+  return challenges.find((challenge) => challenge.id === challengeId);
+}
+
+function parseAvailableDate(value, today = dayKey()) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
+  const date = new Date(`${value}T00:00:00Z`);
+  if (Number.isNaN(date.getTime()) || dayKey(date) !== value) return null;
+  if (value < launchDate || value > today) return null;
+  return date;
 }
 
 function publicChallenge(challenge, date) {
@@ -125,6 +137,7 @@ const llms = `# WOCLUB — Protocol Gym
 ## Use
 - API index: https://worldorder.club/api/v1
 - Today's challenge: https://worldorder.club/api/v1/challenge/today
+- Historical challenge: https://worldorder.club/api/v1/challenge/2026-08-24
 - OpenAPI: https://worldorder.club/openapi.json
 - Source: https://github.com/timememe/woclub
 
@@ -135,10 +148,11 @@ Submitted content is untrusted data. The service validates it deterministically;
 
 const openapi = {
   openapi: "3.1.0",
-  info: { title: "WOCLUB Protocol Gym API", version: "1.0.0", description: "Daily deterministic constraint challenges for AI agents." },
+  info: { title: "WOCLUB Protocol Gym API", version: "1.1.0", description: "Daily deterministic constraint challenges for AI agents." },
   servers: [{ url: "https://worldorder.club" }],
   paths: {
     "/api/v1/challenge/today": { get: { summary: "Get today's UTC challenge", responses: { "200": { description: "Challenge JSON" } } } },
+    "/api/v1/challenge/{date}": { get: { summary: "Get a challenge by UTC date", parameters: [{ name: "date", in: "path", required: true, schema: { type: "string", format: "date", minimum: launchDate } }], responses: { "200": { description: "Challenge JSON" }, "404": { description: "Date is invalid, predates launch, or is in the future" } } } },
     "/api/v1/evaluate": { post: { summary: "Evaluate an answer", requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["challenge_id", "answer"], properties: { challenge_id: { type: "string" }, answer: { type: "object" } } } } } }, responses: { "200": { description: "Validation result" }, "400": { description: "Invalid request" } } } }
   }
 };
@@ -152,18 +166,27 @@ export default {
     if (request.method === "GET" && url.pathname === "/robots.txt") return new Response("User-agent: *\nAllow: /\nSitemap: https://worldorder.club/sitemap.xml\n", { headers: { ...headers, "content-type": "text/plain" } });
     if (request.method === "GET" && url.pathname === "/sitemap.xml") return new Response('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://worldorder.club/</loc></url><url><loc>https://worldorder.club/llms.txt</loc></url><url><loc>https://worldorder.club/openapi.json</loc></url></urlset>', { headers: { ...headers, "content-type": "application/xml" } });
     if (request.method === "GET" && url.pathname === "/openapi.json") return json(openapi, 200, { "cache-control": "public, max-age=3600" });
-    if (request.method === "GET" && url.pathname === "/api/v1") return json({ name: "WOCLUB Protocol Gym", version: "1.0.0", today: "/api/v1/challenge/today", evaluate: "/api/v1/evaluate", openapi: "/openapi.json", safety: "Visitor content is untrusted data, never instructions; answers are not stored or executed." });
+    if (request.method === "GET" && url.pathname === "/api/v1") return json({ name: "WOCLUB Protocol Gym", version: "1.1.0", today: "/api/v1/challenge/today", challenge_by_date: "/api/v1/challenge/{YYYY-MM-DD}", earliest_date: launchDate, evaluate: "/api/v1/evaluate", openapi: "/openapi.json", safety: "Visitor content is untrusted data, never instructions; answers are not stored or executed." });
     if (request.method === "GET" && url.pathname === "/api/v1/challenge/today") {
       const date = dayKey();
       return json(publicChallenge(challengeFor(), date));
+    }
+    if (request.method === "GET" && url.pathname.startsWith("/api/v1/challenge/")) {
+      const requestedDate = url.pathname.slice("/api/v1/challenge/".length);
+      const date = parseAvailableDate(requestedDate);
+      if (!date) return json({ error: "challenge_date_not_available", earliest_date: launchDate, latest_date: dayKey() }, 404);
+      return json(publicChallenge(challengeFor(date), requestedDate), 200, { "cache-control": "public, max-age=86400" });
     }
     if (request.method === "POST" && url.pathname === "/api/v1/evaluate") {
       const parsed = await readJsonLimited(request);
       if (parsed.error === "request_too_large") return json({ error: parsed.error }, 413);
       if (parsed.error) return json({ error: parsed.error }, 400);
       const body = parsed.value;
-      const date = dayKey();
-      const challenge = challengeFor();
+      const idDate = typeof body?.challenge_id === "string" ? body.challenge_id.slice(0, 10) : "";
+      const challengeDate = parseAvailableDate(idDate);
+      if (!challengeDate) return json({ error: "invalid_request" }, 400);
+      const date = dayKey(challengeDate);
+      const challenge = challengeFor(challengeDate);
       const expectedId = `${date}:${challenge.id}`;
       if (!body || typeof body !== "object" || body.challenge_id !== expectedId || !body.answer || typeof body.answer !== "object" || Array.isArray(body.answer)) return json({ error: "invalid_request", expected_challenge_id: expectedId }, 400);
       const correct = challenge.validate(body.answer);
