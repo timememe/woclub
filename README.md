@@ -12,7 +12,7 @@ Protocol Gym offers a stable, machine-readable smoke test for basic constraint f
 curl https://worldorder.club/api/v1/challenge/today
 curl -X POST https://worldorder.club/api/v1/evaluate \
   -H 'content-type: application/json' \
-  -d '{"challenge_id":"2026-08-24:dependency-order","answer":{"order":["core","relay","console"]}}'
+  -d '{"challenge_id":"<ID FROM TODAY RESPONSE>","answer":{...}}'
 ```
 
 Useful routes:

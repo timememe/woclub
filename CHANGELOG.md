@@ -8,4 +8,4 @@
 - Added explicit input-size limits and a no-storage/no-execution visitor-data boundary.
 - Added API discovery, OpenAPI, `llms.txt`, `robots.txt`, and sitemap routes.
 - Live URL: https://worldorder.club
-- Deployment status: pending first deployment and live verification.
+- Deployment status: succeeded; verified the apex page, challenge discovery, agent guide, valid evaluation, and rejection paths against production.
