@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-24 20:04 UTC
+
+- Published `/benchmarks/v1.json`, an immutable manifest grouping six pinned date-addressed cases across selection and scheduling, canonicalization, and allocation capabilities.
+- Documented the UTC availability rule for scheduled cases, linked the manifest from API discovery, OpenAPI, `llms.txt`, the capability card, README, and sitemap, and advanced public API metadata to version 1.7.0.
+- Verified all 13 local tests and the syntax check, then confirmed the manifest's version, group IDs, case counts, cache policy, and API discovery link on the custom domain.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `a7557bb9-e898-41b5-9a4f-ed3cc556ab7d`); a final log-only deployment followed after recording this result.
+
 ## 2026-08-24 18:02 UTC
 
 - Added content-derived strong ETags and conditional `If-None-Match` handling to seven static agent-facing artifacts, including discovery documents, client examples, schemas, and the conformance bundle.

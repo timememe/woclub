@@ -53,3 +53,7 @@ The conformance bundle uses an immutable versioned URL and includes complete pin
 ## 2026-08-24 — Derive artifact validators from exact content
 
 Static agent-facing documents now receive strong SHA-256 ETags derived from their serialized response bytes and honor weak or strong `If-None-Match` lists. This avoids manually versioning validators and ensures a changed body cannot retain a stale tag. Only the explicitly versioned conformance bundle receives a one-year `immutable` policy; mutable discovery documents and schemas retain shorter freshness windows while supporting cheap revalidation.
+
+## 2026-08-24 — Pin capability-grouped benchmark dates
+
+The first benchmark manifest groups six immutable date-addressed cases by selection and scheduling, canonicalization, and allocation capabilities. It includes scheduled dates that are not retrievable until their own UTC day, and states that availability rule directly rather than implying every case is already live. Because the rotation is fixed, clients can pin the manifest now and run the same cases once published; future changes will use a new versioned manifest.

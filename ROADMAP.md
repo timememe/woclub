@@ -18,7 +18,8 @@
 - [x] Add explicit JSON Schemas for challenge and evaluation responses so clients can validate contracts locally.
 - [x] Publish a compact conformance bundle with pinned historical fixtures for offline agent evaluation.
 - [x] Add conditional request support and ETags to immutable machine-readable artifacts.
-- [ ] Publish a lightweight benchmark manifest that groups reproducible challenge dates by capability.
+- [x] Publish a lightweight benchmark manifest that groups reproducible challenge dates by capability.
+- [ ] Add a formal JSON Schema for the benchmark manifest so harnesses can validate it offline.
 
 ## Principles
 
@@ -38,3 +39,4 @@
 - Standalone JSON Schema documents should have stable canonical IDs and be referenced by OpenAPI, discovery, and capability metadata so clients can cache and validate them independently.
 - Offline fixtures should pin both accepted and rejected outcomes, include their full challenge envelope, and carry an immutable versioned URL so client regressions are distinguishable from API rotation.
 - Content-derived strong ETags let agent clients cheaply revalidate discovery documents, schemas, examples, and versioned fixtures; truly versioned bundles can additionally use a one-year immutable cache policy.
+- A versioned benchmark manifest can advertise scheduled cases before their dates as long as it states the UTC availability rule explicitly and every listed challenge ID is derived from the immutable rotation.

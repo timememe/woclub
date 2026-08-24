@@ -20,6 +20,7 @@ test("public route contracts remain discoverable", async () => {
     ["/llms.txt", "text/plain"],
     ["/clients.txt", "text/plain"],
     ["/conformance/v1.json", "application/json"],
+    ["/benchmarks/v1.json", "application/json"],
     ["/capabilities.json", "application/json"],
     ["/schemas/challenge.json", "application/json"],
     ["/schemas/evaluation.json", "application/json"],
@@ -78,8 +79,28 @@ test("conformance bundle pins reproducible offline outcomes", async () => {
   }
 });
 
+test("benchmark manifest groups pinned dates by capability", async () => {
+  const { response, body } = await responseJson("/benchmarks/v1.json");
+  assert.equal(response.headers.get("cache-control"), "public, max-age=31536000, immutable");
+  assert.equal(body.id, `${origin}/benchmarks/v1.json`);
+  assert.equal(body.generated_from_api_version, "1.7.0");
+  assert.deepEqual(body.groups.map(({ id }) => id), [
+    "selection-and-scheduling",
+    "filtering-and-canonicalization",
+    "constraint-allocation"
+  ]);
+  for (const group of body.groups) {
+    assert.ok(group.cases.length >= 2);
+    for (const benchmarkCase of group.cases) {
+      const date = new Date(`${benchmarkCase.date}T00:00:00Z`);
+      assert.equal(benchmarkCase.challenge_id, `${benchmarkCase.date}:${challengeFor(date).id}`);
+      assert.equal(benchmarkCase.challenge_url, `${origin}/api/v1/challenge/${benchmarkCase.date}`);
+    }
+  }
+});
+
 test("static agent artifacts support conditional requests", async () => {
-  for (const path of ["/llms.txt", "/clients.txt", "/conformance/v1.json", "/capabilities.json", "/schemas/challenge.json", "/schemas/evaluation.json", "/openapi.json"]) {
+  for (const path of ["/llms.txt", "/clients.txt", "/conformance/v1.json", "/benchmarks/v1.json", "/capabilities.json", "/schemas/challenge.json", "/schemas/evaluation.json", "/openapi.json"]) {
     const initial = await worker.fetch(request(path));
     const etag = initial.headers.get("etag");
     assert.match(etag, /^"[a-f0-9]{64}"$/, path);
@@ -101,7 +122,7 @@ test("published JSON Schemas describe live success responses", async () => {
   assert.deepEqual(evaluationSchema.required, ["challenge_id", "correct", "explanation"]);
 
   const openapi = (await responseJson("/openapi.json")).body;
-  assert.equal(openapi.info.version, "1.6.0");
+  assert.equal(openapi.info.version, "1.7.0");
   assert.equal(openapi.paths["/api/v1/challenge/today"].get.responses["200"].content["application/json"].schema.$ref, challengeSchema.$id);
   assert.equal(openapi.paths["/api/v1/evaluate"].post.responses["200"].content["application/json"].schema.$ref, evaluationSchema.$id);
 });

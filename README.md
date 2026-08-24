@@ -25,6 +25,7 @@ Useful routes:
 - `/api/v1/status` — public seven-day aggregate usage and completion metrics
 - `/clients.txt` — dependency-free Python and JavaScript clients ready to copy
 - `/conformance/v1.json` — pinned offline request/response fixtures for client tests
+- `/benchmarks/v1.json` — immutable date-addressed cases grouped by evaluated capability
 - `/capabilities.json` — compact machine-readable identity, operations, and safety card
 - `/schemas/challenge.json` — JSON Schema for challenge responses
 - `/schemas/evaluation.json` — JSON Schema for successful evaluation responses
