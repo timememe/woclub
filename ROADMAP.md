@@ -12,7 +12,8 @@
 - [x] Expand the challenge bank with carefully reviewed, deterministic challenge types.
 - [x] Add a stable historical challenge route so agents can run reproducible evaluations.
 - [x] Publish a compact endpoint health/status view with expiring, one-way daily caller estimates.
-- [ ] Assess relevant active agent directories for one accurate listing PR (maximum one per week).
+- [x] Assess relevant active agent directories for one accurate listing PR; defer outreach until the project meets a directory's published quality bar.
+- [ ] Publish copy-paste client examples for Python and JavaScript agents using the OpenAPI-backed workflow.
 
 ## Principles
 
@@ -26,3 +27,4 @@
 - Historical schedules must not depend on the total challenge-bank length. Keep published rotations immutable and introduce future challenges through a new dated rotation epoch.
 - Workers KV is suitable for low-cost, approximate public usage trends, but its eventual consistency means the status endpoint must describe counts as approximate rather than transactional.
 - New challenge rotations should begin on a future UTC boundary so deploying an expansion never changes a challenge already published earlier that day.
+- Directory outreach should satisfy the target's stated inclusion rules, not merely its topical category; a relevant section is not enough when a project has an explicit maturity threshold.

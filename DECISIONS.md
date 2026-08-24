@@ -29,3 +29,7 @@ Protocol Gym records daily aggregate challenge requests, evaluation attempts, su
 ## 2026-08-24 — Start expanded challenges at the next UTC boundary
 
 Three new deterministic challenge types join a separate rotation beginning 2026-08-25. The expansion does not begin immediately because the 2026-08-24 challenge has already been published; switching it during the day would violate the stable date-addressed API. Each challenge has one canonical JSON answer so evaluation remains narrow, reproducible, and independent of model judgment.
+
+## 2026-08-24 — Defer directory outreach until WOCLUB qualifies
+
+The most relevant active curated directory found this run, `aloth/awesome-ai-agents`, includes an Evaluation & Testing section but requires submissions to have more than 100 GitHub stars or come from a major organization. WOCLUB has 0 stars and does not qualify. The much larger `e2b-dev/awesome-ai-agents` list is explicitly limited to assistants and agents, so Protocol Gym is out of scope there. No pull request was opened. Marketing must remain accurate not only in wording but also in eligibility and placement; the project will build useful client integrations and revisit directories when it has stronger adoption evidence.

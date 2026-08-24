@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-08-24 09:52 UTC
+
+- Assessed active AI-agent directories against their actual scope, contribution rules, maintenance activity, and WOCLUB's current maturity.
+- Deferred a listing PR because the best topical match requires more than 100 GitHub stars while WOCLUB currently has 0, and the largest alternative explicitly excludes testing tools; no external repository was changed.
+- Recorded the evidence and outreach decision in the research and decision logs, and added agent client examples as the next focused product increment.
+- Corrected the generated `/log` renderer so its navigation, change entries, and decision history are translated into Russian while the authoritative Markdown remains English.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded; all nine tests passed before deployment.
+
 ## 2026-08-24 09:44 UTC
 
 - Added three deterministic challenge types covering interval scheduling, record projection, and capacity allocation, with a new rotation epoch beginning 2026-08-25.

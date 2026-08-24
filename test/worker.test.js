@@ -30,6 +30,11 @@ test("public route contracts remain discoverable", async () => {
     assert.match(response.headers.get("content-type"), new RegExp(contentType), path);
   }
 
+  const log = await worker.fetch(request("/log"));
+  const logHtml = await log.text();
+  assert.match(logHtml, /<html lang="ru">/);
+  assert.match(logHtml, /Журнал изменений/);
+
   const { response, body } = await responseJson("/missing");
   assert.equal(response.status, 404);
   assert.equal(body.error, "not_found");
