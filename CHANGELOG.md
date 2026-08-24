@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-24 18:02 UTC
+
+- Added content-derived strong ETags and conditional `If-None-Match` handling to seven static agent-facing artifacts, including discovery documents, client examples, schemas, and the conformance bundle.
+- Extended the versioned conformance bundle's immutable cache lifetime to one year while retaining shorter revalidation windows for mutable documents.
+- Verified all 12 local tests and the syntax check, then confirmed strong and weak validators returned `304 Not Modified` for the conformance bundle and challenge schema on the custom domain.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `adbf2658-308c-4550-8b5c-9983754705d5`); a final log-only deployment followed after recording this result.
+
 ## 2026-08-24 16:04 UTC
 
 - Completed the run ~10 self-review: all documented production routes behaved correctly, while aggregate usage remained attributable to known verification traffic and showed no verified external-agent engagement.

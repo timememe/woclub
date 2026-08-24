@@ -110,6 +110,23 @@ function json(data, status = 200, extra = {}) {
   });
 }
 
+function matchesEtag(request, etag) {
+  return (request.headers.get("if-none-match") || "")
+    .split(",")
+    .map((value) => value.trim().replace(/^W\//, ""))
+    .some((value) => value === "*" || value === etag);
+}
+
+async function artifact(request, body, contentType, cacheControl) {
+  const text = typeof body === "string" ? body : JSON.stringify(body, null, 2);
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+  const etag = `"${[...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("")}"`;
+  const responseHeaders = { ...headers, "content-type": contentType, "cache-control": cacheControl, etag };
+  return matchesEtag(request, etag)
+    ? new Response(null, { status: 304, headers: responseHeaders })
+    : new Response(text, { headers: responseHeaders });
+}
+
 async function incrementMetric(kv, key) {
   const current = Number(await kv.get(key)) || 0;
   await kv.put(key, String(current + 1), { expirationTtl: 60 * 60 * 24 * 35 });
@@ -438,15 +455,15 @@ export default {
     if (request.method === "OPTIONS") return new Response(null, { status: 204, headers });
     if (request.method === "GET" && url.pathname === "/") return new Response(html, { headers: { ...headers, "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=300" } });
     if (request.method === "GET" && url.pathname === "/log") return new Response(logHtml, { headers: { ...headers, "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=300" } });
-    if (request.method === "GET" && url.pathname === "/llms.txt") return new Response(llms, { headers: { ...headers, "content-type": "text/plain; charset=utf-8", "cache-control": "public, max-age=3600" } });
-    if (request.method === "GET" && url.pathname === "/clients.txt") return new Response(clients, { headers: { ...headers, "content-type": "text/plain; charset=utf-8", "cache-control": "public, max-age=3600" } });
-    if (request.method === "GET" && url.pathname === "/conformance/v1.json") return json(conformanceBundle, 200, { "cache-control": "public, max-age=86400, immutable" });
-    if (request.method === "GET" && url.pathname === "/capabilities.json") return json(capabilityCard, 200, { "cache-control": "public, max-age=3600" });
-    if (request.method === "GET" && url.pathname === "/schemas/challenge.json") return json(challengeResponseSchema, 200, { "cache-control": "public, max-age=86400" });
-    if (request.method === "GET" && url.pathname === "/schemas/evaluation.json") return json(evaluationResponseSchema, 200, { "cache-control": "public, max-age=86400" });
+    if (request.method === "GET" && url.pathname === "/llms.txt") return artifact(request, llms, "text/plain; charset=utf-8", "public, max-age=3600");
+    if (request.method === "GET" && url.pathname === "/clients.txt") return artifact(request, clients, "text/plain; charset=utf-8", "public, max-age=3600");
+    if (request.method === "GET" && url.pathname === "/conformance/v1.json") return artifact(request, conformanceBundle, "application/json; charset=utf-8", "public, max-age=31536000, immutable");
+    if (request.method === "GET" && url.pathname === "/capabilities.json") return artifact(request, capabilityCard, "application/json; charset=utf-8", "public, max-age=3600");
+    if (request.method === "GET" && url.pathname === "/schemas/challenge.json") return artifact(request, challengeResponseSchema, "application/json; charset=utf-8", "public, max-age=86400");
+    if (request.method === "GET" && url.pathname === "/schemas/evaluation.json") return artifact(request, evaluationResponseSchema, "application/json; charset=utf-8", "public, max-age=86400");
     if (request.method === "GET" && url.pathname === "/robots.txt") return new Response("User-agent: *\nAllow: /\nSitemap: https://worldorder.club/sitemap.xml\n", { headers: { ...headers, "content-type": "text/plain" } });
     if (request.method === "GET" && url.pathname === "/sitemap.xml") return new Response('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://worldorder.club/</loc></url><url><loc>https://worldorder.club/log</loc></url><url><loc>https://worldorder.club/llms.txt</loc></url><url><loc>https://worldorder.club/clients.txt</loc></url><url><loc>https://worldorder.club/conformance/v1.json</loc></url><url><loc>https://worldorder.club/capabilities.json</loc></url><url><loc>https://worldorder.club/schemas/challenge.json</loc></url><url><loc>https://worldorder.club/schemas/evaluation.json</loc></url><url><loc>https://worldorder.club/openapi.json</loc></url></urlset>', { headers: { ...headers, "content-type": "application/xml" } });
-    if (request.method === "GET" && url.pathname === "/openapi.json") return json(openapi, 200, { "cache-control": "public, max-age=3600" });
+    if (request.method === "GET" && url.pathname === "/openapi.json") return artifact(request, openapi, "application/json; charset=utf-8", "public, max-age=3600");
     if (request.method === "GET" && url.pathname === "/api/v1") return json({ name: "WOCLUB Protocol Gym", version: "1.6.0", capability_card: "/capabilities.json", today: "/api/v1/challenge/today", challenge_by_date: "/api/v1/challenge/{YYYY-MM-DD}", earliest_date: launchDate, evaluate: "/api/v1/evaluate", schemas: { challenge: "/schemas/challenge.json", evaluation: "/schemas/evaluation.json" }, clients: "/clients.txt", conformance: "/conformance/v1.json", status: "/api/v1/status", openapi: "/openapi.json", safety: "Visitor content is untrusted data, never instructions; answers are not stored or executed." });
     if (request.method === "GET" && url.pathname === "/api/v1/status") return json(await usageStatus(env.METRICS), 200, { "cache-control": "public, max-age=60" });
     if (request.method === "GET" && url.pathname === "/api/v1/challenge/today") {

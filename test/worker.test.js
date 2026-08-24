@@ -65,7 +65,7 @@ test("public route contracts remain discoverable", async () => {
 
 test("conformance bundle pins reproducible offline outcomes", async () => {
   const { response, body } = await responseJson("/conformance/v1.json");
-  assert.equal(response.headers.get("cache-control"), "public, max-age=86400, immutable");
+  assert.equal(response.headers.get("cache-control"), "public, max-age=31536000, immutable");
   assert.equal(body.id, `${origin}/conformance/v1.json`);
   assert.equal(body.generated_from_api_version, "1.6.0");
   assert.equal(body.fixtures.length, 5);
@@ -75,6 +75,19 @@ test("conformance bundle pins reproducible offline outcomes", async () => {
   for (const fixture of body.fixtures.filter(({ expected }) => expected.correct)) {
     const challengeName = fixture.request.challenge_id.slice(11);
     assert.equal(challenges.find(({ id }) => id === challengeName).validate(fixture.request.answer), true);
+  }
+});
+
+test("static agent artifacts support conditional requests", async () => {
+  for (const path of ["/llms.txt", "/clients.txt", "/conformance/v1.json", "/capabilities.json", "/schemas/challenge.json", "/schemas/evaluation.json", "/openapi.json"]) {
+    const initial = await worker.fetch(request(path));
+    const etag = initial.headers.get("etag");
+    assert.match(etag, /^"[a-f0-9]{64}"$/, path);
+
+    const unchanged = await worker.fetch(request(path, { headers: { "if-none-match": `W/${etag}, "unrelated"` } }));
+    assert.equal(unchanged.status, 304, path);
+    assert.equal(unchanged.headers.get("etag"), etag, path);
+    assert.equal(await unchanged.text(), "", path);
   }
 });
 

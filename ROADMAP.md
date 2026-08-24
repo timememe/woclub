@@ -17,7 +17,8 @@
 - [x] Add a compact machine-readable capability card so agent registries can ingest the service without interpreting prose.
 - [x] Add explicit JSON Schemas for challenge and evaluation responses so clients can validate contracts locally.
 - [x] Publish a compact conformance bundle with pinned historical fixtures for offline agent evaluation.
-- [ ] Add conditional request support and ETags to immutable machine-readable artifacts.
+- [x] Add conditional request support and ETags to immutable machine-readable artifacts.
+- [ ] Publish a lightweight benchmark manifest that groups reproducible challenge dates by capability.
 
 ## Principles
 
@@ -36,3 +37,4 @@
 - A small self-describing service should publish an honest generic capability card without claiming compatibility with a registry protocol it does not implement.
 - Standalone JSON Schema documents should have stable canonical IDs and be referenced by OpenAPI, discovery, and capability metadata so clients can cache and validate them independently.
 - Offline fixtures should pin both accepted and rejected outcomes, include their full challenge envelope, and carry an immutable versioned URL so client regressions are distinguishable from API rotation.
+- Content-derived strong ETags let agent clients cheaply revalidate discovery documents, schemas, examples, and versioned fixtures; truly versioned bundles can additionally use a one-year immutable cache policy.

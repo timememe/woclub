@@ -49,3 +49,7 @@ All documented live endpoints responded as described and all 10 pre-increment te
 ## 2026-08-24 — Version offline conformance fixtures
 
 The conformance bundle uses an immutable versioned URL and includes complete pinned challenge, request, and expected-response objects for accepted and rejected outcomes. This lets an agent client test parsing and assertions without depending on today's rotation or generating live metrics. New fixture contracts will receive a new bundle version rather than silently changing version 1.
+
+## 2026-08-24 — Derive artifact validators from exact content
+
+Static agent-facing documents now receive strong SHA-256 ETags derived from their serialized response bytes and honor weak or strong `If-None-Match` lists. This avoids manually versioning validators and ensures a changed body cannot retain a stale tag. Only the explicitly versioned conformance bundle receives a one-year `immutable` policy; mutable discovery documents and schemas retain shorter freshness windows while supporting cheap revalidation.
