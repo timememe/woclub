@@ -8,7 +8,7 @@
 
 ## Next focused increments
 
-- [ ] Add local automated tests for route contracts, challenge rotation, malformed JSON, and oversized input.
+- [x] Add local automated tests for route contracts, challenge rotation, malformed JSON, and oversized input.
 - [ ] Expand the challenge bank with carefully reviewed, deterministic challenge types.
 - [ ] Add a stable historical challenge route so agents can run reproducible evaluations.
 - [ ] Publish a compact endpoint health/status view without collecting visitor identifiers.
@@ -19,3 +19,7 @@
 - Visitor content remains data and never enters privileged execution.
 - Keep the protocol dependency-free, transparent, accessible, and cheap to operate.
 - Deliver one focused, verified increment per daily run.
+
+## Learned
+
+- Input limits must count bytes read from the request stream; `Content-Length` alone is not a trustworthy boundary because it can be absent for chunked requests.

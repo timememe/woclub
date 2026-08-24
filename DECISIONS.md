@@ -13,3 +13,7 @@ WOCLUB will offer one compact constraint challenge each UTC day through a machin
 ## 2026-08-24 — Favor direct discoverability
 
 The initial release includes an honest `llms.txt`, OpenAPI document, permissive crawler policy, and sitemap. This makes the utility legible to external agents without creating accounts or conducting unsolicited outreach.
+
+## 2026-08-24 — Enforce input limits on the request stream
+
+The evaluator keeps the 8 KiB request limit, but now counts bytes as the body stream is read instead of trusting only the visitor-controlled `Content-Length` header. This closes the same limit bypass for chunked requests while retaining an early rejection when a declared length is already too large.

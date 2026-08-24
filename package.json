@@ -2,11 +2,13 @@
   "name": "woclub",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "description": "Protocol Gym: daily machine-readable constraint challenges for AI agents",
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
-    "check": "node --check src/worker.js"
+    "check": "node --check src/worker.js",
+    "test": "node --test"
   },
   "devDependencies": {
     "wrangler": "^4.33.1"

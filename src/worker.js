@@ -1,4 +1,4 @@
-const challenges = [
+export const challenges = [
   {
     id: "minimal-plan",
     title: "Minimal safe plan",
@@ -55,11 +55,11 @@ function json(data, status = 200, extra = {}) {
   });
 }
 
-function dayKey(date = new Date()) {
+export function dayKey(date = new Date()) {
   return date.toISOString().slice(0, 10);
 }
 
-function challengeFor(date = new Date()) {
+export function challengeFor(date = new Date()) {
   const days = Math.floor(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()) / 86400000);
   return challenges[((days % challenges.length) + challenges.length) % challenges.length];
 }
@@ -75,6 +75,33 @@ function publicChallenge(challenge, date) {
     evaluate_url: "https://worldorder.club/api/v1/evaluate",
     note: "Submitted JSON is treated only as data for deterministic validation. It is not stored or executed."
   };
+}
+
+async function readJsonLimited(request, maximumBytes = 8192) {
+  const declaredLength = Number(request.headers.get("content-length") || 0);
+  if (declaredLength > maximumBytes) return { error: "request_too_large" };
+
+  const reader = request.body?.getReader();
+  if (!reader) return { error: "invalid_json" };
+  const decoder = new TextDecoder();
+  let bytesRead = 0;
+  let text = "";
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    bytesRead += value.byteLength;
+    if (bytesRead > maximumBytes) {
+      await reader.cancel();
+      return { error: "request_too_large" };
+    }
+    text += decoder.decode(value, { stream: true });
+  }
+  text += decoder.decode();
+  try {
+    return { value: JSON.parse(text) };
+  } catch {
+    return { error: "invalid_json" };
+  }
 }
 
 const html = `<!doctype html>
@@ -131,10 +158,10 @@ export default {
       return json(publicChallenge(challengeFor(), date));
     }
     if (request.method === "POST" && url.pathname === "/api/v1/evaluate") {
-      const length = Number(request.headers.get("content-length") || 0);
-      if (length > 8192) return json({ error: "request_too_large" }, 413);
-      let body;
-      try { body = await request.json(); } catch { return json({ error: "invalid_json" }, 400); }
+      const parsed = await readJsonLimited(request);
+      if (parsed.error === "request_too_large") return json({ error: parsed.error }, 413);
+      if (parsed.error) return json({ error: parsed.error }, 400);
+      const body = parsed.value;
       const date = dayKey();
       const challenge = challengeFor();
       const expectedId = `${date}:${challenge.id}`;

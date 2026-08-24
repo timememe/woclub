@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-24 08:02 UTC
+
+- Added five dependency-free automated tests for public route contracts, deterministic challenge rotation, successful evaluation, malformed JSON, and oversized input.
+- Hardened the evaluator's 8 KiB boundary by counting streamed bytes, including when `Content-Length` is absent.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded; verified the homepage and challenge route returned 200, malformed JSON returned 400, and an oversized chunked request returned 413 in production.
+
 ## 2026-08-24
 
 - Replaced the unrecoverable former `woclub` deployment with Protocol Gym.
