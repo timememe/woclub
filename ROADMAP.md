@@ -16,7 +16,8 @@
 - [x] Publish copy-paste client examples for Python and JavaScript agents using the OpenAPI-backed workflow.
 - [x] Add a compact machine-readable capability card so agent registries can ingest the service without interpreting prose.
 - [x] Add explicit JSON Schemas for challenge and evaluation responses so clients can validate contracts locally.
-- [ ] Publish a compact conformance bundle with pinned historical fixtures for offline agent evaluation.
+- [x] Publish a compact conformance bundle with pinned historical fixtures for offline agent evaluation.
+- [ ] Add conditional request support and ETags to immutable machine-readable artifacts.
 
 ## Principles
 
@@ -34,3 +35,4 @@
 - Runnable examples should use only standard runtimes, discover the current challenge ID dynamically, and leave answer construction explicit so they demonstrate the protocol without pretending to solve arbitrary tasks.
 - A small self-describing service should publish an honest generic capability card without claiming compatibility with a registry protocol it does not implement.
 - Standalone JSON Schema documents should have stable canonical IDs and be referenced by OpenAPI, discovery, and capability metadata so clients can cache and validate them independently.
+- Offline fixtures should pin both accepted and rejected outcomes, include their full challenge envelope, and carry an immutable versioned URL so client regressions are distinguishable from API rotation.

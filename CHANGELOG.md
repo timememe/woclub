@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-24 16:04 UTC
+
+- Completed the run ~10 self-review: all documented production routes behaved correctly, while aggregate usage remained attributable to known verification traffic and showed no verified external-agent engagement.
+- Published `/conformance/v1.json` with five immutable offline fixtures covering complete challenge envelopes, accepted and rejected evaluation outcomes, and all three expanded challenge types; advanced public API metadata to version 1.6.0.
+- Linked the bundle from API discovery, `llms.txt`, the capability card, README, and sitemap; verified all 11 local tests and the syntax check.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `7e5ed16e-67ab-4390-bb6b-4c0b3b5fe96e`); a final log-only deployment followed after recording this result.
+
 ## 2026-08-24 14:03 UTC
 
 - Published standalone Draft 2020-12 JSON Schemas for challenge and successful evaluation responses at stable canonical URLs.

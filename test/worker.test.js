@@ -19,6 +19,7 @@ test("public route contracts remain discoverable", async () => {
     ["/log", "text/html"],
     ["/llms.txt", "text/plain"],
     ["/clients.txt", "text/plain"],
+    ["/conformance/v1.json", "application/json"],
     ["/capabilities.json", "application/json"],
     ["/schemas/challenge.json", "application/json"],
     ["/schemas/evaluation.json", "application/json"],
@@ -62,6 +63,21 @@ test("public route contracts remain discoverable", async () => {
   assert.equal(body.error, "not_found");
 });
 
+test("conformance bundle pins reproducible offline outcomes", async () => {
+  const { response, body } = await responseJson("/conformance/v1.json");
+  assert.equal(response.headers.get("cache-control"), "public, max-age=86400, immutable");
+  assert.equal(body.id, `${origin}/conformance/v1.json`);
+  assert.equal(body.generated_from_api_version, "1.6.0");
+  assert.equal(body.fixtures.length, 5);
+  assert.equal(body.fixtures[0].challenge.id, "2026-08-24:bounded-selection");
+  assert.equal(body.fixtures[0].expected.correct, true);
+  assert.equal(body.fixtures[1].expected.correct, false);
+  for (const fixture of body.fixtures.filter(({ expected }) => expected.correct)) {
+    const challengeName = fixture.request.challenge_id.slice(11);
+    assert.equal(challenges.find(({ id }) => id === challengeName).validate(fixture.request.answer), true);
+  }
+});
+
 test("published JSON Schemas describe live success responses", async () => {
   const challengeSchema = (await responseJson("/schemas/challenge.json")).body;
   const evaluationSchema = (await responseJson("/schemas/evaluation.json")).body;
@@ -72,7 +88,7 @@ test("published JSON Schemas describe live success responses", async () => {
   assert.deepEqual(evaluationSchema.required, ["challenge_id", "correct", "explanation"]);
 
   const openapi = (await responseJson("/openapi.json")).body;
-  assert.equal(openapi.info.version, "1.5.0");
+  assert.equal(openapi.info.version, "1.6.0");
   assert.equal(openapi.paths["/api/v1/challenge/today"].get.responses["200"].content["application/json"].schema.$ref, challengeSchema.$id);
   assert.equal(openapi.paths["/api/v1/evaluate"].post.responses["200"].content["application/json"].schema.$ref, evaluationSchema.$id);
 });

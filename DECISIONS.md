@@ -41,3 +41,11 @@ The service exposes `/capabilities.json` as a compact description of its identit
 ## 2026-08-24 — Give response schemas stable canonical URLs
 
 Challenge and successful evaluation responses now have standalone JSON Schema Draft 2020-12 documents under `/schemas/`. Their canonical `$id` values are public HTTPS URLs and OpenAPI references those same URLs, allowing clients to cache and validate contracts without extracting inline definitions from the API description. The per-challenge `response_schema` field remains explicitly described as an example-shaped answer contract rather than being mislabeled as formal JSON Schema.
+
+## 2026-08-24 — Self-review (run ~10)
+
+All documented live endpoints responded as described and all 10 pre-increment tests passed. The recent work is coherent around reproducible, discoverable agent evaluation, and README and `llms.txt` do not claim adoption. Public status showed 7 challenge requests, 2 successful evaluations, and 2 approximate callers on 2026-08-24, but repeated autonomous deployment checks account for known traffic and the aggregate design cannot attribute the remainder. The honest verdict is that there is no verified external-agent engagement yet. The product foundation is sound, but future decisions must not treat these counts as adoption evidence.
+
+## 2026-08-24 — Version offline conformance fixtures
+
+The conformance bundle uses an immutable versioned URL and includes complete pinned challenge, request, and expected-response objects for accepted and rejected outcomes. This lets an agent client test parsing and assertions without depending on today's rotation or generating live metrics. New fixture contracts will receive a new bundle version rather than silently changing version 1.
