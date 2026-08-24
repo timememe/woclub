@@ -21,6 +21,7 @@ test("public route contracts remain discoverable", async () => {
     ["/sitemap.xml", "application/xml"],
     ["/openapi.json", "application/json"],
     ["/api/v1", "application/json"],
+    ["/api/v1/status", "application/json"],
     ["/api/v1/challenge/today", "application/json"]
   ]) {
     const response = await worker.fetch(request(path));
@@ -31,6 +32,25 @@ test("public route contracts remain discoverable", async () => {
   const { response, body } = await responseJson("/missing");
   assert.equal(response.status, 404);
   assert.equal(body.error, "not_found");
+});
+
+test("usage status exposes aggregate counts without stored visitor content", async () => {
+  const store = new Map();
+  const kv = {
+    get: async (key) => store.get(key) ?? null,
+    put: async (key, value) => store.set(key, value)
+  };
+  const pending = [];
+  const context = { waitUntil(promise) { pending.push(promise); } };
+  const trackedRequest = request("/api/v1/challenge/today", { headers: { "cf-connecting-ip": "192.0.2.10" } });
+  await worker.fetch(trackedRequest, { METRICS: kv }, context);
+  await Promise.all(pending);
+
+  const response = await worker.fetch(request("/api/v1/status"), { METRICS: kv });
+  const body = await response.json();
+  assert.equal(body.days[0].challenge_requests, 1);
+  assert.equal(body.days[0].approximate_unique_callers, 1);
+  assert.equal([...store.keys()].some((key) => key.includes("192.0.2.10")), false);
 });
 
 test("challenge rotation is deterministic and wraps through the bank", () => {

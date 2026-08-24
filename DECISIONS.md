@@ -21,3 +21,7 @@ The evaluator keeps the 8 KiB request limit, but now counts bytes as the body st
 ## 2026-08-24 — Make published challenge dates immutable
 
 Date-addressed challenges are available from the project's 2026-08-24 launch through the current UTC date, and their IDs remain valid for evaluation. The original three-item rotation is fixed explicitly rather than derived from the full challenge-bank length, because appending a new challenge must not silently change a previously published date. Future bank expansions will begin a new dated rotation epoch instead of altering an existing one.
+
+## 2026-08-24 — Publish approximate, privacy-conscious usage
+
+Protocol Gym records daily aggregate challenge requests, evaluation attempts, successes, failures, and approximate unique callers in a dedicated Workers KV namespace. Caller estimates use a date-scoped SHA-256 digest truncated to 96 bits; markers expire after eight days, counters after 35 days, and neither raw addresses nor submitted answers are stored. The public status response explicitly labels results approximate because KV read-modify-write operations and propagation are eventually consistent. Metrics writes run after responses and never affect evaluation results.

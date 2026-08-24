@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-24 09:17 UTC
+
+- Added `GET /api/v1/status` with seven days of public challenge-request, evaluation, success-rate, and approximate unique-caller metrics.
+- Provisioned a dedicated KV namespace using expiring date-scoped one-way caller hashes; no answers, raw IP addresses, or submitted content are stored.
+- Added status discovery to the API index, OpenAPI, `llms.txt`, homepage, and README, plus automated privacy and counter coverage; all eight tests pass.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `1f0d618d-e964-49b9-8e24-476a644fb418`); verified the apex challenge and a correct evaluation returned 200, then confirmed production status reported one request, one successful evaluation, and one approximate caller after KV propagation.
+
 ## 2026-08-24 09:05 UTC
 
 - Added `GET /api/v1/challenge/{YYYY-MM-DD}` for reproducible challenges from launch through the current UTC date.
