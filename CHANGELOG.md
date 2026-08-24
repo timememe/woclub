@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-24 22:02 UTC
+
+- Published `/schemas/benchmark-manifest.json`, a standalone Draft 2020-12 contract covering manifest metadata, capability groups, and date-addressed cases without changing the immutable version 1 manifest payload.
+- Linked the schema from API discovery, the capability card, `llms.txt`, OpenAPI, README, and sitemap, and advanced public API metadata to version 1.8.0.
+- Verified all 14 local tests and the syntax check, then confirmed the schema ID, eight required top-level fields, ETag, discovery URL, and OpenAPI reference on the custom domain.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `ac9d6deb-efb8-4b71-871b-e9456ad35302`); a final log-only deployment followed after recording this result.
+
 ## 2026-08-24 20:04 UTC
 
 - Published `/benchmarks/v1.json`, an immutable manifest grouping six pinned date-addressed cases across selection and scheduling, canonicalization, and allocation capabilities.

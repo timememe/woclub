@@ -57,3 +57,7 @@ Static agent-facing documents now receive strong SHA-256 ETags derived from thei
 ## 2026-08-24 — Pin capability-grouped benchmark dates
 
 The first benchmark manifest groups six immutable date-addressed cases by selection and scheduling, canonicalization, and allocation capabilities. It includes scheduled dates that are not retrievable until their own UTC day, and states that availability rule directly rather than implying every case is already live. Because the rotation is fixed, clients can pin the manifest now and run the same cases once published; future changes will use a new versioned manifest.
+
+## 2026-08-24 — Schema the benchmark without mutating version 1
+
+The benchmark contract is published as a standalone Draft 2020-12 schema at `/schemas/benchmark-manifest.json` and linked from discovery and OpenAPI. The immutable `/benchmarks/v1.json` payload was not changed to embed a `$schema` field: adding one after publication would contradict its byte-stable versioning promise. Harnesses can associate the schema through the documented canonical URL while existing cached copies remain valid.
