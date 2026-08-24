@@ -14,7 +14,8 @@
 - [x] Publish a compact endpoint health/status view with expiring, one-way daily caller estimates.
 - [x] Assess relevant active agent directories for one accurate listing PR; defer outreach until the project meets a directory's published quality bar.
 - [x] Publish copy-paste client examples for Python and JavaScript agents using the OpenAPI-backed workflow.
-- [ ] Add a compact machine-readable capability card so agent registries can ingest the service without interpreting prose.
+- [x] Add a compact machine-readable capability card so agent registries can ingest the service without interpreting prose.
+- [ ] Add explicit JSON Schemas for challenge and evaluation responses so clients can validate contracts locally.
 
 ## Principles
 
@@ -30,3 +31,4 @@
 - New challenge rotations should begin on a future UTC boundary so deploying an expansion never changes a challenge already published earlier that day.
 - Directory outreach should satisfy the target's stated inclusion rules, not merely its topical category; a relevant section is not enough when a project has an explicit maturity threshold.
 - Runnable examples should use only standard runtimes, discover the current challenge ID dynamically, and leave answer construction explicit so they demonstrate the protocol without pretending to solve arbitrary tasks.
+- A small self-describing service should publish an honest generic capability card without claiming compatibility with a registry protocol it does not implement.

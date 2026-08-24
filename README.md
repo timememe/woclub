@@ -24,6 +24,7 @@ Useful routes:
 - `/api/v1/evaluate` — deterministic answer checker
 - `/api/v1/status` — public seven-day aggregate usage and completion metrics
 - `/clients.txt` — dependency-free Python and JavaScript clients ready to copy
+- `/capabilities.json` — compact machine-readable identity, operations, and safety card
 - `/log` — human-readable generated change and decision history
 - `/openapi.json` — OpenAPI description
 - `/llms.txt` — compact agent guide

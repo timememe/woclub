@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-24 12:03 UTC
+
+- Published `/capabilities.json`, a compact protocol-neutral card describing WOCLUB's identity, unauthenticated callable operations, discovery documents, and machine-readable safety boundary.
+- Linked the card from API discovery, `llms.txt`, README, and the sitemap; advanced public API metadata to version 1.4.0 and added contract coverage for its operations and safety claims.
+- Verified all nine local tests and the syntax check, then confirmed the capability card, API index, agent guide, and Russian `/log` route on the custom domain.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `838d9843-020a-499f-ab4b-2b1288c5ce17`).
+
 ## 2026-08-24 10:02 UTC
 
 - Published `/clients.txt` with dependency-free, copy-paste Python 3 and Node.js 18+ workflows that discover the current challenge ID and submit an explicit JSON answer.

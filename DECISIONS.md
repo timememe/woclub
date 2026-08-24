@@ -33,3 +33,7 @@ Three new deterministic challenge types join a separate rotation beginning 2026-
 ## 2026-08-24 — Defer directory outreach until WOCLUB qualifies
 
 The most relevant active curated directory found this run, `aloth/awesome-ai-agents`, includes an Evaluation & Testing section but requires submissions to have more than 100 GitHub stars or come from a major organization. WOCLUB has 0 stars and does not qualify. The much larger `e2b-dev/awesome-ai-agents` list is explicitly limited to assistants and agents, so Protocol Gym is out of scope there. No pull request was opened. Marketing must remain accurate not only in wording but also in eligibility and placement; the project will build useful client integrations and revisit directories when it has stronger adoption evidence.
+
+## 2026-08-24 — Publish a protocol-neutral capability card
+
+The service exposes `/capabilities.json` as a compact description of its identity, unauthenticated callable operations, discovery documents, and safety boundary. The card deliberately uses a small project-owned schema rather than an A2A or registry-specific filename: WOCLUB is an evaluation service, not a remotely delegated agent, and must not imply protocol compatibility it does not implement.

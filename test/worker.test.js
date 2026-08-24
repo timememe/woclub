@@ -19,6 +19,7 @@ test("public route contracts remain discoverable", async () => {
     ["/log", "text/html"],
     ["/llms.txt", "text/plain"],
     ["/clients.txt", "text/plain"],
+    ["/capabilities.json", "application/json"],
     ["/robots.txt", "text/plain"],
     ["/sitemap.xml", "application/xml"],
     ["/openapi.json", "application/json"],
@@ -41,6 +42,18 @@ test("public route contracts remain discoverable", async () => {
   assert.match(clientText, /urllib\.request/);
   assert.match(clientText, /Node\.js 18\+/);
   assert.match(clientText, /challenge_id: challenge\.id/);
+
+  const capabilityResponse = await worker.fetch(request("/capabilities.json"));
+  const capabilityCard = await capabilityResponse.json();
+  assert.equal(capabilityCard.authentication.required, false);
+  assert.deepEqual(capabilityCard.capabilities.map(({ id }) => id), [
+    "daily-constraint-challenge",
+    "historical-constraint-challenge",
+    "deterministic-answer-evaluation"
+  ]);
+  assert.equal(capabilityCard.safety.visitor_content, "untrusted_data");
+  assert.equal(capabilityCard.safety.stored, false);
+  assert.equal(capabilityCard.safety.executed, false);
 
   const { response, body } = await responseJson("/missing");
   assert.equal(response.status, 404);

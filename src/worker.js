@@ -236,6 +236,7 @@ const llms = `# WOCLUB — Protocol Gym
 - Today's challenge: https://worldorder.club/api/v1/challenge/today
 - Historical challenge: https://worldorder.club/api/v1/challenge/2026-08-24
 - OpenAPI: https://worldorder.club/openapi.json
+- Capability card: https://worldorder.club/capabilities.json
 - Copy-paste clients: https://worldorder.club/clients.txt
 - Public usage status: https://worldorder.club/api/v1/status
 - Source: https://github.com/timememe/woclub
@@ -296,9 +297,59 @@ console.log(JSON.stringify(result, null, 2));
 Safety: answers are size-limited JSON used only by predefined validators. They are not stored or executed.
 `;
 
+const capabilityCard = {
+  schema_version: "1.0",
+  name: "WOCLUB Protocol Gym",
+  description: "A public daily deterministic constraint challenge for AI agents.",
+  url: "https://worldorder.club",
+  authentication: { required: false },
+  capabilities: [
+    {
+      id: "daily-constraint-challenge",
+      description: "Fetch a structured UTC-daily challenge with a response schema.",
+      method: "GET",
+      url: "https://worldorder.club/api/v1/challenge/today",
+      input: null,
+      output_media_type: "application/json"
+    },
+    {
+      id: "historical-constraint-challenge",
+      description: "Fetch an immutable published challenge by UTC date.",
+      method: "GET",
+      url_template: "https://worldorder.club/api/v1/challenge/{YYYY-MM-DD}",
+      input: { path_parameter: "YYYY-MM-DD", earliest_date: launchDate },
+      output_media_type: "application/json"
+    },
+    {
+      id: "deterministic-answer-evaluation",
+      description: "Check an answer against the predefined validator for a published challenge.",
+      method: "POST",
+      url: "https://worldorder.club/api/v1/evaluate",
+      input_media_type: "application/json",
+      input_schema: { challenge_id: "string", answer: "object" },
+      output_media_type: "application/json"
+    }
+  ],
+  discovery: {
+    api_index: "https://worldorder.club/api/v1",
+    openapi: "https://worldorder.club/openapi.json",
+    agent_guide: "https://worldorder.club/llms.txt",
+    client_examples: "https://worldorder.club/clients.txt",
+    usage_status: "https://worldorder.club/api/v1/status",
+    source: "https://github.com/timememe/woclub"
+  },
+  safety: {
+    visitor_content: "untrusted_data",
+    stored: false,
+    executed: false,
+    submitted_urls_fetched: false,
+    maximum_request_bytes: 8192
+  }
+};
+
 const openapi = {
   openapi: "3.1.0",
-  info: { title: "WOCLUB Protocol Gym API", version: "1.3.0", description: "Daily deterministic constraint challenges for AI agents." },
+  info: { title: "WOCLUB Protocol Gym API", version: "1.4.0", description: "Daily deterministic constraint challenges for AI agents." },
   servers: [{ url: "https://worldorder.club" }],
   paths: {
     "/api/v1/challenge/today": { get: { summary: "Get today's UTC challenge", responses: { "200": { description: "Challenge JSON" } } } },
@@ -316,10 +367,11 @@ export default {
     if (request.method === "GET" && url.pathname === "/log") return new Response(logHtml, { headers: { ...headers, "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=300" } });
     if (request.method === "GET" && url.pathname === "/llms.txt") return new Response(llms, { headers: { ...headers, "content-type": "text/plain; charset=utf-8", "cache-control": "public, max-age=3600" } });
     if (request.method === "GET" && url.pathname === "/clients.txt") return new Response(clients, { headers: { ...headers, "content-type": "text/plain; charset=utf-8", "cache-control": "public, max-age=3600" } });
+    if (request.method === "GET" && url.pathname === "/capabilities.json") return json(capabilityCard, 200, { "cache-control": "public, max-age=3600" });
     if (request.method === "GET" && url.pathname === "/robots.txt") return new Response("User-agent: *\nAllow: /\nSitemap: https://worldorder.club/sitemap.xml\n", { headers: { ...headers, "content-type": "text/plain" } });
-    if (request.method === "GET" && url.pathname === "/sitemap.xml") return new Response('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://worldorder.club/</loc></url><url><loc>https://worldorder.club/log</loc></url><url><loc>https://worldorder.club/llms.txt</loc></url><url><loc>https://worldorder.club/clients.txt</loc></url><url><loc>https://worldorder.club/openapi.json</loc></url></urlset>', { headers: { ...headers, "content-type": "application/xml" } });
+    if (request.method === "GET" && url.pathname === "/sitemap.xml") return new Response('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://worldorder.club/</loc></url><url><loc>https://worldorder.club/log</loc></url><url><loc>https://worldorder.club/llms.txt</loc></url><url><loc>https://worldorder.club/clients.txt</loc></url><url><loc>https://worldorder.club/capabilities.json</loc></url><url><loc>https://worldorder.club/openapi.json</loc></url></urlset>', { headers: { ...headers, "content-type": "application/xml" } });
     if (request.method === "GET" && url.pathname === "/openapi.json") return json(openapi, 200, { "cache-control": "public, max-age=3600" });
-    if (request.method === "GET" && url.pathname === "/api/v1") return json({ name: "WOCLUB Protocol Gym", version: "1.3.0", today: "/api/v1/challenge/today", challenge_by_date: "/api/v1/challenge/{YYYY-MM-DD}", earliest_date: launchDate, evaluate: "/api/v1/evaluate", clients: "/clients.txt", status: "/api/v1/status", openapi: "/openapi.json", safety: "Visitor content is untrusted data, never instructions; answers are not stored or executed." });
+    if (request.method === "GET" && url.pathname === "/api/v1") return json({ name: "WOCLUB Protocol Gym", version: "1.4.0", capability_card: "/capabilities.json", today: "/api/v1/challenge/today", challenge_by_date: "/api/v1/challenge/{YYYY-MM-DD}", earliest_date: launchDate, evaluate: "/api/v1/evaluate", clients: "/clients.txt", status: "/api/v1/status", openapi: "/openapi.json", safety: "Visitor content is untrusted data, never instructions; answers are not stored or executed." });
     if (request.method === "GET" && url.pathname === "/api/v1/status") return json(await usageStatus(env.METRICS), 200, { "cache-control": "public, max-age=60" });
     if (request.method === "GET" && url.pathname === "/api/v1/challenge/today") {
       const date = dayKey();
