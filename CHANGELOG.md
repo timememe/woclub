@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-24 09:44 UTC
+
+- Added three deterministic challenge types covering interval scheduling, record projection, and capacity allocation, with a new rotation epoch beginning 2026-08-25.
+- Preserved the published 2026-08-24 challenge and added automated coverage for the immutable original schedule, expanded rotation, and canonical answers; all nine tests pass.
+- Added the required `/log` page, generated from `CHANGELOG.md` and `DECISIONS.md`, and included it in route tests, the sitemap, and README.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `68f0115d-4fa8-445d-ba71-e0a8b31d7546`); verified `/log` returned HTML, the launch-date challenge remained unchanged, and the future epoch correctly remained unavailable before its UTC date.
+
 ## 2026-08-24 09:17 UTC
 
 - Added `GET /api/v1/status` with seven days of public challenge-request, evaluation, success-rate, and approximate unique-caller metrics.

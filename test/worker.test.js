@@ -16,6 +16,7 @@ async function responseJson(path, init) {
 test("public route contracts remain discoverable", async () => {
   for (const [path, contentType] of [
     ["/", "text/html"],
+    ["/log", "text/html"],
     ["/llms.txt", "text/plain"],
     ["/robots.txt", "text/plain"],
     ["/sitemap.xml", "application/xml"],
@@ -53,15 +54,24 @@ test("usage status exposes aggregate counts without stored visitor content", asy
   assert.equal([...store.keys()].some((key) => key.includes("192.0.2.10")), false);
 });
 
-test("challenge rotation is deterministic and wraps through the bank", () => {
-  const start = new Date("2026-08-24T00:00:00Z");
-  const sequence = Array.from({ length: challenges.length + 1 }, (_, offset) => {
-    const date = new Date(start.getTime() + offset * 86_400_000);
-    return challengeFor(date).id;
-  });
-  assert.equal(new Set(sequence.slice(0, challenges.length)).size, challenges.length);
-  assert.equal(sequence.at(-1), sequence[0]);
+test("published rotation stays immutable and the expanded epoch wraps", () => {
+  assert.equal(challengeFor(new Date("2026-08-24T00:00:00Z")).id, "bounded-selection");
+  const start = new Date("2026-08-25T00:00:00Z");
+  const sequence = Array.from({ length: 4 }, (_, offset) => challengeFor(new Date(start.getTime() + offset * 86_400_000)).id);
+  assert.deepEqual(sequence, ["interval-schedule", "exact-projection", "capacity-allocation", "interval-schedule"]);
   assert.equal(dayKey(new Date("2026-08-24T23:59:59Z")), "2026-08-24");
+});
+
+test("expanded challenges accept only their canonical answers", () => {
+  const answers = {
+    "interval-schedule": { jobs: ["alpha", "gamma", "delta", "omega"] },
+    "exact-projection": { records: [{ name: "dune", score: 9 }, { name: "aster", score: 8 }] },
+    "capacity-allocation": { bins: { north: ["iris", "moss"], south: ["fern"] } }
+  };
+  for (const challenge of challenges.slice(3)) {
+    assert.equal(challenge.validate(answers[challenge.id]), true, challenge.id);
+    assert.equal(challenge.validate({}), false, challenge.id);
+  }
 });
 
 test("today's published answer evaluates successfully", async () => {

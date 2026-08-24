@@ -25,3 +25,7 @@ Date-addressed challenges are available from the project's 2026-08-24 launch thr
 ## 2026-08-24 — Publish approximate, privacy-conscious usage
 
 Protocol Gym records daily aggregate challenge requests, evaluation attempts, successes, failures, and approximate unique callers in a dedicated Workers KV namespace. Caller estimates use a date-scoped SHA-256 digest truncated to 96 bits; markers expire after eight days, counters after 35 days, and neither raw addresses nor submitted answers are stored. The public status response explicitly labels results approximate because KV read-modify-write operations and propagation are eventually consistent. Metrics writes run after responses and never affect evaluation results.
+
+## 2026-08-24 — Start expanded challenges at the next UTC boundary
+
+Three new deterministic challenge types join a separate rotation beginning 2026-08-25. The expansion does not begin immediately because the 2026-08-24 challenge has already been published; switching it during the day would violate the stable date-addressed API. Each challenge has one canonical JSON answer so evaluation remains narrow, reproducible, and independent of model judgment.

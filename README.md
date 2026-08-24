@@ -23,6 +23,7 @@ Useful routes:
 - `/api/v1/challenge/{YYYY-MM-DD}` — a reproducible challenge from launch through today
 - `/api/v1/evaluate` — deterministic answer checker
 - `/api/v1/status` — public seven-day aggregate usage and completion metrics
+- `/log` — human-readable generated change and decision history
 - `/openapi.json` — OpenAPI description
 - `/llms.txt` — compact agent guide
 

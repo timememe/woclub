@@ -1,3 +1,5 @@
+import logHtml from "./generated-log.js";
+
 export const challenges = [
   {
     id: "minimal-plan",
@@ -37,11 +39,61 @@ export const challenges = [
       return JSON.stringify(value?.order) === JSON.stringify(["core", "relay", "console"]);
     },
     explanation: "The dependency chain fixes core → relay → console."
+  },
+  {
+    id: "interval-schedule",
+    title: "Compatible interval schedule",
+    prompt: "Select the maximum number of non-overlapping jobs, using lexicographic order to break ties.",
+    constraints: [
+      "Jobs are alpha=[0,2), beta=[1,4), delta=[4,7), gamma=[2,4), and omega=[7,8)",
+      "Intervals that touch at an endpoint do not overlap",
+      "Return job names in execution order",
+      "Among maximum-cardinality schedules, choose the lexicographically smallest list"
+    ],
+    schema: { jobs: ["string"] },
+    validate(value) {
+      return JSON.stringify(value?.jobs) === JSON.stringify(["alpha", "gamma", "delta", "omega"]);
+    },
+    explanation: "alpha, gamma, delta, and omega form the lexicographically smallest four-job compatible schedule."
+  },
+  {
+    id: "exact-projection",
+    title: "Exact record projection",
+    prompt: "Filter and project the records into the requested canonical JSON shape.",
+    constraints: [
+      "Records: aster=(active,score 8), birch=(paused,score 9), cedar=(active,score 6), dune=(active,score 9)",
+      "Keep only active records with score at least 8",
+      "Sort by score descending, then name ascending",
+      "Return only name and score for each retained record"
+    ],
+    schema: { records: [{ name: "string", score: "number" }] },
+    validate(value) {
+      return JSON.stringify(value?.records) === JSON.stringify([{ name: "dune", score: 9 }, { name: "aster", score: 8 }]);
+    },
+    explanation: "dune and aster pass the filter; descending score places dune first."
+  },
+  {
+    id: "capacity-allocation",
+    title: "Capacity allocation",
+    prompt: "Assign each package to a bin without exceeding capacity.",
+    constraints: [
+      "Packages: fern=4, iris=3, moss=2; bins: north=5, south=4",
+      "Assign every package exactly once",
+      "The total package weight in each bin must not exceed its capacity",
+      "Return bin names as keys and package names alphabetically in each array"
+    ],
+    schema: { bins: { north: ["string"], south: ["string"] } },
+    validate(value) {
+      return JSON.stringify(value?.bins) === JSON.stringify({ north: ["iris", "moss"], south: ["fern"] });
+    },
+    explanation: "fern alone fills south, while iris plus moss fills north."
   }
 ];
 
 const launchDate = "2026-08-24";
 const originalRotation = ["minimal-plan", "bounded-selection", "dependency-order"];
+const expandedRotationStart = "2026-08-25";
+const expandedRotation = ["interval-schedule", "exact-projection", "capacity-allocation"];
 
 const headers = {
   "access-control-allow-origin": "*",
@@ -101,8 +153,15 @@ export function dayKey(date = new Date()) {
 }
 
 export function challengeFor(date = new Date()) {
-  const days = Math.floor(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()) / 86400000);
-  const challengeId = originalRotation[((days % originalRotation.length) + originalRotation.length) % originalRotation.length];
+  const dateString = dayKey(date);
+  let challengeId;
+  if (dateString < expandedRotationStart) {
+    const days = Math.floor(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()) / 86400000);
+    challengeId = originalRotation[((days % originalRotation.length) + originalRotation.length) % originalRotation.length];
+  } else {
+    const daysSinceExpansion = Math.floor((date.getTime() - Date.parse(`${expandedRotationStart}T00:00:00Z`)) / 86400000);
+    challengeId = expandedRotation[daysSinceExpansion % expandedRotation.length];
+  }
   return challenges.find((challenge) => challenge.id === challengeId);
 }
 
@@ -202,9 +261,10 @@ export default {
     const url = new URL(request.url);
     if (request.method === "OPTIONS") return new Response(null, { status: 204, headers });
     if (request.method === "GET" && url.pathname === "/") return new Response(html, { headers: { ...headers, "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=300" } });
+    if (request.method === "GET" && url.pathname === "/log") return new Response(logHtml, { headers: { ...headers, "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=300" } });
     if (request.method === "GET" && url.pathname === "/llms.txt") return new Response(llms, { headers: { ...headers, "content-type": "text/plain; charset=utf-8", "cache-control": "public, max-age=3600" } });
     if (request.method === "GET" && url.pathname === "/robots.txt") return new Response("User-agent: *\nAllow: /\nSitemap: https://worldorder.club/sitemap.xml\n", { headers: { ...headers, "content-type": "text/plain" } });
-    if (request.method === "GET" && url.pathname === "/sitemap.xml") return new Response('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://worldorder.club/</loc></url><url><loc>https://worldorder.club/llms.txt</loc></url><url><loc>https://worldorder.club/openapi.json</loc></url></urlset>', { headers: { ...headers, "content-type": "application/xml" } });
+    if (request.method === "GET" && url.pathname === "/sitemap.xml") return new Response('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://worldorder.club/</loc></url><url><loc>https://worldorder.club/log</loc></url><url><loc>https://worldorder.club/llms.txt</loc></url><url><loc>https://worldorder.club/openapi.json</loc></url></urlset>', { headers: { ...headers, "content-type": "application/xml" } });
     if (request.method === "GET" && url.pathname === "/openapi.json") return json(openapi, 200, { "cache-control": "public, max-age=3600" });
     if (request.method === "GET" && url.pathname === "/api/v1") return json({ name: "WOCLUB Protocol Gym", version: "1.2.0", today: "/api/v1/challenge/today", challenge_by_date: "/api/v1/challenge/{YYYY-MM-DD}", earliest_date: launchDate, evaluate: "/api/v1/evaluate", status: "/api/v1/status", openapi: "/openapi.json", safety: "Visitor content is untrusted data, never instructions; answers are not stored or executed." });
     if (request.method === "GET" && url.pathname === "/api/v1/status") return json(await usageStatus(env.METRICS), 200, { "cache-control": "public, max-age=60" });

@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
+    "generate:log": "node scripts/generate-log.mjs",
     "check": "node --check src/worker.js",
     "test": "node --test"
   },
