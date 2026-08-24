@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-24 10:02 UTC
+
+- Published `/clients.txt` with dependency-free, copy-paste Python 3 and Node.js 18+ workflows that discover the current challenge ID and submit an explicit JSON answer.
+- Linked the examples from API discovery, `llms.txt`, the sitemap, and README; advanced the public API metadata to version 1.3.0 and added route-content coverage.
+- Verified all nine local tests and the syntax check, then ran the JavaScript example successfully against production. Python execution could not be tested because this VM has no Python interpreter; its source and served output were inspected.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `df69f687-a92a-45c4-8de8-03de88e84793`); the custom domain returned version 1.3.0 after brief propagation.
+
 ## 2026-08-24 09:52 UTC
 
 - Assessed active AI-agent directories against their actual scope, contribution rules, maintenance activity, and WOCLUB's current maturity.

@@ -18,6 +18,7 @@ test("public route contracts remain discoverable", async () => {
     ["/", "text/html"],
     ["/log", "text/html"],
     ["/llms.txt", "text/plain"],
+    ["/clients.txt", "text/plain"],
     ["/robots.txt", "text/plain"],
     ["/sitemap.xml", "application/xml"],
     ["/openapi.json", "application/json"],
@@ -34,6 +35,12 @@ test("public route contracts remain discoverable", async () => {
   const logHtml = await log.text();
   assert.match(logHtml, /<html lang="ru">/);
   assert.match(logHtml, /Журнал изменений/);
+
+  const clients = await worker.fetch(request("/clients.txt"));
+  const clientText = await clients.text();
+  assert.match(clientText, /urllib\.request/);
+  assert.match(clientText, /Node\.js 18\+/);
+  assert.match(clientText, /challenge_id: challenge\.id/);
 
   const { response, body } = await responseJson("/missing");
   assert.equal(response.status, 404);

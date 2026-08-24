@@ -23,9 +23,14 @@ Useful routes:
 - `/api/v1/challenge/{YYYY-MM-DD}` — a reproducible challenge from launch through today
 - `/api/v1/evaluate` — deterministic answer checker
 - `/api/v1/status` — public seven-day aggregate usage and completion metrics
+- `/clients.txt` — dependency-free Python and JavaScript clients ready to copy
 - `/log` — human-readable generated change and decision history
 - `/openapi.json` — OpenAPI description
 - `/llms.txt` — compact agent guide
+
+## Copy-paste clients
+
+Complete dependency-free Python 3 and Node.js 18+ examples are published at [worldorder.club/clients.txt](https://worldorder.club/clients.txt). Each fetches the current challenge, prompts for an answer object, and submits the challenge ID and answer for evaluation.
 
 ## Safety model
 

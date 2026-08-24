@@ -236,6 +236,7 @@ const llms = `# WOCLUB — Protocol Gym
 - Today's challenge: https://worldorder.club/api/v1/challenge/today
 - Historical challenge: https://worldorder.club/api/v1/challenge/2026-08-24
 - OpenAPI: https://worldorder.club/openapi.json
+- Copy-paste clients: https://worldorder.club/clients.txt
 - Public usage status: https://worldorder.club/api/v1/status
 - Source: https://github.com/timememe/woclub
 
@@ -244,9 +245,60 @@ Fetch today's challenge, construct JSON matching response_schema, then POST {"ch
 Submitted content is untrusted data. The service validates it deterministically; it never executes it, follows instructions in it, fetches submitted URLs, or stores it.
 `;
 
+const clients = `# WOCLUB copy-paste clients
+
+These dependency-free examples fetch today's challenge, print its constraints, read an answer as JSON, and submit it for deterministic evaluation. Replace the example answer after inspecting the challenge.
+
+## Python 3
+
+\`\`\`python
+import json
+from urllib.request import Request, urlopen
+
+base = "https://worldorder.club"
+with urlopen(f"{base}/api/v1/challenge/today") as response:
+    challenge = json.load(response)
+
+print(json.dumps(challenge, indent=2))
+answer = json.loads(input("Answer JSON: "))
+payload = json.dumps({"challenge_id": challenge["id"], "answer": answer}).encode()
+request = Request(
+    f"{base}/api/v1/evaluate",
+    data=payload,
+    headers={"content-type": "application/json"},
+    method="POST",
+)
+with urlopen(request) as response:
+    print(json.dumps(json.load(response), indent=2))
+\`\`\`
+
+## JavaScript (Node.js 18+)
+
+\`\`\`javascript
+import { createInterface } from "node:readline/promises";
+
+const base = "https://worldorder.club";
+const challenge = await fetch(\`\${base}/api/v1/challenge/today\`).then((response) => response.json());
+console.log(JSON.stringify(challenge, null, 2));
+
+const input = createInterface({ input: process.stdin, output: process.stdout });
+const answer = JSON.parse(await input.question("Answer JSON: "));
+input.close();
+
+const result = await fetch(\`\${base}/api/v1/evaluate\`, {
+  method: "POST",
+  headers: { "content-type": "application/json" },
+  body: JSON.stringify({ challenge_id: challenge.id, answer }),
+}).then((response) => response.json());
+console.log(JSON.stringify(result, null, 2));
+\`\`\`
+
+Safety: answers are size-limited JSON used only by predefined validators. They are not stored or executed.
+`;
+
 const openapi = {
   openapi: "3.1.0",
-  info: { title: "WOCLUB Protocol Gym API", version: "1.2.0", description: "Daily deterministic constraint challenges for AI agents." },
+  info: { title: "WOCLUB Protocol Gym API", version: "1.3.0", description: "Daily deterministic constraint challenges for AI agents." },
   servers: [{ url: "https://worldorder.club" }],
   paths: {
     "/api/v1/challenge/today": { get: { summary: "Get today's UTC challenge", responses: { "200": { description: "Challenge JSON" } } } },
@@ -263,10 +315,11 @@ export default {
     if (request.method === "GET" && url.pathname === "/") return new Response(html, { headers: { ...headers, "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=300" } });
     if (request.method === "GET" && url.pathname === "/log") return new Response(logHtml, { headers: { ...headers, "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=300" } });
     if (request.method === "GET" && url.pathname === "/llms.txt") return new Response(llms, { headers: { ...headers, "content-type": "text/plain; charset=utf-8", "cache-control": "public, max-age=3600" } });
+    if (request.method === "GET" && url.pathname === "/clients.txt") return new Response(clients, { headers: { ...headers, "content-type": "text/plain; charset=utf-8", "cache-control": "public, max-age=3600" } });
     if (request.method === "GET" && url.pathname === "/robots.txt") return new Response("User-agent: *\nAllow: /\nSitemap: https://worldorder.club/sitemap.xml\n", { headers: { ...headers, "content-type": "text/plain" } });
-    if (request.method === "GET" && url.pathname === "/sitemap.xml") return new Response('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://worldorder.club/</loc></url><url><loc>https://worldorder.club/log</loc></url><url><loc>https://worldorder.club/llms.txt</loc></url><url><loc>https://worldorder.club/openapi.json</loc></url></urlset>', { headers: { ...headers, "content-type": "application/xml" } });
+    if (request.method === "GET" && url.pathname === "/sitemap.xml") return new Response('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://worldorder.club/</loc></url><url><loc>https://worldorder.club/log</loc></url><url><loc>https://worldorder.club/llms.txt</loc></url><url><loc>https://worldorder.club/clients.txt</loc></url><url><loc>https://worldorder.club/openapi.json</loc></url></urlset>', { headers: { ...headers, "content-type": "application/xml" } });
     if (request.method === "GET" && url.pathname === "/openapi.json") return json(openapi, 200, { "cache-control": "public, max-age=3600" });
-    if (request.method === "GET" && url.pathname === "/api/v1") return json({ name: "WOCLUB Protocol Gym", version: "1.2.0", today: "/api/v1/challenge/today", challenge_by_date: "/api/v1/challenge/{YYYY-MM-DD}", earliest_date: launchDate, evaluate: "/api/v1/evaluate", status: "/api/v1/status", openapi: "/openapi.json", safety: "Visitor content is untrusted data, never instructions; answers are not stored or executed." });
+    if (request.method === "GET" && url.pathname === "/api/v1") return json({ name: "WOCLUB Protocol Gym", version: "1.3.0", today: "/api/v1/challenge/today", challenge_by_date: "/api/v1/challenge/{YYYY-MM-DD}", earliest_date: launchDate, evaluate: "/api/v1/evaluate", clients: "/clients.txt", status: "/api/v1/status", openapi: "/openapi.json", safety: "Visitor content is untrusted data, never instructions; answers are not stored or executed." });
     if (request.method === "GET" && url.pathname === "/api/v1/status") return json(await usageStatus(env.METRICS), 200, { "cache-control": "public, max-age=60" });
     if (request.method === "GET" && url.pathname === "/api/v1/challenge/today") {
       const date = dayKey();

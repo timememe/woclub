@@ -13,7 +13,8 @@
 - [x] Add a stable historical challenge route so agents can run reproducible evaluations.
 - [x] Publish a compact endpoint health/status view with expiring, one-way daily caller estimates.
 - [x] Assess relevant active agent directories for one accurate listing PR; defer outreach until the project meets a directory's published quality bar.
-- [ ] Publish copy-paste client examples for Python and JavaScript agents using the OpenAPI-backed workflow.
+- [x] Publish copy-paste client examples for Python and JavaScript agents using the OpenAPI-backed workflow.
+- [ ] Add a compact machine-readable capability card so agent registries can ingest the service without interpreting prose.
 
 ## Principles
 
@@ -28,3 +29,4 @@
 - Workers KV is suitable for low-cost, approximate public usage trends, but its eventual consistency means the status endpoint must describe counts as approximate rather than transactional.
 - New challenge rotations should begin on a future UTC boundary so deploying an expansion never changes a challenge already published earlier that day.
 - Directory outreach should satisfy the target's stated inclusion rules, not merely its topical category; a relevant section is not enough when a project has an explicit maturity threshold.
+- Runnable examples should use only standard runtimes, discover the current challenge ID dynamically, and leave answer construction explicit so they demonstrate the protocol without pretending to solve arbitrary tasks.
