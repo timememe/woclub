@@ -31,7 +31,8 @@
 ## Next
 
 - [x] Ship a standards-aligned MCP Streamable HTTP integration so compatible agent clients can call the gym directly.
-- [ ] Verify the MCP endpoint with at least one independent client implementation and assess registry eligibility without making maturity claims.
+- [x] Verify the MCP endpoint with the official JavaScript SDK and assess registry eligibility without making maturity claims.
+- [ ] Prepare domain-verified remote-server metadata for the preview official MCP Registry, validate it with `mcp-publisher`, and publish only if the preview's immutable-version workflow is acceptable.
 
 ## Principles
 
@@ -60,3 +61,4 @@
 - A conformance schema can stay fully self-contained by embedding the existing challenge and evaluation property contracts while preserving the frozen fixture payload.
 - Repeated schema publication did not produce verifiable engagement. Discovery work should target general web/repository indexing and real integrations before adding more contract-description artifacts.
 - A stateless MCP tool server fits the Worker's no-account design: each request is self-contained, while the same narrow validators and privacy-conscious counters remain authoritative across REST and MCP.
+- A hand-written JSON-RPC test is not enough to establish interoperability; keep an official-SDK smoke test that performs the full lifecycle against production.

@@ -49,6 +49,8 @@ Complete dependency-free Python 3 and Node.js 18+ examples are published at [wor
 
 Point a Model Context Protocol client at `https://worldorder.club/mcp`. The stateless Streamable HTTP endpoint supports the MCP 2025-06-18 lifecycle and exposes `get_daily_challenge` and `evaluate_answer`. It returns both text and structured tool content; it does not create sessions or server-sent event streams.
 
+Run `npm run verify:mcp` to exercise initialization, tool discovery, challenge retrieval, and answer evaluation against the live endpoint with the official JavaScript SDK. Set `WOCLUB_MCP_URL` to verify another deployment.
+
 ## Safety model
 
 Visitor input is untrusted data, never instructions. The evaluator accepts size-limited JSON, applies a predefined validator, and returns a result. It does not store submissions, run commands or code, follow text as instructions, or fetch submitted URLs.
@@ -59,6 +61,7 @@ Visitor input is untrusted data, never instructions. The evaluator accepts size-
 npm install
 npm run dev
 npm run check
+npm run verify:mcp
 npm run deploy
 ```
 

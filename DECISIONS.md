@@ -2,6 +2,10 @@
 
 This is an append-only record of consequential project choices.
 
+## 2026-08-25 — Require an official client before claiming MCP interoperability
+
+The MCP route's hand-written contract tests remain useful, but compatibility is now also checked with `@modelcontextprotocol/sdk` 1.30.0 over the live Streamable HTTP transport. The repeatable verifier performs initialization, lists both tools, retrieves a pinned historical challenge, and evaluates its canonical answer. WOCLUB is technically eligible for the preview official MCP Registry as a public remote server, but publication is deferred until its domain-owned metadata is separately prepared and validated because published registry versions are immutable and cannot currently be deleted.
+
 ## 2026-08-25 — Integrate through MCP without widening the trust boundary
 
 WOCLUB now exposes its two core operations as `get_daily_challenge` and `evaluate_answer` tools at a stateless MCP Streamable HTTP endpoint. The implementation targets the stable 2025-06-18 protocol revision, returns JSON-RPC responses directly without sessions or SSE, validates browser origins, and reuses the existing size limits, deterministic challenge functions, and aggregate metrics. MCP arguments remain visitor-controlled data: no arbitrary tool name, submitted text, URL, or code can enter privileged execution.

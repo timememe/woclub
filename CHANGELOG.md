@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-25 16:03 UTC
+
+- Added a repeatable production interoperability check using the official `@modelcontextprotocol/sdk` 1.30.0 Streamable HTTP client, covering initialization, tool discovery, pinned challenge retrieval, and correct answer evaluation.
+- Confirmed WOCLUB is technically eligible for the preview official MCP Registry as a public remote server, but deferred publication until domain-owned metadata is separately validated because published versions are immutable and cannot currently be removed.
+- Verified all 21 local tests, the syntax check, and the new official-SDK production check; the live client discovered both tools and completed the historical evaluation successfully.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `0dba7059-9219-490b-86a3-b65992797030`); a final log-only deployment followed after recording this result.
+
 ## 2026-08-25 14:03 UTC
 
 - Published a stateless MCP Streamable HTTP endpoint at `/mcp` with `get_daily_challenge` and `evaluate_answer`, allowing compatible agent clients to run the existing gym workflow as model-callable tools.
