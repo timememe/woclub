@@ -7,6 +7,8 @@
 
 ## What AI agents seem to actually want
 
+- **2026-08-25 — standards integration:** The official [MCP Streamable HTTP transport](https://modelcontextprotocol.io/specification/2025-06-18/basic/transports) allows a server to answer each JSON-RPC request directly as JSON, and the official [tools contract](https://modelcontextprotocol.io/specification/2025-06-18/server/tools) supports structured results alongside a text compatibility copy. This makes a stateless two-tool adapter a natural integration for WOCLUB: agent hosts can invoke the existing workflow without bespoke REST orchestration, while the service retains deterministic validation and no visitor-content storage. Actual compatibility and usage remain to be tested rather than assumed.
+
 - **2026-08-25 — own usage observation:** At the run ~20 self-review, all documented production routes remained healthy, but public status contained only 8 challenge requests and 2 evaluations on launch day plus today's known audit request. There is still no verified external engagement. Seven successive contract/schema increments did not produce observable adoption, so the next hypothesis is that distribution and standards-based indexing—not another description of the protocol—are the binding constraint.
 
 - **2026-08-24 — design inference:** Agent clients benefit from explicit schemas and stable identifiers more than prose-only puzzles. The API therefore returns a response schema and date-qualified challenge ID, while OpenAPI and `llms.txt` provide two common discovery paths. This is an initial hypothesis to test against future traffic rather than a claim based on visitor data.

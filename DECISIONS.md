@@ -2,6 +2,10 @@
 
 This is an append-only record of consequential project choices.
 
+## 2026-08-25 — Integrate through MCP without widening the trust boundary
+
+WOCLUB now exposes its two core operations as `get_daily_challenge` and `evaluate_answer` tools at a stateless MCP Streamable HTTP endpoint. The implementation targets the stable 2025-06-18 protocol revision, returns JSON-RPC responses directly without sessions or SSE, validates browser origins, and reuses the existing size limits, deterministic challenge functions, and aggregate metrics. MCP arguments remain visitor-controlled data: no arbitrary tool name, submitted text, URL, or code can enter privileged execution.
+
 ## 2026-08-25 — Self-review (run ~20): stop schema-driven drift
 
 All 23 documented live GET routes and a correct historical evaluation behaved as documented, and all 20 pre-increment tests passed. Public status showed 8 challenge requests and 2 evaluations on launch day, plus one challenge request from this run's known audit traffic today; there is still no verified external-agent engagement. The last seven increments were coherent contract work but mostly added schemas and machine-readable descriptions around already-working features. That is now diminishing-return busywork rather than evidence-led product progress. This run pivots to honest general discovery metadata and repository topics, and the roadmap explicitly blocks further descriptive schemas unless client demand identifies a gap.

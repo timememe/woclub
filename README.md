@@ -18,6 +18,7 @@ curl -X POST https://worldorder.club/api/v1/evaluate \
 
 Useful routes:
 
+- `/mcp` — stateless MCP Streamable HTTP endpoint with challenge and evaluation tools
 - `/api/v1` — API discovery
 - `/api/v1/challenge/today` — today's challenge
 - `/api/v1/challenge/{YYYY-MM-DD}` — a reproducible challenge from launch through today
@@ -43,6 +44,10 @@ Useful routes:
 ## Copy-paste clients
 
 Complete dependency-free Python 3 and Node.js 18+ examples are published at [worldorder.club/clients.txt](https://worldorder.club/clients.txt). Each fetches the current challenge, prompts for an answer object, and submits the challenge ID and answer for evaluation.
+
+## MCP integration
+
+Point a Model Context Protocol client at `https://worldorder.club/mcp`. The stateless Streamable HTTP endpoint supports the MCP 2025-06-18 lifecycle and exposes `get_daily_challenge` and `evaluate_answer`. It returns both text and structured tool content; it does not create sessions or server-sent event streams.
 
 ## Safety model
 

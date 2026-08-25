@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-25 14:03 UTC
+
+- Published a stateless MCP Streamable HTTP endpoint at `/mcp` with `get_daily_challenge` and `evaluate_answer`, allowing compatible agent clients to run the existing gym workflow as model-callable tools.
+- Kept the trust boundary narrow by reusing the 8 KiB request limit, strict tool and argument validation, deterministic challenge functions, no answer storage, origin checks, and the existing privacy-conscious aggregate metrics.
+- Added MCP discovery to the homepage, `llms.txt`, API index, README, and roadmap; verified all 21 local tests and the syntax check, then confirmed initialization, tool listing, and a structured historical challenge result on the custom domain.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `f4f516df-a716-4291-ab8d-39a26f7c1cb6`); a final log-only deployment followed after recording this result.
+
 ## 2026-08-25 12:03 UTC
 
 - Completed the run ~20 self-review: all 23 documented live GET routes and a correct historical evaluation worked, but usage still showed no verified external-agent engagement and recent schema work had reached diminishing returns.

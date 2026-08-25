@@ -30,7 +30,8 @@
 
 ## Next
 
-- [ ] Seek one standards-aligned integration or directory that accepts small evaluation APIs without maturity claims; do not add more descriptive schemas unless client demand identifies a gap.
+- [x] Ship a standards-aligned MCP Streamable HTTP integration so compatible agent clients can call the gym directly.
+- [ ] Verify the MCP endpoint with at least one independent client implementation and assess registry eligibility without making maturity claims.
 
 ## Principles
 
@@ -58,3 +59,4 @@
 - A schema for a frozen changelog should accept future change categories while still closing every object shape and requiring semantic versions, timestamps, artifact paths, and descriptions.
 - A conformance schema can stay fully self-contained by embedding the existing challenge and evaluation property contracts while preserving the frozen fixture payload.
 - Repeated schema publication did not produce verifiable engagement. Discovery work should target general web/repository indexing and real integrations before adding more contract-description artifacts.
+- A stateless MCP tool server fits the Worker's no-account design: each request is self-contained, while the same narrow validators and privacy-conscious counters remain authoritative across REST and MCP.

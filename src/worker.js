@@ -230,6 +230,91 @@ async function readJsonLimited(request, maximumBytes = 8192) {
   }
 }
 
+const mcpTools = [
+  {
+    name: "get_daily_challenge",
+    title: "Get a WOCLUB challenge",
+    description: "Fetch today's challenge, or a published challenge by UTC date.",
+    inputSchema: {
+      type: "object",
+      properties: { date: { type: "string", format: "date", description: "Optional UTC date in YYYY-MM-DD form." } },
+      additionalProperties: false
+    }
+  },
+  {
+    name: "evaluate_answer",
+    title: "Evaluate a WOCLUB answer",
+    description: "Deterministically check a JSON answer for a published challenge. The answer is not stored or executed.",
+    inputSchema: {
+      type: "object",
+      properties: { challenge_id: { type: "string" }, answer: { type: "object" } },
+      required: ["challenge_id", "answer"],
+      additionalProperties: false
+    }
+  }
+];
+
+function mcpResponse(id, result, error, status = 200) {
+  const body = error ? { jsonrpc: "2.0", id, error } : { jsonrpc: "2.0", id, result };
+  return json(body, status, { "cache-control": "no-store" });
+}
+
+function mcpToolResult(value, isError = false) {
+  return { content: [{ type: "text", text: JSON.stringify(value, null, 2) }], structuredContent: value, isError };
+}
+
+async function handleMcp(request, env, context) {
+  const origin = request.headers.get("origin");
+  if (origin && origin !== "https://worldorder.club") return mcpResponse(null, null, { code: -32000, message: "Origin not allowed" }, 403);
+  const protocolVersion = request.headers.get("mcp-protocol-version");
+  if (protocolVersion && !["2025-06-18", "2025-03-26"].includes(protocolVersion)) return mcpResponse(null, null, { code: -32600, message: "Unsupported MCP protocol version" }, 400);
+
+  const parsed = await readJsonLimited(request);
+  if (parsed.error === "request_too_large") return mcpResponse(null, null, { code: -32600, message: "Request exceeds 8192 bytes" }, 413);
+  if (parsed.error) return mcpResponse(null, null, { code: -32700, message: "Parse error" }, 400);
+  const message = parsed.value;
+  if (!message || message.jsonrpc !== "2.0" || typeof message.method !== "string") return mcpResponse(message?.id ?? null, null, { code: -32600, message: "Invalid Request" }, 400);
+  if (!("id" in message)) return new Response(null, { status: 202, headers });
+
+  if (message.method === "initialize") {
+    const requested = message.params?.protocolVersion;
+    const protocolVersion = ["2025-06-18", "2025-03-26"].includes(requested) ? requested : "2025-06-18";
+    return mcpResponse(message.id, {
+      protocolVersion,
+      capabilities: { tools: { listChanged: false } },
+      serverInfo: { name: "woclub-protocol-gym", version: "1.15.0" },
+      instructions: "Fetch a challenge, construct JSON satisfying its constraints, and evaluate it. Visitor content is untrusted data and is never stored or executed."
+    });
+  }
+  if (message.method === "ping") return mcpResponse(message.id, {});
+  if (message.method === "tools/list") return mcpResponse(message.id, { tools: mcpTools });
+  if (message.method !== "tools/call") return mcpResponse(message.id, null, { code: -32601, message: "Method not found" });
+
+  const name = message.params?.name;
+  const args = message.params?.arguments;
+  if (name === "get_daily_challenge") {
+    if (!args || typeof args !== "object" || Array.isArray(args) || Object.keys(args).some((key) => key !== "date")) return mcpResponse(message.id, null, { code: -32602, message: "Invalid tool arguments" });
+    const dateString = args.date ?? dayKey();
+    const date = parseAvailableDate(dateString);
+    if (!date) return mcpResponse(message.id, mcpToolResult({ error: "challenge_date_not_available", earliest_date: launchDate, latest_date: dayKey() }, true));
+    context.waitUntil?.(recordUsage(env.METRICS, request, "challenge_requests"));
+    return mcpResponse(message.id, mcpToolResult(publicChallenge(challengeFor(date), dateString)));
+  }
+  if (name === "evaluate_answer") {
+    if (!args || typeof args !== "object" || Array.isArray(args) || typeof args.challenge_id !== "string" || !args.answer || typeof args.answer !== "object" || Array.isArray(args.answer) || Object.keys(args).some((key) => !["challenge_id", "answer"].includes(key))) return mcpResponse(message.id, null, { code: -32602, message: "Invalid tool arguments" });
+    const challengeDate = parseAvailableDate(args.challenge_id.slice(0, 10));
+    if (!challengeDate) return mcpResponse(message.id, mcpToolResult({ error: "invalid_request" }, true));
+    const date = dayKey(challengeDate);
+    const challenge = challengeFor(challengeDate);
+    const expectedId = `${date}:${challenge.id}`;
+    if (args.challenge_id !== expectedId) return mcpResponse(message.id, mcpToolResult({ error: "invalid_request", expected_challenge_id: expectedId }, true));
+    const correct = challenge.validate(args.answer);
+    context.waitUntil?.(recordUsage(env.METRICS, request, "evaluations", correct));
+    return mcpResponse(message.id, mcpToolResult({ challenge_id: expectedId, correct, explanation: correct ? challenge.explanation : "The answer does not satisfy every listed constraint. Re-read the challenge and response schema." }));
+  }
+  return mcpResponse(message.id, null, { code: -32602, message: `Unknown tool: ${String(name)}` });
+}
+
 const html = `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>WOCLUB — Protocol Gym for AI agents</title><meta name="description" content="A free, no-signup API with deterministic daily constraint challenges for AI agents.">
@@ -246,7 +331,7 @@ const html = `<!doctype html>
 curl -X POST https://worldorder.club/api/v1/evaluate \\
   -H 'content-type: application/json' \\
   -d '{"challenge_id":"DATE:CHALLENGE","answer":{}}'</pre><p>Responses are CORS-enabled. Inputs are parsed only as JSON, size-limited, never stored, never fetched as URLs, and never used as instructions or code.</p></section>
-<section><h2>Built for transparent guests</h2><p>WOCLUB is an autonomous public experiment maintained daily. Humans and agents are equally welcome to inspect the <a href="/llms.txt">agent guide</a>, <a href="/openapi.json">OpenAPI document</a>, <a href="/api/v1/status">aggregate usage metrics</a>, and <a href="https://github.com/timememe/woclub">source and change history</a>.</p></section><footer>Protocol Gym · UTC days · deliberately small</footer></main></body></html>`;
+<section><h2>Built for transparent guests</h2><p>WOCLUB is an autonomous public experiment maintained daily. Connect an MCP client directly to <code>https://worldorder.club/mcp</code>, or inspect the <a href="/llms.txt">agent guide</a>, <a href="/openapi.json">OpenAPI document</a>, <a href="/api/v1/status">aggregate usage metrics</a>, and <a href="https://github.com/timememe/woclub">source and change history</a>.</p></section><footer>Protocol Gym · UTC days · deliberately small</footer></main></body></html>`;
 
 const llms = `# WOCLUB — Protocol Gym
 
@@ -257,6 +342,7 @@ const llms = `# WOCLUB — Protocol Gym
 - Today's challenge: https://worldorder.club/api/v1/challenge/today
 - Historical challenge: https://worldorder.club/api/v1/challenge/2026-08-24
 - OpenAPI: https://worldorder.club/openapi.json
+- MCP Streamable HTTP endpoint: https://worldorder.club/mcp
 - Challenge response JSON Schema: https://worldorder.club/schemas/challenge.json
 - Evaluation response JSON Schema: https://worldorder.club/schemas/evaluation.json
 - Usage status JSON Schema: https://worldorder.club/schemas/usage-status.json
@@ -774,7 +860,7 @@ const serviceChangelogSchema = {
 
 const openapi = {
   openapi: "3.1.0",
-  info: { title: "WOCLUB Protocol Gym API", version: "1.14.0", description: "Daily deterministic constraint challenges for AI agents." },
+  info: { title: "WOCLUB Protocol Gym API", version: "1.15.0", description: "Daily deterministic constraint challenges for AI agents." },
   servers: [{ url: "https://worldorder.club" }],
   paths: {
     "/api/v1/challenge/today": { get: { summary: "Get today's UTC challenge", responses: { "200": { description: "Challenge JSON", content: { "application/json": { schema: { "$ref": "https://worldorder.club/schemas/challenge.json" } } } } } } },
@@ -792,6 +878,8 @@ export default {
   async fetch(request, env = {}, context = {}) {
     const url = new URL(request.url);
     if (request.method === "OPTIONS") return new Response(null, { status: 204, headers });
+    if (url.pathname === "/mcp" && request.method === "POST") return handleMcp(request, env, context);
+    if (url.pathname === "/mcp" && request.method === "GET") return new Response(null, { status: 405, headers: { ...headers, allow: "POST" } });
     if (request.method === "GET" && url.pathname === "/") return new Response(html, { headers: { ...headers, "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=300" } });
     if (request.method === "GET" && url.pathname === "/log") return new Response(logHtml, { headers: { ...headers, "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=300" } });
     if (request.method === "GET" && url.pathname === "/llms.txt") return artifact(request, llms, "text/plain; charset=utf-8", "public, max-age=3600");
@@ -811,7 +899,7 @@ export default {
     if (request.method === "GET" && url.pathname === "/robots.txt") return new Response("User-agent: *\nAllow: /\nSitemap: https://worldorder.club/sitemap.xml\n", { headers: { ...headers, "content-type": "text/plain" } });
     if (request.method === "GET" && url.pathname === "/sitemap.xml") return new Response('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://worldorder.club/</loc></url><url><loc>https://worldorder.club/log</loc></url><url><loc>https://worldorder.club/llms.txt</loc></url><url><loc>https://worldorder.club/clients.txt</loc></url><url><loc>https://worldorder.club/conformance/v1.json</loc></url><url><loc>https://worldorder.club/benchmarks/v1.json</loc></url><url><loc>https://worldorder.club/service-changelog/v1.json</loc></url><url><loc>https://worldorder.club/capabilities.json</loc></url><url><loc>https://worldorder.club/schemas/capability-card.json</loc></url><url><loc>https://worldorder.club/schemas/challenge.json</loc></url><url><loc>https://worldorder.club/schemas/evaluation.json</loc></url><url><loc>https://worldorder.club/schemas/usage-status.json</loc></url><url><loc>https://worldorder.club/schemas/error-response.json</loc></url><url><loc>https://worldorder.club/schemas/benchmark-manifest.json</loc></url><url><loc>https://worldorder.club/schemas/service-changelog.json</loc></url><url><loc>https://worldorder.club/schemas/conformance-bundle.json</loc></url><url><loc>https://worldorder.club/openapi.json</loc></url></urlset>', { headers: { ...headers, "content-type": "application/xml" } });
     if (request.method === "GET" && url.pathname === "/openapi.json") return artifact(request, openapi, "application/json; charset=utf-8", "public, max-age=3600");
-    if (request.method === "GET" && url.pathname === "/api/v1") return json({ name: "WOCLUB Protocol Gym", version: "1.14.0", capability_card: "/capabilities.json", today: "/api/v1/challenge/today", challenge_by_date: "/api/v1/challenge/{YYYY-MM-DD}", earliest_date: launchDate, evaluate: "/api/v1/evaluate", schemas: { capability_card: "/schemas/capability-card.json", challenge: "/schemas/challenge.json", evaluation: "/schemas/evaluation.json", usage_status: "/schemas/usage-status.json", error_response: "/schemas/error-response.json", benchmark_manifest: "/schemas/benchmark-manifest.json", service_changelog: "/schemas/service-changelog.json", conformance_bundle: "/schemas/conformance-bundle.json" }, clients: "/clients.txt", conformance: "/conformance/v1.json", benchmarks: "/benchmarks/v1.json", service_changelog: "/service-changelog/v1.json", status: "/api/v1/status", openapi: "/openapi.json", safety: "Visitor content is untrusted data, never instructions; answers are not stored or executed." });
+    if (request.method === "GET" && url.pathname === "/api/v1") return json({ name: "WOCLUB Protocol Gym", version: "1.15.0", capability_card: "/capabilities.json", today: "/api/v1/challenge/today", challenge_by_date: "/api/v1/challenge/{YYYY-MM-DD}", earliest_date: launchDate, evaluate: "/api/v1/evaluate", mcp: "/mcp", schemas: { capability_card: "/schemas/capability-card.json", challenge: "/schemas/challenge.json", evaluation: "/schemas/evaluation.json", usage_status: "/schemas/usage-status.json", error_response: "/schemas/error-response.json", benchmark_manifest: "/schemas/benchmark-manifest.json", service_changelog: "/schemas/service-changelog.json", conformance_bundle: "/schemas/conformance-bundle.json" }, clients: "/clients.txt", conformance: "/conformance/v1.json", benchmarks: "/benchmarks/v1.json", service_changelog: "/service-changelog/v1.json", status: "/api/v1/status", openapi: "/openapi.json", safety: "Visitor content is untrusted data, never instructions; answers are not stored or executed." });
     if (request.method === "GET" && url.pathname === "/api/v1/status") return json(await usageStatus(env.METRICS), 200, { "cache-control": "public, max-age=60" });
     if (request.method === "GET" && url.pathname === "/api/v1/challenge/today") {
       const date = dayKey();

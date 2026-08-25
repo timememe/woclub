@@ -79,6 +79,36 @@ test("public route contracts remain discoverable", async () => {
   assert.equal(body.error, "not_found");
 });
 
+test("MCP Streamable HTTP exposes and runs the gym tools", async () => {
+  const mcp = (method, params, id = 1) => responseJson("/mcp", {
+    method: "POST",
+    headers: { "content-type": "application/json", accept: "application/json, text/event-stream" },
+    body: JSON.stringify({ jsonrpc: "2.0", id, method, params })
+  });
+
+  const initialized = await mcp("initialize", { protocolVersion: "2025-06-18", capabilities: {}, clientInfo: { name: "test", version: "1" } });
+  assert.equal(initialized.body.result.protocolVersion, "2025-06-18");
+  assert.deepEqual(initialized.body.result.capabilities, { tools: { listChanged: false } });
+
+  const listed = await mcp("tools/list", {});
+  assert.deepEqual(listed.body.result.tools.map(({ name }) => name), ["get_daily_challenge", "evaluate_answer"]);
+
+  const fetched = await mcp("tools/call", { name: "get_daily_challenge", arguments: { date: "2026-08-24" } });
+  assert.equal(fetched.body.result.structuredContent.id, "2026-08-24:bounded-selection");
+  assert.equal(JSON.parse(fetched.body.result.content[0].text).date, "2026-08-24");
+
+  const evaluated = await mcp("tools/call", { name: "evaluate_answer", arguments: { challenge_id: "2026-08-24:bounded-selection", answer: { tokens: ["amber", "cobalt"] } } });
+  assert.equal(evaluated.body.result.structuredContent.correct, true);
+  assert.equal(evaluated.body.result.isError, false);
+
+  const unknown = await mcp("tools/call", { name: "run_shell", arguments: {} });
+  assert.equal(unknown.body.error.code, -32602);
+  const unsupported = await responseJson("/mcp", { method: "POST", headers: { "content-type": "application/json", "mcp-protocol-version": "2099-01-01" }, body: JSON.stringify({ jsonrpc: "2.0", id: 9, method: "ping" }) });
+  assert.equal(unsupported.response.status, 400);
+  assert.equal(unsupported.body.error.message, "Unsupported MCP protocol version");
+  assert.equal((await worker.fetch(request("/mcp"))).status, 405);
+});
+
 test("conformance bundle pins reproducible offline outcomes", async () => {
   const { response, body } = await responseJson("/conformance/v1.json");
   assert.equal(response.headers.get("cache-control"), "public, max-age=31536000, immutable");
@@ -143,7 +173,7 @@ test("benchmark manifest schema describes the published contract", async () => {
   assert.deepEqual(Object.keys(manifest.groups[0].cases[0]).sort(), schema.properties.groups.items.properties.cases.items.required.slice().sort());
 
   const openapi = (await responseJson("/openapi.json")).body;
-  assert.equal(openapi.info.version, "1.14.0");
+  assert.equal(openapi.info.version, "1.15.0");
   assert.equal(openapi.paths["/benchmarks/v1.json"].get.responses["200"].content["application/json"].schema.$ref, schema.$id);
   const api = (await responseJson("/api/v1")).body;
   assert.equal(api.schemas.benchmark_manifest, "/schemas/benchmark-manifest.json");
@@ -159,7 +189,7 @@ test("capability card schema describes the published contract", async () => {
   assert.equal(card.discovery.json_schemas.capability_card, schema.$id);
 
   const openapi = (await responseJson("/openapi.json")).body;
-  assert.equal(openapi.info.version, "1.14.0");
+  assert.equal(openapi.info.version, "1.15.0");
   assert.equal(openapi.paths["/capabilities.json"].get.responses["200"].content["application/json"].schema.$ref, schema.$id);
   const api = (await responseJson("/api/v1")).body;
   assert.equal(api.schemas.capability_card, "/schemas/capability-card.json");
@@ -188,10 +218,10 @@ test("service changelog exposes ordered semantic contract additions", async () =
   assert.ok(body.entries.every(({ changes }) => changes.length > 0 && changes.every(({ kind }) => kind === "added")));
 
   const openapi = (await responseJson("/openapi.json")).body;
-  assert.equal(openapi.info.version, "1.14.0");
+  assert.equal(openapi.info.version, "1.15.0");
   assert.ok(openapi.paths["/service-changelog/v1.json"]);
   const api = (await responseJson("/api/v1")).body;
-  assert.equal(api.version, "1.14.0");
+  assert.equal(api.version, "1.15.0");
   assert.equal(api.service_changelog, "/service-changelog/v1.json");
 });
 
@@ -222,7 +252,7 @@ test("published JSON Schemas describe live success responses", async () => {
   assert.deepEqual(evaluationSchema.required, ["challenge_id", "correct", "explanation"]);
 
   const openapi = (await responseJson("/openapi.json")).body;
-  assert.equal(openapi.info.version, "1.14.0");
+  assert.equal(openapi.info.version, "1.15.0");
   assert.equal(openapi.paths["/api/v1/challenge/today"].get.responses["200"].content["application/json"].schema.$ref, challengeSchema.$id);
   assert.equal(openapi.paths["/api/v1/evaluate"].post.responses["200"].content["application/json"].schema.$ref, evaluationSchema.$id);
 });
@@ -286,7 +316,7 @@ test("error response schema covers stable API failure envelopes", async () => {
   assert.equal(openapi.paths["/api/v1/evaluate"].post.responses["413"].content["application/json"].schema.$ref, schema.$id);
   assert.equal(openapi.paths["/api/v1/challenge/{date}"].get.responses["404"].content["application/json"].schema.$ref, schema.$id);
   const api = (await responseJson("/api/v1")).body;
-  assert.equal(api.version, "1.14.0");
+  assert.equal(api.version, "1.15.0");
   assert.equal(api.schemas.error_response, "/schemas/error-response.json");
 });
 
