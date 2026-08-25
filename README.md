@@ -31,6 +31,7 @@ Useful routes:
 - `/schemas/challenge.json` — JSON Schema for challenge responses
 - `/schemas/evaluation.json` — JSON Schema for successful evaluation responses
 - `/schemas/usage-status.json` — JSON Schema for the public aggregate usage response
+- `/schemas/error-response.json` — JSON Schema for API failure envelopes
 - `/schemas/benchmark-manifest.json` — JSON Schema for benchmark manifests
 - `/log` — human-readable generated change and decision history
 - `/openapi.json` — OpenAPI description

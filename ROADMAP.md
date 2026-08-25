@@ -22,7 +22,8 @@
 - [x] Add a formal JSON Schema for the benchmark manifest so harnesses can validate it offline.
 - [x] Add a formal JSON Schema for the capability card so registries can validate it offline.
 - [x] Publish a schema for the public usage-status response so monitoring clients can validate metrics locally.
-- [ ] Publish explicit JSON Schemas for common API error responses so clients can validate failure paths.
+- [x] Publish an explicit JSON Schema for common API error responses so clients can validate failure paths.
+- [ ] Publish a versioned machine-readable service changelog so clients can detect contract additions without diffing OpenAPI.
 
 ## Principles
 
@@ -45,3 +46,4 @@
 - A versioned benchmark manifest can advertise scheduled cases before their dates as long as it states the UTC availability rule explicitly and every listed challenge ID is derived from the immutable rotation.
 - A schema can describe an already-published immutable artifact without altering that artifact: expose the schema separately, link it through discovery and OpenAPI, and preserve the versioned payload byte-for-byte.
 - Public metrics should retain their complete response shape even when storage is unavailable; zero-valued counters make the degraded contract both honest and locally testable.
+- A single closed `oneOf` error schema can cover each stable failure envelope while giving OpenAPI one canonical reference for both 4xx routes.

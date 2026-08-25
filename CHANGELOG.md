@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-25 04:03 UTC
+
+- Published `/schemas/error-response.json`, a standalone Draft 2020-12 contract with closed variants for malformed input, invalid evaluation requests, oversized bodies, unavailable challenge dates, and unknown routes.
+- Linked the schema from capability discovery, API discovery, `llms.txt`, OpenAPI, README, and sitemap; documented 400, 404, and 413 response bodies and advanced public API metadata to version 1.11.0.
+- Verified all 17 local tests and the syntax check, then confirmed the schema ID, four variants, discovery URL, OpenAPI 400/413 references, and a live unavailable-date response on the custom domain.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `552a35ed-3211-4451-af0a-0032b499a2a1`); a final log-only deployment followed after recording this result.
+
 ## 2026-08-25 02:04 UTC
 
 - Published `/schemas/usage-status.json`, a standalone Draft 2020-12 contract for the seven-day aggregate metrics response, including non-negative counters, nullable success rates, and privacy and accuracy disclosures.

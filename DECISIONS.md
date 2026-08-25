@@ -69,3 +69,7 @@ The protocol-neutral capability card now has a standalone Draft 2020-12 schema a
 ## 2026-08-25 — Keep the usage contract stable without storage
 
 The public status response now has a standalone Draft 2020-12 schema covering its seven-day window, non-negative aggregate counters, nullable success rate, and privacy and accuracy disclosures. If the metrics binding is unavailable, the endpoint returns the same complete shape with zero counters instead of omitting fields. This preserves a locally valid, honest degraded response without claiming persisted observations exist.
+
+## 2026-08-25 — Use one closed schema for API failure envelopes
+
+Common 400, 404, and 413 responses share one canonical Draft 2020-12 schema at `/schemas/error-response.json`. Its closed `oneOf` variants enumerate every stable error code and the fields allowed with it, so clients can validate distinct failure paths through one OpenAPI reference without accepting arbitrary properties. Successful response contracts remain separate because they have different caching and client-handling semantics.
