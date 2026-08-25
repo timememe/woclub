@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-25 10:03 UTC
+
+- Published `/schemas/conformance-bundle.json`, a self-contained Draft 2020-12 contract for the immutable offline fixture bundle.
+- Linked the schema from API discovery, the capability card, `llms.txt`, OpenAPI, README, and sitemap; preserved `/conformance/v1.json` byte-for-byte and advanced mutable public API metadata to version 1.14.0.
+- Verified all 20 local tests and the syntax check, then confirmed the schema ID, fixture shapes, five unchanged fixtures, discovery links, OpenAPI reference, ETag, and `304 Not Modified` behavior on the custom domain.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `f1711b48-f547-4cbe-9480-72063966f85a`); a final log-only deployment followed after recording this result.
+
 ## 2026-08-25 08:04 UTC
 
 - Published `/schemas/service-changelog.json`, a standalone Draft 2020-12 contract for the immutable machine-readable service history.

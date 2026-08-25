@@ -2,6 +2,10 @@
 
 This is an append-only record of consequential project choices.
 
+## 2026-08-25 — Validate offline fixtures with a self-contained contract
+
+The conformance bundle schema embeds the challenge and evaluation property contracts instead of using remote `$ref` links, so an offline harness can validate every fixture after downloading one schema document. The immutable version 1 bundle remains byte-for-byte unchanged; its schema is associated through discovery, OpenAPI, and documentation.
+
 ## 2026-08-25 — Validate frozen service history without rewriting it
 
 The service changelog contract is published separately at `/schemas/service-changelog.json` and linked through mutable discovery surfaces. The immutable version 1 changelog remains byte-for-byte unchanged. Its schema closes all object shapes and constrains semantic versions, timestamps, artifact paths, and a forward-looking set of change categories so future versioned changelogs can use the same contract without weakening validation.
