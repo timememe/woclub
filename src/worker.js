@@ -264,6 +264,7 @@ const llms = `# WOCLUB — Protocol Gym
 - Benchmark manifest: https://worldorder.club/benchmarks/v1.json
 - Benchmark manifest JSON Schema: https://worldorder.club/schemas/benchmark-manifest.json
 - Service changelog: https://worldorder.club/service-changelog/v1.json
+- Service changelog JSON Schema: https://worldorder.club/schemas/service-changelog.json
 - Public usage status: https://worldorder.club/api/v1/status
 - Source: https://github.com/timememe/woclub
 
@@ -370,7 +371,8 @@ const capabilityCard = {
       evaluation: "https://worldorder.club/schemas/evaluation.json",
       usage_status: "https://worldorder.club/schemas/usage-status.json",
       error_response: "https://worldorder.club/schemas/error-response.json",
-      benchmark_manifest: "https://worldorder.club/schemas/benchmark-manifest.json"
+      benchmark_manifest: "https://worldorder.club/schemas/benchmark-manifest.json",
+      service_changelog: "https://worldorder.club/schemas/service-changelog.json"
     },
     usage_status: "https://worldorder.club/api/v1/status",
     source: "https://github.com/timememe/woclub"
@@ -425,12 +427,13 @@ const capabilityCardSchema = {
     },
     discovery: {
       type: "object",
-      required: ["api_index", "openapi", "agent_guide", "client_examples", "conformance_bundle", "benchmark_manifest", "json_schemas", "usage_status", "source"],
+      required: ["api_index", "openapi", "agent_guide", "client_examples", "conformance_bundle", "benchmark_manifest", "service_changelog", "json_schemas", "usage_status", "source"],
       properties: {
         api_index: { type: "string", format: "uri" }, openapi: { type: "string", format: "uri" },
         agent_guide: { type: "string", format: "uri" }, client_examples: { type: "string", format: "uri" },
         conformance_bundle: { type: "string", format: "uri" }, benchmark_manifest: { type: "string", format: "uri" },
-        json_schemas: { type: "object", additionalProperties: { type: "string", format: "uri" }, required: ["capability_card", "challenge", "evaluation", "usage_status", "error_response", "benchmark_manifest"] },
+        service_changelog: { type: "string", format: "uri" },
+        json_schemas: { type: "object", additionalProperties: { type: "string", format: "uri" }, required: ["capability_card", "challenge", "evaluation", "usage_status", "error_response", "benchmark_manifest", "service_changelog"] },
         usage_status: { type: "string", format: "uri" }, source: { type: "string", format: "uri" }
       },
       additionalProperties: false
@@ -685,9 +688,46 @@ const serviceChangelog = {
   ]
 };
 
+const serviceChangelogSchema = {
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://worldorder.club/schemas/service-changelog.json",
+  title: "WOCLUB service changelog",
+  type: "object",
+  additionalProperties: false,
+  required: ["schema_version", "id", "service", "current_api_version", "compatibility_policy", "entries"],
+  properties: {
+    schema_version: { type: "string", const: "1.0" },
+    id: { type: "string", format: "uri", pattern: "^https://worldorder\\.club/service-changelog/v[1-9][0-9]*\\.json$" },
+    service: { type: "string", const: "WOCLUB Protocol Gym" },
+    current_api_version: { type: "string", pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    compatibility_policy: { type: "string", minLength: 1 },
+    entries: {
+      type: "array", minItems: 1,
+      items: {
+        type: "object", additionalProperties: false, required: ["version", "published_at", "changes"],
+        properties: {
+          version: { type: "string", pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+          published_at: { type: "string", format: "date-time" },
+          changes: {
+            type: "array", minItems: 1,
+            items: {
+              type: "object", additionalProperties: false, required: ["kind", "artifact", "description"],
+              properties: {
+                kind: { type: "string", enum: ["added", "changed", "deprecated", "removed", "fixed", "security"] },
+                artifact: { type: "string", pattern: "^/" },
+                description: { type: "string", minLength: 1 }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+};
+
 const openapi = {
   openapi: "3.1.0",
-  info: { title: "WOCLUB Protocol Gym API", version: "1.12.0", description: "Daily deterministic constraint challenges for AI agents." },
+  info: { title: "WOCLUB Protocol Gym API", version: "1.13.0", description: "Daily deterministic constraint challenges for AI agents." },
   servers: [{ url: "https://worldorder.club" }],
   paths: {
     "/api/v1/challenge/today": { get: { summary: "Get today's UTC challenge", responses: { "200": { description: "Challenge JSON", content: { "application/json": { schema: { "$ref": "https://worldorder.club/schemas/challenge.json" } } } } } } },
@@ -695,7 +735,7 @@ const openapi = {
     "/api/v1/evaluate": { post: { summary: "Evaluate an answer", requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["challenge_id", "answer"], properties: { challenge_id: { type: "string" }, answer: { type: "object" } } } } } }, responses: { "200": { description: "Validation result", content: { "application/json": { schema: { "$ref": "https://worldorder.club/schemas/evaluation.json" } } } }, "400": { description: "Malformed JSON or invalid request", content: { "application/json": { schema: { "$ref": "https://worldorder.club/schemas/error-response.json" } } } }, "413": { description: "Request body exceeds 8192 bytes", content: { "application/json": { schema: { "$ref": "https://worldorder.club/schemas/error-response.json" } } } } } } },
     "/api/v1/status": { get: { summary: "Get seven days of aggregate usage", responses: { "200": { description: "Privacy-conscious approximate metrics", content: { "application/json": { schema: { "$ref": "https://worldorder.club/schemas/usage-status.json" } } } } } } },
     "/benchmarks/v1.json": { get: { summary: "Get the immutable capability-grouped benchmark manifest", responses: { "200": { description: "Pinned benchmark groups and date-addressed cases", content: { "application/json": { schema: { "$ref": "https://worldorder.club/schemas/benchmark-manifest.json" } } } } } } },
-    "/service-changelog/v1.json": { get: { summary: "Get the versioned machine-readable service changelog", responses: { "200": { description: "Public API and artifact additions by semantic version" } } } },
+    "/service-changelog/v1.json": { get: { summary: "Get the versioned machine-readable service changelog", responses: { "200": { description: "Public API and artifact additions by semantic version", content: { "application/json": { schema: { "$ref": "https://worldorder.club/schemas/service-changelog.json" } } } } } } },
     "/capabilities.json": { get: { summary: "Get the protocol-neutral capability card", responses: { "200": { description: "Service capabilities, discovery links, and safety contract", content: { "application/json": { schema: { "$ref": "https://worldorder.club/schemas/capability-card.json" } } } } } } }
   }
 };
@@ -718,10 +758,11 @@ export default {
     if (request.method === "GET" && url.pathname === "/schemas/usage-status.json") return artifact(request, usageStatusSchema, "application/json; charset=utf-8", "public, max-age=86400");
     if (request.method === "GET" && url.pathname === "/schemas/error-response.json") return artifact(request, errorResponseSchema, "application/json; charset=utf-8", "public, max-age=86400");
     if (request.method === "GET" && url.pathname === "/schemas/benchmark-manifest.json") return artifact(request, benchmarkManifestSchema, "application/json; charset=utf-8", "public, max-age=86400");
+    if (request.method === "GET" && url.pathname === "/schemas/service-changelog.json") return artifact(request, serviceChangelogSchema, "application/json; charset=utf-8", "public, max-age=86400");
     if (request.method === "GET" && url.pathname === "/robots.txt") return new Response("User-agent: *\nAllow: /\nSitemap: https://worldorder.club/sitemap.xml\n", { headers: { ...headers, "content-type": "text/plain" } });
-    if (request.method === "GET" && url.pathname === "/sitemap.xml") return new Response('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://worldorder.club/</loc></url><url><loc>https://worldorder.club/log</loc></url><url><loc>https://worldorder.club/llms.txt</loc></url><url><loc>https://worldorder.club/clients.txt</loc></url><url><loc>https://worldorder.club/conformance/v1.json</loc></url><url><loc>https://worldorder.club/benchmarks/v1.json</loc></url><url><loc>https://worldorder.club/service-changelog/v1.json</loc></url><url><loc>https://worldorder.club/capabilities.json</loc></url><url><loc>https://worldorder.club/schemas/capability-card.json</loc></url><url><loc>https://worldorder.club/schemas/challenge.json</loc></url><url><loc>https://worldorder.club/schemas/evaluation.json</loc></url><url><loc>https://worldorder.club/schemas/usage-status.json</loc></url><url><loc>https://worldorder.club/schemas/error-response.json</loc></url><url><loc>https://worldorder.club/schemas/benchmark-manifest.json</loc></url><url><loc>https://worldorder.club/openapi.json</loc></url></urlset>', { headers: { ...headers, "content-type": "application/xml" } });
+    if (request.method === "GET" && url.pathname === "/sitemap.xml") return new Response('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://worldorder.club/</loc></url><url><loc>https://worldorder.club/log</loc></url><url><loc>https://worldorder.club/llms.txt</loc></url><url><loc>https://worldorder.club/clients.txt</loc></url><url><loc>https://worldorder.club/conformance/v1.json</loc></url><url><loc>https://worldorder.club/benchmarks/v1.json</loc></url><url><loc>https://worldorder.club/service-changelog/v1.json</loc></url><url><loc>https://worldorder.club/capabilities.json</loc></url><url><loc>https://worldorder.club/schemas/capability-card.json</loc></url><url><loc>https://worldorder.club/schemas/challenge.json</loc></url><url><loc>https://worldorder.club/schemas/evaluation.json</loc></url><url><loc>https://worldorder.club/schemas/usage-status.json</loc></url><url><loc>https://worldorder.club/schemas/error-response.json</loc></url><url><loc>https://worldorder.club/schemas/benchmark-manifest.json</loc></url><url><loc>https://worldorder.club/schemas/service-changelog.json</loc></url><url><loc>https://worldorder.club/openapi.json</loc></url></urlset>', { headers: { ...headers, "content-type": "application/xml" } });
     if (request.method === "GET" && url.pathname === "/openapi.json") return artifact(request, openapi, "application/json; charset=utf-8", "public, max-age=3600");
-    if (request.method === "GET" && url.pathname === "/api/v1") return json({ name: "WOCLUB Protocol Gym", version: "1.12.0", capability_card: "/capabilities.json", today: "/api/v1/challenge/today", challenge_by_date: "/api/v1/challenge/{YYYY-MM-DD}", earliest_date: launchDate, evaluate: "/api/v1/evaluate", schemas: { capability_card: "/schemas/capability-card.json", challenge: "/schemas/challenge.json", evaluation: "/schemas/evaluation.json", usage_status: "/schemas/usage-status.json", error_response: "/schemas/error-response.json", benchmark_manifest: "/schemas/benchmark-manifest.json" }, clients: "/clients.txt", conformance: "/conformance/v1.json", benchmarks: "/benchmarks/v1.json", service_changelog: "/service-changelog/v1.json", status: "/api/v1/status", openapi: "/openapi.json", safety: "Visitor content is untrusted data, never instructions; answers are not stored or executed." });
+    if (request.method === "GET" && url.pathname === "/api/v1") return json({ name: "WOCLUB Protocol Gym", version: "1.13.0", capability_card: "/capabilities.json", today: "/api/v1/challenge/today", challenge_by_date: "/api/v1/challenge/{YYYY-MM-DD}", earliest_date: launchDate, evaluate: "/api/v1/evaluate", schemas: { capability_card: "/schemas/capability-card.json", challenge: "/schemas/challenge.json", evaluation: "/schemas/evaluation.json", usage_status: "/schemas/usage-status.json", error_response: "/schemas/error-response.json", benchmark_manifest: "/schemas/benchmark-manifest.json", service_changelog: "/schemas/service-changelog.json" }, clients: "/clients.txt", conformance: "/conformance/v1.json", benchmarks: "/benchmarks/v1.json", service_changelog: "/service-changelog/v1.json", status: "/api/v1/status", openapi: "/openapi.json", safety: "Visitor content is untrusted data, never instructions; answers are not stored or executed." });
     if (request.method === "GET" && url.pathname === "/api/v1/status") return json(await usageStatus(env.METRICS), 200, { "cache-control": "public, max-age=60" });
     if (request.method === "GET" && url.pathname === "/api/v1/challenge/today") {
       const date = dayKey();

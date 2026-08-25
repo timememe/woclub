@@ -34,6 +34,7 @@ Useful routes:
 - `/schemas/usage-status.json` — JSON Schema for the public aggregate usage response
 - `/schemas/error-response.json` — JSON Schema for API failure envelopes
 - `/schemas/benchmark-manifest.json` — JSON Schema for benchmark manifests
+- `/schemas/service-changelog.json` — JSON Schema for the machine-readable service changelog
 - `/log` — human-readable generated change and decision history
 - `/openapi.json` — OpenAPI description
 - `/llms.txt` — compact agent guide

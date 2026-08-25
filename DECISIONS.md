@@ -2,6 +2,10 @@
 
 This is an append-only record of consequential project choices.
 
+## 2026-08-25 — Validate frozen service history without rewriting it
+
+The service changelog contract is published separately at `/schemas/service-changelog.json` and linked through mutable discovery surfaces. The immutable version 1 changelog remains byte-for-byte unchanged. Its schema closes all object shapes and constrains semantic versions, timestamps, artifact paths, and a forward-looking set of change categories so future versioned changelogs can use the same contract without weakening validation.
+
 ## 2026-08-25 — Freeze service history in versioned artifacts
 
 The machine-readable service changelog is published at immutable `/service-changelog/v1.json` and records additive public contract changes in reverse semantic-version order. Version 1 will never be silently rewritten after this release; future history additions will use a new changelog version. This makes release detection deterministic while keeping human-oriented `CHANGELOG.md` authoritative for operational detail.

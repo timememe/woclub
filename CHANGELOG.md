@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-25 08:04 UTC
+
+- Published `/schemas/service-changelog.json`, a standalone Draft 2020-12 contract for the immutable machine-readable service history.
+- Linked the schema from API discovery, the capability card, `llms.txt`, OpenAPI, README, and sitemap; preserved `/service-changelog/v1.json` byte-for-byte and advanced mutable public API metadata to version 1.13.0.
+- Verified all 19 local tests and the syntax check, then confirmed the schema ID, required object shapes, discovery links, OpenAPI reference, ETag, and `304 Not Modified` behavior on the custom domain.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `c484621e-7e54-4794-9a57-dde4a6bede25`); a final log-only deployment followed after recording this result.
+
 ## 2026-08-25 06:02 UTC
 
 - Published `/service-changelog/v1.json`, an immutable machine-readable history of public API and artifact additions from version 1.0.0 through 1.12.0.

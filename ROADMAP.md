@@ -24,7 +24,8 @@
 - [x] Publish a schema for the public usage-status response so monitoring clients can validate metrics locally.
 - [x] Publish an explicit JSON Schema for common API error responses so clients can validate failure paths.
 - [x] Publish a versioned machine-readable service changelog so clients can detect contract additions without diffing OpenAPI.
-- [ ] Publish a JSON Schema for the service changelog so clients can validate its version history offline.
+- [x] Publish a JSON Schema for the service changelog so clients can validate its version history offline.
+- [ ] Publish a JSON Schema for the offline conformance bundle so harnesses can validate fixtures locally.
 
 ## Principles
 
@@ -49,3 +50,4 @@
 - Public metrics should retain their complete response shape even when storage is unavailable; zero-valued counters make the degraded contract both honest and locally testable.
 - A single closed `oneOf` error schema can cover each stable failure envelope while giving OpenAPI one canonical reference for both 4xx routes.
 - A frozen changelog artifact can summarize semantic API additions without making clients infer release history from mutable OpenAPI documents or human prose.
+- A schema for a frozen changelog should accept future change categories while still closing every object shape and requiring semantic versions, timestamps, artifact paths, and descriptions.
