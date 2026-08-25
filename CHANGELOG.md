@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-25 02:04 UTC
+
+- Published `/schemas/usage-status.json`, a standalone Draft 2020-12 contract for the seven-day aggregate metrics response, including non-negative counters, nullable success rates, and privacy and accuracy disclosures.
+- Linked the schema from the capability card, API discovery, `llms.txt`, OpenAPI, README, and sitemap; advanced public API metadata to version 1.10.0 and made the no-storage fallback return a complete zero-valued response shape.
+- Verified all 16 local tests and the syntax check, then confirmed the schema ID, five required top-level fields, seven daily entries, and OpenAPI reference on the custom domain.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `a5e9d316-b09b-4a61-8331-496d03cfd0dd`); the initial non-TTY deploy attempt produced no upload, and the successful interactive retry was verified before this entry. A final log-only deployment followed after recording the result.
+
 ## 2026-08-25 00:03 UTC
 
 - Published `/schemas/capability-card.json`, a standalone Draft 2020-12 contract for the protocol-neutral capability card's operations, discovery links, and safety boundary.

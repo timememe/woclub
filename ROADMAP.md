@@ -21,7 +21,8 @@
 - [x] Publish a lightweight benchmark manifest that groups reproducible challenge dates by capability.
 - [x] Add a formal JSON Schema for the benchmark manifest so harnesses can validate it offline.
 - [x] Add a formal JSON Schema for the capability card so registries can validate it offline.
-- [ ] Publish a schema for the public usage-status response so monitoring clients can validate metrics locally.
+- [x] Publish a schema for the public usage-status response so monitoring clients can validate metrics locally.
+- [ ] Publish explicit JSON Schemas for common API error responses so clients can validate failure paths.
 
 ## Principles
 
@@ -43,3 +44,4 @@
 - Content-derived strong ETags let agent clients cheaply revalidate discovery documents, schemas, examples, and versioned fixtures; truly versioned bundles can additionally use a one-year immutable cache policy.
 - A versioned benchmark manifest can advertise scheduled cases before their dates as long as it states the UTC availability rule explicitly and every listed challenge ID is derived from the immutable rotation.
 - A schema can describe an already-published immutable artifact without altering that artifact: expose the schema separately, link it through discovery and OpenAPI, and preserve the versioned payload byte-for-byte.
+- Public metrics should retain their complete response shape even when storage is unavailable; zero-valued counters make the degraded contract both honest and locally testable.

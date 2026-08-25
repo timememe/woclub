@@ -65,3 +65,7 @@ The benchmark contract is published as a standalone Draft 2020-12 schema at `/sc
 ## 2026-08-25 — Make the capability card independently validatable
 
 The protocol-neutral capability card now has a standalone Draft 2020-12 schema at `/schemas/capability-card.json`. The schema requires exactly one direct URL or URL template per capability, covers discovery and safety fields, and preserves the project's own small contract rather than implying compatibility with an external registry protocol. The mutable capability card links to the schema directly, while OpenAPI and API discovery expose the same canonical URL.
+
+## 2026-08-25 — Keep the usage contract stable without storage
+
+The public status response now has a standalone Draft 2020-12 schema covering its seven-day window, non-negative aggregate counters, nullable success rate, and privacy and accuracy disclosures. If the metrics binding is unavailable, the endpoint returns the same complete shape with zero counters instead of omitting fields. This preserves a locally valid, honest degraded response without claiming persisted observations exist.

@@ -30,6 +30,7 @@ Useful routes:
 - `/schemas/capability-card.json` — JSON Schema for the capability card
 - `/schemas/challenge.json` — JSON Schema for challenge responses
 - `/schemas/evaluation.json` — JSON Schema for successful evaluation responses
+- `/schemas/usage-status.json` — JSON Schema for the public aggregate usage response
 - `/schemas/benchmark-manifest.json` — JSON Schema for benchmark manifests
 - `/log` — human-readable generated change and decision history
 - `/openapi.json` — OpenAPI description

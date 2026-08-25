@@ -25,6 +25,7 @@ test("public route contracts remain discoverable", async () => {
     ["/schemas/capability-card.json", "application/json"],
     ["/schemas/challenge.json", "application/json"],
     ["/schemas/evaluation.json", "application/json"],
+    ["/schemas/usage-status.json", "application/json"],
     ["/schemas/benchmark-manifest.json", "application/json"],
     ["/robots.txt", "text/plain"],
     ["/sitemap.xml", "application/xml"],
@@ -112,7 +113,7 @@ test("benchmark manifest schema describes the published contract", async () => {
   assert.deepEqual(Object.keys(manifest.groups[0].cases[0]).sort(), schema.properties.groups.items.properties.cases.items.required.slice().sort());
 
   const openapi = (await responseJson("/openapi.json")).body;
-  assert.equal(openapi.info.version, "1.9.0");
+  assert.equal(openapi.info.version, "1.10.0");
   assert.equal(openapi.paths["/benchmarks/v1.json"].get.responses["200"].content["application/json"].schema.$ref, schema.$id);
   const api = (await responseJson("/api/v1")).body;
   assert.equal(api.schemas.benchmark_manifest, "/schemas/benchmark-manifest.json");
@@ -128,14 +129,14 @@ test("capability card schema describes the published contract", async () => {
   assert.equal(card.discovery.json_schemas.capability_card, schema.$id);
 
   const openapi = (await responseJson("/openapi.json")).body;
-  assert.equal(openapi.info.version, "1.9.0");
+  assert.equal(openapi.info.version, "1.10.0");
   assert.equal(openapi.paths["/capabilities.json"].get.responses["200"].content["application/json"].schema.$ref, schema.$id);
   const api = (await responseJson("/api/v1")).body;
   assert.equal(api.schemas.capability_card, "/schemas/capability-card.json");
 });
 
 test("static agent artifacts support conditional requests", async () => {
-  for (const path of ["/llms.txt", "/clients.txt", "/conformance/v1.json", "/benchmarks/v1.json", "/capabilities.json", "/schemas/capability-card.json", "/schemas/challenge.json", "/schemas/evaluation.json", "/schemas/benchmark-manifest.json", "/openapi.json"]) {
+  for (const path of ["/llms.txt", "/clients.txt", "/conformance/v1.json", "/benchmarks/v1.json", "/capabilities.json", "/schemas/capability-card.json", "/schemas/challenge.json", "/schemas/evaluation.json", "/schemas/usage-status.json", "/schemas/benchmark-manifest.json", "/openapi.json"]) {
     const initial = await worker.fetch(request(path));
     const etag = initial.headers.get("etag");
     assert.match(etag, /^"[a-f0-9]{64}"$/, path);
@@ -157,7 +158,7 @@ test("published JSON Schemas describe live success responses", async () => {
   assert.deepEqual(evaluationSchema.required, ["challenge_id", "correct", "explanation"]);
 
   const openapi = (await responseJson("/openapi.json")).body;
-  assert.equal(openapi.info.version, "1.9.0");
+  assert.equal(openapi.info.version, "1.10.0");
   assert.equal(openapi.paths["/api/v1/challenge/today"].get.responses["200"].content["application/json"].schema.$ref, challengeSchema.$id);
   assert.equal(openapi.paths["/api/v1/evaluate"].post.responses["200"].content["application/json"].schema.$ref, evaluationSchema.$id);
 });
@@ -179,6 +180,22 @@ test("usage status exposes aggregate counts without stored visitor content", asy
   assert.equal(body.days[0].challenge_requests, 1);
   assert.equal(body.days[0].approximate_unique_callers, 1);
   assert.equal([...store.keys()].some((key) => key.includes("192.0.2.10")), false);
+});
+
+test("usage status schema describes the public metrics contract", async () => {
+  const schema = (await responseJson("/schemas/usage-status.json")).body;
+  const status = (await responseJson("/api/v1/status")).body;
+  assert.equal(schema.$schema, "https://json-schema.org/draft/2020-12/schema");
+  assert.equal(schema.$id, `${origin}/schemas/usage-status.json`);
+  assert.deepEqual(Object.keys(status).sort(), schema.required.slice().sort());
+  assert.equal(status.days.length, 7);
+  assert.deepEqual(Object.keys(status.days[0]).sort(), schema.properties.days.items.required.slice().sort());
+  assert.deepEqual(schema.properties.days.items.properties.success_rate.type, ["number", "null"]);
+
+  const openapi = (await responseJson("/openapi.json")).body;
+  assert.equal(openapi.paths["/api/v1/status"].get.responses["200"].content["application/json"].schema.$ref, schema.$id);
+  const api = (await responseJson("/api/v1")).body;
+  assert.equal(api.schemas.usage_status, "/schemas/usage-status.json");
 });
 
 test("published rotation stays immutable and the expanded epoch wraps", () => {
