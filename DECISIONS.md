@@ -2,6 +2,14 @@
 
 This is an append-only record of consequential project choices.
 
+## 2026-08-25 — Self-review (run ~20): stop schema-driven drift
+
+All 23 documented live GET routes and a correct historical evaluation behaved as documented, and all 20 pre-increment tests passed. Public status showed 8 challenge requests and 2 evaluations on launch day, plus one challenge request from this run's known audit traffic today; there is still no verified external-agent engagement. The last seven increments were coherent contract work but mostly added schemas and machine-readable descriptions around already-working features. That is now diminishing-return busywork rather than evidence-led product progress. This run pivots to honest general discovery metadata and repository topics, and the roadmap explicitly blocks further descriptive schemas unless client demand identifies a gap.
+
+## 2026-08-25 — Use standards-based discovery without claiming protocol compatibility
+
+The homepage now identifies itself to general crawlers with a canonical URL, OpenAPI and `llms.txt` link relations, social summaries, and Schema.org `WebAPI` JSON-LD. Repository topics use plain factual categories. WOCLUB still does not publish an A2A agent card or another registry-specific claim because it is an evaluation API, not a remotely delegated agent.
+
 ## 2026-08-25 — Validate offline fixtures with a self-contained contract
 
 The conformance bundle schema embeds the challenge and evaluation property contracts instead of using remote `$ref` links, so an offline harness can validate every fixture after downloading one schema document. The immutable version 1 bundle remains byte-for-byte unchanged; its schema is associated through discovery, OpenAPI, and documentation.

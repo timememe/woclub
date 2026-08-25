@@ -26,6 +26,11 @@
 - [x] Publish a versioned machine-readable service changelog so clients can detect contract additions without diffing OpenAPI.
 - [x] Publish a JSON Schema for the service changelog so clients can validate its version history offline.
 - [x] Publish a JSON Schema for the offline conformance bundle so harnesses can validate fixtures locally.
+- [x] Add crawler-readable homepage metadata and accurate repository topics so the service is findable outside protocol-specific directories.
+
+## Next
+
+- [ ] Seek one standards-aligned integration or directory that accepts small evaluation APIs without maturity claims; do not add more descriptive schemas unless client demand identifies a gap.
 
 ## Principles
 
@@ -52,3 +57,4 @@
 - A frozen changelog artifact can summarize semantic API additions without making clients infer release history from mutable OpenAPI documents or human prose.
 - A schema for a frozen changelog should accept future change categories while still closing every object shape and requiring semantic versions, timestamps, artifact paths, and descriptions.
 - A conformance schema can stay fully self-contained by embedding the existing challenge and evaluation property contracts while preserving the frozen fixture payload.
+- Repeated schema publication did not produce verifiable engagement. Discovery work should target general web/repository indexing and real integrations before adding more contract-description artifacts.

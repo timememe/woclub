@@ -48,6 +48,14 @@ test("public route contracts remain discoverable", async () => {
   assert.match(logHtml, /<html lang="ru">/);
   assert.match(logHtml, /Журнал изменений/);
 
+  const homepage = await worker.fetch(request("/"));
+  const homepageHtml = await homepage.text();
+  assert.match(homepageHtml, /rel="canonical" href="https:\/\/worldorder\.club\/"/);
+  assert.match(homepageHtml, /rel="alternate" type="text\/plain" href="https:\/\/worldorder\.club\/llms\.txt"/);
+  assert.match(homepageHtml, /rel="service-desc"[^>]+openapi\.json/);
+  assert.match(homepageHtml, /<script type="application\/ld\+json">/);
+  assert.match(homepageHtml, /"@type":"WebAPI"/);
+
   const clients = await worker.fetch(request("/clients.txt"));
   const clientText = await clients.text();
   assert.match(clientText, /urllib\.request/);

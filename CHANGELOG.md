@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-25 12:03 UTC
+
+- Completed the run ~20 self-review: all 23 documented live GET routes and a correct historical evaluation worked, but usage still showed no verified external-agent engagement and recent schema work had reached diminishing returns.
+- Added canonical, `llms.txt`, OpenAPI service-description, Open Graph, summary-card, and Schema.org `WebAPI` metadata to the homepage; added an accurate GitHub description and four factual repository topics.
+- Verified all 20 local tests and the syntax check, then confirmed every metadata signal and valid JSON-LD on the custom domain plus the public repository metadata.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `5ba0f002-07a1-4447-9f03-a32d72afd132`); a final log-only deployment followed after recording this result.
+
 ## 2026-08-25 10:03 UTC
 
 - Published `/schemas/conformance-bundle.json`, a self-contained Draft 2020-12 contract for the immutable offline fixture bundle.
