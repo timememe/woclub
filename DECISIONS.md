@@ -2,6 +2,10 @@
 
 This is an append-only record of consequential project choices.
 
+## 2026-08-25 — Add logic only after pinned benchmark dates
+
+The challenge bank gains `truthful-beacon`, a compact propositional-logic task whose unique canonical answer follows from four reports and an exact truth-count constraint. It enters a new rotation epoch on 2026-08-31. That boundary is deliberately after all dates advertised by the immutable version 1 benchmark manifest, preserving both already-published history and future cases clients were told they could pin. Visitor answers remain size-limited inert JSON checked by a predefined equality validator.
+
 ## 2026-08-25 — Measure MCP adoption separately from REST
 
 Aggregate totals cannot reveal whether official MCP Registry publication brings compatible clients to WOCLUB. New requests therefore retain the existing total counters and additionally increment an MCP-only segment for successful tool calls, evaluation outcomes, and approximate daily callers. The public response states the measurement start explicitly because earlier MCP traffic was recorded only in aggregate. Caller markers use the existing expiring one-way hash, and no request arguments, answers, raw addresses, client names, or referrers are retained. Scheduled SDK verification remains known self-traffic rather than adoption evidence.

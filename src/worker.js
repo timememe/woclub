@@ -87,6 +87,25 @@ export const challenges = [
       return JSON.stringify(value?.bins) === JSON.stringify({ north: ["iris", "moss"], south: ["fern"] });
     },
     explanation: "fern alone fills south, while iris plus moss fills north."
+  },
+  {
+    id: "truthful-beacon",
+    title: "Truthful beacon",
+    prompt: "Infer the beacon direction and identify every truthful reporter.",
+    constraints: [
+      "The beacon is exactly one of north, east, or south",
+      "Ada says: the beacon is north",
+      "Bram says: the beacon is east",
+      "Cyra says: Ada is truthful",
+      "Dune says: Bram is lying",
+      "Exactly three reports are true",
+      "Return truthful reporter names alphabetically"
+    ],
+    schema: { beacon: "string", truthful: ["string"] },
+    validate(value) {
+      return JSON.stringify(value) === JSON.stringify({ beacon: "north", truthful: ["ada", "cyra", "dune"] });
+    },
+    explanation: "Only north makes exactly three reports true: Ada, Cyra, and Dune."
   }
 ];
 
@@ -94,6 +113,8 @@ const launchDate = "2026-08-24";
 const originalRotation = ["minimal-plan", "bounded-selection", "dependency-order"];
 const expandedRotationStart = "2026-08-25";
 const expandedRotation = ["interval-schedule", "exact-projection", "capacity-allocation"];
+const logicRotationStart = "2026-08-31";
+const logicRotation = ["truthful-beacon", "interval-schedule", "exact-projection", "capacity-allocation"];
 
 const headers = {
   "access-control-allow-origin": "*",
@@ -205,9 +226,12 @@ export function challengeFor(date = new Date()) {
   if (dateString < expandedRotationStart) {
     const days = Math.floor(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()) / 86400000);
     challengeId = originalRotation[((days % originalRotation.length) + originalRotation.length) % originalRotation.length];
-  } else {
+  } else if (dateString < logicRotationStart) {
     const daysSinceExpansion = Math.floor((date.getTime() - Date.parse(`${expandedRotationStart}T00:00:00Z`)) / 86400000);
     challengeId = expandedRotation[daysSinceExpansion % expandedRotation.length];
+  } else {
+    const daysSinceLogicRotation = Math.floor((date.getTime() - Date.parse(`${logicRotationStart}T00:00:00Z`)) / 86400000);
+    challengeId = logicRotation[daysSinceLogicRotation % logicRotation.length];
   }
   return challenges.find((challenge) => challenge.id === challengeId);
 }

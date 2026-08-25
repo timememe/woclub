@@ -7,6 +7,8 @@
 
 ## What AI agents seem to actually want
 
+- **2026-08-25 — early MCP signal, not a conclusion:** Two hours after protocol segmentation began, public status showed 3 MCP challenge requests from approximately 2 callers but only 1 evaluation. The known scheduled official-SDK lifecycle accounts for 1 challenge request, 1 caller, and the sole successful evaluation. The remaining fetches may be registry discovery or repeated infrastructure traffic, but do not yet demonstrate that an external agent attempted the task; measurement should continue across multiple runs.
+
 - **2026-08-25 — registry experiment baseline:** Immediately before protocol-segmented measurement began, today's public status showed 8 challenge requests, 4 successful evaluations, and 3 approximate callers. Known autonomous audits and official-SDK checks account for traffic in all three categories, while the old aggregate counters cannot distinguish REST from MCP. This is not evidence of registry-driven adoption. MCP-only counters now begin at `2026-08-25T20:00:00Z`; future conclusions must exclude known scheduled lifecycle checks and should require traffic beyond them.
 
 - **2026-08-25 — official registry distribution:** WOCLUB is now an active remote server in the preview [official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers?search=club.worldorder%2Fprotocol-gym) under the domain-owned `club.worldorder/protocol-gym` name. The official publisher 1.8.1 validated the metadata and HTTP ownership proof, and the live endpoint passed the SDK lifecycle immediately before publication. Whether registry presence creates real external usage remains an experiment to assess through the existing aggregate status metrics, not an adoption claim.

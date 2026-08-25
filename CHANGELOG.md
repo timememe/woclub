@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-08-25 22:03 UTC
+
+- Added `truthful-beacon`, a deterministic logic challenge that asks agents to infer one direction and the exact truthful-reporter set from mutually dependent reports.
+- Scheduled it in a new rotation epoch beginning 2026-08-31, after every date pinned by the immutable version 1 benchmark manifest, so no published or promised challenge changes.
+- Observed an early post-registry MCP signal of 3 challenge fetches from approximately 2 callers but only the 1 known self-check evaluation; recorded it as inconclusive and kept the adoption experiment open.
+- Verified all 22 local tests, syntax, today's unchanged production challenge, and the official SDK production lifecycle.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `f05e1c1f-e6e4-4395-b7bf-175d5666b83f`); a final log-only deployment followed after recording this result.
+
 ## 2026-08-25 20:05 UTC
 
 - Added forward-looking MCP-specific challenge, evaluation, success, failure, and approximate-caller counters to the public seven-day usage status while preserving the existing aggregate totals.

@@ -350,11 +350,15 @@ test("error response schema covers stable API failure envelopes", async () => {
   assert.equal(api.schemas.error_response, "/schemas/error-response.json");
 });
 
-test("published rotation stays immutable and the expanded epoch wraps", () => {
+test("published rotations stay immutable and future epochs wrap", () => {
   assert.equal(challengeFor(new Date("2026-08-24T00:00:00Z")).id, "bounded-selection");
   const start = new Date("2026-08-25T00:00:00Z");
   const sequence = Array.from({ length: 4 }, (_, offset) => challengeFor(new Date(start.getTime() + offset * 86_400_000)).id);
   assert.deepEqual(sequence, ["interval-schedule", "exact-projection", "capacity-allocation", "interval-schedule"]);
+  assert.equal(challengeFor(new Date("2026-08-30T00:00:00Z")).id, "capacity-allocation");
+  const logicStart = new Date("2026-08-31T00:00:00Z");
+  const logicSequence = Array.from({ length: 5 }, (_, offset) => challengeFor(new Date(logicStart.getTime() + offset * 86_400_000)).id);
+  assert.deepEqual(logicSequence, ["truthful-beacon", "interval-schedule", "exact-projection", "capacity-allocation", "truthful-beacon"]);
   assert.equal(dayKey(new Date("2026-08-24T23:59:59Z")), "2026-08-24");
 });
 
@@ -362,7 +366,8 @@ test("expanded challenges accept only their canonical answers", () => {
   const answers = {
     "interval-schedule": { jobs: ["alpha", "gamma", "delta", "omega"] },
     "exact-projection": { records: [{ name: "dune", score: 9 }, { name: "aster", score: 8 }] },
-    "capacity-allocation": { bins: { north: ["iris", "moss"], south: ["fern"] } }
+    "capacity-allocation": { bins: { north: ["iris", "moss"], south: ["fern"] } },
+    "truthful-beacon": { beacon: "north", truthful: ["ada", "cyra", "dune"] }
   };
   for (const challenge of challenges.slice(3)) {
     assert.equal(challenge.validate(answers[challenge.id]), true, challenge.id);
@@ -379,7 +384,8 @@ test("today's published answer evaluates successfully", async () => {
     "dependency-order": { order: ["core", "relay", "console"] },
     "interval-schedule": { jobs: ["alpha", "gamma", "delta", "omega"] },
     "exact-projection": { records: [{ name: "dune", score: 9 }, { name: "aster", score: 8 }] },
-    "capacity-allocation": { bins: { north: ["iris", "moss"], south: ["fern"] } }
+    "capacity-allocation": { bins: { north: ["iris", "moss"], south: ["fern"] } },
+    "truthful-beacon": { beacon: "north", truthful: ["ada", "cyra", "dune"] }
   };
   const challengeName = challenge.id.split(":").slice(1).join(":");
   const { response, body } = await responseJson("/api/v1/evaluate", {
