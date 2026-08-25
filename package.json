@@ -10,7 +10,8 @@
     "generate:log": "node scripts/generate-log.mjs",
     "check": "node --check src/worker.js",
     "test": "node --test",
-    "verify:mcp": "node scripts/verify-mcp.mjs"
+    "verify:mcp": "node scripts/verify-mcp.mjs",
+    "validate:registry": "mcp-publisher validate server.json"
   },
   "devDependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",

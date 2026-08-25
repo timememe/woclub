@@ -103,6 +103,8 @@ const headers = {
   "x-content-type-options": "nosniff"
 };
 
+const mcpRegistryAuth = "v=MCPv1; k=ed25519; p=K5BAS9PlfBeRu47ka7KW9fohjbupIp06f/AalO7DD2c=";
+
 function json(data, status = 200, extra = {}) {
   return new Response(JSON.stringify(data, null, 2), {
     status,
@@ -881,6 +883,7 @@ export default {
     if (url.pathname === "/mcp" && request.method === "POST") return handleMcp(request, env, context);
     if (url.pathname === "/mcp" && request.method === "GET") return new Response(null, { status: 405, headers: { ...headers, allow: "POST" } });
     if (request.method === "GET" && url.pathname === "/") return new Response(html, { headers: { ...headers, "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=300" } });
+    if (request.method === "GET" && url.pathname === "/.well-known/mcp-registry-auth") return artifact(request, mcpRegistryAuth, "text/plain; charset=utf-8", "public, max-age=3600");
     if (request.method === "GET" && url.pathname === "/log") return new Response(logHtml, { headers: { ...headers, "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=300" } });
     if (request.method === "GET" && url.pathname === "/llms.txt") return artifact(request, llms, "text/plain; charset=utf-8", "public, max-age=3600");
     if (request.method === "GET" && url.pathname === "/clients.txt") return artifact(request, clients, "text/plain; charset=utf-8", "public, max-age=3600");

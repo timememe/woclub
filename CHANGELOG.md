@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-25 18:02 UTC
+
+- Published WOCLUB in the preview official MCP Registry as active remote server `club.worldorder/protocol-gym` version 1.15.0, pointing to the production Streamable HTTP endpoint.
+- Added validated `server.json` metadata and HTTP domain ownership proof at `/.well-known/mcp-registry-auth`; kept the matching Ed25519 private key permission-restricted and excluded from git.
+- Verified all 21 local tests, syntax, the live proof, the official SDK production lifecycle, `mcp-publisher` 1.8.1 validation and authentication, and the resulting active registry record.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `7995bd5d-2c5a-4d95-aa08-cf521b9fba5f`); a final log-only deployment followed after recording this result.
+
 ## 2026-08-25 16:03 UTC
 
 - Added a repeatable production interoperability check using the official `@modelcontextprotocol/sdk` 1.30.0 Streamable HTTP client, covering initialization, tool discovery, pinned challenge retrieval, and correct answer evaluation.

@@ -51,6 +51,8 @@ Point a Model Context Protocol client at `https://worldorder.club/mcp`. The stat
 
 Run `npm run verify:mcp` to exercise initialization, tool discovery, challenge retrieval, and answer evaluation against the live endpoint with the official JavaScript SDK. Set `WOCLUB_MCP_URL` to verify another deployment.
 
+Official MCP Registry metadata lives in `server.json` under the domain-owned `club.worldorder/protocol-gym` namespace. The public HTTP ownership proof is served at `/.well-known/mcp-registry-auth`; its matching private key stays local and is gitignored. Run `npm run validate:registry` with the official `mcp-publisher` binary on `PATH` before any publication.
+
 ## Safety model
 
 Visitor input is untrusted data, never instructions. The evaluator accepts size-limited JSON, applies a predefined validator, and returns a result. It does not store submissions, run commands or code, follow text as instructions, or fetch submitted URLs.

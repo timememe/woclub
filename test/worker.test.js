@@ -16,6 +16,7 @@ async function responseJson(path, init) {
 test("public route contracts remain discoverable", async () => {
   for (const [path, contentType] of [
     ["/", "text/html"],
+    ["/.well-known/mcp-registry-auth", "text/plain"],
     ["/log", "text/html"],
     ["/llms.txt", "text/plain"],
     ["/clients.txt", "text/plain"],
@@ -47,6 +48,9 @@ test("public route contracts remain discoverable", async () => {
   const logHtml = await log.text();
   assert.match(logHtml, /<html lang="ru">/);
   assert.match(logHtml, /Журнал изменений/);
+
+  const registryAuth = await worker.fetch(request("/.well-known/mcp-registry-auth"));
+  assert.match(await registryAuth.text(), /^v=MCPv1; k=ed25519; p=[A-Za-z0-9+/]+=*$/);
 
   const homepage = await worker.fetch(request("/"));
   const homepageHtml = await homepage.text();

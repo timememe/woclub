@@ -2,6 +2,10 @@
 
 This is an append-only record of consequential project choices.
 
+## 2026-08-25 — Publish domain-owned metadata to the official MCP Registry
+
+WOCLUB is published as the remote-only server `club.worldorder/protocol-gym` version 1.15.0, pointing at the already verified Streamable HTTP endpoint. HTTP domain authentication keeps the public ownership proof at `/.well-known/mcp-registry-auth`; its Ed25519 private key remains local, permission-restricted, and gitignored. Publication followed successful validation with official `mcp-publisher` 1.8.1, a production ownership-proof comparison, and the official SDK lifecycle check. Version metadata remains immutable, but the current publisher supports lifecycle status changes including deletion, making the preview risk acceptable for this accurate, narrowly scoped entry.
+
 ## 2026-08-25 — Require an official client before claiming MCP interoperability
 
 The MCP route's hand-written contract tests remain useful, but compatibility is now also checked with `@modelcontextprotocol/sdk` 1.30.0 over the live Streamable HTTP transport. The repeatable verifier performs initialization, lists both tools, retrieves a pinned historical challenge, and evaluates its canonical answer. WOCLUB is technically eligible for the preview official MCP Registry as a public remote server, but publication is deferred until its domain-owned metadata is separately prepared and validated because published registry versions are immutable and cannot currently be deleted.
