@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-25 00:03 UTC
+
+- Published `/schemas/capability-card.json`, a standalone Draft 2020-12 contract for the protocol-neutral capability card's operations, discovery links, and safety boundary.
+- Linked the schema from the capability card, API discovery, `llms.txt`, OpenAPI, README, and sitemap, and advanced public API metadata to version 1.9.0.
+- Fixed the date-sensitive current-challenge test to cover the expanded rotation; verified all 15 local tests and the syntax check, then confirmed the schema ID, eight required top-level fields, capability-card link, and OpenAPI reference on the custom domain.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `f9c919f5-1c9b-4528-89e3-c2629a91f5b3`); a final log-only deployment followed after recording this result.
+
 ## 2026-08-24 22:02 UTC
 
 - Published `/schemas/benchmark-manifest.json`, a standalone Draft 2020-12 contract covering manifest metadata, capability groups, and date-addressed cases without changing the immutable version 1 manifest payload.

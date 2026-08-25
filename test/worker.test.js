@@ -22,6 +22,7 @@ test("public route contracts remain discoverable", async () => {
     ["/conformance/v1.json", "application/json"],
     ["/benchmarks/v1.json", "application/json"],
     ["/capabilities.json", "application/json"],
+    ["/schemas/capability-card.json", "application/json"],
     ["/schemas/challenge.json", "application/json"],
     ["/schemas/evaluation.json", "application/json"],
     ["/schemas/benchmark-manifest.json", "application/json"],
@@ -111,14 +112,30 @@ test("benchmark manifest schema describes the published contract", async () => {
   assert.deepEqual(Object.keys(manifest.groups[0].cases[0]).sort(), schema.properties.groups.items.properties.cases.items.required.slice().sort());
 
   const openapi = (await responseJson("/openapi.json")).body;
-  assert.equal(openapi.info.version, "1.8.0");
+  assert.equal(openapi.info.version, "1.9.0");
   assert.equal(openapi.paths["/benchmarks/v1.json"].get.responses["200"].content["application/json"].schema.$ref, schema.$id);
   const api = (await responseJson("/api/v1")).body;
   assert.equal(api.schemas.benchmark_manifest, "/schemas/benchmark-manifest.json");
 });
 
+test("capability card schema describes the published contract", async () => {
+  const schema = (await responseJson("/schemas/capability-card.json")).body;
+  const card = (await responseJson("/capabilities.json")).body;
+  assert.equal(schema.$schema, "https://json-schema.org/draft/2020-12/schema");
+  assert.equal(schema.$id, `${origin}/schemas/capability-card.json`);
+  assert.deepEqual(Object.keys(card).sort(), schema.required.slice().sort());
+  assert.deepEqual(Object.keys(card.safety).sort(), schema.properties.safety.required.slice().sort());
+  assert.equal(card.discovery.json_schemas.capability_card, schema.$id);
+
+  const openapi = (await responseJson("/openapi.json")).body;
+  assert.equal(openapi.info.version, "1.9.0");
+  assert.equal(openapi.paths["/capabilities.json"].get.responses["200"].content["application/json"].schema.$ref, schema.$id);
+  const api = (await responseJson("/api/v1")).body;
+  assert.equal(api.schemas.capability_card, "/schemas/capability-card.json");
+});
+
 test("static agent artifacts support conditional requests", async () => {
-  for (const path of ["/llms.txt", "/clients.txt", "/conformance/v1.json", "/benchmarks/v1.json", "/capabilities.json", "/schemas/challenge.json", "/schemas/evaluation.json", "/schemas/benchmark-manifest.json", "/openapi.json"]) {
+  for (const path of ["/llms.txt", "/clients.txt", "/conformance/v1.json", "/benchmarks/v1.json", "/capabilities.json", "/schemas/capability-card.json", "/schemas/challenge.json", "/schemas/evaluation.json", "/schemas/benchmark-manifest.json", "/openapi.json"]) {
     const initial = await worker.fetch(request(path));
     const etag = initial.headers.get("etag");
     assert.match(etag, /^"[a-f0-9]{64}"$/, path);
@@ -140,7 +157,7 @@ test("published JSON Schemas describe live success responses", async () => {
   assert.deepEqual(evaluationSchema.required, ["challenge_id", "correct", "explanation"]);
 
   const openapi = (await responseJson("/openapi.json")).body;
-  assert.equal(openapi.info.version, "1.8.0");
+  assert.equal(openapi.info.version, "1.9.0");
   assert.equal(openapi.paths["/api/v1/challenge/today"].get.responses["200"].content["application/json"].schema.$ref, challengeSchema.$id);
   assert.equal(openapi.paths["/api/v1/evaluate"].post.responses["200"].content["application/json"].schema.$ref, evaluationSchema.$id);
 });
@@ -190,7 +207,10 @@ test("today's published answer evaluates successfully", async () => {
   const answers = {
     "minimal-plan": { plan: ["archive", "lab", "dock"] },
     "bounded-selection": { tokens: ["amber", "cobalt"] },
-    "dependency-order": { order: ["core", "relay", "console"] }
+    "dependency-order": { order: ["core", "relay", "console"] },
+    "interval-schedule": { jobs: ["alpha", "gamma", "delta", "omega"] },
+    "exact-projection": { records: [{ name: "dune", score: 9 }, { name: "aster", score: 8 }] },
+    "capacity-allocation": { bins: { north: ["iris", "moss"], south: ["fern"] } }
   };
   const challengeName = challenge.id.split(":").slice(1).join(":");
   const { response, body } = await responseJson("/api/v1/evaluate", {

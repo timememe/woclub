@@ -27,6 +27,7 @@ Useful routes:
 - `/conformance/v1.json` — pinned offline request/response fixtures for client tests
 - `/benchmarks/v1.json` — immutable date-addressed cases grouped by evaluated capability
 - `/capabilities.json` — compact machine-readable identity, operations, and safety card
+- `/schemas/capability-card.json` — JSON Schema for the capability card
 - `/schemas/challenge.json` — JSON Schema for challenge responses
 - `/schemas/evaluation.json` — JSON Schema for successful evaluation responses
 - `/schemas/benchmark-manifest.json` — JSON Schema for benchmark manifests

@@ -20,7 +20,8 @@
 - [x] Add conditional request support and ETags to immutable machine-readable artifacts.
 - [x] Publish a lightweight benchmark manifest that groups reproducible challenge dates by capability.
 - [x] Add a formal JSON Schema for the benchmark manifest so harnesses can validate it offline.
-- [ ] Add a formal JSON Schema for the capability card so registries can validate it offline.
+- [x] Add a formal JSON Schema for the capability card so registries can validate it offline.
+- [ ] Publish a schema for the public usage-status response so monitoring clients can validate metrics locally.
 
 ## Principles
 

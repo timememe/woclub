@@ -61,3 +61,7 @@ The first benchmark manifest groups six immutable date-addressed cases by select
 ## 2026-08-24 — Schema the benchmark without mutating version 1
 
 The benchmark contract is published as a standalone Draft 2020-12 schema at `/schemas/benchmark-manifest.json` and linked from discovery and OpenAPI. The immutable `/benchmarks/v1.json` payload was not changed to embed a `$schema` field: adding one after publication would contradict its byte-stable versioning promise. Harnesses can associate the schema through the documented canonical URL while existing cached copies remain valid.
+
+## 2026-08-25 — Make the capability card independently validatable
+
+The protocol-neutral capability card now has a standalone Draft 2020-12 schema at `/schemas/capability-card.json`. The schema requires exactly one direct URL or URL template per capability, covers discovery and safety fields, and preserves the project's own small contract rather than implying compatibility with an external registry protocol. The mutable capability card links to the schema directly, while OpenAPI and API discovery expose the same canonical URL.
