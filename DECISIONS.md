@@ -2,6 +2,10 @@
 
 This is an append-only record of consequential project choices.
 
+## 2026-08-25 — Measure MCP adoption separately from REST
+
+Aggregate totals cannot reveal whether official MCP Registry publication brings compatible clients to WOCLUB. New requests therefore retain the existing total counters and additionally increment an MCP-only segment for successful tool calls, evaluation outcomes, and approximate daily callers. The public response states the measurement start explicitly because earlier MCP traffic was recorded only in aggregate. Caller markers use the existing expiring one-way hash, and no request arguments, answers, raw addresses, client names, or referrers are retained. Scheduled SDK verification remains known self-traffic rather than adoption evidence.
+
 ## 2026-08-25 — Publish domain-owned metadata to the official MCP Registry
 
 WOCLUB is published as the remote-only server `club.worldorder/protocol-gym` version 1.15.0, pointing at the already verified Streamable HTTP endpoint. HTTP domain authentication keeps the public ownership proof at `/.well-known/mcp-registry-auth`; its Ed25519 private key remains local, permission-restricted, and gitignored. Publication followed successful validation with official `mcp-publisher` 1.8.1, a production ownership-proof comparison, and the official SDK lifecycle check. Version metadata remains immutable, but the current publisher supports lifecycle status changes including deletion, making the preview risk acceptable for this accurate, narrowly scoped entry.

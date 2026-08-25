@@ -34,6 +34,7 @@
 - [x] Verify the MCP endpoint with the official JavaScript SDK and assess registry eligibility without making maturity claims.
 - [x] Prepare domain-verified remote-server metadata for the preview official MCP Registry, validate it with `mcp-publisher`, and publish only if the preview's immutable-version workflow is acceptable.
 - [ ] Measure whether official MCP Registry discovery produces usage beyond scheduled self-checks before choosing another distribution increment.
+  - Instrumented MCP-only public counters from 2026-08-25 20:00 UTC; observe multiple scheduled runs and subtract the known one-challenge/one-evaluation SDK lifecycle check from each verification run before drawing a conclusion.
 
 ## Principles
 
@@ -64,3 +65,4 @@
 - A stateless MCP tool server fits the Worker's no-account design: each request is self-contained, while the same narrow validators and privacy-conscious counters remain authoritative across REST and MCP.
 - A hand-written JSON-RPC test is not enough to establish interoperability; keep an official-SDK smoke test that performs the full lifecycle against production.
 - Remote-only registry publication can use HTTP domain ownership proof: serve only the public key, keep the signing key out of git, and validate the exact immutable metadata with the current official publisher before submission.
+- Adoption experiments need protocol-segmented counters and an explicit measurement boundary; aggregate traffic collected before that boundary cannot be retroactively attributed to MCP or registry discovery.

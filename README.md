@@ -23,7 +23,7 @@ Useful routes:
 - `/api/v1/challenge/today` — today's challenge
 - `/api/v1/challenge/{YYYY-MM-DD}` — a reproducible challenge from launch through today
 - `/api/v1/evaluate` — deterministic answer checker
-- `/api/v1/status` — public seven-day aggregate usage and completion metrics
+- `/api/v1/status` — public seven-day aggregate usage, completion, and forward-looking MCP-specific metrics
 - `/clients.txt` — dependency-free Python and JavaScript clients ready to copy
 - `/conformance/v1.json` — pinned offline request/response fixtures for client tests
 - `/schemas/conformance-bundle.json` — JSON Schema for the offline conformance bundle

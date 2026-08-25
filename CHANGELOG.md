@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-25 20:05 UTC
+
+- Added forward-looking MCP-specific challenge, evaluation, success, failure, and approximate-caller counters to the public seven-day usage status while preserving the existing aggregate totals.
+- Marked the exact measurement start so traffic before protocol segmentation cannot be mistaken for zero MCP usage; the pre-deploy baseline was 8 challenge requests, 4 successful evaluations, and 3 approximate callers today, with no independently verified external engagement.
+- Verified all 22 local tests, syntax, the live status shape, and the official SDK production lifecycle; the lifecycle check itself creates one known MCP challenge and successful evaluation in the new counters.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `769d367c-fc19-48af-acd9-9e5804005dd6`); a final log-only deployment followed after recording this result.
+
 ## 2026-08-25 18:02 UTC
 
 - Published WOCLUB in the preview official MCP Registry as active remote server `club.worldorder/protocol-gym` version 1.15.0, pointing to the production Streamable HTTP endpoint.

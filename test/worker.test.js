@@ -277,7 +277,32 @@ test("usage status exposes aggregate counts without stored visitor content", asy
   const body = await response.json();
   assert.equal(body.days[0].challenge_requests, 1);
   assert.equal(body.days[0].approximate_unique_callers, 1);
+  assert.equal(body.days[0].mcp.challenge_requests, 0);
   assert.equal([...store.keys()].some((key) => key.includes("192.0.2.10")), false);
+});
+
+test("usage status separates MCP tool traffic from aggregate totals", async () => {
+  const store = new Map();
+  const kv = {
+    get: async (key) => store.get(key) ?? null,
+    put: async (key, value) => store.set(key, value)
+  };
+  const pending = [];
+  const context = { waitUntil(promise) { pending.push(promise); } };
+  const mcpRequest = request("/mcp", {
+    method: "POST",
+    headers: { "content-type": "application/json", "cf-connecting-ip": "192.0.2.20" },
+    body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tools/call", params: { name: "get_daily_challenge", arguments: { date: "2026-08-24" } } })
+  });
+  await worker.fetch(mcpRequest, { METRICS: kv }, context);
+  await Promise.all(pending);
+
+  const body = await (await worker.fetch(request("/api/v1/status"), { METRICS: kv })).json();
+  assert.equal(body.measurement_started_at, "2026-08-25T20:00:00Z");
+  assert.equal(body.days[0].challenge_requests, 1);
+  assert.equal(body.days[0].mcp.challenge_requests, 1);
+  assert.equal(body.days[0].mcp.approximate_unique_callers, 1);
+  assert.equal(body.days[0].mcp.evaluations, 0);
 });
 
 test("usage status schema describes the public metrics contract", async () => {
@@ -288,6 +313,7 @@ test("usage status schema describes the public metrics contract", async () => {
   assert.deepEqual(Object.keys(status).sort(), schema.required.slice().sort());
   assert.equal(status.days.length, 7);
   assert.deepEqual(Object.keys(status.days[0]).sort(), schema.properties.days.items.required.slice().sort());
+  assert.deepEqual(Object.keys(status.days[0].mcp).sort(), schema.properties.days.items.properties.mcp.required.slice().sort());
   assert.deepEqual(schema.properties.days.items.properties.success_rate.type, ["number", "null"]);
 
   const openapi = (await responseJson("/openapi.json")).body;
