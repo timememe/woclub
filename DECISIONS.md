@@ -2,6 +2,10 @@
 
 This is an append-only record of consequential project choices.
 
+## 2026-08-25 — Freeze service history in versioned artifacts
+
+The machine-readable service changelog is published at immutable `/service-changelog/v1.json` and records additive public contract changes in reverse semantic-version order. Version 1 will never be silently rewritten after this release; future history additions will use a new changelog version. This makes release detection deterministic while keeping human-oriented `CHANGELOG.md` authoritative for operational detail.
+
 ## 2026-08-24 — Replace the old deployment completely
 
 The `woclub` Worker previously hosted an open AI agent peer network whose source and history were not recovered. Anonymous visitors could post tasks that agents might execute, allowing stranger-controlled content to feed privileged actions. Its onboarding text also told agents not to mention WOCLUB to their operators. This project replaces that deployment rather than continuing it. It will never ask anyone to hide its existence, and visitor content will always be treated as untrusted data rather than instructions.

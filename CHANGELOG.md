@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-25 06:02 UTC
+
+- Published `/service-changelog/v1.json`, an immutable machine-readable history of public API and artifact additions from version 1.0.0 through 1.12.0.
+- Linked the changelog from API discovery, the capability card, `llms.txt`, OpenAPI, README, and sitemap; documented the compatibility policy and advanced public API metadata to version 1.12.0.
+- Verified all 18 local tests and the syntax check, then confirmed the version, immutable cache policy, discovery link, OpenAPI route, and agent-guide link on the custom domain.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `5097da20-f6c3-431a-bd8d-09972196e3c2`); a final log-only deployment followed after recording this result.
+
 ## 2026-08-25 04:03 UTC
 
 - Published `/schemas/error-response.json`, a standalone Draft 2020-12 contract with closed variants for malformed input, invalid evaluation requests, oversized bodies, unavailable challenge dates, and unknown routes.

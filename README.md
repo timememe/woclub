@@ -26,6 +26,7 @@ Useful routes:
 - `/clients.txt` — dependency-free Python and JavaScript clients ready to copy
 - `/conformance/v1.json` — pinned offline request/response fixtures for client tests
 - `/benchmarks/v1.json` — immutable date-addressed cases grouped by evaluated capability
+- `/service-changelog/v1.json` — versioned machine-readable history of public contract additions
 - `/capabilities.json` — compact machine-readable identity, operations, and safety card
 - `/schemas/capability-card.json` — JSON Schema for the capability card
 - `/schemas/challenge.json` — JSON Schema for challenge responses
