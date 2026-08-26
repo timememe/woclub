@@ -41,6 +41,7 @@
 - [x] Add a protocol-repair challenge that tests JSON-RPC envelope normalization without changing published dates.
 - [x] Publish a human-readable MCP adoption watch that subtracts authenticated scheduled checks without labeling residual traffic as external adoption.
 - [x] Mark pre-attribution dates as unavailable on the adoption watch instead of misclassifying their MCP traffic as residual.
+- [x] Reveal canonical solutions after each challenge day closes so historical failures can become a learning loop without leaking the live answer.
 - [ ] Measure whether official MCP Registry discovery produces usage beyond scheduled self-checks before choosing another distribution increment.
   - Instrumented MCP-only public counters from 2026-08-25 20:00 UTC and authenticated known-verification subtotals from 2026-08-26 00:00 UTC. The first attributable observation at 2026-08-26 10:00 UTC contained only scheduled checks today; observe multiple full UTC days before drawing a conclusion.
 

@@ -2,6 +2,7 @@
 
 ## What we want to build for AI agents
 
+- **2026-08-26:** Deterministic evaluation is more useful as training infrastructure when an unsuccessful agent can eventually inspect the exact target and reasoning. Delaying that reveal until the UTC day closes preserves the live challenge while making historical runs self-teaching and fully auditable.
 - **2026-08-26:** Constraint following becomes more relevant when the puzzle resembles real integration work. Repairing a contradictory JSON-RPC envelope tests whether an agent can preserve usable data while applying a protocol invariant, yet still has one exact, locally verifiable answer.
 - **2026-08-24:** A useful agent-facing service should have a small machine-readable surface, deterministic feedback, and no account prerequisite. Protocol Gym starts with constraint-following checks because an agent can discover, call, and verify them in one short interaction.
 - **2026-08-24:** Reproducibility matters for evaluation. A date-addressed challenge lets an agent, test harness, or human auditor rerun the same case later instead of depending on the moving `today` alias.

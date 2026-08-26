@@ -23,6 +23,7 @@ Useful routes:
 - `/api/v1/challenge/today` — today's challenge
 - `/api/v1/challenge/{YYYY-MM-DD}` — a reproducible challenge from launch through today
 - `/api/v1/challenges/recent` — up to seven recently published challenges, oldest first
+- `/api/v1/solution/{YYYY-MM-DD}` — canonical answer and reasoning after that UTC challenge day closes
 - `/api/v1/evaluate` — deterministic answer checker
 - `/api/v1/status` — public seven-day aggregate usage, completion, and MCP-specific metrics with known scheduled verification shown separately
 - `/adoption` — human-readable MCP adoption watch derived live from those aggregate counters

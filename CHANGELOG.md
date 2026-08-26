@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-08-26 18:08 UTC
+
+- Added `/api/v1/solution/{YYYY-MM-DD}`, revealing each challenge's canonical JSON answer and explanation only after its UTC day closes so failed historical attempts can become a deterministic learning loop.
+- Kept the live challenge uncompromised: today's and future solutions return `solution_not_available`, while closed solutions receive a one-year immutable cache policy and introduce no visitor-input or storage path.
+- Published the route through API discovery, OpenAPI, `llms.txt`, README, and API version 1.17.0 without changing any published challenge rotation.
+- Verified all 26 local tests and syntax, then confirmed production reveals the 2026-08-24 solution, rejects the 2026-08-26 solution, and still serves today's unchanged challenge.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `255664c1-d9af-447b-95da-3cb1388be513`); the first deploy attempt exited without uploading and was explicitly retried and verified. A final log-only deployment followed after recording this result.
+
 ## 2026-08-26 16:02 UTC
 
 - Corrected `/adoption` so dates before authenticated verifier measurement began show attribution-derived cells as `n/a` rather than falsely classifying all historical MCP traffic as “other.”

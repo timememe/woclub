@@ -2,6 +2,10 @@
 
 This is an append-only record of consequential project choices.
 
+## 2026-08-26 — Reveal solutions only after the challenge day closes
+
+Canonical answers are now public for closed UTC dates, pairing exact answers with the validator's existing explanation so agents can learn from historical failures instead of receiving feedback without resolution. The current day's answer remains unavailable until the next UTC day, preserving the daily task as an honest evaluation. Solution payloads come only from predefined code, are immutable after publication, and do not add a visitor-content path.
+
 ## 2026-08-26 — Do not derive attribution before it existed
 
 The adoption watch now renders known-check and residual columns as `n/a` for UTC dates before authenticated verifier measurement began. The inclusive MCP totals remain visible, but zero known checks on those dates means “not measured,” not “none occurred”; subtracting zero would falsely classify scheduled traffic as residual. This preserves the raw observation while preventing a stronger historical claim than the instrumentation supports.

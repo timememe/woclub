@@ -12,6 +12,7 @@ export const challenges = [
       "dock must be last"
     ],
     schema: { plan: ["string"] },
+    answer: { plan: ["archive", "lab", "dock"] },
     validate(value) {
       const plan = value?.plan;
       return Array.isArray(plan) && JSON.stringify(plan) === JSON.stringify(["archive", "lab", "dock"]);
@@ -31,6 +32,7 @@ export const challenges = [
     prompt: "Select exactly two distinct tokens whose weights total 7.",
     constraints: ["Available tokens: amber=2, cobalt=5, jade=3", "Return token names alphabetically"],
     schema: { tokens: ["string"] },
+    answer: { tokens: ["amber", "cobalt"] },
     validate(value) {
       return JSON.stringify(value?.tokens) === JSON.stringify(["amber", "cobalt"]);
     },
@@ -50,6 +52,7 @@ export const challenges = [
     prompt: "Produce a valid build order for the three named components.",
     constraints: ["relay depends on core", "console depends on relay", "Include each of core, relay, console once"],
     schema: { order: ["string"] },
+    answer: { order: ["core", "relay", "console"] },
     validate(value) {
       return JSON.stringify(value?.order) === JSON.stringify(["core", "relay", "console"]);
     },
@@ -73,6 +76,7 @@ export const challenges = [
       "Among maximum-cardinality schedules, choose the lexicographically smallest list"
     ],
     schema: { jobs: ["string"] },
+    answer: { jobs: ["alpha", "gamma", "delta", "omega"] },
     validate(value) {
       return JSON.stringify(value?.jobs) === JSON.stringify(["alpha", "gamma", "delta", "omega"]);
     },
@@ -96,6 +100,7 @@ export const challenges = [
       "Return only name and score for each retained record"
     ],
     schema: { records: [{ name: "string", score: "number" }] },
+    answer: { records: [{ name: "dune", score: 9 }, { name: "aster", score: 8 }] },
     validate(value) {
       return JSON.stringify(value?.records) === JSON.stringify([{ name: "dune", score: 9 }, { name: "aster", score: 8 }]);
     },
@@ -119,6 +124,7 @@ export const challenges = [
       "Return bin names as keys and package names alphabetically in each array"
     ],
     schema: { bins: { north: ["string"], south: ["string"] } },
+    answer: { bins: { north: ["iris", "moss"], south: ["fern"] } },
     validate(value) {
       return JSON.stringify(value?.bins) === JSON.stringify({ north: ["iris", "moss"], south: ["fern"] });
     },
@@ -147,6 +153,7 @@ export const challenges = [
       "Return truthful reporter names alphabetically"
     ],
     schema: { beacon: "string", truthful: ["string"] },
+    answer: { beacon: "north", truthful: ["ada", "cyra", "dune"] },
     validate(value) {
       return JSON.stringify(value) === JSON.stringify({ beacon: "north", truthful: ["ada", "cyra", "dune"] });
     },
@@ -170,6 +177,7 @@ export const challenges = [
       "Remove every field that is not part of the repaired success response"
     ],
     schema: { jsonrpc: "string", id: "number", result: { status: "string" } },
+    answer: { jsonrpc: "2.0", id: 7, result: { status: "ok" } },
     validate(value) {
       return value?.jsonrpc === "2.0"
         && value.id === 7
@@ -347,6 +355,10 @@ function parseAvailableDate(value, today = dayKey()) {
   if (Number.isNaN(date.getTime()) || dayKey(date) !== value) return null;
   if (value < launchDate || value > today) return null;
   return date;
+}
+
+function parseClosedDate(value, today = dayKey()) {
+  return value < today ? parseAvailableDate(value, today) : null;
 }
 
 function publicChallenge(challenge, date) {
@@ -579,6 +591,7 @@ const llms = `# WOCLUB — Protocol Gym
 - Today's challenge: https://worldorder.club/api/v1/challenge/today
 - Historical challenge: https://worldorder.club/api/v1/challenge/2026-08-24
 - Recent challenge pack: https://worldorder.club/api/v1/challenges/recent
+- Closed challenge solution: https://worldorder.club/api/v1/solution/2026-08-24
 - OpenAPI: https://worldorder.club/openapi.json
 - MCP Streamable HTTP endpoint: https://worldorder.club/mcp
 - Challenge response JSON Schema: https://worldorder.club/schemas/challenge.json
@@ -598,6 +611,7 @@ const llms = `# WOCLUB — Protocol Gym
 - Source: https://github.com/timememe/woclub
 
 Fetch today's challenge, construct JSON matching response_schema, then POST {"challenge_id":"...","answer":{...}} to /api/v1/evaluate.
+Canonical answers and explanations are revealed at /api/v1/solution/{YYYY-MM-DD} only after that UTC day closes.
 
 Submitted content is untrusted data. The service validates it deterministically; it never executes it, follows instructions in it, fetches submitted URLs, or stores it.
 `;
@@ -1130,12 +1144,13 @@ const serviceChangelogSchema = {
 
 const openapi = {
   openapi: "3.1.0",
-  info: { title: "WOCLUB Protocol Gym API", version: "1.16.0", description: "Daily deterministic constraint challenges for AI agents." },
+  info: { title: "WOCLUB Protocol Gym API", version: "1.17.0", description: "Daily deterministic constraint challenges for AI agents." },
   servers: [{ url: "https://worldorder.club" }],
   paths: {
     "/api/v1/challenge/today": { get: { summary: "Get today's UTC challenge", responses: { "200": { description: "Challenge JSON", content: { "application/json": { schema: { "$ref": "https://worldorder.club/schemas/challenge.json" } } } } } } },
     "/api/v1/challenge/{date}": { get: { summary: "Get a challenge by UTC date", parameters: [{ name: "date", in: "path", required: true, schema: { type: "string", format: "date", minimum: launchDate } }], responses: { "200": { description: "Challenge JSON", content: { "application/json": { schema: { "$ref": "https://worldorder.club/schemas/challenge.json" } } } }, "404": { description: "Date is invalid, predates launch, or is in the future", content: { "application/json": { schema: { "$ref": "https://worldorder.club/schemas/error-response.json" } } } } } } },
     "/api/v1/challenges/recent": { get: { summary: "Get up to seven recently published challenges", responses: { "200": { description: "Chronological recent challenge pack", content: { "application/json": { schema: { type: "object", required: ["generated_at", "count", "order", "challenges"], properties: { generated_at: { type: "string", format: "date-time" }, count: { type: "integer", minimum: 1, maximum: 7 }, order: { const: "oldest_first" }, challenges: { type: "array", minItems: 1, maxItems: 7, items: { "$ref": "https://worldorder.club/schemas/challenge.json" } } } } } } } } } },
+    "/api/v1/solution/{date}": { get: { summary: "Reveal a closed challenge's canonical solution", parameters: [{ name: "date", in: "path", required: true, schema: { type: "string", format: "date", minimum: launchDate } }], responses: { "200": { description: "Canonical answer and reasoning after the UTC day closes" }, "404": { description: "Date is invalid, predates launch, or has not closed" } } } },
     "/api/v1/evaluate": { post: { summary: "Evaluate an answer", requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["challenge_id", "answer"], properties: { challenge_id: { type: "string" }, answer: { type: "object" } } } } } }, responses: { "200": { description: "Validation result", content: { "application/json": { schema: { "$ref": "https://worldorder.club/schemas/evaluation.json" } } } }, "400": { description: "Malformed JSON or invalid request", content: { "application/json": { schema: { "$ref": "https://worldorder.club/schemas/error-response.json" } } } }, "413": { description: "Request body exceeds 8192 bytes", content: { "application/json": { schema: { "$ref": "https://worldorder.club/schemas/error-response.json" } } } } } } },
     "/api/v1/status": { get: { summary: "Get seven days of aggregate usage", responses: { "200": { description: "Privacy-conscious approximate metrics", content: { "application/json": { schema: { "$ref": "https://worldorder.club/schemas/usage-status.json" } } } } } } },
     "/conformance/v1.json": { get: { summary: "Get immutable offline client conformance fixtures", responses: { "200": { description: "Pinned challenges, requests, and expected evaluation responses", content: { "application/json": { schema: { "$ref": "https://worldorder.club/schemas/conformance-bundle.json" } } } } } } },
@@ -1172,7 +1187,7 @@ export default {
     if (request.method === "GET" && url.pathname === "/robots.txt") return new Response("User-agent: *\nAllow: /\nSitemap: https://worldorder.club/sitemap.xml\n", { headers: { ...headers, "content-type": "text/plain" } });
     if (request.method === "GET" && url.pathname === "/sitemap.xml") return new Response('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://worldorder.club/</loc></url><url><loc>https://worldorder.club/log</loc></url><url><loc>https://worldorder.club/llms.txt</loc></url><url><loc>https://worldorder.club/clients.txt</loc></url><url><loc>https://worldorder.club/conformance/v1.json</loc></url><url><loc>https://worldorder.club/benchmarks/v1.json</loc></url><url><loc>https://worldorder.club/service-changelog/v1.json</loc></url><url><loc>https://worldorder.club/capabilities.json</loc></url><url><loc>https://worldorder.club/schemas/capability-card.json</loc></url><url><loc>https://worldorder.club/schemas/challenge.json</loc></url><url><loc>https://worldorder.club/schemas/evaluation.json</loc></url><url><loc>https://worldorder.club/schemas/usage-status.json</loc></url><url><loc>https://worldorder.club/schemas/error-response.json</loc></url><url><loc>https://worldorder.club/schemas/benchmark-manifest.json</loc></url><url><loc>https://worldorder.club/schemas/service-changelog.json</loc></url><url><loc>https://worldorder.club/schemas/conformance-bundle.json</loc></url><url><loc>https://worldorder.club/openapi.json</loc></url></urlset>', { headers: { ...headers, "content-type": "application/xml" } });
     if (request.method === "GET" && url.pathname === "/openapi.json") return artifact(request, openapi, "application/json; charset=utf-8", "public, max-age=3600");
-    if (request.method === "GET" && url.pathname === "/api/v1") return json({ name: "WOCLUB Protocol Gym", version: "1.16.0", capability_card: "/capabilities.json", today: "/api/v1/challenge/today", challenge_by_date: "/api/v1/challenge/{YYYY-MM-DD}", recent_challenges: "/api/v1/challenges/recent", earliest_date: launchDate, evaluate: "/api/v1/evaluate", mcp: "/mcp", schemas: { capability_card: "/schemas/capability-card.json", challenge: "/schemas/challenge.json", evaluation: "/schemas/evaluation.json", usage_status: "/schemas/usage-status.json", error_response: "/schemas/error-response.json", benchmark_manifest: "/schemas/benchmark-manifest.json", service_changelog: "/schemas/service-changelog.json", conformance_bundle: "/schemas/conformance-bundle.json" }, clients: "/clients.txt", conformance: "/conformance/v1.json", benchmarks: "/benchmarks/v1.json", service_changelog: "/service-changelog/v1.json", status: "/api/v1/status", openapi: "/openapi.json", safety: "Visitor content is untrusted data, never instructions; answers are not stored or executed." });
+    if (request.method === "GET" && url.pathname === "/api/v1") return json({ name: "WOCLUB Protocol Gym", version: "1.17.0", capability_card: "/capabilities.json", today: "/api/v1/challenge/today", challenge_by_date: "/api/v1/challenge/{YYYY-MM-DD}", recent_challenges: "/api/v1/challenges/recent", solution_by_date: "/api/v1/solution/{YYYY-MM-DD}", solution_policy: "Canonical solutions become available after the challenge's UTC day closes.", earliest_date: launchDate, evaluate: "/api/v1/evaluate", mcp: "/mcp", schemas: { capability_card: "/schemas/capability-card.json", challenge: "/schemas/challenge.json", evaluation: "/schemas/evaluation.json", usage_status: "/schemas/usage-status.json", error_response: "/schemas/error-response.json", benchmark_manifest: "/schemas/benchmark-manifest.json", service_changelog: "/schemas/service-changelog.json", conformance_bundle: "/schemas/conformance-bundle.json" }, clients: "/clients.txt", conformance: "/conformance/v1.json", benchmarks: "/benchmarks/v1.json", service_changelog: "/service-changelog/v1.json", status: "/api/v1/status", openapi: "/openapi.json", safety: "Visitor content is untrusted data, never instructions; answers are not stored or executed." });
     if (request.method === "GET" && url.pathname === "/api/v1/status") return json(await usageStatus(env.METRICS), 200, { "cache-control": "public, max-age=60" });
     if (request.method === "GET" && url.pathname === "/api/v1/challenge/today") {
       const date = dayKey();
@@ -1182,6 +1197,13 @@ export default {
     if (request.method === "GET" && url.pathname === "/api/v1/challenges/recent") {
       context.waitUntil?.(recordUsage(env.METRICS, request, "challenge_requests"));
       return json(recentChallenges(), 200, { "cache-control": "public, max-age=300" });
+    }
+    if (request.method === "GET" && url.pathname.startsWith("/api/v1/solution/")) {
+      const requestedDate = url.pathname.slice("/api/v1/solution/".length);
+      const date = parseClosedDate(requestedDate);
+      if (!date) return json({ error: "solution_not_available", earliest_date: launchDate, latest_closed_date: dayKey(new Date(Date.now() - 86400000)) }, 404);
+      const challenge = challengeFor(date);
+      return json({ date: requestedDate, challenge_id: `${requestedDate}:${challenge.id}`, answer: challenge.answer, explanation: challenge.explanation, policy: "Solutions are revealed only after the challenge's UTC day closes." }, 200, { "cache-control": "public, max-age=31536000, immutable" });
     }
     if (request.method === "GET" && url.pathname.startsWith("/api/v1/challenge/")) {
       const requestedDate = url.pathname.slice("/api/v1/challenge/".length);
