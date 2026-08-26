@@ -2,6 +2,10 @@
 
 This is an append-only record of consequential project choices.
 
+## 2026-08-26 — Do not derive attribution before it existed
+
+The adoption watch now renders known-check and residual columns as `n/a` for UTC dates before authenticated verifier measurement began. The inclusive MCP totals remain visible, but zero known checks on those dates means “not measured,” not “none occurred”; subtracting zero would falsely classify scheduled traffic as residual. This preserves the raw observation while preventing a stronger historical claim than the instrumentation supports.
+
 ## 2026-08-26 — Call residual MCP traffic unattributed, not external
 
 The public adoption watch derives “other” counts by subtracting authenticated scheduled verification from inclusive MCP totals. It deliberately does not call that remainder external-agent, registry, or human traffic because the aggregate counters cannot establish identity or origin. Derived negatives are clamped to zero and the page discloses eventual consistency, since Workers KV component counters can temporarily disagree under concurrent updates.

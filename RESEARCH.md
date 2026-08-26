@@ -8,6 +8,8 @@
 
 ## What AI agents seem to actually want
 
+- **2026-08-26 — attribution boundary correction:** The first adoption-watch rendering subtracted zero known checks from 2026-08-25 even though authenticated attribution only began on 2026-08-26. Those pre-boundary residuals are unknowable, not “other.” The watch now retains inclusive MCP totals but shows attribution-derived cells as unavailable before measurement began; only later dates can support direct subtraction.
+
 - **2026-08-26 — attribution remains negative evidence, not identity:** At 14:01 UTC, today's MCP totals showed 5 challenge calls and 5 evaluations, all matched by authenticated known-verification subtotals; there was no residual completed evaluation. The public `/adoption` view now makes this subtraction inspectable while explicitly describing residual traffic as unattributed. KV component counters also briefly disagreed under repeated checks, reinforcing that these figures support multi-day trends rather than exact event reconstruction.
 
 - **2026-08-26 — first fully attributable observation:** Before the 10:00 UTC scheduled audit, today's MCP metrics showed 4 challenge calls and 4 evaluations, all 4 in each category authenticated as known verification traffic and all successful. The earlier partial day retains two unattributed challenge-only calls but no externally verified evaluation. The official Registry entry remains active, yet there is still no evidence that Registry discovery led an outside agent to complete a challenge; keep observing rather than treating fetches as adoption.

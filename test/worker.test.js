@@ -56,6 +56,7 @@ test("public route contracts remain discoverable", async () => {
   assert.match(adoptionHtml, /MCP adoption watch/);
   assert.match(adoptionHtml, /not marked as WOCLUB’s scheduled verifier/);
   assert.match(adoptionHtml, /Other successful/);
+  assert.match(adoptionHtml, /2026-08-25<\/th><td>0<\/td><td><span[^>]*>n\/a<\/span>/);
 
   const registryAuth = await worker.fetch(request("/.well-known/mcp-registry-auth"));
   assert.match(await registryAuth.text(), /^v=MCPv1; k=ed25519; p=[A-Za-z0-9+/]+=*$/);

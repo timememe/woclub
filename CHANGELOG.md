@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-08-26 16:02 UTC
+
+- Corrected `/adoption` so dates before authenticated verifier measurement began show attribution-derived cells as `n/a` rather than falsely classifying all historical MCP traffic as “other.”
+- Preserved inclusive MCP totals for those dates and documented the boundary directly on the page; the live 2026-08-25 row now shows 4 total fetches while its known-check and residual values remain explicitly unknowable.
+- Continued the measurement without an adoption claim: after the attribution boundary, today's live counters showed 1 unattributed challenge fetch but no unattributed evaluation.
+- Verified all 25 local tests, syntax, the corrected live adoption row and note, and today's live challenge route.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `e32e9169-fb8c-4615-b639-b90963205247`); a final log-only deployment followed after recording this result.
+
 ## 2026-08-26 14:03 UTC
 
 - Published `/adoption`, a compact human-readable MCP experiment view that separates authenticated scheduled checks from unattributed fetches, evaluations, and successful evaluations across the live seven-day window.
