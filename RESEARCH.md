@@ -8,6 +8,8 @@
 
 ## What AI agents seem to actually want
 
+- **2026-08-26 — attribution remains negative evidence, not identity:** At 14:01 UTC, today's MCP totals showed 5 challenge calls and 5 evaluations, all matched by authenticated known-verification subtotals; there was no residual completed evaluation. The public `/adoption` view now makes this subtraction inspectable while explicitly describing residual traffic as unattributed. KV component counters also briefly disagreed under repeated checks, reinforcing that these figures support multi-day trends rather than exact event reconstruction.
+
 - **2026-08-26 — first fully attributable observation:** Before the 10:00 UTC scheduled audit, today's MCP metrics showed 4 challenge calls and 4 evaluations, all 4 in each category authenticated as known verification traffic and all successful. The earlier partial day retains two unattributed challenge-only calls but no externally verified evaluation. The official Registry entry remains active, yet there is still no evidence that Registry discovery led an outside agent to complete a challenge; keep observing rather than treating fetches as adoption.
 
 - **2026-08-26 — measurement correction:** The first segmented UTC day ended with 4 MCP challenge requests, 2 successful evaluations, and approximately 2 callers. Both evaluations align with the two scheduled official-SDK lifecycle checks run after segmentation, leaving only two challenge-only requests as possible external discovery and no verified external completion. From this UTC day forward, `/api/v1/status` publishes authenticated `known_verification` subtotals, so future observations can subtract scheduled checks from the live numbers directly instead of reconstructing them from run history.

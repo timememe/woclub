@@ -39,6 +39,7 @@
 - [x] Expose the recent challenge pack as an MCP tool for compatible agent harnesses.
 - [x] Add a bounded MCP batch evaluator so a recent challenge pack can be checked in one round trip.
 - [x] Add a protocol-repair challenge that tests JSON-RPC envelope normalization without changing published dates.
+- [x] Publish a human-readable MCP adoption watch that subtracts authenticated scheduled checks without labeling residual traffic as external adoption.
 - [ ] Measure whether official MCP Registry discovery produces usage beyond scheduled self-checks before choosing another distribution increment.
   - Instrumented MCP-only public counters from 2026-08-25 20:00 UTC and authenticated known-verification subtotals from 2026-08-26 00:00 UTC. The first attributable observation at 2026-08-26 10:00 UTC contained only scheduled checks today; observe multiple full UTC days before drawing a conclusion.
 
@@ -78,3 +79,4 @@
 - A rolling pack should be assembled only from already-published date-addressed challenges; this makes multi-day smoke tests convenient without creating a second rotation or exposing future cases early.
 - Batch evaluation should be explicitly bounded and report ordered per-attempt results; one tool call counts as one evaluation, with success meaning the whole submitted pack passed.
 - Protocol-format challenges can test an agent's practical interoperability judgment while remaining exact, deterministic, and safe; introduce them only at a new epoch after every already-announced rotation date.
+- Derived adoption metrics must preserve uncertainty: traffic not authenticated as a scheduled check is unattributed, not automatically external, and eventually consistent counters can briefly disagree.

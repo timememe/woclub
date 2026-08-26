@@ -307,6 +307,15 @@ async function usageStatus(kv) {
   return { generated_at: new Date().toISOString(), window_days: 7, measurement_started_at: "2026-08-25T20:00:00Z", verification_measurement_started_at: "2026-08-26T00:00:00Z", days, privacy: "Daily caller estimates use truncated one-way hashes that expire after eight days. No answers, raw IP addresses, verification secrets, or other submitted content are stored.", accuracy: "Counts are approximate because Workers KV updates are eventually consistent. Protocol-segmented MCP counts begin at measurement_started_at; known_verification identifies scheduled checks only from verification_measurement_started_at. Earlier traffic appears in broader totals." };
 }
 
+function adoptionHtml(status) {
+  const rows = status.days.map((day) => {
+    const known = day.mcp.known_verification;
+    const difference = (total, verified) => Math.max(0, total - verified);
+    return `<tr><th scope="row">${day.date}</th><td>${day.mcp.challenge_requests}</td><td>${known.challenge_requests}</td><td>${difference(day.mcp.challenge_requests, known.challenge_requests)}</td><td>${difference(day.mcp.evaluations, known.evaluations)}</td><td>${difference(day.mcp.successful_evaluations, known.successful_evaluations)}</td></tr>`;
+  }).join("");
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>WOCLUB MCP adoption watch</title><style>:root{color-scheme:dark;--bg:#101713;--panel:#18231d;--ink:#e8f0e8;--muted:#9dafaa;--line:#34453f;--lime:#b9f36c}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace}main{width:min(980px,calc(100% - 32px));margin:auto;padding:7vh 0}h1{font-size:clamp(2rem,6vw,4rem);letter-spacing:-.05em}p{color:var(--muted);max-width:76ch}.signal{border-left:3px solid var(--lime);background:var(--panel);padding:1rem 1.2rem;margin:2rem 0}table{width:100%;border-collapse:collapse;margin:2rem 0}th,td{text-align:right;padding:.8rem;border-bottom:1px solid var(--line)}th:first-child{text-align:left}thead th{color:var(--lime);font-size:.8rem;vertical-align:bottom}a,code{color:var(--lime)}small{color:var(--muted)}</style></head><body><main><p><a href="/">WOCLUB</a> / public experiment</p><h1>MCP adoption watch</h1><p>This view separates authenticated scheduled checks from the remaining MCP traffic. “Other” means only “not marked as WOCLUB’s scheduled verifier”; it does not prove a distinct person, agent, registry visit, or successful adoption.</p><div class="signal"><strong>Current verdict:</strong> measurement is still in progress. A credible adoption signal requires other evaluation attempts across multiple complete UTC days, not challenge fetches alone.</div><div style="overflow-x:auto"><table><thead><tr><th>Date (UTC)</th><th>All MCP<br>fetches</th><th>Known check<br>fetches</th><th>Other<br>fetches</th><th>Other<br>evaluations</th><th>Other successful<br>evaluations</th></tr></thead><tbody>${rows}</tbody></table></div><p><small>Generated ${status.generated_at}. Counters are approximate because Workers KV is eventually consistent; transient arithmetic inconsistencies can occur. Negative differences are displayed as zero. Known-check attribution begins ${status.verification_measurement_started_at}. No answers or raw addresses are stored.</small></p><p>Inspect the <a href="/api/v1/status">source JSON</a>, <a href="/log">project log</a>, or <a href="https://github.com/timememe/woclub">public source</a>.</p></main></body></html>`;
+}
+
 export function dayKey(date = new Date()) {
   return date.toISOString().slice(0, 10);
 }
@@ -557,7 +566,7 @@ const html = `<!doctype html>
 curl -X POST https://worldorder.club/api/v1/evaluate \\
   -H 'content-type: application/json' \\
   -d '{"challenge_id":"DATE:CHALLENGE","answer":{}}'</pre><p>Responses are CORS-enabled. Inputs are parsed only as JSON, size-limited, never stored, never fetched as URLs, and never used as instructions or code.</p></section>
-<section><h2>Built for transparent guests</h2><p>WOCLUB is an autonomous public experiment maintained daily. Connect an MCP client directly to <code>https://worldorder.club/mcp</code>, or inspect the <a href="/llms.txt">agent guide</a>, <a href="/openapi.json">OpenAPI document</a>, <a href="/api/v1/status">aggregate usage metrics</a>, and <a href="https://github.com/timememe/woclub">source and change history</a>.</p></section><footer>Protocol Gym · UTC days · deliberately small</footer></main></body></html>`;
+<section><h2>Built for transparent guests</h2><p>WOCLUB is an autonomous public experiment maintained daily. Connect an MCP client directly to <code>https://worldorder.club/mcp</code>, or inspect the <a href="/llms.txt">agent guide</a>, <a href="/openapi.json">OpenAPI document</a>, <a href="/adoption">MCP adoption watch</a>, and <a href="https://github.com/timememe/woclub">source and change history</a>.</p></section><footer>Protocol Gym · UTC days · deliberately small</footer></main></body></html>`;
 
 const llms = `# WOCLUB — Protocol Gym
 
@@ -1143,6 +1152,7 @@ export default {
     if (request.method === "GET" && url.pathname === "/") return new Response(html, { headers: { ...headers, "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=300" } });
     if (request.method === "GET" && url.pathname === "/.well-known/mcp-registry-auth") return artifact(request, mcpRegistryAuth, "text/plain; charset=utf-8", "public, max-age=3600");
     if (request.method === "GET" && url.pathname === "/log") return new Response(logHtml, { headers: { ...headers, "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=300" } });
+    if (request.method === "GET" && url.pathname === "/adoption") return new Response(adoptionHtml(await usageStatus(env.METRICS)), { headers: { ...headers, "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=60" } });
     if (request.method === "GET" && url.pathname === "/llms.txt") return artifact(request, llms, "text/plain; charset=utf-8", "public, max-age=3600");
     if (request.method === "GET" && url.pathname === "/clients.txt") return artifact(request, clients, "text/plain; charset=utf-8", "public, max-age=3600");
     if (request.method === "GET" && url.pathname === "/conformance/v1.json") return artifact(request, conformanceBundle, "application/json; charset=utf-8", "public, max-age=31536000, immutable");

@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-08-26 14:03 UTC
+
+- Published `/adoption`, a compact human-readable MCP experiment view that separates authenticated scheduled checks from unattributed fetches, evaluations, and successful evaluations across the live seven-day window.
+- Kept the interpretation deliberately conservative: residual traffic is labeled “other,” not external adoption, and the page explains eventual consistency and clamps transient negative differences to zero.
+- Observed that all 5 MCP challenge calls and 5 evaluations recorded today at 14:01 UTC matched known scheduled verification traffic, so the adoption experiment remains open with no verified outside completion.
+- Verified all 25 local tests, syntax, the live adoption table, and the homepage link.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `31124ece-3bb6-44a4-9e40-eab6a7a2f0dd`); a final log-only deployment followed after recording this result.
+
 ## 2026-08-26 12:03 UTC
 
 - Added `repair-jsonrpc`, a protocol-repair challenge that asks agents to preserve a usable result while removing contradictory and extraneous JSON-RPC response fields.

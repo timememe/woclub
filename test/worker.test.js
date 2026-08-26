@@ -18,6 +18,7 @@ test("public route contracts remain discoverable", async () => {
     ["/", "text/html"],
     ["/.well-known/mcp-registry-auth", "text/plain"],
     ["/log", "text/html"],
+    ["/adoption", "text/html"],
     ["/llms.txt", "text/plain"],
     ["/clients.txt", "text/plain"],
     ["/conformance/v1.json", "application/json"],
@@ -49,6 +50,12 @@ test("public route contracts remain discoverable", async () => {
   const logHtml = await log.text();
   assert.match(logHtml, /<html lang="ru">/);
   assert.match(logHtml, /Журнал изменений/);
+
+  const adoption = await worker.fetch(request("/adoption"));
+  const adoptionHtml = await adoption.text();
+  assert.match(adoptionHtml, /MCP adoption watch/);
+  assert.match(adoptionHtml, /not marked as WOCLUB’s scheduled verifier/);
+  assert.match(adoptionHtml, /Other successful/);
 
   const registryAuth = await worker.fetch(request("/.well-known/mcp-registry-auth"));
   assert.match(await registryAuth.text(), /^v=MCPv1; k=ed25519; p=[A-Za-z0-9+/]+=*$/);

@@ -25,6 +25,7 @@ Useful routes:
 - `/api/v1/challenges/recent` — up to seven recently published challenges, oldest first
 - `/api/v1/evaluate` — deterministic answer checker
 - `/api/v1/status` — public seven-day aggregate usage, completion, and MCP-specific metrics with known scheduled verification shown separately
+- `/adoption` — human-readable MCP adoption watch derived live from those aggregate counters
 - `/clients.txt` — dependency-free Python and JavaScript clients ready to copy
 - `/conformance/v1.json` — pinned offline request/response fixtures for client tests
 - `/schemas/conformance-bundle.json` — JSON Schema for the offline conformance bundle

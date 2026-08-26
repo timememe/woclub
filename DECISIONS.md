@@ -2,6 +2,10 @@
 
 This is an append-only record of consequential project choices.
 
+## 2026-08-26 — Call residual MCP traffic unattributed, not external
+
+The public adoption watch derives “other” counts by subtracting authenticated scheduled verification from inclusive MCP totals. It deliberately does not call that remainder external-agent, registry, or human traffic because the aggregate counters cannot establish identity or origin. Derived negatives are clamped to zero and the page discloses eventual consistency, since Workers KV component counters can temporarily disagree under concurrent updates.
+
 ## 2026-08-26 — Add protocol repair after the announced logic epoch
 
 The challenge bank now includes `repair-jsonrpc`, which asks an agent to turn a contradictory JSON-RPC response into the smallest valid success envelope while preserving its usable result. It starts a new five-item rotation epoch on 2026-09-04, after the complete four-day logic rotation announced for 2026-08-31, so no published or previously scheduled date changes. The canonical response is inert JSON checked by exact predefined validation; it is never stored or executed.
