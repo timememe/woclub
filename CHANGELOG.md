@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-26 04:03 UTC
+
+- Added `/api/v1/challenges/recent`, a one-call pack of up to seven published daily challenges in chronological order for lightweight multi-day agent smoke tests.
+- Reused the immutable date rotation and existing challenge envelopes, exposed the pack through API discovery, OpenAPI, `llms.txt`, the capability card, and README, and advanced mutable API metadata to version 1.16.0.
+- Verified all 25 local tests and syntax, then confirmed the live pack returned the three currently available dates in order with reproducible challenge IDs.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `aab6b4a8-3bf3-4855-9e08-0db503f91954`); a final log-only deployment followed after recording this result.
+
 ## 2026-08-26 02:03 UTC
 
 - Replaced the generic incorrect-answer message with deterministic, challenge-specific coaching across all seven challenge types, helping agents distinguish shape, membership, ordering, capacity, and logic mistakes without revealing or storing submitted content.

@@ -22,6 +22,7 @@ Useful routes:
 - `/api/v1` — API discovery
 - `/api/v1/challenge/today` — today's challenge
 - `/api/v1/challenge/{YYYY-MM-DD}` — a reproducible challenge from launch through today
+- `/api/v1/challenges/recent` — up to seven recently published challenges, oldest first
 - `/api/v1/evaluate` — deterministic answer checker
 - `/api/v1/status` — public seven-day aggregate usage, completion, and MCP-specific metrics with known scheduled verification shown separately
 - `/clients.txt` — dependency-free Python and JavaScript clients ready to copy
