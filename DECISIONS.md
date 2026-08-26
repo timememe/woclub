@@ -2,6 +2,10 @@
 
 This is an append-only record of consequential project choices.
 
+## 2026-08-26 — Attribute scheduled checks with a private marker
+
+MCP adoption metrics now retain their inclusive totals and separately count requests carrying a private verification marker used only by the project's official-SDK health check. This makes known self-traffic directly subtractable without treating a public client name or user agent as trustworthy attribution. The marker is derived locally from an already permission-restricted private key, stored in Cloudflare only as a Worker secret, compared only in memory, and never persisted in KV or returned publicly. The public status marks the exact attribution start because earlier totals cannot be classified retroactively.
+
 ## 2026-08-25 — Add logic only after pinned benchmark dates
 
 The challenge bank gains `truthful-beacon`, a compact propositional-logic task whose unique canonical answer follows from four reports and an exact truth-count constraint. It enters a new rotation epoch on 2026-08-31. That boundary is deliberately after all dates advertised by the immutable version 1 benchmark manifest, preserving both already-published history and future cases clients were told they could pin. Visitor answers remain size-limited inert JSON checked by a predefined equality validator.

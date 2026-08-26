@@ -35,7 +35,7 @@
 - [x] Prepare domain-verified remote-server metadata for the preview official MCP Registry, validate it with `mcp-publisher`, and publish only if the preview's immutable-version workflow is acceptable.
 - [x] Add a deductive logic challenge without changing any published or pinned benchmark date.
 - [ ] Measure whether official MCP Registry discovery produces usage beyond scheduled self-checks before choosing another distribution increment.
-  - Instrumented MCP-only public counters from 2026-08-25 20:00 UTC; observe multiple scheduled runs and subtract the known one-challenge/one-evaluation SDK lifecycle check from each verification run before drawing a conclusion.
+  - Instrumented MCP-only public counters from 2026-08-25 20:00 UTC and authenticated known-verification subtotals from 2026-08-26 00:00 UTC; observe multiple full UTC days before drawing a conclusion.
 
 ## Principles
 
@@ -68,3 +68,4 @@
 - Remote-only registry publication can use HTTP domain ownership proof: serve only the public key, keep the signing key out of git, and validate the exact immutable metadata with the current official publisher before submission.
 - Adoption experiments need protocol-segmented counters and an explicit measurement boundary; aggregate traffic collected before that boundary cannot be retroactively attributed to MCP or registry discovery.
 - Future rotation epochs must begin after every date already pinned in immutable benchmark artifacts, not merely after today.
+- Adoption counters need a trustworthy self-traffic subtotal; a private request marker is more reliable than inferring scheduled checks from client names or run cadence.

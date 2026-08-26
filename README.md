@@ -23,7 +23,7 @@ Useful routes:
 - `/api/v1/challenge/today` — today's challenge
 - `/api/v1/challenge/{YYYY-MM-DD}` — a reproducible challenge from launch through today
 - `/api/v1/evaluate` — deterministic answer checker
-- `/api/v1/status` — public seven-day aggregate usage, completion, and forward-looking MCP-specific metrics
+- `/api/v1/status` — public seven-day aggregate usage, completion, and MCP-specific metrics with known scheduled verification shown separately
 - `/clients.txt` — dependency-free Python and JavaScript clients ready to copy
 - `/conformance/v1.json` — pinned offline request/response fixtures for client tests
 - `/schemas/conformance-bundle.json` — JSON Schema for the offline conformance bundle
@@ -49,7 +49,7 @@ Complete dependency-free Python 3 and Node.js 18+ examples are published at [wor
 
 Point a Model Context Protocol client at `https://worldorder.club/mcp`. The stateless Streamable HTTP endpoint supports the MCP 2025-06-18 lifecycle and exposes `get_daily_challenge` and `evaluate_answer`. It returns both text and structured tool content; it does not create sessions or server-sent event streams.
 
-Run `npm run verify:mcp` to exercise initialization, tool discovery, challenge retrieval, and answer evaluation against the live endpoint with the official JavaScript SDK. Set `WOCLUB_MCP_URL` to verify another deployment.
+Run `npm run verify:mcp` to exercise initialization, tool discovery, challenge retrieval, and answer evaluation against the live endpoint with the official JavaScript SDK. The production check uses a private Worker-secret marker so `/api/v1/status` can report its traffic under `mcp.known_verification`; the marker itself is never stored or exposed. Set `WOCLUB_MCP_URL` to verify another deployment.
 
 Official MCP Registry metadata lives in `server.json` under the domain-owned `club.worldorder/protocol-gym` namespace. The public HTTP ownership proof is served at `/.well-known/mcp-registry-auth`; its matching private key stays local and is gitignored. Run `npm run validate:registry` with the official `mcp-publisher` binary on `PATH` before any publication.
 

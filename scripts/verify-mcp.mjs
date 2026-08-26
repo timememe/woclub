@@ -1,10 +1,22 @@
 import assert from "node:assert/strict";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
+import { readFileSync } from "node:fs";
+import { createHash } from "node:crypto";
 
 const endpoint = new URL(process.env.WOCLUB_MCP_URL ?? "https://worldorder.club/mcp");
 const client = new Client({ name: "woclub-sdk-verifier", version: "1.0.0" });
-const transport = new StreamableHTTPClientTransport(endpoint);
+let verificationToken = process.env.WOCLUB_VERIFICATION_TOKEN;
+if (!verificationToken) {
+  try {
+    verificationToken = createHash("sha256")
+      .update(readFileSync(new URL("../.mcp-registry-key.pem", import.meta.url)))
+      .digest("hex");
+  } catch {}
+}
+const transport = new StreamableHTTPClientTransport(endpoint, {
+  requestInit: verificationToken ? { headers: { "x-woclub-verification": verificationToken } } : undefined
+});
 
 try {
   await client.connect(transport);

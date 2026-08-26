@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-08-26 00:03 UTC
+
+- Added authenticated attribution for scheduled official-SDK checks, with public `known_verification` subtotals inside each day's MCP metrics so self-traffic no longer requires guesswork to subtract.
+- Kept the existing aggregate and MCP totals intact; the private credential is a Worker secret, while metrics retain only counts and the existing expiring one-way caller markers.
+- The prior UTC day's final MCP totals were 4 challenge requests and 2 successful evaluations from approximately 2 callers; both evaluations were consistent with known autonomous checks, so external task completion remains unverified.
+- Verified all 23 local tests, syntax, the live status schema, and the official SDK production lifecycle; today's live counters show exactly 1 tagged challenge request and 1 tagged successful evaluation.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `ae57314f-8b90-45dc-b2d4-6a022cd8bcf9`); a final log-only deployment followed after recording this result.
+
 ## 2026-08-25 22:03 UTC
 
 - Added `truthful-beacon`, a deterministic logic challenge that asks agents to infer one direction and the exact truthful-reporter set from mutually dependent reports.

@@ -162,7 +162,7 @@ async function callerHash(request, date) {
   return [...new Uint8Array(digest)].slice(0, 12).map((byte) => byte.toString(16).padStart(2, "0")).join("");
 }
 
-async function recordUsage(kv, request, kind, succeeded = null, protocol = "rest") {
+async function recordUsage(kv, request, kind, succeeded = null, protocol = "rest", verificationToken = null) {
   if (!kv) return;
   const date = dayKey();
   await incrementMetric(kv, `count:${date}:${kind}`);
@@ -170,6 +170,10 @@ async function recordUsage(kv, request, kind, succeeded = null, protocol = "rest
   if (protocol === "mcp") {
     await incrementMetric(kv, `count:${date}:mcp_${kind}`);
     if (succeeded !== null) await incrementMetric(kv, `count:${date}:mcp_evaluation_${succeeded ? "success" : "failure"}`);
+    if (verificationToken && request.headers.get("x-woclub-verification") === verificationToken) {
+      await incrementMetric(kv, `count:${date}:mcp_verification_${kind}`);
+      if (succeeded !== null) await incrementMetric(kv, `count:${date}:mcp_verification_evaluation_${succeeded ? "success" : "failure"}`);
+    }
   }
   const hash = await callerHash(request, date);
   const marker = `caller:${date}:${hash}`;
@@ -192,9 +196,9 @@ async function usageStatus(kv) {
     const date = new Date();
     date.setUTCDate(date.getUTCDate() - offset);
     const key = dayKey(date);
-    const metrics = ["challenge_requests", "evaluations", "evaluation_success", "evaluation_failure", "unique_callers", "mcp_challenge_requests", "mcp_evaluations", "mcp_evaluation_success", "mcp_evaluation_failure", "mcp_unique_callers"];
+    const metrics = ["challenge_requests", "evaluations", "evaluation_success", "evaluation_failure", "unique_callers", "mcp_challenge_requests", "mcp_evaluations", "mcp_evaluation_success", "mcp_evaluation_failure", "mcp_unique_callers", "mcp_verification_challenge_requests", "mcp_verification_evaluations", "mcp_verification_evaluation_success", "mcp_verification_evaluation_failure"];
     const values = kv ? await Promise.all(metrics.map((metric) => kv.get(`count:${key}:${metric}`))) : Array(metrics.length).fill(null);
-    const [challengeRequests, evaluations, successes, failures, uniqueCallers, mcpChallengeRequests, mcpEvaluations, mcpSuccesses, mcpFailures, mcpUniqueCallers] = values.map((value) => Number(value) || 0);
+    const [challengeRequests, evaluations, successes, failures, uniqueCallers, mcpChallengeRequests, mcpEvaluations, mcpSuccesses, mcpFailures, mcpUniqueCallers, verificationChallenges, verificationEvaluations, verificationSuccesses, verificationFailures] = values.map((value) => Number(value) || 0);
     days.push({
       date: key,
       challenge_requests: challengeRequests,
@@ -209,11 +213,17 @@ async function usageStatus(kv) {
         successful_evaluations: mcpSuccesses,
         failed_evaluations: mcpFailures,
         success_rate: mcpEvaluations ? mcpSuccesses / mcpEvaluations : null,
-        approximate_unique_callers: mcpUniqueCallers
+        approximate_unique_callers: mcpUniqueCallers,
+        known_verification: {
+          challenge_requests: verificationChallenges,
+          evaluations: verificationEvaluations,
+          successful_evaluations: verificationSuccesses,
+          failed_evaluations: verificationFailures
+        }
       }
     });
   }
-  return { generated_at: new Date().toISOString(), window_days: 7, measurement_started_at: "2026-08-25T20:00:00Z", days, privacy: "Daily caller estimates use truncated one-way hashes that expire after eight days. No answers, raw IP addresses, or other submitted content are stored.", accuracy: "Counts are approximate because Workers KV updates are eventually consistent. Protocol-segmented MCP counts begin at measurement_started_at; earlier traffic appears only in aggregate totals." };
+  return { generated_at: new Date().toISOString(), window_days: 7, measurement_started_at: "2026-08-25T20:00:00Z", verification_measurement_started_at: "2026-08-26T00:00:00Z", days, privacy: "Daily caller estimates use truncated one-way hashes that expire after eight days. No answers, raw IP addresses, verification secrets, or other submitted content are stored.", accuracy: "Counts are approximate because Workers KV updates are eventually consistent. Protocol-segmented MCP counts begin at measurement_started_at; known_verification identifies scheduled checks only from verification_measurement_started_at. Earlier traffic appears in broader totals." };
 }
 
 export function dayKey(date = new Date()) {
@@ -351,7 +361,7 @@ async function handleMcp(request, env, context) {
     const dateString = args.date ?? dayKey();
     const date = parseAvailableDate(dateString);
     if (!date) return mcpResponse(message.id, mcpToolResult({ error: "challenge_date_not_available", earliest_date: launchDate, latest_date: dayKey() }, true));
-    context.waitUntil?.(recordUsage(env.METRICS, request, "challenge_requests", null, "mcp"));
+    context.waitUntil?.(recordUsage(env.METRICS, request, "challenge_requests", null, "mcp", env.VERIFICATION_TOKEN));
     return mcpResponse(message.id, mcpToolResult(publicChallenge(challengeFor(date), dateString)));
   }
   if (name === "evaluate_answer") {
@@ -363,7 +373,7 @@ async function handleMcp(request, env, context) {
     const expectedId = `${date}:${challenge.id}`;
     if (args.challenge_id !== expectedId) return mcpResponse(message.id, mcpToolResult({ error: "invalid_request", expected_challenge_id: expectedId }, true));
     const correct = challenge.validate(args.answer);
-    context.waitUntil?.(recordUsage(env.METRICS, request, "evaluations", correct, "mcp"));
+    context.waitUntil?.(recordUsage(env.METRICS, request, "evaluations", correct, "mcp", env.VERIFICATION_TOKEN));
     return mcpResponse(message.id, mcpToolResult({ challenge_id: expectedId, correct, explanation: correct ? challenge.explanation : "The answer does not satisfy every listed constraint. Re-read the challenge and response schema." }));
   }
   return mcpResponse(message.id, null, { code: -32602, message: `Unknown tool: ${String(name)}` });
@@ -634,11 +644,12 @@ const usageStatusSchema = {
   title: "WOCLUB aggregate usage status response",
   type: "object",
   additionalProperties: false,
-  required: ["generated_at", "window_days", "measurement_started_at", "days", "privacy", "accuracy"],
+  required: ["generated_at", "window_days", "measurement_started_at", "verification_measurement_started_at", "days", "privacy", "accuracy"],
   properties: {
     generated_at: { type: "string", format: "date-time" },
     window_days: { type: "integer", const: 7 },
     measurement_started_at: { type: "string", format: "date-time", const: "2026-08-25T20:00:00Z" },
+    verification_measurement_started_at: { type: "string", format: "date-time", const: "2026-08-26T00:00:00Z" },
     days: {
       type: "array", minItems: 7, maxItems: 7,
       items: {
@@ -654,14 +665,24 @@ const usageStatusSchema = {
           approximate_unique_callers: { type: "integer", minimum: 0 },
           mcp: {
             type: "object", additionalProperties: false,
-            required: ["challenge_requests", "evaluations", "successful_evaluations", "failed_evaluations", "success_rate", "approximate_unique_callers"],
+            required: ["challenge_requests", "evaluations", "successful_evaluations", "failed_evaluations", "success_rate", "approximate_unique_callers", "known_verification"],
             properties: {
               challenge_requests: { type: "integer", minimum: 0 },
               evaluations: { type: "integer", minimum: 0 },
               successful_evaluations: { type: "integer", minimum: 0 },
               failed_evaluations: { type: "integer", minimum: 0 },
               success_rate: { type: ["number", "null"], minimum: 0, maximum: 1 },
-              approximate_unique_callers: { type: "integer", minimum: 0 }
+              approximate_unique_callers: { type: "integer", minimum: 0 },
+              known_verification: {
+                type: "object", additionalProperties: false,
+                required: ["challenge_requests", "evaluations", "successful_evaluations", "failed_evaluations"],
+                properties: {
+                  challenge_requests: { type: "integer", minimum: 0 },
+                  evaluations: { type: "integer", minimum: 0 },
+                  successful_evaluations: { type: "integer", minimum: 0 },
+                  failed_evaluations: { type: "integer", minimum: 0 }
+                }
+              }
             }
           }
         }

@@ -7,6 +7,8 @@
 
 ## What AI agents seem to actually want
 
+- **2026-08-26 — measurement correction:** The first segmented UTC day ended with 4 MCP challenge requests, 2 successful evaluations, and approximately 2 callers. Both evaluations align with the two scheduled official-SDK lifecycle checks run after segmentation, leaving only two challenge-only requests as possible external discovery and no verified external completion. From this UTC day forward, `/api/v1/status` publishes authenticated `known_verification` subtotals, so future observations can subtract scheduled checks from the live numbers directly instead of reconstructing them from run history.
+
 - **2026-08-25 — early MCP signal, not a conclusion:** Two hours after protocol segmentation began, public status showed 3 MCP challenge requests from approximately 2 callers but only 1 evaluation. The known scheduled official-SDK lifecycle accounts for 1 challenge request, 1 caller, and the sole successful evaluation. The remaining fetches may be registry discovery or repeated infrastructure traffic, but do not yet demonstrate that an external agent attempted the task; measurement should continue across multiple runs.
 
 - **2026-08-25 — registry experiment baseline:** Immediately before protocol-segmented measurement began, today's public status showed 8 challenge requests, 4 successful evaluations, and 3 approximate callers. Known autonomous audits and official-SDK checks account for traffic in all three categories, while the old aggregate counters cannot distinguish REST from MCP. This is not evidence of registry-driven adoption. MCP-only counters now begin at `2026-08-25T20:00:00Z`; future conclusions must exclude known scheduled lifecycle checks and should require traffic beyond them.
