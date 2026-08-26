@@ -158,6 +158,33 @@ export const challenges = [
       return "The chosen direction and truthful set are not logically consistent with all four reports.";
     },
     explanation: "Only north makes exactly three reports true: Ada, Cyra, and Dune."
+  },
+  {
+    id: "repair-jsonrpc",
+    title: "Repair a JSON-RPC envelope",
+    prompt: "Return the smallest valid JSON-RPC 2.0 success response that preserves the usable data.",
+    constraints: [
+      "Broken envelope: {\"jsonrpc\":\"2.0\",\"id\":7,\"result\":{\"status\":\"ok\"},\"error\":{\"code\":-1,\"message\":\"stale\"},\"trace\":\"remove-me\"}",
+      "A response must contain exactly one of result or error",
+      "Preserve jsonrpc, id, and the successful result",
+      "Remove every field that is not part of the repaired success response"
+    ],
+    schema: { jsonrpc: "string", id: "number", result: { status: "string" } },
+    validate(value) {
+      return value?.jsonrpc === "2.0"
+        && value.id === 7
+        && Object.keys(value).sort().join(",") === "id,jsonrpc,result"
+        && value.result?.status === "ok"
+        && Object.keys(value.result).join(",") === "status";
+    },
+    feedback(value) {
+      if (!value || typeof value !== "object" || Array.isArray(value)) return "Return one JSON object for the repaired response envelope.";
+      if (value.jsonrpc !== "2.0" || value.id !== 7) return "Preserve jsonrpc 2.0 and numeric id 7 exactly.";
+      if ("error" in value) return "A JSON-RPC response cannot contain both result and error; keep the successful result.";
+      if (!value.result || value.result.status !== "ok") return "Preserve the usable result object with status ok.";
+      return "Remove fields outside jsonrpc, id, and result from the repaired envelope.";
+    },
+    explanation: "The success data is usable, so the minimal valid envelope keeps jsonrpc, id, and result while removing error and trace."
   }
 ];
 
@@ -167,6 +194,8 @@ const expandedRotationStart = "2026-08-25";
 const expandedRotation = ["interval-schedule", "exact-projection", "capacity-allocation"];
 const logicRotationStart = "2026-08-31";
 const logicRotation = ["truthful-beacon", "interval-schedule", "exact-projection", "capacity-allocation"];
+const protocolRotationStart = "2026-09-04";
+const protocolRotation = ["repair-jsonrpc", "truthful-beacon", "interval-schedule", "exact-projection", "capacity-allocation"];
 
 const headers = {
   "access-control-allow-origin": "*",
@@ -291,9 +320,12 @@ export function challengeFor(date = new Date()) {
   } else if (dateString < logicRotationStart) {
     const daysSinceExpansion = Math.floor((date.getTime() - Date.parse(`${expandedRotationStart}T00:00:00Z`)) / 86400000);
     challengeId = expandedRotation[daysSinceExpansion % expandedRotation.length];
-  } else {
+  } else if (dateString < protocolRotationStart) {
     const daysSinceLogicRotation = Math.floor((date.getTime() - Date.parse(`${logicRotationStart}T00:00:00Z`)) / 86400000);
     challengeId = logicRotation[daysSinceLogicRotation % logicRotation.length];
+  } else {
+    const daysSinceProtocolRotation = Math.floor((date.getTime() - Date.parse(`${protocolRotationStart}T00:00:00Z`)) / 86400000);
+    challengeId = protocolRotation[daysSinceProtocolRotation % protocolRotation.length];
   }
   return challenges.find((challenge) => challenge.id === challengeId);
 }

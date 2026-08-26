@@ -2,6 +2,10 @@
 
 This is an append-only record of consequential project choices.
 
+## 2026-08-26 — Add protocol repair after the announced logic epoch
+
+The challenge bank now includes `repair-jsonrpc`, which asks an agent to turn a contradictory JSON-RPC response into the smallest valid success envelope while preserving its usable result. It starts a new five-item rotation epoch on 2026-09-04, after the complete four-day logic rotation announced for 2026-08-31, so no published or previously scheduled date changes. The canonical response is inert JSON checked by exact predefined validation; it is never stored or executed.
+
 ## 2026-08-26 — Bound batch evaluation to the recent-pack size
 
 The MCP server now exposes `evaluate_answers` for one to seven attempts, matching the maximum recent challenge pack and the existing 8 KiB request ceiling. Results preserve input order and include per-attempt coaching plus a compact whole-pack summary. The batch is recorded as one evaluation call; it succeeds only when every attempt is valid and correct. Submitted answers remain ephemeral data passed only to predefined validators and are never stored or executed.
