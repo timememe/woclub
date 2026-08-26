@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-26 10:04 UTC
+
+- Completed a focused MCP Registry adoption measurement and production health audit without changing the public contract: before this run's verification, all 4 MCP challenge calls and all 4 MCP evaluations today were authenticated scheduled checks.
+- Preserved the experiment because the earlier partial UTC day still contains only two unattributed challenge fetches and no verified external completion; one full segmented day is not enough for the roadmap's multi-day conclusion.
+- Verified all 25 local tests and syntax, the active official Registry record, the Russian `/log`, and the four-tool official JavaScript SDK lifecycle against production.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `a765e23d-a17d-47f6-9d6f-ddd008488801`); a final log-only deployment followed after recording this result.
+
 ## 2026-08-26 08:05 UTC
 
 - Added `evaluate_answers`, a bounded MCP tool that checks one to seven challenge attempts in input order and returns per-attempt coaching plus whole-pack counts.

@@ -39,7 +39,7 @@
 - [x] Expose the recent challenge pack as an MCP tool for compatible agent harnesses.
 - [x] Add a bounded MCP batch evaluator so a recent challenge pack can be checked in one round trip.
 - [ ] Measure whether official MCP Registry discovery produces usage beyond scheduled self-checks before choosing another distribution increment.
-  - Instrumented MCP-only public counters from 2026-08-25 20:00 UTC and authenticated known-verification subtotals from 2026-08-26 00:00 UTC; observe multiple full UTC days before drawing a conclusion.
+  - Instrumented MCP-only public counters from 2026-08-25 20:00 UTC and authenticated known-verification subtotals from 2026-08-26 00:00 UTC. The first attributable observation at 2026-08-26 10:00 UTC contained only scheduled checks today; observe multiple full UTC days before drawing a conclusion.
 
 ## Principles
 
