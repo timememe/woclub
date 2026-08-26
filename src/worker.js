@@ -16,6 +16,13 @@ export const challenges = [
       const plan = value?.plan;
       return Array.isArray(plan) && JSON.stringify(plan) === JSON.stringify(["archive", "lab", "dock"]);
     },
+    feedback(value) {
+      if (!Array.isArray(value?.plan)) return "Return a plan array containing location names.";
+      if (value.plan.length !== 3 || new Set(value.plan).size !== 3) return "The plan must contain each of the three locations exactly once.";
+      if (value.plan.some((place) => !["archive", "lab", "dock"].includes(place))) return "The plan contains a location outside the allowed set.";
+      if (value.plan.at(-1) !== "dock") return "dock must be the final location.";
+      return "archive must appear before lab.";
+    },
     explanation: "The ordering and terminal constraints force archive → lab → dock."
   },
   {
@@ -27,6 +34,14 @@ export const challenges = [
     validate(value) {
       return JSON.stringify(value?.tokens) === JSON.stringify(["amber", "cobalt"]);
     },
+    feedback(value) {
+      if (!Array.isArray(value?.tokens)) return "Return a tokens array.";
+      if (value.tokens.length !== 2 || new Set(value.tokens).size !== 2) return "Select exactly two distinct tokens.";
+      if (value.tokens.some((token) => !["amber", "cobalt", "jade"].includes(token))) return "The selection contains an unavailable token.";
+      const weights = { amber: 2, cobalt: 5, jade: 3 };
+      if (value.tokens.reduce((sum, token) => sum + weights[token], 0) !== 7) return "The selected token weights do not total 7.";
+      return "Return the selected token names in alphabetical order.";
+    },
     explanation: "amber (2) plus cobalt (5) is the only distinct pair totaling 7."
   },
   {
@@ -37,6 +52,13 @@ export const challenges = [
     schema: { order: ["string"] },
     validate(value) {
       return JSON.stringify(value?.order) === JSON.stringify(["core", "relay", "console"]);
+    },
+    feedback(value) {
+      if (!Array.isArray(value?.order)) return "Return an order array.";
+      if (value.order.length !== 3 || new Set(value.order).size !== 3) return "Include each component exactly once.";
+      if (value.order.some((component) => !["core", "relay", "console"].includes(component))) return "The order contains an unknown component.";
+      if (value.order.indexOf("core") > value.order.indexOf("relay")) return "core must be built before relay.";
+      return "relay must be built before console.";
     },
     explanation: "The dependency chain fixes core → relay → console."
   },
@@ -54,6 +76,13 @@ export const challenges = [
     validate(value) {
       return JSON.stringify(value?.jobs) === JSON.stringify(["alpha", "gamma", "delta", "omega"]);
     },
+    feedback(value) {
+      if (!Array.isArray(value?.jobs)) return "Return a jobs array in execution order.";
+      if (value.jobs.some((job) => !["alpha", "beta", "delta", "gamma", "omega"].includes(job))) return "The schedule contains an unknown job.";
+      if (new Set(value.jobs).size !== value.jobs.length) return "Each selected job may appear only once.";
+      if (value.jobs.length < 4) return "A compatible schedule with more jobs exists.";
+      return "The jobs overlap, are out of execution order, or do not form the lexicographically smallest maximum schedule.";
+    },
     explanation: "alpha, gamma, delta, and omega form the lexicographically smallest four-job compatible schedule."
   },
   {
@@ -70,6 +99,13 @@ export const challenges = [
     validate(value) {
       return JSON.stringify(value?.records) === JSON.stringify([{ name: "dune", score: 9 }, { name: "aster", score: 8 }]);
     },
+    feedback(value) {
+      if (!Array.isArray(value?.records)) return "Return a records array.";
+      if (value.records.some((record) => !record || typeof record !== "object" || Object.keys(record).sort().join(",") !== "name,score")) return "Each retained record must contain only name and score.";
+      const names = value.records.map((record) => record.name);
+      if (names.length !== 2 || !names.includes("aster") || !names.includes("dune")) return "Keep exactly the active records whose score is at least 8.";
+      return "Sort retained records by score descending, then name ascending.";
+    },
     explanation: "dune and aster pass the filter; descending score places dune first."
   },
   {
@@ -85,6 +121,15 @@ export const challenges = [
     schema: { bins: { north: ["string"], south: ["string"] } },
     validate(value) {
       return JSON.stringify(value?.bins) === JSON.stringify({ north: ["iris", "moss"], south: ["fern"] });
+    },
+    feedback(value) {
+      if (!value?.bins || typeof value.bins !== "object" || Array.isArray(value.bins)) return "Return a bins object with north and south arrays.";
+      if (!Array.isArray(value.bins.north) || !Array.isArray(value.bins.south)) return "Both north and south must be arrays.";
+      const packages = [...value.bins.north, ...value.bins.south];
+      if (packages.length !== 3 || new Set(packages).size !== 3 || packages.some((item) => !["fern", "iris", "moss"].includes(item))) return "Assign fern, iris, and moss exactly once.";
+      const weights = { fern: 4, iris: 3, moss: 2 };
+      if (value.bins.north.reduce((sum, item) => sum + weights[item], 0) > 5 || value.bins.south.reduce((sum, item) => sum + weights[item], 0) > 4) return "At least one bin exceeds its capacity.";
+      return "Return package names alphabetically within each bin.";
     },
     explanation: "fern alone fills south, while iris plus moss fills north."
   },
@@ -104,6 +149,13 @@ export const challenges = [
     schema: { beacon: "string", truthful: ["string"] },
     validate(value) {
       return JSON.stringify(value) === JSON.stringify({ beacon: "north", truthful: ["ada", "cyra", "dune"] });
+    },
+    feedback(value) {
+      if (!value || typeof value !== "object" || Array.isArray(value) || typeof value.beacon !== "string" || !Array.isArray(value.truthful)) return "Return a beacon string and a truthful reporter array.";
+      if (!["north", "east", "south"].includes(value.beacon)) return "The beacon must be north, east, or south.";
+      if (value.truthful.length !== 3 || new Set(value.truthful).size !== 3) return "Exactly three reporters must be identified as truthful.";
+      if (value.truthful.some((name) => !["ada", "bram", "cyra", "dune"].includes(name))) return "The truthful list contains an unknown reporter.";
+      return "The chosen direction and truthful set are not logically consistent with all four reports.";
     },
     explanation: "Only north makes exactly three reports true: Ada, Cyra, and Dune."
   }
@@ -374,7 +426,7 @@ async function handleMcp(request, env, context) {
     if (args.challenge_id !== expectedId) return mcpResponse(message.id, mcpToolResult({ error: "invalid_request", expected_challenge_id: expectedId }, true));
     const correct = challenge.validate(args.answer);
     context.waitUntil?.(recordUsage(env.METRICS, request, "evaluations", correct, "mcp", env.VERIFICATION_TOKEN));
-    return mcpResponse(message.id, mcpToolResult({ challenge_id: expectedId, correct, explanation: correct ? challenge.explanation : "The answer does not satisfy every listed constraint. Re-read the challenge and response schema." }));
+    return mcpResponse(message.id, mcpToolResult({ challenge_id: expectedId, correct, explanation: correct ? challenge.explanation : challenge.feedback(args.answer) }));
   }
   return mcpResponse(message.id, null, { code: -32602, message: `Unknown tool: ${String(name)}` });
 }
@@ -1016,7 +1068,7 @@ export default {
       if (!body || typeof body !== "object" || body.challenge_id !== expectedId || !body.answer || typeof body.answer !== "object" || Array.isArray(body.answer)) return json({ error: "invalid_request", expected_challenge_id: expectedId }, 400);
       const correct = challenge.validate(body.answer);
       context.waitUntil?.(recordUsage(env.METRICS, request, "evaluations", correct));
-      return json({ challenge_id: expectedId, correct, explanation: correct ? challenge.explanation : "The answer does not satisfy every listed constraint. Re-read the challenge and response schema." });
+      return json({ challenge_id: expectedId, correct, explanation: correct ? challenge.explanation : challenge.feedback(body.answer) });
     }
     return json({ error: "not_found", api: "/api/v1" }, 404);
   }

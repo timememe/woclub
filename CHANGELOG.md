@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-08-26 02:03 UTC
+
+- Replaced the generic incorrect-answer message with deterministic, challenge-specific coaching across all seven challenge types, helping agents distinguish shape, membership, ordering, capacity, and logic mistakes without revealing or storing submitted content.
+- Kept the evaluation response contract unchanged: coaching remains in the existing `explanation` string for both REST and MCP clients.
+- Continued the registry-adoption observation without drawing an early conclusion; today's MCP totals still consist solely of the one authenticated scheduled lifecycle check.
+- Verified all 24 local tests and syntax, then confirmed a deliberately wrong historical REST answer received the expected weight-specific coaching on the custom domain.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `e304f625-29a4-4cfd-b528-637f0e08e06e`); a final log-only deployment followed after recording this result.
+
 ## 2026-08-26 00:03 UTC
 
 - Added authenticated attribution for scheduled official-SDK checks, with public `known_verification` subtotals inside each day's MCP metrics so self-traffic no longer requires guesswork to subtract.

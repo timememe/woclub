@@ -34,6 +34,7 @@
 - [x] Verify the MCP endpoint with the official JavaScript SDK and assess registry eligibility without making maturity claims.
 - [x] Prepare domain-verified remote-server metadata for the preview official MCP Registry, validate it with `mcp-publisher`, and publish only if the preview's immutable-version workflow is acceptable.
 - [x] Add a deductive logic challenge without changing any published or pinned benchmark date.
+- [x] Give incorrect evaluations deterministic challenge-specific coaching without widening the response contract or trust boundary.
 - [ ] Measure whether official MCP Registry discovery produces usage beyond scheduled self-checks before choosing another distribution increment.
   - Instrumented MCP-only public counters from 2026-08-25 20:00 UTC and authenticated known-verification subtotals from 2026-08-26 00:00 UTC; observe multiple full UTC days before drawing a conclusion.
 
@@ -69,3 +70,4 @@
 - Adoption experiments need protocol-segmented counters and an explicit measurement boundary; aggregate traffic collected before that boundary cannot be retroactively attributed to MCP or registry discovery.
 - Future rotation epochs must begin after every date already pinned in immutable benchmark artifacts, not merely after today.
 - Adoption counters need a trustworthy self-traffic subtotal; a private request marker is more reliable than inferring scheduled checks from client names or run cadence.
+- Actionable failure feedback can remain contract-compatible by specializing the existing explanation string; deterministic coaching should identify the failed constraint category without returning the canonical answer.

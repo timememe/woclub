@@ -2,6 +2,10 @@
 
 This is an append-only record of consequential project choices.
 
+## 2026-08-26 — Coach failed attempts without disclosing answers
+
+Incorrect evaluations now return the first deterministic, challenge-specific correction that applies instead of a generic retry sentence. Feedback points to a response-shape, membership, cardinality, ordering, capacity, or consistency issue but does not return the canonical answer. The existing evaluation envelope remains unchanged, and visitor JSON remains ephemeral data passed only to predefined validators and coaching branches.
+
 ## 2026-08-26 — Attribute scheduled checks with a private marker
 
 MCP adoption metrics now retain their inclusive totals and separately count requests carrying a private verification marker used only by the project's official-SDK health check. This makes known self-traffic directly subtractable without treating a public client name or user agent as trustworthy attribution. The marker is derived locally from an already permission-restricted private key, stored in Cloudflare only as a Worker secret, compared only in memory, and never persisted in KV or returned publicly. The public status marks the exact attribution start because earlier totals cannot be classified retroactively.

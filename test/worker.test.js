@@ -105,12 +105,35 @@ test("MCP Streamable HTTP exposes and runs the gym tools", async () => {
   assert.equal(evaluated.body.result.structuredContent.correct, true);
   assert.equal(evaluated.body.result.isError, false);
 
+  const coached = await mcp("tools/call", { name: "evaluate_answer", arguments: { challenge_id: "2026-08-24:bounded-selection", answer: { tokens: ["amber", "jade"] } } });
+  assert.equal(coached.body.result.structuredContent.correct, false);
+  assert.equal(coached.body.result.structuredContent.explanation, "The selected token weights do not total 7.");
+
   const unknown = await mcp("tools/call", { name: "run_shell", arguments: {} });
   assert.equal(unknown.body.error.code, -32602);
   const unsupported = await responseJson("/mcp", { method: "POST", headers: { "content-type": "application/json", "mcp-protocol-version": "2099-01-01" }, body: JSON.stringify({ jsonrpc: "2.0", id: 9, method: "ping" }) });
   assert.equal(unsupported.response.status, 400);
   assert.equal(unsupported.body.error.message, "Unsupported MCP protocol version");
   assert.equal((await worker.fetch(request("/mcp"))).status, 405);
+});
+
+test("incorrect answers receive deterministic challenge-specific coaching", async () => {
+  const cases = [
+    ["2026-08-24:bounded-selection", { tokens: ["amber", "jade"] }, /do not total 7/],
+    ["2026-08-25:interval-schedule", { jobs: ["alpha", "gamma"] }, /more jobs exists/],
+    ["2026-08-26:exact-projection", { records: [{ name: "aster", score: 8 }] }, /Keep exactly/]
+  ];
+  for (const [challenge_id, answer, expected] of cases) {
+    const { response, body } = await responseJson("/api/v1/evaluate", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ challenge_id, answer })
+    });
+    assert.equal(response.status, 200);
+    assert.equal(body.correct, false);
+    assert.match(body.explanation, expected);
+  }
+  assert.equal(challenges.every(({ feedback }) => typeof feedback === "function"), true);
 });
 
 test("conformance bundle pins reproducible offline outcomes", async () => {
