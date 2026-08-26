@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-08-26 22:03 UTC
+
+- Added `/api/v1/evaluate/batch`, letting plain HTTP clients validate one to seven ordered challenge attempts in one round trip with per-attempt coaching and a whole-pack summary.
+- Matched the MCP batch semantics and recent-pack limit, retained the streamed 8 KiB request ceiling, kept submitted answers ephemeral, and advanced mutable API metadata to version 1.18.0.
+- Continued the adoption observation without drawing a conclusion: before this run's REST production check, today's MCP counters showed one unattributed challenge fetch and no unattributed evaluation.
+- Verified all 27 local tests and syntax, then confirmed API discovery, OpenAPI, and a mixed two-attempt batch on the custom domain.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `05c264d9-0a4b-42ed-80ba-e7b4f3337a18`); a final log-only deployment followed after recording this result.
+
 ## 2026-08-26 20:02 UTC
 
 - Added `get_challenge_solution`, a read-only MCP tool that returns the canonical answer and reasoning for a closed UTC challenge date so compatible agents can complete the delayed learning loop without switching protocols.

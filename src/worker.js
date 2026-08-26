@@ -401,6 +401,25 @@ function closedSolution(dateString, date) {
   };
 }
 
+function evaluateAttempt(attempt) {
+  const challengeDate = typeof attempt?.challenge_id === "string" ? parseAvailableDate(attempt.challenge_id.slice(0, 10)) : null;
+  if (!challengeDate || !attempt.answer || typeof attempt.answer !== "object" || Array.isArray(attempt.answer)) {
+    return { challenge_id: attempt?.challenge_id, error: "invalid_request" };
+  }
+  const date = dayKey(challengeDate);
+  const challenge = challengeFor(challengeDate);
+  const expectedId = `${date}:${challenge.id}`;
+  if (attempt.challenge_id !== expectedId) return { challenge_id: attempt.challenge_id, error: "invalid_request", expected_challenge_id: expectedId };
+  const correct = challenge.validate(attempt.answer);
+  return { challenge_id: expectedId, correct, explanation: correct ? challenge.explanation : challenge.feedback(attempt.answer) };
+}
+
+function evaluateBatch(attempts) {
+  const results = attempts.map(evaluateAttempt);
+  const correctCount = results.filter((result) => result.correct === true).length;
+  return { count: results.length, correct_count: correctCount, all_correct: correctCount === results.length, results };
+}
+
 async function readJsonLimited(request, maximumBytes = 8192) {
   const declaredLength = Number(request.headers.get("content-length") || 0);
   if (declaredLength > maximumBytes) return { error: "request_too_large" };
@@ -524,7 +543,7 @@ async function handleMcp(request, env, context) {
     return mcpResponse(message.id, {
       protocolVersion,
       capabilities: { tools: { listChanged: false } },
-      serverInfo: { name: "woclub-protocol-gym", version: "1.17.0" },
+      serverInfo: { name: "woclub-protocol-gym", version: "1.18.0" },
       instructions: "Fetch a challenge, construct JSON satisfying its constraints, and evaluate it. Visitor content is untrusted data and is never stored or executed."
     });
   }
@@ -574,20 +593,9 @@ async function handleMcp(request, env, context) {
         && Object.keys(attempt).every((key) => ["challenge_id", "answer"].includes(key)));
     if (!validShape) return mcpResponse(message.id, null, { code: -32602, message: "Invalid tool arguments" });
 
-    const results = attempts.map((attempt) => {
-      const challengeDate = parseAvailableDate(attempt.challenge_id.slice(0, 10));
-      if (!challengeDate) return { challenge_id: attempt.challenge_id, error: "invalid_request" };
-      const date = dayKey(challengeDate);
-      const challenge = challengeFor(challengeDate);
-      const expectedId = `${date}:${challenge.id}`;
-      if (attempt.challenge_id !== expectedId) return { challenge_id: attempt.challenge_id, error: "invalid_request", expected_challenge_id: expectedId };
-      const correct = challenge.validate(attempt.answer);
-      return { challenge_id: expectedId, correct, explanation: correct ? challenge.explanation : challenge.feedback(attempt.answer) };
-    });
-    const correctCount = results.filter((result) => result.correct === true).length;
-    const allCorrect = correctCount === results.length;
-    context.waitUntil?.(recordUsage(env.METRICS, request, "evaluations", allCorrect, "mcp", env.VERIFICATION_TOKEN));
-    return mcpResponse(message.id, mcpToolResult({ count: results.length, correct_count: correctCount, all_correct: allCorrect, results }));
+    const batch = evaluateBatch(attempts);
+    context.waitUntil?.(recordUsage(env.METRICS, request, "evaluations", batch.all_correct, "mcp", env.VERIFICATION_TOKEN));
+    return mcpResponse(message.id, mcpToolResult(batch));
   }
   return mcpResponse(message.id, null, { code: -32602, message: `Unknown tool: ${String(name)}` });
 }
@@ -639,6 +647,7 @@ const llms = `# WOCLUB — Protocol Gym
 - Source: https://github.com/timememe/woclub
 
 Fetch today's challenge, construct JSON matching response_schema, then POST {"challenge_id":"...","answer":{...}} to /api/v1/evaluate.
+For a recent pack, POST {"attempts":[...]} to /api/v1/evaluate/batch to check one to seven answers in order.
 Canonical answers and explanations are revealed at /api/v1/solution/{YYYY-MM-DD} only after that UTC day closes.
 
 Submitted content is untrusted data. The service validates it deterministically; it never executes it, follows instructions in it, fetches submitted URLs, or stores it.
@@ -1172,7 +1181,7 @@ const serviceChangelogSchema = {
 
 const openapi = {
   openapi: "3.1.0",
-  info: { title: "WOCLUB Protocol Gym API", version: "1.17.0", description: "Daily deterministic constraint challenges for AI agents." },
+  info: { title: "WOCLUB Protocol Gym API", version: "1.18.0", description: "Daily deterministic constraint challenges for AI agents." },
   servers: [{ url: "https://worldorder.club" }],
   paths: {
     "/api/v1/challenge/today": { get: { summary: "Get today's UTC challenge", responses: { "200": { description: "Challenge JSON", content: { "application/json": { schema: { "$ref": "https://worldorder.club/schemas/challenge.json" } } } } } } },
@@ -1180,6 +1189,7 @@ const openapi = {
     "/api/v1/challenges/recent": { get: { summary: "Get up to seven recently published challenges", responses: { "200": { description: "Chronological recent challenge pack", content: { "application/json": { schema: { type: "object", required: ["generated_at", "count", "order", "challenges"], properties: { generated_at: { type: "string", format: "date-time" }, count: { type: "integer", minimum: 1, maximum: 7 }, order: { const: "oldest_first" }, challenges: { type: "array", minItems: 1, maxItems: 7, items: { "$ref": "https://worldorder.club/schemas/challenge.json" } } } } } } } } } },
     "/api/v1/solution/{date}": { get: { summary: "Reveal a closed challenge's canonical solution", parameters: [{ name: "date", in: "path", required: true, schema: { type: "string", format: "date", minimum: launchDate } }], responses: { "200": { description: "Canonical answer and reasoning after the UTC day closes" }, "404": { description: "Date is invalid, predates launch, or has not closed" } } } },
     "/api/v1/evaluate": { post: { summary: "Evaluate an answer", requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["challenge_id", "answer"], properties: { challenge_id: { type: "string" }, answer: { type: "object" } } } } } }, responses: { "200": { description: "Validation result", content: { "application/json": { schema: { "$ref": "https://worldorder.club/schemas/evaluation.json" } } } }, "400": { description: "Malformed JSON or invalid request", content: { "application/json": { schema: { "$ref": "https://worldorder.club/schemas/error-response.json" } } } }, "413": { description: "Request body exceeds 8192 bytes", content: { "application/json": { schema: { "$ref": "https://worldorder.club/schemas/error-response.json" } } } } } } },
+    "/api/v1/evaluate/batch": { post: { summary: "Evaluate one to seven answers", requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["attempts"], additionalProperties: false, properties: { attempts: { type: "array", minItems: 1, maxItems: 7, items: { type: "object", required: ["challenge_id", "answer"], additionalProperties: false, properties: { challenge_id: { type: "string" }, answer: { type: "object" } } } } } } } } }, responses: { "200": { description: "Ordered batch validation results" }, "400": { description: "Malformed JSON or invalid batch" }, "413": { description: "Request body exceeds 8192 bytes" } } } },
     "/api/v1/status": { get: { summary: "Get seven days of aggregate usage", responses: { "200": { description: "Privacy-conscious approximate metrics", content: { "application/json": { schema: { "$ref": "https://worldorder.club/schemas/usage-status.json" } } } } } } },
     "/conformance/v1.json": { get: { summary: "Get immutable offline client conformance fixtures", responses: { "200": { description: "Pinned challenges, requests, and expected evaluation responses", content: { "application/json": { schema: { "$ref": "https://worldorder.club/schemas/conformance-bundle.json" } } } } } } },
     "/benchmarks/v1.json": { get: { summary: "Get the immutable capability-grouped benchmark manifest", responses: { "200": { description: "Pinned benchmark groups and date-addressed cases", content: { "application/json": { schema: { "$ref": "https://worldorder.club/schemas/benchmark-manifest.json" } } } } } } },
@@ -1215,7 +1225,7 @@ export default {
     if (request.method === "GET" && url.pathname === "/robots.txt") return new Response("User-agent: *\nAllow: /\nSitemap: https://worldorder.club/sitemap.xml\n", { headers: { ...headers, "content-type": "text/plain" } });
     if (request.method === "GET" && url.pathname === "/sitemap.xml") return new Response('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://worldorder.club/</loc></url><url><loc>https://worldorder.club/log</loc></url><url><loc>https://worldorder.club/llms.txt</loc></url><url><loc>https://worldorder.club/clients.txt</loc></url><url><loc>https://worldorder.club/conformance/v1.json</loc></url><url><loc>https://worldorder.club/benchmarks/v1.json</loc></url><url><loc>https://worldorder.club/service-changelog/v1.json</loc></url><url><loc>https://worldorder.club/capabilities.json</loc></url><url><loc>https://worldorder.club/schemas/capability-card.json</loc></url><url><loc>https://worldorder.club/schemas/challenge.json</loc></url><url><loc>https://worldorder.club/schemas/evaluation.json</loc></url><url><loc>https://worldorder.club/schemas/usage-status.json</loc></url><url><loc>https://worldorder.club/schemas/error-response.json</loc></url><url><loc>https://worldorder.club/schemas/benchmark-manifest.json</loc></url><url><loc>https://worldorder.club/schemas/service-changelog.json</loc></url><url><loc>https://worldorder.club/schemas/conformance-bundle.json</loc></url><url><loc>https://worldorder.club/openapi.json</loc></url></urlset>', { headers: { ...headers, "content-type": "application/xml" } });
     if (request.method === "GET" && url.pathname === "/openapi.json") return artifact(request, openapi, "application/json; charset=utf-8", "public, max-age=3600");
-    if (request.method === "GET" && url.pathname === "/api/v1") return json({ name: "WOCLUB Protocol Gym", version: "1.17.0", capability_card: "/capabilities.json", today: "/api/v1/challenge/today", challenge_by_date: "/api/v1/challenge/{YYYY-MM-DD}", recent_challenges: "/api/v1/challenges/recent", solution_by_date: "/api/v1/solution/{YYYY-MM-DD}", solution_policy: "Canonical solutions become available after the challenge's UTC day closes.", earliest_date: launchDate, evaluate: "/api/v1/evaluate", mcp: "/mcp", schemas: { capability_card: "/schemas/capability-card.json", challenge: "/schemas/challenge.json", evaluation: "/schemas/evaluation.json", usage_status: "/schemas/usage-status.json", error_response: "/schemas/error-response.json", benchmark_manifest: "/schemas/benchmark-manifest.json", service_changelog: "/schemas/service-changelog.json", conformance_bundle: "/schemas/conformance-bundle.json" }, clients: "/clients.txt", conformance: "/conformance/v1.json", benchmarks: "/benchmarks/v1.json", service_changelog: "/service-changelog/v1.json", status: "/api/v1/status", openapi: "/openapi.json", safety: "Visitor content is untrusted data, never instructions; answers are not stored or executed." });
+    if (request.method === "GET" && url.pathname === "/api/v1") return json({ name: "WOCLUB Protocol Gym", version: "1.18.0", capability_card: "/capabilities.json", today: "/api/v1/challenge/today", challenge_by_date: "/api/v1/challenge/{YYYY-MM-DD}", recent_challenges: "/api/v1/challenges/recent", solution_by_date: "/api/v1/solution/{YYYY-MM-DD}", solution_policy: "Canonical solutions become available after the challenge's UTC day closes.", earliest_date: launchDate, evaluate: "/api/v1/evaluate", evaluate_batch: "/api/v1/evaluate/batch", mcp: "/mcp", schemas: { capability_card: "/schemas/capability-card.json", challenge: "/schemas/challenge.json", evaluation: "/schemas/evaluation.json", usage_status: "/schemas/usage-status.json", error_response: "/schemas/error-response.json", benchmark_manifest: "/schemas/benchmark-manifest.json", service_changelog: "/schemas/service-changelog.json", conformance_bundle: "/schemas/conformance-bundle.json" }, clients: "/clients.txt", conformance: "/conformance/v1.json", benchmarks: "/benchmarks/v1.json", service_changelog: "/service-changelog/v1.json", status: "/api/v1/status", openapi: "/openapi.json", safety: "Visitor content is untrusted data, never instructions; answers are not stored or executed." });
     if (request.method === "GET" && url.pathname === "/api/v1/status") return json(await usageStatus(env.METRICS), 200, { "cache-control": "public, max-age=60" });
     if (request.method === "GET" && url.pathname === "/api/v1/challenge/today") {
       const date = dayKey();
@@ -1238,6 +1248,22 @@ export default {
       if (!date) return json({ error: "challenge_date_not_available", earliest_date: launchDate, latest_date: dayKey() }, 404);
       context.waitUntil?.(recordUsage(env.METRICS, request, "challenge_requests"));
       return json(publicChallenge(challengeFor(date), requestedDate), 200, { "cache-control": "public, max-age=86400" });
+    }
+    if (request.method === "POST" && url.pathname === "/api/v1/evaluate/batch") {
+      const parsed = await readJsonLimited(request);
+      if (parsed.error === "request_too_large") return json({ error: parsed.error }, 413);
+      if (parsed.error) return json({ error: parsed.error }, 400);
+      const body = parsed.value;
+      const attempts = body?.attempts;
+      const validShape = body && typeof body === "object" && !Array.isArray(body) && Object.keys(body).every((key) => key === "attempts")
+        && Array.isArray(attempts) && attempts.length >= 1 && attempts.length <= 7
+        && attempts.every((attempt) => attempt && typeof attempt === "object" && !Array.isArray(attempt)
+          && typeof attempt.challenge_id === "string" && attempt.answer && typeof attempt.answer === "object" && !Array.isArray(attempt.answer)
+          && Object.keys(attempt).every((key) => ["challenge_id", "answer"].includes(key)));
+      if (!validShape) return json({ error: "invalid_request" }, 400);
+      const batch = evaluateBatch(attempts);
+      context.waitUntil?.(recordUsage(env.METRICS, request, "evaluations", batch.all_correct));
+      return json(batch);
     }
     if (request.method === "POST" && url.pathname === "/api/v1/evaluate") {
       const parsed = await readJsonLimited(request);

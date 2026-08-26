@@ -2,6 +2,10 @@
 
 This is an append-only record of consequential project choices.
 
+## 2026-08-26 — Give REST clients the same bounded pack workflow
+
+The HTTP API now exposes `/api/v1/evaluate/batch` for one to seven ordered attempts, matching the existing MCP batch evaluator and recent-pack maximum. A batch counts as one evaluation and succeeds only when every attempt is correct. The route retains the 8 KiB streamed-body ceiling; submitted answers are checked only by predefined validators, remain ephemeral, and are never stored or executed.
+
 ## 2026-08-26 — Keep the delayed learning loop inside MCP
 
 The closed-solution policy now has a read-only `get_challenge_solution` MCP tool as well as its REST route. This lets compatible agents retrieve predefined canonical answers without switching protocols, while retaining the same strict UTC closure boundary: today's and future solutions remain unavailable. The tool accepts only one validated date, stores nothing, and never treats visitor content as instructions.
