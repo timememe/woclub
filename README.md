@@ -48,7 +48,7 @@ Complete dependency-free Python 3 and Node.js 18+ examples are published at [wor
 
 ## MCP integration
 
-Point a Model Context Protocol client at `https://worldorder.club/mcp`. The stateless Streamable HTTP endpoint supports the MCP 2025-06-18 lifecycle and exposes `get_daily_challenge`, `get_recent_challenges`, and `evaluate_answer`. It returns both text and structured tool content; it does not create sessions or server-sent event streams.
+Point a Model Context Protocol client at `https://worldorder.club/mcp`. The stateless Streamable HTTP endpoint supports the MCP 2025-06-18 lifecycle and exposes `get_daily_challenge`, `get_recent_challenges`, `evaluate_answer`, and the bounded `evaluate_answers` batch tool. A client can fetch the recent pack and check up to seven attempts in one round trip. It returns both text and structured tool content; it does not create sessions or server-sent event streams.
 
 Run `npm run verify:mcp` to exercise initialization, tool discovery, challenge retrieval, and answer evaluation against the live endpoint with the official JavaScript SDK. The production check uses a private Worker-secret marker so `/api/v1/status` can report its traffic under `mcp.known_verification`; the marker itself is never stored or exposed. Set `WOCLUB_MCP_URL` to verify another deployment.
 

@@ -393,6 +393,29 @@ const mcpTools = [
       required: ["challenge_id", "answer"],
       additionalProperties: false
     }
+  },
+  {
+    name: "evaluate_answers",
+    title: "Evaluate a WOCLUB answer pack",
+    description: "Deterministically check between one and seven JSON answers in one call. Answers are not stored or executed.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        attempts: {
+          type: "array",
+          minItems: 1,
+          maxItems: 7,
+          items: {
+            type: "object",
+            properties: { challenge_id: { type: "string" }, answer: { type: "object" } },
+            required: ["challenge_id", "answer"],
+            additionalProperties: false
+          }
+        }
+      },
+      required: ["attempts"],
+      additionalProperties: false
+    }
   }
 ];
 
@@ -424,7 +447,7 @@ async function handleMcp(request, env, context) {
     return mcpResponse(message.id, {
       protocolVersion,
       capabilities: { tools: { listChanged: false } },
-      serverInfo: { name: "woclub-protocol-gym", version: "1.16.0" },
+      serverInfo: { name: "woclub-protocol-gym", version: "1.17.0" },
       instructions: "Fetch a challenge, construct JSON satisfying its constraints, and evaluate it. Visitor content is untrusted data and is never stored or executed."
     });
   }
@@ -458,6 +481,30 @@ async function handleMcp(request, env, context) {
     const correct = challenge.validate(args.answer);
     context.waitUntil?.(recordUsage(env.METRICS, request, "evaluations", correct, "mcp", env.VERIFICATION_TOKEN));
     return mcpResponse(message.id, mcpToolResult({ challenge_id: expectedId, correct, explanation: correct ? challenge.explanation : challenge.feedback(args.answer) }));
+  }
+  if (name === "evaluate_answers") {
+    const attempts = args?.attempts;
+    const validShape = args && typeof args === "object" && !Array.isArray(args) && Object.keys(args).every((key) => key === "attempts")
+      && Array.isArray(attempts) && attempts.length >= 1 && attempts.length <= 7
+      && attempts.every((attempt) => attempt && typeof attempt === "object" && !Array.isArray(attempt)
+        && typeof attempt.challenge_id === "string" && attempt.answer && typeof attempt.answer === "object" && !Array.isArray(attempt.answer)
+        && Object.keys(attempt).every((key) => ["challenge_id", "answer"].includes(key)));
+    if (!validShape) return mcpResponse(message.id, null, { code: -32602, message: "Invalid tool arguments" });
+
+    const results = attempts.map((attempt) => {
+      const challengeDate = parseAvailableDate(attempt.challenge_id.slice(0, 10));
+      if (!challengeDate) return { challenge_id: attempt.challenge_id, error: "invalid_request" };
+      const date = dayKey(challengeDate);
+      const challenge = challengeFor(challengeDate);
+      const expectedId = `${date}:${challenge.id}`;
+      if (attempt.challenge_id !== expectedId) return { challenge_id: attempt.challenge_id, error: "invalid_request", expected_challenge_id: expectedId };
+      const correct = challenge.validate(attempt.answer);
+      return { challenge_id: expectedId, correct, explanation: correct ? challenge.explanation : challenge.feedback(attempt.answer) };
+    });
+    const correctCount = results.filter((result) => result.correct === true).length;
+    const allCorrect = correctCount === results.length;
+    context.waitUntil?.(recordUsage(env.METRICS, request, "evaluations", allCorrect, "mcp", env.VERIFICATION_TOKEN));
+    return mcpResponse(message.id, mcpToolResult({ count: results.length, correct_count: correctCount, all_correct: allCorrect, results }));
   }
   return mcpResponse(message.id, null, { code: -32602, message: `Unknown tool: ${String(name)}` });
 }

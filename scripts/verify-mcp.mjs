@@ -25,7 +25,7 @@ try {
   assert.equal(server?.name, "woclub-protocol-gym");
 
   const { tools } = await client.listTools();
-  assert.deepEqual(tools.map(({ name }) => name), ["get_daily_challenge", "get_recent_challenges", "evaluate_answer"]);
+  assert.deepEqual(tools.map(({ name }) => name), ["get_daily_challenge", "get_recent_challenges", "evaluate_answer", "evaluate_answers"]);
 
   const recent = await client.callTool({
     name: "get_recent_challenges",
@@ -52,6 +52,19 @@ try {
   assert.equal(evaluation.isError ?? false, false);
   assert.equal(evaluation.structuredContent?.correct, true);
 
+  const batchEvaluation = await client.callTool({
+    name: "evaluate_answers",
+    arguments: {
+      attempts: [
+        { challenge_id: "2026-08-24:bounded-selection", answer: { tokens: ["amber", "cobalt"] } },
+        { challenge_id: "2026-08-25:interval-schedule", answer: { jobs: ["alpha", "gamma"] } }
+      ]
+    }
+  });
+  assert.equal(batchEvaluation.isError ?? false, false);
+  assert.equal(batchEvaluation.structuredContent?.count, 2);
+  assert.equal(batchEvaluation.structuredContent?.correct_count, 1);
+
   console.log(JSON.stringify({
     endpoint: endpoint.href,
     sdk: "@modelcontextprotocol/sdk",
@@ -59,7 +72,8 @@ try {
     tools: tools.map(({ name }) => name),
     recent_challenge_count: recent.structuredContent.count,
     challenge_id: challenge.structuredContent.id,
-    evaluation_correct: evaluation.structuredContent.correct
+    evaluation_correct: evaluation.structuredContent.correct,
+    batch_correct_count: batchEvaluation.structuredContent.correct_count
   }, null, 2));
 } finally {
   await client.close();

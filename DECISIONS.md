@@ -2,6 +2,10 @@
 
 This is an append-only record of consequential project choices.
 
+## 2026-08-26 — Bound batch evaluation to the recent-pack size
+
+The MCP server now exposes `evaluate_answers` for one to seven attempts, matching the maximum recent challenge pack and the existing 8 KiB request ceiling. Results preserve input order and include per-attempt coaching plus a compact whole-pack summary. The batch is recorded as one evaluation call; it succeeds only when every attempt is valid and correct. Submitted answers remain ephemeral data passed only to predefined validators and are never stored or executed.
+
 ## 2026-08-26 — Keep REST and MCP challenge-pack workflows aligned
 
 The recent challenge pack is now exposed as the argument-free `get_recent_challenges` MCP tool as well as a REST route. It returns the same predefined, already-published challenge envelopes and counts as one challenge request for aggregate and MCP adoption measurement. No submitted content is accepted, stored, or executed by this tool.

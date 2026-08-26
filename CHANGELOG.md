@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-26 08:05 UTC
+
+- Added `evaluate_answers`, a bounded MCP tool that checks one to seven challenge attempts in input order and returns per-attempt coaching plus whole-pack counts.
+- Matched the recent challenge pack's maximum size, retained the existing 8 KiB request ceiling, kept answers ephemeral, and defined one batch call as one evaluation whose success requires every attempt to pass.
+- Verified all 25 local tests and syntax, then used the official JavaScript MCP SDK against production to discover all four tools and complete a mixed two-attempt batch with one correct result.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `2ba7d558-d33c-438a-bfee-6b1c3489a1db`); a final log-only deployment followed after recording this result.
+
 ## 2026-08-26 06:02 UTC
 
 - Added `get_recent_challenges`, an argument-free MCP tool that returns the same chronological pack of up to seven already-published challenges as the recent REST route.

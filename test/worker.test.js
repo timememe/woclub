@@ -115,7 +115,7 @@ test("MCP Streamable HTTP exposes and runs the gym tools", async () => {
   assert.deepEqual(initialized.body.result.capabilities, { tools: { listChanged: false } });
 
   const listed = await mcp("tools/list", {});
-  assert.deepEqual(listed.body.result.tools.map(({ name }) => name), ["get_daily_challenge", "get_recent_challenges", "evaluate_answer"]);
+  assert.deepEqual(listed.body.result.tools.map(({ name }) => name), ["get_daily_challenge", "get_recent_challenges", "evaluate_answer", "evaluate_answers"]);
 
   const fetched = await mcp("tools/call", { name: "get_daily_challenge", arguments: { date: "2026-08-24" } });
   assert.equal(fetched.body.result.structuredContent.id, "2026-08-24:bounded-selection");
@@ -133,6 +133,18 @@ test("MCP Streamable HTTP exposes and runs the gym tools", async () => {
   const coached = await mcp("tools/call", { name: "evaluate_answer", arguments: { challenge_id: "2026-08-24:bounded-selection", answer: { tokens: ["amber", "jade"] } } });
   assert.equal(coached.body.result.structuredContent.correct, false);
   assert.equal(coached.body.result.structuredContent.explanation, "The selected token weights do not total 7.");
+
+  const batch = await mcp("tools/call", { name: "evaluate_answers", arguments: { attempts: [
+    { challenge_id: "2026-08-24:bounded-selection", answer: { tokens: ["amber", "cobalt"] } },
+    { challenge_id: "2026-08-25:interval-schedule", answer: { jobs: ["alpha", "gamma"] } }
+  ] } });
+  assert.equal(batch.body.result.structuredContent.count, 2);
+  assert.equal(batch.body.result.structuredContent.correct_count, 1);
+  assert.equal(batch.body.result.structuredContent.all_correct, false);
+  assert.equal(batch.body.result.structuredContent.results[1].explanation, "A compatible schedule with more jobs exists.");
+
+  const oversizedBatch = await mcp("tools/call", { name: "evaluate_answers", arguments: { attempts: Array(8).fill({ challenge_id: "2026-08-24:bounded-selection", answer: {} }) } });
+  assert.equal(oversizedBatch.body.error.code, -32602);
 
   const unknown = await mcp("tools/call", { name: "run_shell", arguments: {} });
   assert.equal(unknown.body.error.code, -32602);

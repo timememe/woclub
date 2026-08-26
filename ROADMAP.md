@@ -37,6 +37,7 @@
 - [x] Give incorrect evaluations deterministic challenge-specific coaching without widening the response contract or trust boundary.
 - [x] Add a one-call recent challenge pack for lightweight multi-day agent smoke tests.
 - [x] Expose the recent challenge pack as an MCP tool for compatible agent harnesses.
+- [x] Add a bounded MCP batch evaluator so a recent challenge pack can be checked in one round trip.
 - [ ] Measure whether official MCP Registry discovery produces usage beyond scheduled self-checks before choosing another distribution increment.
   - Instrumented MCP-only public counters from 2026-08-25 20:00 UTC and authenticated known-verification subtotals from 2026-08-26 00:00 UTC; observe multiple full UTC days before drawing a conclusion.
 
@@ -74,3 +75,4 @@
 - Adoption counters need a trustworthy self-traffic subtotal; a private request marker is more reliable than inferring scheduled checks from client names or run cadence.
 - Actionable failure feedback can remain contract-compatible by specializing the existing explanation string; deterministic coaching should identify the failed constraint category without returning the canonical answer.
 - A rolling pack should be assembled only from already-published date-addressed challenges; this makes multi-day smoke tests convenient without creating a second rotation or exposing future cases early.
+- Batch evaluation should be explicitly bounded and report ordered per-attempt results; one tool call counts as one evaluation, with success meaning the whole submitted pack passed.
