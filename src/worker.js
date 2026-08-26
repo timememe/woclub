@@ -390,6 +390,17 @@ function recentChallenges(today = new Date(), limit = 7) {
   };
 }
 
+function closedSolution(dateString, date) {
+  const challenge = challengeFor(date);
+  return {
+    date: dateString,
+    challenge_id: `${dateString}:${challenge.id}`,
+    answer: challenge.answer,
+    explanation: challenge.explanation,
+    policy: "Solutions are revealed only after the challenge's UTC day closes."
+  };
+}
+
 async function readJsonLimited(request, maximumBytes = 8192) {
   const declaredLength = Number(request.headers.get("content-length") || 0);
   if (declaredLength > maximumBytes) return { error: "request_too_large" };
@@ -435,6 +446,17 @@ const mcpTools = [
     inputSchema: {
       type: "object",
       properties: {},
+      additionalProperties: false
+    }
+  },
+  {
+    name: "get_challenge_solution",
+    title: "Get a closed WOCLUB solution",
+    description: "Fetch the canonical answer and reasoning for a challenge only after its UTC day has closed.",
+    inputSchema: {
+      type: "object",
+      properties: { date: { type: "string", format: "date", description: "A closed UTC date in YYYY-MM-DD form." } },
+      required: ["date"],
       additionalProperties: false
     }
   },
@@ -524,6 +546,12 @@ async function handleMcp(request, env, context) {
     if (!args || typeof args !== "object" || Array.isArray(args) || Object.keys(args).length) return mcpResponse(message.id, null, { code: -32602, message: "Invalid tool arguments" });
     context.waitUntil?.(recordUsage(env.METRICS, request, "challenge_requests", null, "mcp", env.VERIFICATION_TOKEN));
     return mcpResponse(message.id, mcpToolResult(recentChallenges()));
+  }
+  if (name === "get_challenge_solution") {
+    if (!args || typeof args !== "object" || Array.isArray(args) || typeof args.date !== "string" || Object.keys(args).some((key) => key !== "date")) return mcpResponse(message.id, null, { code: -32602, message: "Invalid tool arguments" });
+    const date = parseClosedDate(args.date);
+    if (!date) return mcpResponse(message.id, mcpToolResult({ error: "solution_not_available", earliest_date: launchDate, latest_closed_date: dayKey(new Date(Date.now() - 86400000)) }, true));
+    return mcpResponse(message.id, mcpToolResult(closedSolution(args.date, date)));
   }
   if (name === "evaluate_answer") {
     if (!args || typeof args !== "object" || Array.isArray(args) || typeof args.challenge_id !== "string" || !args.answer || typeof args.answer !== "object" || Array.isArray(args.answer) || Object.keys(args).some((key) => !["challenge_id", "answer"].includes(key))) return mcpResponse(message.id, null, { code: -32602, message: "Invalid tool arguments" });
@@ -1202,8 +1230,7 @@ export default {
       const requestedDate = url.pathname.slice("/api/v1/solution/".length);
       const date = parseClosedDate(requestedDate);
       if (!date) return json({ error: "solution_not_available", earliest_date: launchDate, latest_closed_date: dayKey(new Date(Date.now() - 86400000)) }, 404);
-      const challenge = challengeFor(date);
-      return json({ date: requestedDate, challenge_id: `${requestedDate}:${challenge.id}`, answer: challenge.answer, explanation: challenge.explanation, policy: "Solutions are revealed only after the challenge's UTC day closes." }, 200, { "cache-control": "public, max-age=31536000, immutable" });
+      return json(closedSolution(requestedDate, date), 200, { "cache-control": "public, max-age=31536000, immutable" });
     }
     if (request.method === "GET" && url.pathname.startsWith("/api/v1/challenge/")) {
       const requestedDate = url.pathname.slice("/api/v1/challenge/".length);

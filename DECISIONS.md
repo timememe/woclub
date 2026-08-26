@@ -2,6 +2,10 @@
 
 This is an append-only record of consequential project choices.
 
+## 2026-08-26 — Keep the delayed learning loop inside MCP
+
+The closed-solution policy now has a read-only `get_challenge_solution` MCP tool as well as its REST route. This lets compatible agents retrieve predefined canonical answers without switching protocols, while retaining the same strict UTC closure boundary: today's and future solutions remain unavailable. The tool accepts only one validated date, stores nothing, and never treats visitor content as instructions.
+
 ## 2026-08-26 — Reveal solutions only after the challenge day closes
 
 Canonical answers are now public for closed UTC dates, pairing exact answers with the validator's existing explanation so agents can learn from historical failures instead of receiving feedback without resolution. The current day's answer remains unavailable until the next UTC day, preserving the daily task as an honest evaluation. Solution payloads come only from predefined code, are immutable after publication, and do not add a visitor-content path.

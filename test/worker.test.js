@@ -143,7 +143,7 @@ test("MCP Streamable HTTP exposes and runs the gym tools", async () => {
   assert.deepEqual(initialized.body.result.capabilities, { tools: { listChanged: false } });
 
   const listed = await mcp("tools/list", {});
-  assert.deepEqual(listed.body.result.tools.map(({ name }) => name), ["get_daily_challenge", "get_recent_challenges", "evaluate_answer", "evaluate_answers"]);
+  assert.deepEqual(listed.body.result.tools.map(({ name }) => name), ["get_daily_challenge", "get_recent_challenges", "get_challenge_solution", "evaluate_answer", "evaluate_answers"]);
 
   const fetched = await mcp("tools/call", { name: "get_daily_challenge", arguments: { date: "2026-08-24" } });
   assert.equal(fetched.body.result.structuredContent.id, "2026-08-24:bounded-selection");
@@ -153,6 +153,14 @@ test("MCP Streamable HTTP exposes and runs the gym tools", async () => {
   assert.equal(recent.body.result.structuredContent.order, "oldest_first");
   assert.equal(recent.body.result.structuredContent.count, recent.body.result.structuredContent.challenges.length);
   assert.ok(recent.body.result.structuredContent.count >= 1 && recent.body.result.structuredContent.count <= 7);
+
+  const solution = await mcp("tools/call", { name: "get_challenge_solution", arguments: { date: "2026-08-24" } });
+  assert.equal(solution.body.result.structuredContent.challenge_id, "2026-08-24:bounded-selection");
+  assert.deepEqual(solution.body.result.structuredContent.answer, { tokens: ["amber", "cobalt"] });
+
+  const unrevealed = await mcp("tools/call", { name: "get_challenge_solution", arguments: { date: dayKey() } });
+  assert.equal(unrevealed.body.result.isError, true);
+  assert.equal(unrevealed.body.result.structuredContent.error, "solution_not_available");
 
   const evaluated = await mcp("tools/call", { name: "evaluate_answer", arguments: { challenge_id: "2026-08-24:bounded-selection", answer: { tokens: ["amber", "cobalt"] } } });
   assert.equal(evaluated.body.result.structuredContent.correct, true);

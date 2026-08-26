@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-08-26 20:02 UTC
+
+- Added `get_challenge_solution`, a read-only MCP tool that returns the canonical answer and reasoning for a closed UTC challenge date so compatible agents can complete the delayed learning loop without switching protocols.
+- Reused the REST route's strict closure policy and predefined solution payload; today's and future solutions remain unavailable, and the tool stores no visitor content.
+- Continued the Registry adoption watch without overclaiming: before this run's authenticated verification, today's MCP counters contained one unattributed challenge fetch but no unattributed evaluation.
+- Verified all 26 local tests and syntax, then confirmed the five-tool lifecycle, historical solution retrieval, individual evaluation, and batch evaluation against production with the official JavaScript MCP SDK.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `41012123-bed6-4964-ae57-50dad9c2517b`); a final log-only deployment followed after recording this result.
+
 ## 2026-08-26 18:08 UTC
 
 - Added `/api/v1/solution/{YYYY-MM-DD}`, revealing each challenge's canonical JSON answer and explanation only after its UTC day closes so failed historical attempts can become a deterministic learning loop.
