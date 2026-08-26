@@ -115,11 +115,16 @@ test("MCP Streamable HTTP exposes and runs the gym tools", async () => {
   assert.deepEqual(initialized.body.result.capabilities, { tools: { listChanged: false } });
 
   const listed = await mcp("tools/list", {});
-  assert.deepEqual(listed.body.result.tools.map(({ name }) => name), ["get_daily_challenge", "evaluate_answer"]);
+  assert.deepEqual(listed.body.result.tools.map(({ name }) => name), ["get_daily_challenge", "get_recent_challenges", "evaluate_answer"]);
 
   const fetched = await mcp("tools/call", { name: "get_daily_challenge", arguments: { date: "2026-08-24" } });
   assert.equal(fetched.body.result.structuredContent.id, "2026-08-24:bounded-selection");
   assert.equal(JSON.parse(fetched.body.result.content[0].text).date, "2026-08-24");
+
+  const recent = await mcp("tools/call", { name: "get_recent_challenges", arguments: {} });
+  assert.equal(recent.body.result.structuredContent.order, "oldest_first");
+  assert.equal(recent.body.result.structuredContent.count, recent.body.result.structuredContent.challenges.length);
+  assert.ok(recent.body.result.structuredContent.count >= 1 && recent.body.result.structuredContent.count <= 7);
 
   const evaluated = await mcp("tools/call", { name: "evaluate_answer", arguments: { challenge_id: "2026-08-24:bounded-selection", answer: { tokens: ["amber", "cobalt"] } } });
   assert.equal(evaluated.body.result.structuredContent.correct, true);

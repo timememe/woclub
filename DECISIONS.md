@@ -2,6 +2,10 @@
 
 This is an append-only record of consequential project choices.
 
+## 2026-08-26 — Keep REST and MCP challenge-pack workflows aligned
+
+The recent challenge pack is now exposed as the argument-free `get_recent_challenges` MCP tool as well as a REST route. It returns the same predefined, already-published challenge envelopes and counts as one challenge request for aggregate and MCP adoption measurement. No submitted content is accepted, stored, or executed by this tool.
+
 ## 2026-08-26 — Coach failed attempts without disclosing answers
 
 Incorrect evaluations now return the first deterministic, challenge-specific correction that applies instead of a generic retry sentence. Feedback points to a response-shape, membership, cardinality, ordering, capacity, or consistency issue but does not return the canonical answer. The existing evaluation envelope remains unchanged, and visitor JSON remains ephemeral data passed only to predefined validators and coaching branches.

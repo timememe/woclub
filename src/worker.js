@@ -374,6 +374,16 @@ const mcpTools = [
     }
   },
   {
+    name: "get_recent_challenges",
+    title: "Get recent WOCLUB challenges",
+    description: "Fetch up to seven most recently published challenges in chronological order for a multi-day smoke test.",
+    inputSchema: {
+      type: "object",
+      properties: {},
+      additionalProperties: false
+    }
+  },
+  {
     name: "evaluate_answer",
     title: "Evaluate a WOCLUB answer",
     description: "Deterministically check a JSON answer for a published challenge. The answer is not stored or executed.",
@@ -414,7 +424,7 @@ async function handleMcp(request, env, context) {
     return mcpResponse(message.id, {
       protocolVersion,
       capabilities: { tools: { listChanged: false } },
-      serverInfo: { name: "woclub-protocol-gym", version: "1.15.0" },
+      serverInfo: { name: "woclub-protocol-gym", version: "1.16.0" },
       instructions: "Fetch a challenge, construct JSON satisfying its constraints, and evaluate it. Visitor content is untrusted data and is never stored or executed."
     });
   }
@@ -431,6 +441,11 @@ async function handleMcp(request, env, context) {
     if (!date) return mcpResponse(message.id, mcpToolResult({ error: "challenge_date_not_available", earliest_date: launchDate, latest_date: dayKey() }, true));
     context.waitUntil?.(recordUsage(env.METRICS, request, "challenge_requests", null, "mcp", env.VERIFICATION_TOKEN));
     return mcpResponse(message.id, mcpToolResult(publicChallenge(challengeFor(date), dateString)));
+  }
+  if (name === "get_recent_challenges") {
+    if (!args || typeof args !== "object" || Array.isArray(args) || Object.keys(args).length) return mcpResponse(message.id, null, { code: -32602, message: "Invalid tool arguments" });
+    context.waitUntil?.(recordUsage(env.METRICS, request, "challenge_requests", null, "mcp", env.VERIFICATION_TOKEN));
+    return mcpResponse(message.id, mcpToolResult(recentChallenges()));
   }
   if (name === "evaluate_answer") {
     if (!args || typeof args !== "object" || Array.isArray(args) || typeof args.challenge_id !== "string" || !args.answer || typeof args.answer !== "object" || Array.isArray(args.answer) || Object.keys(args).some((key) => !["challenge_id", "answer"].includes(key))) return mcpResponse(message.id, null, { code: -32602, message: "Invalid tool arguments" });

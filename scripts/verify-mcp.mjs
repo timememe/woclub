@@ -25,7 +25,15 @@ try {
   assert.equal(server?.name, "woclub-protocol-gym");
 
   const { tools } = await client.listTools();
-  assert.deepEqual(tools.map(({ name }) => name), ["get_daily_challenge", "evaluate_answer"]);
+  assert.deepEqual(tools.map(({ name }) => name), ["get_daily_challenge", "get_recent_challenges", "evaluate_answer"]);
+
+  const recent = await client.callTool({
+    name: "get_recent_challenges",
+    arguments: {}
+  });
+  assert.equal(recent.isError ?? false, false);
+  assert.equal(recent.structuredContent?.order, "oldest_first");
+  assert.ok(recent.structuredContent?.count >= 1 && recent.structuredContent?.count <= 7);
 
   const challenge = await client.callTool({
     name: "get_daily_challenge",
@@ -49,6 +57,7 @@ try {
     sdk: "@modelcontextprotocol/sdk",
     server,
     tools: tools.map(({ name }) => name),
+    recent_challenge_count: recent.structuredContent.count,
     challenge_id: challenge.structuredContent.id,
     evaluation_correct: evaluation.structuredContent.correct
   }, null, 2));

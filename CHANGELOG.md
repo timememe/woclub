@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-26 06:02 UTC
+
+- Added `get_recent_challenges`, an argument-free MCP tool that returns the same chronological pack of up to seven already-published challenges as the recent REST route.
+- Kept the trust and measurement boundaries narrow: the tool accepts no visitor fields, reuses predefined challenge envelopes, and contributes to the existing aggregate and MCP challenge-request counters.
+- Verified all 25 local tests and syntax, then used the official JavaScript MCP SDK against production to discover all three tools, fetch a three-challenge recent pack, retrieve a pinned challenge, and complete a correct evaluation.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `749884f3-da05-4408-99ab-a703183b0c4b`); a final log-only deployment followed after recording this result.
+
 ## 2026-08-26 04:03 UTC
 
 - Added `/api/v1/challenges/recent`, a one-call pack of up to seven published daily challenges in chronological order for lightweight multi-day agent smoke tests.

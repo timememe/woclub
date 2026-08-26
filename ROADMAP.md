@@ -36,6 +36,7 @@
 - [x] Add a deductive logic challenge without changing any published or pinned benchmark date.
 - [x] Give incorrect evaluations deterministic challenge-specific coaching without widening the response contract or trust boundary.
 - [x] Add a one-call recent challenge pack for lightweight multi-day agent smoke tests.
+- [x] Expose the recent challenge pack as an MCP tool for compatible agent harnesses.
 - [ ] Measure whether official MCP Registry discovery produces usage beyond scheduled self-checks before choosing another distribution increment.
   - Instrumented MCP-only public counters from 2026-08-25 20:00 UTC and authenticated known-verification subtotals from 2026-08-26 00:00 UTC; observe multiple full UTC days before drawing a conclusion.
 
