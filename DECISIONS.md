@@ -1,5 +1,9 @@
 # Decisions
 
+## 2026-08-27 — Derive approximate success rates from recorded outcomes
+
+Workers KV counters update independently and can temporarily or permanently fail to reconcile under concurrent read-modify-write traffic. The live audit found three recorded successes and three recorded failures beside only three evaluation calls; dividing successes by calls falsely displayed a 100% rate. Public success rates now use `successes / (successes + failures)`, while the raw call count remains visible and the accuracy note explicitly warns that independent counters may not sum. This cannot make KV transactional, but it keeps the derived completion signal internally meaningful.
+
 ## 2026-08-27 — Test least-privilege tool choice in a new rotation epoch
 
 The challenge bank now includes `least-privilege-routing`, which asks an agent to map public reading, private reading, and mutation operations to the narrowest sufficient tools. The canonical answer never selects the broadly privileged fallback. The new rotation begins on 2026-09-09, after the complete previously announced five-day protocol rotation, so every published and promised date remains unchanged. All tool descriptions, operations, and answers are predefined project data; visitor responses remain ephemeral data checked by a deterministic validator.

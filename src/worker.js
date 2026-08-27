@@ -331,14 +331,14 @@ async function usageStatus(kv) {
       evaluations,
       successful_evaluations: successes,
       failed_evaluations: failures,
-      success_rate: evaluations ? successes / evaluations : null,
+      success_rate: successes + failures ? successes / (successes + failures) : null,
       approximate_unique_callers: uniqueCallers,
       mcp: {
         challenge_requests: mcpChallengeRequests,
         evaluations: mcpEvaluations,
         successful_evaluations: mcpSuccesses,
         failed_evaluations: mcpFailures,
-        success_rate: mcpEvaluations ? mcpSuccesses / mcpEvaluations : null,
+        success_rate: mcpSuccesses + mcpFailures ? mcpSuccesses / (mcpSuccesses + mcpFailures) : null,
         approximate_unique_callers: mcpUniqueCallers,
         known_verification: {
           challenge_requests: verificationChallenges,
@@ -349,7 +349,7 @@ async function usageStatus(kv) {
       }
     });
   }
-  return { generated_at: new Date().toISOString(), window_days: 7, measurement_started_at: "2026-08-25T20:00:00Z", verification_measurement_started_at: "2026-08-26T00:00:00Z", days, privacy: "Daily caller estimates use truncated one-way hashes that expire after eight days. No answers, raw IP addresses, verification secrets, or other submitted content are stored.", accuracy: "Counts are approximate because Workers KV updates are eventually consistent. Protocol-segmented MCP counts begin at measurement_started_at; known_verification identifies scheduled checks only from verification_measurement_started_at. Earlier traffic appears in broader totals." };
+  return { generated_at: new Date().toISOString(), window_days: 7, measurement_started_at: "2026-08-25T20:00:00Z", verification_measurement_started_at: "2026-08-26T00:00:00Z", days, privacy: "Daily caller estimates use truncated one-way hashes that expire after eight days. No answers, raw IP addresses, verification secrets, or other submitted content are stored.", accuracy: "Counts are approximate because Workers KV updates are eventually consistent and independent counters may not sum exactly. Success rates use recorded outcomes (successes divided by successes plus failures), not the independently recorded evaluation-call count. Protocol-segmented MCP counts begin at measurement_started_at; known_verification identifies scheduled checks only from verification_measurement_started_at. Earlier traffic appears in broader totals." };
 }
 
 function adoptionHtml(status) {

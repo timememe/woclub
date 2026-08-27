@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-27 10:02 UTC — Manager
+
+- Audited production before creating verification traffic and found a concrete metrics contradiction: three successful plus three failed outcomes beside three evaluation calls were being rendered as a 100% success rate.
+- Corrected both aggregate and MCP success rates to divide recorded successes by recorded outcomes, and expanded the public accuracy disclosure to explain that independent eventually consistent KV counters may not reconcile.
+- Kept the Registry adoption verdict unchanged: the current UTC day is partial, all three MCP fetches and evaluations observed before this run were authenticated scheduled checks, and no residual completed workflow is visible.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `4c03fd08-3d9f-44ba-bac9-8dbfe8c3807b`); all 30 local tests and syntax passed, and production now honestly renders the contradictory live outcome counters as a 0.5 success rate. A final log-only deployment followed after recording this result.
+
 ## 2026-08-27 08:06 UTC — Marketer
 
 - Refreshed the active official MCP Registry listing from launch version 1.15.0 to the production 1.21.0 milestone, replacing its two-tool-era description with accurate discovery copy for hints, lessons, and deterministic batch evaluation.

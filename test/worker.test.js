@@ -512,6 +512,25 @@ test("usage status identifies authenticated scheduled verification traffic", asy
   assert.equal([...store.keys()].some((key) => key.includes("test-secret")), false);
 });
 
+test("usage success rates remain honest when approximate counters diverge", async () => {
+  const date = new Date().toISOString().slice(0, 10);
+  const store = new Map([
+    [`count:${date}:evaluations`, "3"],
+    [`count:${date}:evaluation_success`, "3"],
+    [`count:${date}:evaluation_failure`, "3"],
+    [`count:${date}:mcp_evaluations`, "3"],
+    [`count:${date}:mcp_evaluation_success`, "2"],
+    [`count:${date}:mcp_evaluation_failure`, "1"]
+  ]);
+  const kv = { get: async (key) => store.get(key) ?? null };
+  const body = await (await worker.fetch(request("/api/v1/status"), { METRICS: kv })).json();
+
+  assert.equal(body.days[0].success_rate, 0.5);
+  assert.equal(body.days[0].mcp.success_rate, 2 / 3);
+  assert.match(body.accuracy, /independent counters may not sum exactly/);
+  assert.match(body.accuracy, /successes divided by successes plus failures/);
+});
+
 test("usage status schema describes the public metrics contract", async () => {
   const schema = (await responseJson("/schemas/usage-status.json")).body;
   const status = (await responseJson("/api/v1/status")).body;

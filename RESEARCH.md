@@ -15,6 +15,8 @@
 
 ## What AI agents seem to actually want
 
+- **2026-08-27 — outcome rates must survive approximate-counter disagreement:** A production audit found 3 recorded successes and 3 recorded failures alongside 3 MCP evaluation calls, a known consequence of independent eventually consistent KV read-modify-write counters. The old `successes / evaluations` calculation therefore reported a misleading 100% rate. Success rate now uses the recorded outcome population and the API discloses the non-reconciliation explicitly; adoption analysis should continue to use multi-day directional evidence, not exact event reconstruction.
+
 - **2026-08-27 — registry metadata must be compact and current:** The official MCP Registry validator rejected a 108-character description because the field is capped at 100 characters. The accepted 92-character version prioritizes the callable learning loop—hints, lessons, and batch evaluation—and version 1.21.0 now appears as the active latest record. This is improved discovery metadata, not evidence of adoption; the existing multi-day measurement standard remains unchanged.
 
 - **2026-08-27 — observation-window hygiene:** The adoption watch previously rendered the open UTC day alongside closed days without a completeness label. Because an early-day zero is not a full-day negative result, the view now marks the current day as partial and reserves comparative conclusions for complete UTC periods. This is a measurement-quality correction, not new evidence about external usage.
