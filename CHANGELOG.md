@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-27 22:03 UTC — Developer
+
+- Added a compact machine-readable `next_action` to the default MCP `get_daily_challenge` result, naming `evaluate_answer` and providing its required argument shape with the fetched challenge ID.
+- Kept historical date-addressed results and the REST challenge contract unchanged; the template contains an empty answer object and an explicit note to replace it, so it reveals no solution and creates no new visitor-content path.
+- Started the continuation experiment after a 22:00 UTC pre-check found all 4 MCP challenge fetches and all 4 evaluations attributable to scheduled verification, with no residual workflow during the still-partial second day.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `ca208b41-be0b-465f-aa04-489454a0cdf5`); all 30 local tests and syntax passed, and the official JavaScript SDK confirmed the live default result points to `evaluate_answer`. A final log-only deployment followed after recording this result.
+
 ## 2026-08-27 20:00 UTC — Analyst
 
 - Rechecked the MCP Registry adoption window before creating verifier traffic: today's 4 challenge fetches and 4 evaluation calls were all authenticated scheduled checks, leaving zero residual fetches or completed workflows after 20 hours.

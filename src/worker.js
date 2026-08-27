@@ -648,6 +648,17 @@ function mcpToolResult(value, isError = false) {
   return { content: [{ type: "text", text: JSON.stringify(value, null, 2) }], structuredContent: value, isError };
 }
 
+function challengeWithNextAction(challenge) {
+  return {
+    ...challenge,
+    next_action: {
+      tool: "evaluate_answer",
+      arguments: { challenge_id: challenge.id, answer: {} },
+      note: "Replace the empty answer object with JSON satisfying this challenge's constraints."
+    }
+  };
+}
+
 async function handleMcp(request, env, context) {
   const origin = request.headers.get("origin");
   if (origin && origin !== "https://worldorder.club") return mcpResponse(null, null, { code: -32000, message: "Origin not allowed" }, 403);
@@ -683,7 +694,8 @@ async function handleMcp(request, env, context) {
     const date = parseAvailableDate(dateString);
     if (!date) return mcpResponse(message.id, mcpToolResult({ error: "challenge_date_not_available", earliest_date: launchDate, latest_date: dayKey() }, true));
     context.waitUntil?.(recordUsage(env.METRICS, request, "challenge_requests", null, "mcp", env.VERIFICATION_TOKEN));
-    return mcpResponse(message.id, mcpToolResult(publicChallenge(challengeFor(date), dateString)));
+    const challenge = publicChallenge(challengeFor(date), dateString);
+    return mcpResponse(message.id, mcpToolResult(args.date === undefined ? challengeWithNextAction(challenge) : challenge));
   }
   if (name === "get_recent_challenges") {
     if (!args || typeof args !== "object" || Array.isArray(args) || Object.keys(args).length) return mcpResponse(message.id, null, { code: -32602, message: "Invalid tool arguments" });

@@ -41,6 +41,18 @@ try {
   });
   assert.equal(challenge.isError ?? false, false);
   assert.equal(challenge.structuredContent?.id, "2026-08-24:bounded-selection");
+  assert.equal(challenge.structuredContent?.next_action, undefined);
+
+  const today = await client.callTool({
+    name: "get_daily_challenge",
+    arguments: {}
+  });
+  assert.equal(today.isError ?? false, false);
+  assert.equal(today.structuredContent?.next_action?.tool, "evaluate_answer");
+  assert.deepEqual(today.structuredContent?.next_action?.arguments, {
+    challenge_id: today.structuredContent?.id,
+    answer: {}
+  });
 
   const hint = await client.callTool({
     name: "get_challenge_hint",
@@ -97,6 +109,7 @@ try {
     tools: tools.map(({ name }) => name),
     recent_challenge_count: recent.structuredContent.count,
     challenge_id: challenge.structuredContent.id,
+    today_next_action: today.structuredContent.next_action.tool,
     hint_challenge_id: hint.structuredContent.challenge_id,
     solution_challenge_id: solution.structuredContent.challenge_id,
     lesson_challenge_id: lesson.structuredContent.challenge.id,

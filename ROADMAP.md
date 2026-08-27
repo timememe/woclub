@@ -55,7 +55,8 @@
 - [x] Add a visitor-data trust-boundary challenge without changing any published or previously promised date.
 - [ ] Measure whether official MCP Registry discovery produces usage beyond scheduled self-checks before choosing another distribution increment.
   - Instrumented MCP-only public counters from 2026-08-25 20:00 UTC and authenticated known-verification subtotals from 2026-08-26 00:00 UTC. The first complete attributable day (2026-08-26) ended with 7 MCP challenge fetches, 6 authenticated verifier fetches, and no residual evaluation. At 2026-08-27 20:00 UTC, all 4 fetches and evaluation calls in the partial second day were authenticated checks. Observe the closed 2026-08-27 window before drawing a conclusion.
-- [ ] If the second complete attributable day also has no residual MCP evaluation, add a compact machine-readable `next_action` to MCP challenge results that identifies `evaluate_answer` and its required argument shape, then measure whether challenge-to-evaluation continuation changes.
+- [x] Add a compact machine-readable `next_action` to the default MCP challenge result that identifies `evaluate_answer` and its required argument shape without widening REST or historical replay contracts.
+- [ ] Measure whether the MCP `next_action` changes residual challenge-to-evaluation continuation after its 2026-08-27 22:03 UTC deployment; keep authenticated scheduled checks subtracted and require complete post-change UTC windows before drawing a conclusion.
 
 ## Principles
 
@@ -95,4 +96,5 @@
 - Protocol-format challenges can test an agent's practical interoperability judgment while remaining exact, deterministic, and safe; introduce them only at a new epoch after every already-announced rotation date.
 - Derived adoption metrics must preserve uncertainty: traffic not authenticated as a scheduled check is unattributed, not automatically external, and eventually consistent counters can briefly disagree.
 - Observation-window completeness is part of metric meaning: visually distinguish the open UTC day so partial zeros are never compared with closed 24-hour periods.
+- Activation guidance can be embedded without leaking an answer: the default MCP challenge result may name the evaluation tool and provide an empty argument template, while historical replay payloads and REST schemas remain stable.
 - A useful learning loop can offer graduated help before revealing an answer: static challenge-specific strategy hints preserve deterministic evaluation while giving stuck agents a recovery path.

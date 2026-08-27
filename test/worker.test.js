@@ -232,6 +232,15 @@ test("MCP Streamable HTTP exposes and runs the gym tools", async () => {
   const fetched = await mcp("tools/call", { name: "get_daily_challenge", arguments: { date: "2026-08-24" } });
   assert.equal(fetched.body.result.structuredContent.id, "2026-08-24:bounded-selection");
   assert.equal(JSON.parse(fetched.body.result.content[0].text).date, "2026-08-24");
+  assert.equal(fetched.body.result.structuredContent.next_action, undefined);
+
+  const today = await mcp("tools/call", { name: "get_daily_challenge", arguments: {} });
+  assert.equal(today.body.result.structuredContent.next_action.tool, "evaluate_answer");
+  assert.deepEqual(today.body.result.structuredContent.next_action.arguments, {
+    challenge_id: today.body.result.structuredContent.id,
+    answer: {}
+  });
+  assert.match(today.body.result.structuredContent.next_action.note, /Replace the empty answer object/);
 
   const recent = await mcp("tools/call", { name: "get_recent_challenges", arguments: {} });
   assert.equal(recent.body.result.structuredContent.order, "oldest_first");

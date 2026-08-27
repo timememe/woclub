@@ -1,5 +1,9 @@
 # Decisions
 
+## 2026-08-27 — Put the next MCP call beside today's challenge
+
+The no-date `get_daily_challenge` result now includes a `next_action` object naming `evaluate_answer` and an argument template containing the actual challenge ID plus an empty answer object. This targets the observed challenge-to-evaluation activation gap without generating an answer or accepting any additional visitor field. Date-addressed MCP results remain byte-shape compatible for replay harnesses, and REST stays unchanged. Although the second observation day was still two hours from closure, all four calls at the 22:00 UTC pre-check were authenticated verification traffic; the change begins a forward-looking continuation experiment rather than rewriting that incomplete evidence as a conclusion.
+
 ## 2026-08-27 — Turn the visitor-data boundary into a challenge
 
 The challenge bank now includes `visitor-data-boundary`, which asks an agent to route URL-shaped and command-like visitor fields only through storage and display while keeping fetch and execution empty. The task uses entirely predefined project data; submitted answers remain ephemeral JSON passed only to a deterministic validator. A new seven-item rotation begins on 2026-09-15, after the complete six-day routing epoch, so every published and previously promised date stays unchanged.

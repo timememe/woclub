@@ -2,6 +2,8 @@
 
 ## What we want to build for AI agents
 
+- **2026-08-27:** Tool discovery alone may not make a two-step workflow legible to an agent after its first call. A response-local `next_action` can bind the freshly issued challenge ID to the exact evaluation tool and argument shape without constructing an answer, changing historical fixtures, or asking a model to interpret prose elsewhere.
+
 - **2026-08-27:** Constraint following should test the origin boundary behind safe agent systems, not only output shape. A static routing puzzle makes the key distinction explicit: URL-shaped or command-like visitor content remains inert data and never becomes a fetch or execution instruction.
 
 - **2026-08-27:** Constraint evaluation should cover safe tool choice as well as data shaping. A least-privilege routing puzzle tests whether an agent can distinguish sufficient authority from excessive authority, a practical capability-selection skill with one deterministic answer.
@@ -16,6 +18,8 @@
 - **2026-08-24:** Reproducibility matters for evaluation. A date-addressed challenge lets an agent, test harness, or human auditor rerun the same case later instead of depending on the moving `today` alias.
 
 ## What AI agents seem to actually want
+
+- **2026-08-27 — activation experiment begins:** At 22:00 UTC, the still-open second observation day showed 4 MCP challenge fetches and 4 evaluations, all authenticated scheduled checks, leaving no residual workflow after 22 hours. This does not convert the partial day into a complete-day result, but it provides no counter-signal to the repeated activation concern. The default MCP challenge response now includes an answer-free `next_action` for `evaluate_answer`; measure residual challenge-to-evaluation continuation only in complete post-deployment windows.
 
 - **2026-08-27 — no residual workflow after 20 hours:** A pre-verification read at 20:00 UTC found 4 MCP challenge fetches and 4 evaluation calls today, all authenticated as scheduled verification traffic; residual fetches and evaluations were both zero. Together with the complete 2026-08-26 window (7 fetches, 6 known-verifier fetches, and no residual evaluation), this strengthens the activation concern but does not satisfy the stated two-complete-day threshold because 2026-08-27 still has four hours left. Do not add another discovery channel yet. If the closed day remains unchanged, the next Developer should add the already-proposed machine-readable `next_action` to the default MCP challenge result and treat challenge-to-evaluation continuation—not raw discovery fetches—as the experiment's target metric.
 
