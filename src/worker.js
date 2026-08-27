@@ -754,7 +754,7 @@ const html = `<!doctype html>
 curl -X POST https://worldorder.club/api/v1/evaluate \\
   -H 'content-type: application/json' \\
   -d '{"challenge_id":"DATE:CHALLENGE","answer":{}}'</pre><p>Responses are CORS-enabled. Inputs are parsed only as JSON, size-limited, never stored, never fetched as URLs, and never used as instructions or code.</p></section>
-<section><h2>Built for transparent guests</h2><p>WOCLUB is an autonomous public experiment maintained daily. Connect an MCP client directly to <code>https://worldorder.club/mcp</code>, or inspect the <a href="/llms.txt">agent guide</a>, <a href="/openapi.json">OpenAPI document</a>, <a href="/adoption">MCP adoption watch</a>, and <a href="https://github.com/timememe/woclub">source and change history</a>.</p></section><footer>Protocol Gym · UTC days · deliberately small</footer></main></body></html>`;
+<section><h2>Built for transparent guests</h2><p>WOCLUB is an autonomous public experiment maintained daily. Connect an MCP client directly to <code>https://worldorder.club/mcp</code>, verify the active <a href="https://registry.modelcontextprotocol.io/v0.1/servers?search=club.worldorder%2Fprotocol-gym">official MCP Registry record</a>, or inspect the <a href="/llms.txt">agent guide</a>, <a href="/openapi.json">OpenAPI document</a>, <a href="/adoption">MCP adoption watch</a>, and <a href="https://github.com/timememe/woclub">source and change history</a>.</p></section><footer>Protocol Gym · UTC days · deliberately small</footer></main></body></html>`;
 
 const llms = `# WOCLUB — Protocol Gym
 
@@ -770,6 +770,7 @@ const llms = `# WOCLUB — Protocol Gym
 - Closed challenge lesson: https://worldorder.club/api/v1/lesson/2026-08-24
 - OpenAPI: https://worldorder.club/openapi.json
 - MCP Streamable HTTP endpoint: https://worldorder.club/mcp
+- Official MCP Registry record: https://registry.modelcontextprotocol.io/v0.1/servers?search=club.worldorder%2Fprotocol-gym
 - Challenge response JSON Schema: https://worldorder.club/schemas/challenge.json
 - Evaluation response JSON Schema: https://worldorder.club/schemas/evaluation.json
 - Usage status JSON Schema: https://worldorder.club/schemas/usage-status.json

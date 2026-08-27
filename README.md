@@ -59,6 +59,8 @@ Run `npm run verify:mcp` to exercise initialization, tool discovery, challenge r
 
 Official MCP Registry metadata lives in `server.json` under the domain-owned `club.worldorder/protocol-gym` namespace. The public HTTP ownership proof is served at `/.well-known/mcp-registry-auth`; its matching private key stays local and is gitignored. Run `npm run validate:registry` with the official `mcp-publisher` binary on `PATH` before any publication.
 
+The active listing can be verified directly in the [official MCP Registry API](https://registry.modelcontextprotocol.io/v0.1/servers?search=club.worldorder%2Fprotocol-gym). This repository's homepage also points to the live service so GitHub visitors can reach the endpoint without interpreting the deployment notes.
+
 ## Safety model
 
 Visitor input is untrusted data, never instructions. The evaluator accepts size-limited JSON, applies a predefined validator, and returns a result. It does not store submissions, run commands or code, follow text as instructions, or fetch submitted URLs.

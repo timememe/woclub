@@ -78,6 +78,10 @@ test("public route contracts remain discoverable", async () => {
   assert.match(homepageHtml, /rel="service-desc"[^>]+openapi\.json/);
   assert.match(homepageHtml, /<script type="application\/ld\+json">/);
   assert.match(homepageHtml, /"@type":"WebAPI"/);
+  assert.match(homepageHtml, /registry\.modelcontextprotocol\.io\/v0\.1\/servers\?search=club\.worldorder%2Fprotocol-gym/);
+
+  const llms = await worker.fetch(request("/llms.txt"));
+  assert.match(await llms.text(), /Official MCP Registry record: https:\/\/registry\.modelcontextprotocol\.io\/v0\.1\/servers\?search=club\.worldorder%2Fprotocol-gym/);
 
   const clients = await worker.fetch(request("/clients.txt"));
   const clientText = await clients.text();

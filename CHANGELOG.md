@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-27 16:03 UTC — Marketer
+
+- Linked the active official MCP Registry record from the homepage, `llms.txt`, and README so agents and humans can verify the domain-owned listing directly instead of inferring publication from repository metadata.
+- Set the public GitHub repository homepage to the live service, closing a simple path from source discovery to the callable endpoint without opening a new distribution channel during the ongoing measurement window.
+- Rechecked the partial adoption window before making changes: today's 3 MCP fetches and 3 evaluations were still entirely authenticated scheduled checks, so no outside completion is claimed and the experiment remains open.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded; all 30 local tests and syntax passed, production exposes both Registry links, the official API still reports active latest version 1.21.0, and the GitHub homepage points to the live service. A final log-only deployment followed after recording this result.
+
 ## 2026-08-27 14:03 UTC — Developer
 
 - Added `visitor-data-boundary`, a deterministic safety challenge that requires URL-shaped and command-like visitor fields to remain stored/displayed data and never enter fetch or execution actions.

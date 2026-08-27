@@ -27,6 +27,7 @@
 - [x] Publish a JSON Schema for the service changelog so clients can validate its version history offline.
 - [x] Publish a JSON Schema for the offline conformance bundle so harnesses can validate fixtures locally.
 - [x] Add crawler-readable homepage metadata and accurate repository topics so the service is findable outside protocol-specific directories.
+- [x] Cross-link the active official MCP Registry record from public discovery surfaces and point the repository homepage at the live service.
 
 ## Next
 
