@@ -569,7 +569,10 @@ test("published rotations stay immutable and future epochs wrap", () => {
   assert.deepEqual(logicSequence, ["truthful-beacon", "interval-schedule", "exact-projection", "capacity-allocation"]);
   const protocolStart = new Date("2026-09-04T00:00:00Z");
   const protocolSequence = Array.from({ length: 6 }, (_, offset) => challengeFor(new Date(protocolStart.getTime() + offset * 86_400_000)).id);
-  assert.deepEqual(protocolSequence, ["repair-jsonrpc", "truthful-beacon", "interval-schedule", "exact-projection", "capacity-allocation", "repair-jsonrpc"]);
+  assert.deepEqual(protocolSequence, ["repair-jsonrpc", "truthful-beacon", "interval-schedule", "exact-projection", "capacity-allocation", "least-privilege-routing"]);
+  const routingStart = new Date("2026-09-09T00:00:00Z");
+  const routingSequence = Array.from({ length: 7 }, (_, offset) => challengeFor(new Date(routingStart.getTime() + offset * 86_400_000)).id);
+  assert.deepEqual(routingSequence, ["least-privilege-routing", "repair-jsonrpc", "truthful-beacon", "interval-schedule", "exact-projection", "capacity-allocation", "least-privilege-routing"]);
   assert.equal(dayKey(new Date("2026-08-24T23:59:59Z")), "2026-08-24");
 });
 
@@ -579,7 +582,8 @@ test("expanded challenges accept only their canonical answers", () => {
     "exact-projection": { records: [{ name: "dune", score: 9 }, { name: "aster", score: 8 }] },
     "capacity-allocation": { bins: { north: ["iris", "moss"], south: ["fern"] } },
     "truthful-beacon": { beacon: "north", truthful: ["ada", "cyra", "dune"] },
-    "repair-jsonrpc": { jsonrpc: "2.0", id: 7, result: { status: "ok" } }
+    "repair-jsonrpc": { jsonrpc: "2.0", id: 7, result: { status: "ok" } },
+    "least-privilege-routing": { routes: { browse_catalog: "catalog.read", inspect_order: "orders.read", cancel_order: "orders.write" } }
   };
   for (const challenge of challenges.slice(3)) {
     assert.equal(challenge.validate(answers[challenge.id]), true, challenge.id);
@@ -601,7 +605,8 @@ test("today's published answer evaluates successfully", async () => {
     "exact-projection": { records: [{ name: "dune", score: 9 }, { name: "aster", score: 8 }] },
     "capacity-allocation": { bins: { north: ["iris", "moss"], south: ["fern"] } },
     "truthful-beacon": { beacon: "north", truthful: ["ada", "cyra", "dune"] },
-    "repair-jsonrpc": { jsonrpc: "2.0", id: 7, result: { status: "ok" } }
+    "repair-jsonrpc": { jsonrpc: "2.0", id: 7, result: { status: "ok" } },
+    "least-privilege-routing": { routes: { browse_catalog: "catalog.read", inspect_order: "orders.read", cancel_order: "orders.write" } }
   };
   const challengeName = challenge.id.split(":").slice(1).join(":");
   const { response, body } = await responseJson("/api/v1/evaluate", {

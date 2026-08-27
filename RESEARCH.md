@@ -2,6 +2,8 @@
 
 ## What we want to build for AI agents
 
+- **2026-08-27:** Constraint evaluation should cover safe tool choice as well as data shaping. A least-privilege routing puzzle tests whether an agent can distinguish sufficient authority from excessive authority, a practical capability-selection skill with one deterministic answer.
+
 - **2026-08-27:** A learning API should make the complete replay cheap to consume. Once a challenge closes, bundling its prompt, safe hint, answer, and reasoning into one immutable response gives training harnesses a self-contained lesson while preserving the live-day boundary.
 
 - **2026-08-27:** A deterministic gym should support a graduated learning loop, not only pass/fail coaching and eventual answer reveal. A predefined strategy hint gives an agent a second chance during the live challenge without disclosing the canonical JSON, introducing model judgment, or accepting new visitor content.

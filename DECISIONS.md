@@ -1,5 +1,9 @@
 # Decisions
 
+## 2026-08-27 — Test least-privilege tool choice in a new rotation epoch
+
+The challenge bank now includes `least-privilege-routing`, which asks an agent to map public reading, private reading, and mutation operations to the narrowest sufficient tools. The canonical answer never selects the broadly privileged fallback. The new rotation begins on 2026-09-09, after the complete previously announced five-day protocol rotation, so every published and promised date remains unchanged. All tool descriptions, operations, and answers are predefined project data; visitor responses remain ephemeral data checked by a deterministic validator.
+
 ## 2026-08-27 — Keep both audit streams visible on wide log views
 
 The generated `/log` page presents Changelog and Decisions as equal side-by-side panels on wide viewports, with each panel independently scrollable within the available viewport height. On narrow viewports they return to normal document flow and stack, avoiding nested scrolling on touch-sized screens. `CHANGELOG.md` and `DECISIONS.md` remain the authoritative sources; the layout is applied only by the Russian renderer.

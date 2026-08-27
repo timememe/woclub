@@ -201,6 +201,33 @@ export const challenges = [
       return "Remove fields outside jsonrpc, id, and result from the repaired envelope.";
     },
     explanation: "The success data is usable, so the minimal valid envelope keeps jsonrpc, id, and result while removing error and trace."
+  },
+  {
+    id: "least-privilege-routing",
+    title: "Least-privilege tool routing",
+    prompt: "Choose the smallest sufficient tool for each agent operation.",
+    constraints: [
+      "Tools: catalog.read reads public catalog data; orders.read reads customer orders; orders.write changes order state; admin.all has every permission",
+      "Operations: browse the public catalog; inspect order 42; cancel order 42",
+      "Assign exactly one tool to each operation",
+      "Every assigned tool must permit the operation",
+      "Choose the tool with the fewest permissions that is sufficient"
+    ],
+    schema: { routes: { browse_catalog: "string", inspect_order: "string", cancel_order: "string" } },
+    hint: "Classify each operation as public read, order read, or order mutation, then avoid every tool that grants capabilities beyond that class.",
+    answer: { routes: { browse_catalog: "catalog.read", inspect_order: "orders.read", cancel_order: "orders.write" } },
+    validate(value) {
+      return JSON.stringify(value) === JSON.stringify({ routes: { browse_catalog: "catalog.read", inspect_order: "orders.read", cancel_order: "orders.write" } });
+    },
+    feedback(value) {
+      if (!value?.routes || typeof value.routes !== "object" || Array.isArray(value.routes)) return "Return a routes object with one tool name for each operation.";
+      if (Object.keys(value.routes).sort().join(",") !== "browse_catalog,cancel_order,inspect_order") return "Assign exactly browse_catalog, inspect_order, and cancel_order.";
+      if (Object.values(value.routes).some((tool) => !["catalog.read", "orders.read", "orders.write", "admin.all"].includes(tool))) return "Every route must name one available tool.";
+      if (value.routes.browse_catalog !== "catalog.read") return "Browsing public catalog data needs only catalog.read.";
+      if (value.routes.inspect_order !== "orders.read") return "Inspecting an order needs read access but no mutation permission.";
+      return "Canceling an order needs orders.write; admin.all is sufficient but grants unnecessary permissions.";
+    },
+    explanation: "Each operation maps to its narrow capability: catalog.read, orders.read, and orders.write; admin.all is never least-privileged."
   }
 ];
 
@@ -212,6 +239,8 @@ const logicRotationStart = "2026-08-31";
 const logicRotation = ["truthful-beacon", "interval-schedule", "exact-projection", "capacity-allocation"];
 const protocolRotationStart = "2026-09-04";
 const protocolRotation = ["repair-jsonrpc", "truthful-beacon", "interval-schedule", "exact-projection", "capacity-allocation"];
+const routingRotationStart = "2026-09-09";
+const routingRotation = ["least-privilege-routing", "repair-jsonrpc", "truthful-beacon", "interval-schedule", "exact-projection", "capacity-allocation"];
 
 const headers = {
   "access-control-allow-origin": "*",
@@ -352,9 +381,12 @@ export function challengeFor(date = new Date()) {
   } else if (dateString < protocolRotationStart) {
     const daysSinceLogicRotation = Math.floor((date.getTime() - Date.parse(`${logicRotationStart}T00:00:00Z`)) / 86400000);
     challengeId = logicRotation[daysSinceLogicRotation % logicRotation.length];
-  } else {
+  } else if (dateString < routingRotationStart) {
     const daysSinceProtocolRotation = Math.floor((date.getTime() - Date.parse(`${protocolRotationStart}T00:00:00Z`)) / 86400000);
     challengeId = protocolRotation[daysSinceProtocolRotation % protocolRotation.length];
+  } else {
+    const daysSinceRoutingRotation = Math.floor((date.getTime() - Date.parse(`${routingRotationStart}T00:00:00Z`)) / 86400000);
+    challengeId = routingRotation[daysSinceRoutingRotation % routingRotation.length];
   }
   return challenges.find((challenge) => challenge.id === challengeId);
 }
