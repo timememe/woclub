@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-27 06:17 UTC
+
+- Added `get_challenge_lesson`, a read-only MCP tool that returns a closed challenge, answer-safe hint, canonical answer, and reasoning in one call.
+- Reused the REST lesson's strict UTC closure boundary and predefined payload; today's and future lessons remain unavailable, and mutable REST and MCP metadata advanced to version 1.21.0.
+- Verified all 29 local tests and syntax, then used the official JavaScript MCP SDK against production to discover all seven tools and replay the complete 2026-08-24 lesson.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `84e70533-6bb1-433c-8678-7d2e3afaa440`); a final log-only deployment followed after recording this result.
+
 ## 2026-08-27 06:03 UTC
 
 - Added `/api/v1/lesson/{YYYY-MM-DD}`, a one-call immutable replay containing a closed challenge, its answer-safe strategy hint, canonical answer, and reasoning.

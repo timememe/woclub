@@ -46,6 +46,7 @@
 - [x] Add a bounded REST batch evaluator so HTTP clients can check a recent challenge pack in one round trip.
 - [x] Add answer-safe strategy hints over REST and MCP so agents can recover before evaluation without revealing the live solution.
 - [x] Add a one-call immutable lesson for closed challenges that bundles the prompt, hint, canonical answer, and reasoning.
+- [x] Expose the complete closed-challenge lesson as an MCP tool for one-call in-protocol replay.
 - [ ] Measure whether official MCP Registry discovery produces usage beyond scheduled self-checks before choosing another distribution increment.
   - Instrumented MCP-only public counters from 2026-08-25 20:00 UTC and authenticated known-verification subtotals from 2026-08-26 00:00 UTC. The first complete attributable day (2026-08-26) ended with 7 MCP challenge fetches, 6 authenticated verifier fetches, and no residual evaluation. Observe at least one more complete UTC day before drawing a conclusion.
 

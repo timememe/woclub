@@ -112,7 +112,7 @@ test("recent challenge pack is chronological, bounded, and reproducible", async 
   const api = (await responseJson("/api/v1")).body;
   const openapi = (await responseJson("/openapi.json")).body;
   assert.equal(api.recent_challenges, "/api/v1/challenges/recent");
-  assert.equal(api.version, "1.20.0");
+  assert.equal(api.version, "1.21.0");
   assert.ok(openapi.paths["/api/v1/challenges/recent"]);
 });
 
@@ -181,7 +181,7 @@ test("canonical solutions appear only after the UTC challenge day closes", async
 
   const api = (await responseJson("/api/v1")).body;
   const openapi = (await responseJson("/openapi.json")).body;
-  assert.equal(api.version, "1.20.0");
+  assert.equal(api.version, "1.21.0");
   assert.equal(api.solution_by_date, "/api/v1/solution/{YYYY-MM-DD}");
   assert.ok(openapi.paths["/api/v1/solution/{date}"]);
 });
@@ -201,7 +201,7 @@ test("closed lessons bundle the full learning loop and never reveal today's answ
 
   const api = (await responseJson("/api/v1")).body;
   const openapi = (await responseJson("/openapi.json")).body;
-  assert.equal(api.version, "1.20.0");
+  assert.equal(api.version, "1.21.0");
   assert.equal(api.lesson_by_date, "/api/v1/lesson/{YYYY-MM-DD}");
   assert.ok(openapi.paths["/api/v1/lesson/{date}"]);
 });
@@ -218,7 +218,7 @@ test("MCP Streamable HTTP exposes and runs the gym tools", async () => {
   assert.deepEqual(initialized.body.result.capabilities, { tools: { listChanged: false } });
 
   const listed = await mcp("tools/list", {});
-  assert.deepEqual(listed.body.result.tools.map(({ name }) => name), ["get_daily_challenge", "get_recent_challenges", "get_challenge_solution", "get_challenge_hint", "evaluate_answer", "evaluate_answers"]);
+  assert.deepEqual(listed.body.result.tools.map(({ name }) => name), ["get_daily_challenge", "get_recent_challenges", "get_challenge_solution", "get_challenge_hint", "get_challenge_lesson", "evaluate_answer", "evaluate_answers"]);
 
   const fetched = await mcp("tools/call", { name: "get_daily_challenge", arguments: { date: "2026-08-24" } });
   assert.equal(fetched.body.result.structuredContent.id, "2026-08-24:bounded-selection");
@@ -236,6 +236,15 @@ test("MCP Streamable HTTP exposes and runs the gym tools", async () => {
   const unrevealed = await mcp("tools/call", { name: "get_challenge_solution", arguments: { date: dayKey() } });
   assert.equal(unrevealed.body.result.isError, true);
   assert.equal(unrevealed.body.result.structuredContent.error, "solution_not_available");
+
+  const lesson = await mcp("tools/call", { name: "get_challenge_lesson", arguments: { date: "2026-08-24" } });
+  assert.equal(lesson.body.result.structuredContent.challenge.id, "2026-08-24:bounded-selection");
+  assert.match(lesson.body.result.structuredContent.hint, /distinct pairs/);
+  assert.deepEqual(lesson.body.result.structuredContent.solution.answer, { tokens: ["amber", "cobalt"] });
+
+  const unavailableLesson = await mcp("tools/call", { name: "get_challenge_lesson", arguments: { date: dayKey() } });
+  assert.equal(unavailableLesson.body.result.isError, true);
+  assert.equal(unavailableLesson.body.result.structuredContent.error, "lesson_not_available");
 
   const evaluated = await mcp("tools/call", { name: "evaluate_answer", arguments: { challenge_id: "2026-08-24:bounded-selection", answer: { tokens: ["amber", "cobalt"] } } });
   assert.equal(evaluated.body.result.structuredContent.correct, true);
@@ -348,7 +357,7 @@ test("benchmark manifest schema describes the published contract", async () => {
   assert.deepEqual(Object.keys(manifest.groups[0].cases[0]).sort(), schema.properties.groups.items.properties.cases.items.required.slice().sort());
 
   const openapi = (await responseJson("/openapi.json")).body;
-  assert.equal(openapi.info.version, "1.20.0");
+  assert.equal(openapi.info.version, "1.21.0");
   assert.equal(openapi.paths["/benchmarks/v1.json"].get.responses["200"].content["application/json"].schema.$ref, schema.$id);
   const api = (await responseJson("/api/v1")).body;
   assert.equal(api.schemas.benchmark_manifest, "/schemas/benchmark-manifest.json");
@@ -364,7 +373,7 @@ test("capability card schema describes the published contract", async () => {
   assert.equal(card.discovery.json_schemas.capability_card, schema.$id);
 
   const openapi = (await responseJson("/openapi.json")).body;
-  assert.equal(openapi.info.version, "1.20.0");
+  assert.equal(openapi.info.version, "1.21.0");
   assert.equal(openapi.paths["/capabilities.json"].get.responses["200"].content["application/json"].schema.$ref, schema.$id);
   const api = (await responseJson("/api/v1")).body;
   assert.equal(api.schemas.capability_card, "/schemas/capability-card.json");
@@ -393,10 +402,10 @@ test("service changelog exposes ordered semantic contract additions", async () =
   assert.ok(body.entries.every(({ changes }) => changes.length > 0 && changes.every(({ kind }) => kind === "added")));
 
   const openapi = (await responseJson("/openapi.json")).body;
-  assert.equal(openapi.info.version, "1.20.0");
+  assert.equal(openapi.info.version, "1.21.0");
   assert.ok(openapi.paths["/service-changelog/v1.json"]);
   const api = (await responseJson("/api/v1")).body;
-  assert.equal(api.version, "1.20.0");
+  assert.equal(api.version, "1.21.0");
   assert.equal(api.service_changelog, "/service-changelog/v1.json");
 });
 
@@ -427,7 +436,7 @@ test("published JSON Schemas describe live success responses", async () => {
   assert.deepEqual(evaluationSchema.required, ["challenge_id", "correct", "explanation"]);
 
   const openapi = (await responseJson("/openapi.json")).body;
-  assert.equal(openapi.info.version, "1.20.0");
+  assert.equal(openapi.info.version, "1.21.0");
   assert.equal(openapi.paths["/api/v1/challenge/today"].get.responses["200"].content["application/json"].schema.$ref, challengeSchema.$id);
   assert.equal(openapi.paths["/api/v1/evaluate"].post.responses["200"].content["application/json"].schema.$ref, evaluationSchema.$id);
 });
@@ -540,7 +549,7 @@ test("error response schema covers stable API failure envelopes", async () => {
   assert.equal(openapi.paths["/api/v1/evaluate"].post.responses["413"].content["application/json"].schema.$ref, schema.$id);
   assert.equal(openapi.paths["/api/v1/challenge/{date}"].get.responses["404"].content["application/json"].schema.$ref, schema.$id);
   const api = (await responseJson("/api/v1")).body;
-  assert.equal(api.version, "1.20.0");
+  assert.equal(api.version, "1.21.0");
   assert.equal(api.schemas.error_response, "/schemas/error-response.json");
 });
 

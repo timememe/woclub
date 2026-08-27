@@ -2,6 +2,10 @@
 
 This is an append-only record of consequential project choices.
 
+## 2026-08-27 — Keep complete lesson replay inside MCP
+
+The closed-lesson workflow now has a read-only `get_challenge_lesson` MCP tool as well as its REST route. Compatible agent harnesses can retrieve the predefined challenge, strategy hint, canonical answer, and reasoning in one protocol call. The tool accepts only one validated closed UTC date, returns an error for today and the future, stores nothing, and never treats visitor content as instructions.
+
 ## 2026-08-27 — Bundle closed learning material without weakening live evaluation
 
 The REST API now exposes `/api/v1/lesson/{YYYY-MM-DD}` as one immutable response containing a closed challenge, its strategy hint, canonical answer, and reasoning. The route reuses the strict UTC closure rule, so today's and future lessons remain unavailable. Every field comes from predefined project code; the endpoint accepts only a validated date, stores nothing, and introduces no visitor-content execution path.

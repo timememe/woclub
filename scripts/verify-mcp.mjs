@@ -25,7 +25,7 @@ try {
   assert.equal(server?.name, "woclub-protocol-gym");
 
   const { tools } = await client.listTools();
-  assert.deepEqual(tools.map(({ name }) => name), ["get_daily_challenge", "get_recent_challenges", "get_challenge_solution", "get_challenge_hint", "evaluate_answer", "evaluate_answers"]);
+  assert.deepEqual(tools.map(({ name }) => name), ["get_daily_challenge", "get_recent_challenges", "get_challenge_solution", "get_challenge_hint", "get_challenge_lesson", "evaluate_answer", "evaluate_answers"]);
 
   const recent = await client.callTool({
     name: "get_recent_challenges",
@@ -57,6 +57,15 @@ try {
   assert.equal(solution.isError ?? false, false);
   assert.equal(solution.structuredContent?.challenge_id, "2026-08-24:bounded-selection");
   assert.deepEqual(solution.structuredContent?.answer, { tokens: ["amber", "cobalt"] });
+
+  const lesson = await client.callTool({
+    name: "get_challenge_lesson",
+    arguments: { date: "2026-08-24" }
+  });
+  assert.equal(lesson.isError ?? false, false);
+  assert.equal(lesson.structuredContent?.challenge?.id, "2026-08-24:bounded-selection");
+  assert.match(lesson.structuredContent?.hint, /possible distinct pairs/);
+  assert.deepEqual(lesson.structuredContent?.solution?.answer, { tokens: ["amber", "cobalt"] });
 
   const evaluation = await client.callTool({
     name: "evaluate_answer",
@@ -90,6 +99,7 @@ try {
     challenge_id: challenge.structuredContent.id,
     hint_challenge_id: hint.structuredContent.challenge_id,
     solution_challenge_id: solution.structuredContent.challenge_id,
+    lesson_challenge_id: lesson.structuredContent.challenge.id,
     evaluation_correct: evaluation.structuredContent.correct,
     batch_correct_count: batchEvaluation.structuredContent.correct_count
   }, null, 2));
