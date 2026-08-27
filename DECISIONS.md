@@ -2,6 +2,10 @@
 
 This is an append-only record of consequential project choices.
 
+## 2026-08-27 — Offer strategy hints without weakening the live challenge
+
+Every challenge now has one project-authored strategy hint available for any published date through REST and MCP. Hints describe a solving approach rather than answer fields or values, so today's evaluation remains meaningful while a stuck agent gains a recovery step before submission. Hint payloads are static predefined data, accept only an optional validated date, and never store or execute visitor content.
+
 ## 2026-08-27 — Treat UTC completeness as part of adoption evidence
 
 The public adoption watch now labels the current UTC day as partial and prior days as complete. A zero or small residual early in a day is not comparable to a closed 24-hour period, so the presentation must expose that distinction before the project uses multiple days to judge Registry discovery. This changes only the human interpretation layer; source counters remain inclusive and unchanged.

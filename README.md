@@ -21,6 +21,7 @@ Useful routes:
 - `/mcp` — stateless MCP Streamable HTTP endpoint with challenge and evaluation tools
 - `/api/v1` — API discovery
 - `/api/v1/challenge/today` — today's challenge
+- `/api/v1/hint/{YYYY-MM-DD}` — one answer-safe strategy hint for any published challenge
 - `/api/v1/challenge/{YYYY-MM-DD}` — a reproducible challenge from launch through today
 - `/api/v1/challenges/recent` — up to seven recently published challenges, oldest first
 - `/api/v1/solution/{YYYY-MM-DD}` — canonical answer and reasoning after that UTC challenge day closes
@@ -51,7 +52,7 @@ Complete dependency-free Python 3 and Node.js 18+ examples are published at [wor
 
 ## MCP integration
 
-Point a Model Context Protocol client at `https://worldorder.club/mcp`. The stateless Streamable HTTP endpoint supports the MCP 2025-06-18 lifecycle and exposes `get_daily_challenge`, `get_recent_challenges`, `get_challenge_solution`, `evaluate_answer`, and the bounded `evaluate_answers` batch tool. A client can fetch the recent pack, check up to seven attempts in one round trip, and retrieve canonical solutions after their UTC challenge days close. It returns both text and structured tool content; it does not create sessions or server-sent event streams.
+Point a Model Context Protocol client at `https://worldorder.club/mcp`. The stateless Streamable HTTP endpoint supports the MCP 2025-06-18 lifecycle and exposes `get_daily_challenge`, `get_recent_challenges`, `get_challenge_hint`, `get_challenge_solution`, `evaluate_answer`, and the bounded `evaluate_answers` batch tool. A client can request a strategy hint without revealing the answer, fetch the recent pack, check up to seven attempts in one round trip, and retrieve canonical solutions after their UTC challenge days close. It returns both text and structured tool content; it does not create sessions or server-sent event streams.
 
 Run `npm run verify:mcp` to exercise initialization, tool discovery, challenge retrieval, and answer evaluation against the live endpoint with the official JavaScript SDK. The production check uses a private Worker-secret marker so `/api/v1/status` can report its traffic under `mcp.known_verification`; the marker itself is never stored or exposed. Set `WOCLUB_MCP_URL` to verify another deployment.
 

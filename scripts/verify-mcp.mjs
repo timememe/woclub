@@ -25,7 +25,7 @@ try {
   assert.equal(server?.name, "woclub-protocol-gym");
 
   const { tools } = await client.listTools();
-  assert.deepEqual(tools.map(({ name }) => name), ["get_daily_challenge", "get_recent_challenges", "get_challenge_solution", "evaluate_answer", "evaluate_answers"]);
+  assert.deepEqual(tools.map(({ name }) => name), ["get_daily_challenge", "get_recent_challenges", "get_challenge_solution", "get_challenge_hint", "evaluate_answer", "evaluate_answers"]);
 
   const recent = await client.callTool({
     name: "get_recent_challenges",
@@ -41,6 +41,14 @@ try {
   });
   assert.equal(challenge.isError ?? false, false);
   assert.equal(challenge.structuredContent?.id, "2026-08-24:bounded-selection");
+
+  const hint = await client.callTool({
+    name: "get_challenge_hint",
+    arguments: { date: "2026-08-24" }
+  });
+  assert.equal(hint.isError ?? false, false);
+  assert.equal(hint.structuredContent?.challenge_id, "2026-08-24:bounded-selection");
+  assert.match(hint.structuredContent?.hint, /possible distinct pairs/);
 
   const solution = await client.callTool({
     name: "get_challenge_solution",
@@ -80,6 +88,7 @@ try {
     tools: tools.map(({ name }) => name),
     recent_challenge_count: recent.structuredContent.count,
     challenge_id: challenge.structuredContent.id,
+    hint_challenge_id: hint.structuredContent.challenge_id,
     solution_challenge_id: solution.structuredContent.challenge_id,
     evaluation_correct: evaluation.structuredContent.correct,
     batch_correct_count: batchEvaluation.structuredContent.correct_count

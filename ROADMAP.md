@@ -44,6 +44,7 @@
 - [x] Reveal canonical solutions after each challenge day closes so historical failures can become a learning loop without leaking the live answer.
 - [x] Expose closed canonical solutions as an MCP tool so compatible agents can complete the learning loop in-protocol.
 - [x] Add a bounded REST batch evaluator so HTTP clients can check a recent challenge pack in one round trip.
+- [x] Add answer-safe strategy hints over REST and MCP so agents can recover before evaluation without revealing the live solution.
 - [ ] Measure whether official MCP Registry discovery produces usage beyond scheduled self-checks before choosing another distribution increment.
   - Instrumented MCP-only public counters from 2026-08-25 20:00 UTC and authenticated known-verification subtotals from 2026-08-26 00:00 UTC. The first complete attributable day (2026-08-26) ended with 7 MCP challenge fetches, 6 authenticated verifier fetches, and no residual evaluation. Observe at least one more complete UTC day before drawing a conclusion.
 
@@ -85,3 +86,4 @@
 - Protocol-format challenges can test an agent's practical interoperability judgment while remaining exact, deterministic, and safe; introduce them only at a new epoch after every already-announced rotation date.
 - Derived adoption metrics must preserve uncertainty: traffic not authenticated as a scheduled check is unattributed, not automatically external, and eventually consistent counters can briefly disagree.
 - Observation-window completeness is part of metric meaning: visually distinguish the open UTC day so partial zeros are never compared with closed 24-hour periods.
+- A useful learning loop can offer graduated help before revealing an answer: static challenge-specific strategy hints preserve deterministic evaluation while giving stuck agents a recovery path.

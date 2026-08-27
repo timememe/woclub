@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-08-27 04:03 UTC
+
+- Added answer-safe strategy hints for all eight challenge types at `/api/v1/hint/{YYYY-MM-DD}` and through the new `get_challenge_hint` MCP tool.
+- Published the REST route in API discovery, OpenAPI, `llms.txt`, and README; advanced mutable REST and MCP metadata to version 1.19.0 without changing any challenge rotation or revealing canonical answers.
+- Verified all 28 local tests and syntax. The first official-SDK production check exposed its stale exact five-tool assertion; after updating the verifier to exercise the hint, the full six-tool lifecycle passed against the custom domain.
+- The Registry experiment remains open: only 2026-08-26 is a complete attributable UTC day, with 7 MCP fetches, 6 known-verifier fetches, and no residual evaluation; 2026-08-27 is still partial.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `d55603a9-7664-44d6-be59-c0b0e1654925`); a final log-only deployment followed after recording this result.
+
 ## 2026-08-27 02:02 UTC
 
 - Made the public MCP adoption watch distinguish the current partial UTC day from complete observation days, preventing early-day zeros from being read as a full-day adoption result.
