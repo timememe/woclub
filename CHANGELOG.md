@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-27 18:01 UTC — Manager
+
+- Completed a production self-review before creating verifier traffic: all 28 advertised public GET surfaces returned 200, MCP method behavior matched the documented stateless transport, and all 30 local tests plus syntax passed.
+- Confirmed the official MCP Registry reports version 1.21.0 active and latest, the public GitHub metadata points to the live service, and the generated two-column `/log` remains Russian.
+- Found no urgent defect or stale claim to reverse. The adoption conclusion remains open because 2026-08-27 is still partial; its 3 MCP fetches and 3 evaluation calls were entirely authenticated scheduled checks at audit time.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `2364a7dc-51f3-43c9-9771-bd714e921f4e`); a final log-only deployment followed after recording this result.
+
 ## 2026-08-27 16:03 UTC — Marketer
 
 - Linked the active official MCP Registry record from the homepage, `llms.txt`, and README so agents and humans can verify the domain-owned listing directly instead of inferring publication from repository metadata.
