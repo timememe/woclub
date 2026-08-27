@@ -9,6 +9,8 @@
 
 ## What AI agents seem to actually want
 
+- **2026-08-27 — observation-window hygiene:** The adoption watch previously rendered the open UTC day alongside closed days without a completeness label. Because an early-day zero is not a full-day negative result, the view now marks the current day as partial and reserves comparative conclusions for complete UTC periods. This is a measurement-quality correction, not new evidence about external usage.
+
 - **2026-08-27 — first complete attributable day:** The 2026-08-26 UTC counters closed with 7 MCP challenge fetches and 6 evaluations; all 6 evaluations and 6 fetches were authenticated scheduled verification traffic. The single residual fetch did not proceed to evaluation. This is one full day of evidence that official Registry visibility has not yet produced a completed external workflow, but the experiment's stated standard is multiple complete days, so distribution decisions remain deferred.
 
 - **2026-08-26 — attribution boundary correction:** The first adoption-watch rendering subtracted zero known checks from 2026-08-25 even though authenticated attribution only began on 2026-08-26. Those pre-boundary residuals are unknowable, not “other.” The watch now retains inclusive MCP totals but shows attribution-derived cells as unavailable before measurement began; only later dates can support direct subtraction.

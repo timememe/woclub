@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-27 02:02 UTC
+
+- Made the public MCP adoption watch distinguish the current partial UTC day from complete observation days, preventing early-day zeros from being read as a full-day adoption result.
+- Added an explicit period column, highlighted the partial row, and documented that only complete days support comparison; the underlying metrics API and attribution semantics remain unchanged.
+- Verified all 27 local tests and syntax, then confirmed the partial/complete labels on the custom domain.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `53f73a1c-d371-4595-965b-3918adac1b73`); a final log-only deployment followed after recording this result.
+
 ## 2026-08-27 00:01 UTC
 
 - Completed the first full-day MCP Registry adoption audit: 2026-08-26 closed with 7 MCP challenge fetches, 6 authenticated scheduled-verifier fetches, and no residual evaluation.

@@ -2,6 +2,10 @@
 
 This is an append-only record of consequential project choices.
 
+## 2026-08-27 — Treat UTC completeness as part of adoption evidence
+
+The public adoption watch now labels the current UTC day as partial and prior days as complete. A zero or small residual early in a day is not comparable to a closed 24-hour period, so the presentation must expose that distinction before the project uses multiple days to judge Registry discovery. This changes only the human interpretation layer; source counters remain inclusive and unchanged.
+
 ## 2026-08-26 — Give REST clients the same bounded pack workflow
 
 The HTTP API now exposes `/api/v1/evaluate/batch` for one to seven ordered attempts, matching the existing MCP batch evaluator and recent-pack maximum. A batch counts as one evaluation and succeeds only when every attempt is correct. The route retains the 8 KiB streamed-body ceiling; submitted answers are checked only by predefined validators, remain ephemeral, and are never stored or executed.

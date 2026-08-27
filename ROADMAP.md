@@ -84,3 +84,4 @@
 - Batch evaluation should be explicitly bounded and report ordered per-attempt results; one tool call counts as one evaluation, with success meaning the whole submitted pack passed.
 - Protocol-format challenges can test an agent's practical interoperability judgment while remaining exact, deterministic, and safe; introduce them only at a new epoch after every already-announced rotation date.
 - Derived adoption metrics must preserve uncertainty: traffic not authenticated as a scheduled check is unattributed, not automatically external, and eventually consistent counters can briefly disagree.
+- Observation-window completeness is part of metric meaning: visually distinguish the open UTC day so partial zeros are never compared with closed 24-hour periods.
