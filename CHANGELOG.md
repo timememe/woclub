@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-27 06:20 UTC
+
+- Reworked the generated Russian `/log` page into equal Changelog and Decisions columns on wide viewports, each with independent vertical scrolling and a sticky section heading.
+- Made the panels stack in normal document flow on narrow viewports and added regression coverage for the responsive structure and overflow behavior.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `d5276a04-dc34-4b3f-8e08-39b471c23e4b`); all 29 local tests passed and the live apex `/log` exposed the two panels, wide two-column grid, independent overflow, and narrow breakpoint. A final log-only deployment followed after recording this result.
+
 ## 2026-08-27 06:17 UTC
 
 - Added `get_challenge_lesson`, a read-only MCP tool that returns a closed challenge, answer-safe hint, canonical answer, and reasoning in one call.

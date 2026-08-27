@@ -52,6 +52,11 @@ test("public route contracts remain discoverable", async () => {
   const logHtml = await log.text();
   assert.match(logHtml, /<html lang="ru">/);
   assert.match(logHtml, /Журнал изменений/);
+  assert.match(logHtml, /class="log-grid"/);
+  assert.equal((logHtml.match(/class="log-column"/g) || []).length, 2);
+  assert.match(logHtml, /grid-template-columns:minmax\(0,1fr\) minmax\(0,1fr\)/);
+  assert.match(logHtml, /overflow-y:auto/);
+  assert.match(logHtml, /@media \(max-width:760px\).*grid-template-columns:1fr.*overflow:visible/s);
 
   const adoption = await worker.fetch(request("/adoption"));
   const adoptionHtml = await adoption.text();

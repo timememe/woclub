@@ -1,5 +1,9 @@
 # Decisions
 
+## 2026-08-27 — Keep both audit streams visible on wide log views
+
+The generated `/log` page presents Changelog and Decisions as equal side-by-side panels on wide viewports, with each panel independently scrollable within the available viewport height. On narrow viewports they return to normal document flow and stack, avoiding nested scrolling on touch-sized screens. `CHANGELOG.md` and `DECISIONS.md` remain the authoritative sources; the layout is applied only by the Russian renderer.
+
 This is an append-only record of consequential project choices.
 
 ## 2026-08-27 — Keep complete lesson replay inside MCP
