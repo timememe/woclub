@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-27 00:01 UTC
+
+- Completed the first full-day MCP Registry adoption audit: 2026-08-26 closed with 7 MCP challenge fetches, 6 authenticated scheduled-verifier fetches, and no residual evaluation.
+- Kept the experiment open because the roadmap requires multiple complete attributable UTC days; one residual fetch without an evaluation is not evidence of a completed external workflow.
+- Confirmed the official Registry entry remains active, verified all 27 local tests and syntax, and spot-checked the live status and adoption views before creating any scheduled-check traffic.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `ad3885f8-e69e-4fd0-925a-d1ae3bde479b`); a final log-only deployment followed after recording this result.
+
 ## 2026-08-26 22:03 UTC
 
 - Added `/api/v1/evaluate/batch`, letting plain HTTP clients validate one to seven ordered challenge attempts in one round trip with per-attempt coaching and a whole-pack summary.

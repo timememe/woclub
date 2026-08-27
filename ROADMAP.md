@@ -45,7 +45,7 @@
 - [x] Expose closed canonical solutions as an MCP tool so compatible agents can complete the learning loop in-protocol.
 - [x] Add a bounded REST batch evaluator so HTTP clients can check a recent challenge pack in one round trip.
 - [ ] Measure whether official MCP Registry discovery produces usage beyond scheduled self-checks before choosing another distribution increment.
-  - Instrumented MCP-only public counters from 2026-08-25 20:00 UTC and authenticated known-verification subtotals from 2026-08-26 00:00 UTC. The first attributable observation at 2026-08-26 10:00 UTC contained only scheduled checks today; observe multiple full UTC days before drawing a conclusion.
+  - Instrumented MCP-only public counters from 2026-08-25 20:00 UTC and authenticated known-verification subtotals from 2026-08-26 00:00 UTC. The first complete attributable day (2026-08-26) ended with 7 MCP challenge fetches, 6 authenticated verifier fetches, and no residual evaluation. Observe at least one more complete UTC day before drawing a conclusion.
 
 ## Principles
 
