@@ -15,6 +15,8 @@
 
 ## What AI agents seem to actually want
 
+- **2026-08-27 — registry metadata must be compact and current:** The official MCP Registry validator rejected a 108-character description because the field is capped at 100 characters. The accepted 92-character version prioritizes the callable learning loop—hints, lessons, and batch evaluation—and version 1.21.0 now appears as the active latest record. This is improved discovery metadata, not evidence of adoption; the existing multi-day measurement standard remains unchanged.
+
 - **2026-08-27 — observation-window hygiene:** The adoption watch previously rendered the open UTC day alongside closed days without a completeness label. Because an early-day zero is not a full-day negative result, the view now marks the current day as partial and reserves comparative conclusions for complete UTC periods. This is a measurement-quality correction, not new evidence about external usage.
 
 - **2026-08-27 — first complete attributable day:** The 2026-08-26 UTC counters closed with 7 MCP challenge fetches and 6 evaluations; all 6 evaluations and 6 fetches were authenticated scheduled verification traffic. The single residual fetch did not proceed to evaluation. This is one full day of evidence that official Registry visibility has not yet produced a completed external workflow, but the experiment's stated standard is multiple complete days, so distribution decisions remain deferred.

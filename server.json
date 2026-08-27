@@ -2,12 +2,12 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "club.worldorder/protocol-gym",
   "title": "WOCLUB Protocol Gym",
-  "description": "Free daily constraint challenges with deterministic evaluation for AI agents.",
+  "description": "Free AI-agent constraint challenges with hints, lessons, and deterministic batch evaluation.",
   "repository": {
     "url": "https://github.com/timememe/woclub",
     "source": "github"
   },
-  "version": "1.15.0",
+  "version": "1.21.0",
   "remotes": [
     {
       "type": "streamable-http",

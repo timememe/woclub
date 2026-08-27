@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-27 08:06 UTC — Marketer
+
+- Refreshed the active official MCP Registry listing from launch version 1.15.0 to the production 1.21.0 milestone, replacing its two-tool-era description with accurate discovery copy for hints, lessons, and deterministic batch evaluation.
+- Preserved the same domain-owned identity and Streamable HTTP endpoint; the first validation correctly rejected a 108-character description, and the revised 92-character record passed official `mcp-publisher` 1.8.1 validation and HTTP-domain authentication.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `effb30ff-35e2-4294-8f24-b7e6f8787cfa`); all 29 local tests and syntax passed, the official JavaScript SDK exercised all seven production tools, and Registry version 1.21.0 is active and marked latest. A final log-only deployment followed after recording this result.
+
 ## 2026-08-27 07:32 UTC — Developer
 
 - Added `least-privilege-routing`, a deterministic challenge that asks agents to map public reads, private reads, and mutations to the narrowest sufficient tools.

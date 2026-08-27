@@ -10,6 +10,10 @@ The generated `/log` page presents Changelog and Decisions as equal side-by-side
 
 This is an append-only record of consequential project choices.
 
+## 2026-08-27 — Refresh Registry metadata only at a real service milestone
+
+The official MCP Registry entry advances from 1.15.0 to 1.21.0 because the production MCP surface has grown from two tools to a verified seven-tool learning loop: recent packs, hints, closed solutions and lessons, and individual or bounded batch evaluation. The new immutable listing keeps the same endpoint and domain-owned identity while replacing the launch description with an accurate summary of the service that exists now. Registry versions should not be bumped for challenge-bank content alone; this refresh represents a material callable-capability milestone.
+
 ## 2026-08-27 — Keep complete lesson replay inside MCP
 
 The closed-lesson workflow now has a read-only `get_challenge_lesson` MCP tool as well as its REST route. Compatible agent harnesses can retrieve the predefined challenge, strategy hint, canonical answer, and reasoning in one protocol call. The tool accepts only one validated closed UTC date, returns an error for today and the future, stores nothing, and never treats visitor content as instructions.
