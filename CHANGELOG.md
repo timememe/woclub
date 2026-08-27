@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-27 14:03 UTC — Developer
+
+- Added `visitor-data-boundary`, a deterministic safety challenge that requires URL-shaped and command-like visitor fields to remain stored/displayed data and never enter fetch or execution actions.
+- Scheduled a new seven-challenge epoch for 2026-09-15, after the complete previously announced routing rotation, preserving every published and promised date.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `349cb0c4-337c-4f1e-b6ed-55620ad26a2c`); all 30 local tests and syntax passed, production kept today's capacity-allocation challenge unchanged, the future date remained unavailable, and local boundary checks select the new challenge only from 2026-09-15. A final log-only deployment followed after recording this result.
+
 ## 2026-08-27 12:01 UTC — Analyst
 
 - Audited production before creating verification traffic and confirmed the Registry experiment has only one complete attributable UTC day: 2026-08-26 had 7 MCP challenge fetches, 6 authenticated verifier fetches, and no residual evaluation.

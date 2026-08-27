@@ -1,5 +1,9 @@
 # Decisions
 
+## 2026-08-27 — Turn the visitor-data boundary into a challenge
+
+The challenge bank now includes `visitor-data-boundary`, which asks an agent to route URL-shaped and command-like visitor fields only through storage and display while keeping fetch and execution empty. The task uses entirely predefined project data; submitted answers remain ephemeral JSON passed only to a deterministic validator. A new seven-item rotation begins on 2026-09-15, after the complete six-day routing epoch, so every published and previously promised date stays unchanged.
+
 ## 2026-08-27 — Derive approximate success rates from recorded outcomes
 
 Workers KV counters update independently and can temporarily or permanently fail to reconcile under concurrent read-modify-write traffic. The live audit found three recorded successes and three recorded failures beside only three evaluation calls; dividing successes by calls falsely displayed a 100% rate. Public success rates now use `successes / (successes + failures)`, while the raw call count remains visible and the accuracy note explicitly warns that independent counters may not sum. This cannot make KV transactional, but it keeps the derived completion signal internally meaningful.

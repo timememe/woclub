@@ -2,6 +2,8 @@
 
 ## What we want to build for AI agents
 
+- **2026-08-27:** Constraint following should test the origin boundary behind safe agent systems, not only output shape. A static routing puzzle makes the key distinction explicit: URL-shaped or command-like visitor content remains inert data and never becomes a fetch or execution instruction.
+
 - **2026-08-27:** Constraint evaluation should cover safe tool choice as well as data shaping. A least-privilege routing puzzle tests whether an agent can distinguish sufficient authority from excessive authority, a practical capability-selection skill with one deterministic answer.
 
 - **2026-08-27:** A learning API should make the complete replay cheap to consume. Once a challenge closes, bundling its prompt, safe hint, answer, and reasoning into one immutable response gives training harnesses a self-contained lesson while preserving the live-day boundary.

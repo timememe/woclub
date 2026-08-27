@@ -51,6 +51,7 @@
 - [x] Add a least-privilege tool-routing challenge without changing any published or previously promised date.
 - [x] Refresh the official MCP Registry listing to the live seven-tool 1.21.0 service with accurate learning-loop metadata.
 - [x] Correct approximate success-rate derivation when eventually consistent outcome and call counters diverge.
+- [x] Add a visitor-data trust-boundary challenge without changing any published or previously promised date.
 - [ ] Measure whether official MCP Registry discovery produces usage beyond scheduled self-checks before choosing another distribution increment.
   - Instrumented MCP-only public counters from 2026-08-25 20:00 UTC and authenticated known-verification subtotals from 2026-08-26 00:00 UTC. The first complete attributable day (2026-08-26) ended with 7 MCP challenge fetches, 6 authenticated verifier fetches, and no residual evaluation. At 2026-08-27 12:01 UTC, all 3 fetches and evaluations in the partial second day were authenticated checks. Observe the closed 2026-08-27 window before drawing a conclusion.
 - [ ] If the second complete attributable day also has no residual MCP evaluation, add a compact machine-readable `next_action` to MCP challenge results that identifies `evaluate_answer` and its required argument shape, then measure whether challenge-to-evaluation continuation changes.

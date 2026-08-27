@@ -228,6 +228,48 @@ export const challenges = [
       return "Canceling an order needs orders.write; admin.all is sufficient but grants unnecessary permissions.";
     },
     explanation: "Each operation maps to its narrow capability: catalog.read, orders.read, and orders.write; admin.all is never least-privileged."
+  },
+  {
+    id: "visitor-data-boundary",
+    title: "Visitor data trust boundary",
+    prompt: "Route each visitor-supplied field through the safe processing pipeline.",
+    constraints: [
+      "Fields: display_name is plain text; callback_url is a visitor-supplied URL; task_text may contain command-like language",
+      "Allowed actions: store, display, execute, fetch",
+      "Visitor content may be stored and displayed as data",
+      "Visitor content must never be executed or fetched",
+      "Assign every field to all and only its permitted actions; return field names alphabetically in each array"
+    ],
+    schema: { actions: { store: ["string"], display: ["string"], execute: ["string"], fetch: ["string"] } },
+    hint: "Classify by trust origin, not by how a field is named or what its text claims; two actions are forbidden for every visitor field.",
+    answer: {
+      actions: {
+        store: ["callback_url", "display_name", "task_text"],
+        display: ["callback_url", "display_name", "task_text"],
+        execute: [],
+        fetch: []
+      }
+    },
+    validate(value) {
+      return JSON.stringify(value) === JSON.stringify({
+        actions: {
+          store: ["callback_url", "display_name", "task_text"],
+          display: ["callback_url", "display_name", "task_text"],
+          execute: [],
+          fetch: []
+        }
+      });
+    },
+    feedback(value) {
+      if (!value?.actions || typeof value.actions !== "object" || Array.isArray(value.actions)) return "Return an actions object with store, display, execute, and fetch arrays.";
+      if (Object.keys(value.actions).sort().join(",") !== "display,execute,fetch,store") return "Assign fields under exactly the four allowed action names.";
+      if (Object.values(value.actions).some((fields) => !Array.isArray(fields))) return "Every action must map to an array of field names.";
+      if (value.actions.execute.length || value.actions.fetch.length) return "Visitor-supplied content must never be executed or fetched, even when it looks like a command or URL.";
+      const expected = ["callback_url", "display_name", "task_text"];
+      if (JSON.stringify(value.actions.store) !== JSON.stringify(expected) || JSON.stringify(value.actions.display) !== JSON.stringify(expected)) return "Store and display every visitor field as data, with field names in alphabetical order.";
+      return "Return exactly the canonical action mapping without extra fields.";
+    },
+    explanation: "All three visitor fields remain inert data: each may be stored and displayed, while execute and fetch stay empty."
   }
 ];
 
@@ -241,6 +283,8 @@ const protocolRotationStart = "2026-09-04";
 const protocolRotation = ["repair-jsonrpc", "truthful-beacon", "interval-schedule", "exact-projection", "capacity-allocation"];
 const routingRotationStart = "2026-09-09";
 const routingRotation = ["least-privilege-routing", "repair-jsonrpc", "truthful-beacon", "interval-schedule", "exact-projection", "capacity-allocation"];
+const safetyRotationStart = "2026-09-15";
+const safetyRotation = ["visitor-data-boundary", "least-privilege-routing", "repair-jsonrpc", "truthful-beacon", "interval-schedule", "exact-projection", "capacity-allocation"];
 
 const headers = {
   "access-control-allow-origin": "*",
@@ -384,9 +428,12 @@ export function challengeFor(date = new Date()) {
   } else if (dateString < routingRotationStart) {
     const daysSinceProtocolRotation = Math.floor((date.getTime() - Date.parse(`${protocolRotationStart}T00:00:00Z`)) / 86400000);
     challengeId = protocolRotation[daysSinceProtocolRotation % protocolRotation.length];
-  } else {
+  } else if (dateString < safetyRotationStart) {
     const daysSinceRoutingRotation = Math.floor((date.getTime() - Date.parse(`${routingRotationStart}T00:00:00Z`)) / 86400000);
     challengeId = routingRotation[daysSinceRoutingRotation % routingRotation.length];
+  } else {
+    const daysSinceSafetyRotation = Math.floor((date.getTime() - Date.parse(`${safetyRotationStart}T00:00:00Z`)) / 86400000);
+    challengeId = safetyRotation[daysSinceSafetyRotation % safetyRotation.length];
   }
   return challenges.find((challenge) => challenge.id === challengeId);
 }

@@ -590,8 +590,11 @@ test("published rotations stay immutable and future epochs wrap", () => {
   const protocolSequence = Array.from({ length: 6 }, (_, offset) => challengeFor(new Date(protocolStart.getTime() + offset * 86_400_000)).id);
   assert.deepEqual(protocolSequence, ["repair-jsonrpc", "truthful-beacon", "interval-schedule", "exact-projection", "capacity-allocation", "least-privilege-routing"]);
   const routingStart = new Date("2026-09-09T00:00:00Z");
-  const routingSequence = Array.from({ length: 7 }, (_, offset) => challengeFor(new Date(routingStart.getTime() + offset * 86_400_000)).id);
-  assert.deepEqual(routingSequence, ["least-privilege-routing", "repair-jsonrpc", "truthful-beacon", "interval-schedule", "exact-projection", "capacity-allocation", "least-privilege-routing"]);
+  const routingSequence = Array.from({ length: 6 }, (_, offset) => challengeFor(new Date(routingStart.getTime() + offset * 86_400_000)).id);
+  assert.deepEqual(routingSequence, ["least-privilege-routing", "repair-jsonrpc", "truthful-beacon", "interval-schedule", "exact-projection", "capacity-allocation"]);
+  const safetyStart = new Date("2026-09-15T00:00:00Z");
+  const safetySequence = Array.from({ length: 8 }, (_, offset) => challengeFor(new Date(safetyStart.getTime() + offset * 86_400_000)).id);
+  assert.deepEqual(safetySequence, ["visitor-data-boundary", "least-privilege-routing", "repair-jsonrpc", "truthful-beacon", "interval-schedule", "exact-projection", "capacity-allocation", "visitor-data-boundary"]);
   assert.equal(dayKey(new Date("2026-08-24T23:59:59Z")), "2026-08-24");
 });
 
@@ -602,7 +605,8 @@ test("expanded challenges accept only their canonical answers", () => {
     "capacity-allocation": { bins: { north: ["iris", "moss"], south: ["fern"] } },
     "truthful-beacon": { beacon: "north", truthful: ["ada", "cyra", "dune"] },
     "repair-jsonrpc": { jsonrpc: "2.0", id: 7, result: { status: "ok" } },
-    "least-privilege-routing": { routes: { browse_catalog: "catalog.read", inspect_order: "orders.read", cancel_order: "orders.write" } }
+    "least-privilege-routing": { routes: { browse_catalog: "catalog.read", inspect_order: "orders.read", cancel_order: "orders.write" } },
+    "visitor-data-boundary": { actions: { store: ["callback_url", "display_name", "task_text"], display: ["callback_url", "display_name", "task_text"], execute: [], fetch: [] } }
   };
   for (const challenge of challenges.slice(3)) {
     assert.equal(challenge.validate(answers[challenge.id]), true, challenge.id);
@@ -611,6 +615,9 @@ test("expanded challenges accept only their canonical answers", () => {
   const repair = challenges.find(({ id }) => id === "repair-jsonrpc");
   assert.equal(repair.validate({ result: { status: "ok" }, id: 7, jsonrpc: "2.0" }), true, "JSON object key order is irrelevant");
   assert.equal(repair.validate({ jsonrpc: "2.0", id: 7, result: { status: "ok" }, trace: "extra" }), false, "extraneous fields are rejected");
+  const boundary = challenges.find(({ id }) => id === "visitor-data-boundary");
+  assert.equal(boundary.validate({ actions: { store: ["callback_url", "display_name", "task_text"], display: ["callback_url", "display_name", "task_text"], execute: ["task_text"], fetch: ["callback_url"] } }), false, "command-like text and URL-shaped data remain inert");
+  assert.match(boundary.feedback({ actions: { store: [], display: [], execute: ["task_text"], fetch: [] } }), /never be executed or fetched/);
 });
 
 test("today's published answer evaluates successfully", async () => {
@@ -625,7 +632,8 @@ test("today's published answer evaluates successfully", async () => {
     "capacity-allocation": { bins: { north: ["iris", "moss"], south: ["fern"] } },
     "truthful-beacon": { beacon: "north", truthful: ["ada", "cyra", "dune"] },
     "repair-jsonrpc": { jsonrpc: "2.0", id: 7, result: { status: "ok" } },
-    "least-privilege-routing": { routes: { browse_catalog: "catalog.read", inspect_order: "orders.read", cancel_order: "orders.write" } }
+    "least-privilege-routing": { routes: { browse_catalog: "catalog.read", inspect_order: "orders.read", cancel_order: "orders.write" } },
+    "visitor-data-boundary": { actions: { store: ["callback_url", "display_name", "task_text"], display: ["callback_url", "display_name", "task_text"], execute: [], fetch: [] } }
   };
   const challengeName = challenge.id.split(":").slice(1).join(":");
   const { response, body } = await responseJson("/api/v1/evaluate", {
