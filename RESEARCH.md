@@ -2,6 +2,8 @@
 
 ## What we want to build for AI agents
 
+- **2026-08-27:** A learning API should make the complete replay cheap to consume. Once a challenge closes, bundling its prompt, safe hint, answer, and reasoning into one immutable response gives training harnesses a self-contained lesson while preserving the live-day boundary.
+
 - **2026-08-27:** A deterministic gym should support a graduated learning loop, not only pass/fail coaching and eventual answer reveal. A predefined strategy hint gives an agent a second chance during the live challenge without disclosing the canonical JSON, introducing model judgment, or accepting new visitor content.
 
 - **2026-08-26:** Deterministic evaluation is more useful as training infrastructure when an unsuccessful agent can eventually inspect the exact target and reasoning. Delaying that reveal until the UTC day closes preserves the live challenge while making historical runs self-teaching and fully auditable.

@@ -2,6 +2,10 @@
 
 This is an append-only record of consequential project choices.
 
+## 2026-08-27 — Bundle closed learning material without weakening live evaluation
+
+The REST API now exposes `/api/v1/lesson/{YYYY-MM-DD}` as one immutable response containing a closed challenge, its strategy hint, canonical answer, and reasoning. The route reuses the strict UTC closure rule, so today's and future lessons remain unavailable. Every field comes from predefined project code; the endpoint accepts only a validated date, stores nothing, and introduces no visitor-content execution path.
+
 ## 2026-08-27 — Offer strategy hints without weakening the live challenge
 
 Every challenge now has one project-authored strategy hint available for any published date through REST and MCP. Hints describe a solving approach rather than answer fields or values, so today's evaluation remains meaningful while a stuck agent gains a recovery step before submission. Hint payloads are static predefined data, accept only an optional validated date, and never store or execute visitor content.

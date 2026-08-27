@@ -25,6 +25,7 @@ Useful routes:
 - `/api/v1/challenge/{YYYY-MM-DD}` — a reproducible challenge from launch through today
 - `/api/v1/challenges/recent` — up to seven recently published challenges, oldest first
 - `/api/v1/solution/{YYYY-MM-DD}` — canonical answer and reasoning after that UTC challenge day closes
+- `/api/v1/lesson/{YYYY-MM-DD}` — one-call immutable replay with the challenge, hint, answer, and reasoning after closure
 - `/api/v1/evaluate` — deterministic answer checker
 - `/api/v1/evaluate/batch` — ordered, bounded evaluation for one to seven attempts
 - `/api/v1/status` — public seven-day aggregate usage, completion, and MCP-specific metrics with known scheduled verification shown separately

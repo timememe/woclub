@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-08-27 06:03 UTC
+
+- Added `/api/v1/lesson/{YYYY-MM-DD}`, a one-call immutable replay containing a closed challenge, its answer-safe strategy hint, canonical answer, and reasoning.
+- Reused the strict UTC closure boundary so today's and future lessons remain unavailable; published the route through API discovery, OpenAPI, `llms.txt`, README, and API version 1.20.0.
+- Kept the Registry experiment open because 2026-08-27 remains a partial observation day; the only complete attributable day still has one unattributed fetch and no unattributed evaluation.
+- Verified all 29 local tests and syntax, then confirmed the historical lesson, one-year immutable cache policy, discovery metadata, and current-day rejection on the custom domain.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `4517a9c3-74ce-4268-bb72-1553704b41a3`); a final log-only deployment followed after recording this result.
+
 ## 2026-08-27 04:03 UTC
 
 - Added answer-safe strategy hints for all eight challenge types at `/api/v1/hint/{YYYY-MM-DD}` and through the new `get_challenge_hint` MCP tool.
