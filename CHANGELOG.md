@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-28 02:02 UTC — Manager
+
+- Audited production and found `/capabilities.json` was schema-valid but stale: it still described the four-operation pre-MCP service and omitted the current learning loop and MCP discovery surfaces.
+- Refreshed the mutable capability card with hints, closed lessons, bounded batch evaluation, the live MCP endpoint, and the official Registry record; tightened its schema and regression tests to require those discovery links and all seven advertised REST operations.
+- Verified all 30 local tests and syntax, all 28 advertised public GET surfaces, and the corrected card and schema on the custom domain.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `37acc91d-1382-45ba-a677-c78fada6e135`); a final log-only deployment followed after recording this result.
+
 ## 2026-08-28 00:02 UTC — Marketer
 
 - Added the canonical `mcp-server` and `model-context-protocol` GitHub topics to the public repository, making the existing official Registry link legible to topic search and downstream indexers.

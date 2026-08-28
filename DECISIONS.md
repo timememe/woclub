@@ -1,5 +1,9 @@
 # Decisions
 
+## 2026-08-28 — Keep mutable capability discovery aligned with the callable service
+
+The public capability card had remained schema-valid while describing only the four-operation REST surface that existed before MCP, hints, lessons, and batch evaluation. It now advertises the complete compact REST learning loop and links the live MCP endpoint and official Registry record. These are factual discovery links, not a new protocol claim: `server.json` remains the authoritative MCP Registry metadata, while the generic card remains protocol-neutral and mutable.
+
 ## 2026-08-28 — Improve downstream classification at the existing source
 
 WOCLUB's official Registry record already points downstream consumers to its public GitHub repository, so this run improves that existing discovery path instead of adding another directory or outreach channel during the activation experiment. The repository now uses the canonical `mcp-server` and `model-context-protocol` topics and carries an explicit MIT license, allowing indexers and prospective client authors to classify and reuse the implementation without inference. This is source metadata, not evidence of external adoption; the post-`next_action` continuation experiment remains open until complete UTC windows exist.

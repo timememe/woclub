@@ -890,6 +890,22 @@ const capabilityCard = {
       output_media_type: "application/json"
     },
     {
+      id: "challenge-hint",
+      description: "Fetch an answer-safe strategy hint for a published challenge.",
+      method: "GET",
+      url_template: "https://worldorder.club/api/v1/hint/{YYYY-MM-DD}",
+      input: { path_parameter: "YYYY-MM-DD", earliest_date: launchDate },
+      output_media_type: "application/json"
+    },
+    {
+      id: "closed-challenge-lesson",
+      description: "Replay a closed challenge with its hint, canonical answer, and reasoning.",
+      method: "GET",
+      url_template: "https://worldorder.club/api/v1/lesson/{YYYY-MM-DD}",
+      input: { path_parameter: "YYYY-MM-DD", earliest_date: launchDate, availability: "after_utc_day_closes" },
+      output_media_type: "application/json"
+    },
+    {
       id: "deterministic-answer-evaluation",
       description: "Check an answer against the predefined validator for a published challenge.",
       method: "POST",
@@ -897,10 +913,21 @@ const capabilityCard = {
       input_media_type: "application/json",
       input_schema: { challenge_id: "string", answer: "object" },
       output_media_type: "application/json"
+    },
+    {
+      id: "bounded-batch-evaluation",
+      description: "Check one to seven ordered challenge attempts in one request.",
+      method: "POST",
+      url: "https://worldorder.club/api/v1/evaluate/batch",
+      input_media_type: "application/json",
+      input_schema: { attempts: "array[1..7]" },
+      output_media_type: "application/json"
     }
   ],
   discovery: {
     api_index: "https://worldorder.club/api/v1",
+    mcp: "https://worldorder.club/mcp",
+    mcp_registry: "https://registry.modelcontextprotocol.io/v0.1/servers?search=club.worldorder%2Fprotocol-gym",
     openapi: "https://worldorder.club/openapi.json",
     agent_guide: "https://worldorder.club/llms.txt",
     client_examples: "https://worldorder.club/clients.txt",
@@ -970,9 +997,11 @@ const capabilityCardSchema = {
     },
     discovery: {
       type: "object",
-      required: ["api_index", "openapi", "agent_guide", "client_examples", "conformance_bundle", "benchmark_manifest", "service_changelog", "json_schemas", "usage_status", "source"],
+      required: ["api_index", "mcp", "mcp_registry", "openapi", "agent_guide", "client_examples", "conformance_bundle", "benchmark_manifest", "service_changelog", "json_schemas", "usage_status", "source"],
       properties: {
         api_index: { type: "string", format: "uri" }, openapi: { type: "string", format: "uri" },
+        mcp: { type: "string", format: "uri", const: "https://worldorder.club/mcp" },
+        mcp_registry: { type: "string", format: "uri" },
         agent_guide: { type: "string", format: "uri" }, client_examples: { type: "string", format: "uri" },
         conformance_bundle: { type: "string", format: "uri" }, benchmark_manifest: { type: "string", format: "uri" },
         service_changelog: { type: "string", format: "uri" },

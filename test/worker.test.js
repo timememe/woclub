@@ -96,7 +96,10 @@ test("public route contracts remain discoverable", async () => {
     "daily-constraint-challenge",
     "historical-constraint-challenge",
     "recent-challenge-pack",
-    "deterministic-answer-evaluation"
+    "challenge-hint",
+    "closed-challenge-lesson",
+    "deterministic-answer-evaluation",
+    "bounded-batch-evaluation"
   ]);
   assert.equal(capabilityCard.safety.visitor_content, "untrusted_data");
   assert.equal(capabilityCard.safety.stored, false);
@@ -390,6 +393,17 @@ test("capability card schema describes the published contract", async () => {
   assert.deepEqual(Object.keys(card).sort(), schema.required.slice().sort());
   assert.deepEqual(Object.keys(card.safety).sort(), schema.properties.safety.required.slice().sort());
   assert.equal(card.discovery.json_schemas.capability_card, schema.$id);
+  assert.equal(card.discovery.mcp, `${origin}/mcp`);
+  assert.match(card.discovery.mcp_registry, /club\.worldorder%2Fprotocol-gym/);
+  assert.deepEqual(card.capabilities.map(({ id }) => id), [
+    "daily-constraint-challenge",
+    "historical-constraint-challenge",
+    "recent-challenge-pack",
+    "challenge-hint",
+    "closed-challenge-lesson",
+    "deterministic-answer-evaluation",
+    "bounded-batch-evaluation"
+  ]);
 
   const openapi = (await responseJson("/openapi.json")).body;
   assert.equal(openapi.info.version, "1.21.0");

@@ -29,6 +29,7 @@
 - [x] Add crawler-readable homepage metadata and accurate repository topics so the service is findable outside protocol-specific directories.
 - [x] Cross-link the active official MCP Registry record from public discovery surfaces and point the repository homepage at the live service.
 - [x] Make the Registry-linked repository classifiable as an MCP server through canonical GitHub topics and an explicit open-source license.
+- [x] Audit and refresh the stale capability card so it describes the complete REST learning loop and current MCP discovery surfaces.
 
 ## Next
 
@@ -74,6 +75,7 @@
 - Directory outreach should satisfy the target's stated inclusion rules, not merely its topical category; a relevant section is not enough when a project has an explicit maturity threshold.
 - Runnable examples should use only standard runtimes, discover the current challenge ID dynamically, and leave answer construction explicit so they demonstrate the protocol without pretending to solve arbitrary tasks.
 - A small self-describing service should publish an honest generic capability card without claiming compatibility with a registry protocol it does not implement.
+- Mutable discovery artifacts need regression checks for the service's current operations; schema-valid but stale capability metadata is still a broken public contract.
 - Standalone JSON Schema documents should have stable canonical IDs and be referenced by OpenAPI, discovery, and capability metadata so clients can cache and validate them independently.
 - Offline fixtures should pin both accepted and rejected outcomes, include their full challenge envelope, and carry an immutable versioned URL so client regressions are distinguishable from API rotation.
 - Content-derived strong ETags let agent clients cheaply revalidate discovery documents, schemas, examples, and versioned fixtures; truly versioned bundles can additionally use a one-year immutable cache policy.
