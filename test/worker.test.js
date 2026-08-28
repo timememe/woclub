@@ -621,8 +621,11 @@ test("published rotations stay immutable and future epochs wrap", () => {
   const routingSequence = Array.from({ length: 6 }, (_, offset) => challengeFor(new Date(routingStart.getTime() + offset * 86_400_000)).id);
   assert.deepEqual(routingSequence, ["least-privilege-routing", "repair-jsonrpc", "truthful-beacon", "interval-schedule", "exact-projection", "capacity-allocation"]);
   const safetyStart = new Date("2026-09-15T00:00:00Z");
-  const safetySequence = Array.from({ length: 8 }, (_, offset) => challengeFor(new Date(safetyStart.getTime() + offset * 86_400_000)).id);
-  assert.deepEqual(safetySequence, ["visitor-data-boundary", "least-privilege-routing", "repair-jsonrpc", "truthful-beacon", "interval-schedule", "exact-projection", "capacity-allocation", "visitor-data-boundary"]);
+  const safetySequence = Array.from({ length: 7 }, (_, offset) => challengeFor(new Date(safetyStart.getTime() + offset * 86_400_000)).id);
+  assert.deepEqual(safetySequence, ["visitor-data-boundary", "least-privilege-routing", "repair-jsonrpc", "truthful-beacon", "interval-schedule", "exact-projection", "capacity-allocation"]);
+  const contextStart = new Date("2026-09-22T00:00:00Z");
+  const contextSequence = Array.from({ length: 9 }, (_, offset) => challengeFor(new Date(contextStart.getTime() + offset * 86_400_000)).id);
+  assert.deepEqual(contextSequence, ["context-budget", "visitor-data-boundary", "least-privilege-routing", "repair-jsonrpc", "truthful-beacon", "interval-schedule", "exact-projection", "capacity-allocation", "context-budget"]);
   assert.equal(dayKey(new Date("2026-08-24T23:59:59Z")), "2026-08-24");
 });
 
@@ -634,7 +637,8 @@ test("expanded challenges accept only their canonical answers", () => {
     "truthful-beacon": { beacon: "north", truthful: ["ada", "cyra", "dune"] },
     "repair-jsonrpc": { jsonrpc: "2.0", id: 7, result: { status: "ok" } },
     "least-privilege-routing": { routes: { browse_catalog: "catalog.read", inspect_order: "orders.read", cancel_order: "orders.write" } },
-    "visitor-data-boundary": { actions: { store: ["callback_url", "display_name", "task_text"], display: ["callback_url", "display_name", "task_text"], execute: [], fetch: [] } }
+    "visitor-data-boundary": { actions: { store: ["callback_url", "display_name", "task_text"], display: ["callback_url", "display_name", "task_text"], execute: [], fetch: [] } },
+    "context-budget": { selected: ["history", "policy"], total_tokens: 7, total_value: 13 }
   };
   for (const challenge of challenges.slice(3)) {
     assert.equal(challenge.validate(answers[challenge.id]), true, challenge.id);
@@ -646,6 +650,9 @@ test("expanded challenges accept only their canonical answers", () => {
   const boundary = challenges.find(({ id }) => id === "visitor-data-boundary");
   assert.equal(boundary.validate({ actions: { store: ["callback_url", "display_name", "task_text"], display: ["callback_url", "display_name", "task_text"], execute: ["task_text"], fetch: ["callback_url"] } }), false, "command-like text and URL-shaped data remain inert");
   assert.match(boundary.feedback({ actions: { store: [], display: [], execute: ["task_text"], fetch: [] } }), /never be executed or fetched/);
+  const context = challenges.find(({ id }) => id === "context-budget");
+  assert.equal(context.validate({ selected: ["policy", "schema"], total_tokens: 5, total_value: 11 }), false, "a feasible but lower-value selection is rejected");
+  assert.match(context.feedback({ selected: ["example"], total_tokens: 3, total_value: 4 }), /schema/);
 });
 
 test("today's published answer evaluates successfully", async () => {

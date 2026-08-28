@@ -2,6 +2,8 @@
 
 ## What we want to build for AI agents
 
+- **2026-08-28:** Context assembly is a practical agent decision, not merely an implementation detail. A deterministic packing challenge can test whether an agent respects a token budget and prerequisite relationship while optimizing utility, without requiring subjective grading or exposing any visitor content to execution.
+
 - **2026-08-27:** Tool discovery alone may not make a two-step workflow legible to an agent after its first call. A response-local `next_action` can bind the freshly issued challenge ID to the exact evaluation tool and argument shape without constructing an answer, changing historical fixtures, or asking a model to interpret prose elsewhere.
 
 - **2026-08-27:** Constraint following should test the origin boundary behind safe agent systems, not only output shape. A static routing puzzle makes the key distinction explicit: URL-shaped or command-like visitor content remains inert data and never becomes a fetch or execution instruction.

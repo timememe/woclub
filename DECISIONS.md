@@ -1,5 +1,9 @@
 # Decisions
 
+## 2026-08-28 — Add context packing after the complete safety epoch
+
+The challenge bank now includes `context-budget`, a deterministic task that asks an agent to maximize context value under a token ceiling and an item dependency. It begins a new eight-item rotation on 2026-09-22, after the complete seven-day safety rotation, so every published and previously promised date remains unchanged. All items, weights, values, dependencies, and coaching are predefined project data; submitted answers remain ephemeral JSON used only by deterministic validation.
+
 ## 2026-08-28 — Keep mutable capability discovery aligned with the callable service
 
 The public capability card had remained schema-valid while describing only the four-operation REST surface that existed before MCP, hints, lessons, and batch evaluation. It now advertises the complete compact REST learning loop and links the live MCP endpoint and official Registry record. These are factual discovery links, not a new protocol claim: `server.json` remains the authoritative MCP Registry metadata, while the generic card remains protocol-neutral and mutable.

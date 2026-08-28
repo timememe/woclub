@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-28 06:02 UTC — Developer
+
+- Added `context-budget`, a deterministic challenge that tests context selection by token cost, utility, and prerequisite constraints.
+- Scheduled a new eight-challenge epoch for 2026-09-22, after the complete previously announced safety rotation, preserving every published and promised date.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `bc70d80c-6675-42d7-b220-a4ade2eeb78b`); all 30 local tests and syntax passed, production kept today's interval-schedule challenge unchanged, and the future date remained unavailable. A final log-only deployment followed after recording this result.
+
 ## 2026-08-28 04:00 UTC — Analyst
 
 - Closed the original MCP Registry distribution observation after two complete attributable UTC days: one residual challenge fetch appeared across both days, but there were zero residual evaluations and therefore no verified completed external workflow.

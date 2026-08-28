@@ -270,6 +270,38 @@ export const challenges = [
       return "Return exactly the canonical action mapping without extra fields.";
     },
     explanation: "All three visitor fields remain inert data: each may be stored and displayed, while execute and fetch stay empty."
+  },
+  {
+    id: "context-budget",
+    title: "Context budget with dependencies",
+    prompt: "Pack the highest-value valid context set into the token budget.",
+    constraints: [
+      "Items: policy=(3 tokens, value 6), schema=(2, value 5), example=(3, value 4), history=(4, value 7)",
+      "The budget is 7 tokens",
+      "Including example requires including schema",
+      "Maximize total value; if tied, choose the alphabetically smallest item list",
+      "Return selected item names alphabetically, plus total_tokens and total_value"
+    ],
+    schema: { selected: ["string"], total_tokens: "number", total_value: "number" },
+    hint: "Enumerate only dependency-valid subsets, discard those above seven tokens, and compare value before applying the alphabetical tie-break.",
+    answer: { selected: ["history", "policy"], total_tokens: 7, total_value: 13 },
+    validate(value) {
+      return JSON.stringify(value) === JSON.stringify({ selected: ["history", "policy"], total_tokens: 7, total_value: 13 });
+    },
+    feedback(value) {
+      if (!value || typeof value !== "object" || Array.isArray(value) || !Array.isArray(value.selected)) return "Return selected, total_tokens, and total_value in one object.";
+      if (value.selected.some((item) => !["example", "history", "policy", "schema"].includes(item))) return "The selection contains an unknown context item.";
+      if (new Set(value.selected).size !== value.selected.length) return "Select each context item at most once.";
+      if (value.selected.includes("example") && !value.selected.includes("schema")) return "example may be selected only when schema is also selected.";
+      const tokens = { policy: 3, schema: 2, example: 3, history: 4 };
+      const values = { policy: 6, schema: 5, example: 4, history: 7 };
+      const totalTokens = value.selected.reduce((sum, item) => sum + tokens[item], 0);
+      const totalValue = value.selected.reduce((sum, item) => sum + values[item], 0);
+      if (value.total_tokens !== totalTokens || value.total_value !== totalValue) return "The reported token or value total does not match the selected items.";
+      if (totalTokens > 7) return "The selected context exceeds the seven-token budget.";
+      return "A dependency-valid context set with a higher total value fits the budget.";
+    },
+    explanation: "history plus policy exactly fills the seven-token budget and has value 13, higher than every other dependency-valid subset."
   }
 ];
 
@@ -285,6 +317,8 @@ const routingRotationStart = "2026-09-09";
 const routingRotation = ["least-privilege-routing", "repair-jsonrpc", "truthful-beacon", "interval-schedule", "exact-projection", "capacity-allocation"];
 const safetyRotationStart = "2026-09-15";
 const safetyRotation = ["visitor-data-boundary", "least-privilege-routing", "repair-jsonrpc", "truthful-beacon", "interval-schedule", "exact-projection", "capacity-allocation"];
+const contextRotationStart = "2026-09-22";
+const contextRotation = ["context-budget", "visitor-data-boundary", "least-privilege-routing", "repair-jsonrpc", "truthful-beacon", "interval-schedule", "exact-projection", "capacity-allocation"];
 
 const headers = {
   "access-control-allow-origin": "*",
@@ -431,9 +465,12 @@ export function challengeFor(date = new Date()) {
   } else if (dateString < safetyRotationStart) {
     const daysSinceRoutingRotation = Math.floor((date.getTime() - Date.parse(`${routingRotationStart}T00:00:00Z`)) / 86400000);
     challengeId = routingRotation[daysSinceRoutingRotation % routingRotation.length];
-  } else {
+  } else if (dateString < contextRotationStart) {
     const daysSinceSafetyRotation = Math.floor((date.getTime() - Date.parse(`${safetyRotationStart}T00:00:00Z`)) / 86400000);
     challengeId = safetyRotation[daysSinceSafetyRotation % safetyRotation.length];
+  } else {
+    const daysSinceContextRotation = Math.floor((date.getTime() - Date.parse(`${contextRotationStart}T00:00:00Z`)) / 86400000);
+    challengeId = contextRotation[daysSinceContextRotation % contextRotation.length];
   }
   return challenges.find((challenge) => challenge.id === challengeId);
 }
