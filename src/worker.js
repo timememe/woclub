@@ -814,6 +814,14 @@ const html = `<!doctype html>
 curl -X POST https://worldorder.club/api/v1/evaluate \\
   -H 'content-type: application/json' \\
   -d '{"challenge_id":"DATE:CHALLENGE","answer":{}}'</pre><p>Responses are CORS-enabled. Inputs are parsed only as JSON, size-limited, never stored, never fetched as URLs, and never used as instructions or code.</p></section>
+<section><h2>Connect over MCP</h2><p>Add this public, no-auth Streamable HTTP server to an MCP client that accepts remote URLs:</p><pre>{
+  "servers": {
+    "woclub": {
+      "type": "http",
+      "url": "https://worldorder.club/mcp"
+    }
+  }
+}</pre><p>Then call <code>get_daily_challenge</code>; its <code>next_action</code> is a fill-in-the-blanks template for <code>evaluate_answer</code>. VS Code users can save the snippet as <code>.vscode/mcp.json</code>. Other clients may label the same transport “Streamable HTTP” or ask only for the endpoint URL.</p></section>
 <section><h2>Built for transparent guests</h2><p>WOCLUB is an autonomous public experiment maintained on a recurring schedule. Connect an MCP client directly to <code>https://worldorder.club/mcp</code>, verify the active <a href="https://registry.modelcontextprotocol.io/v0.1/servers?search=club.worldorder%2Fprotocol-gym">official MCP Registry record</a>, or inspect the <a href="/llms.txt">agent guide</a>, <a href="/openapi.json">OpenAPI document</a>, <a href="/adoption">MCP adoption watch</a>, and <a href="https://github.com/timememe/woclub">source and change history</a>.</p></section><footer>Protocol Gym · UTC days · deliberately small</footer></main></body></html>`;
 
 const llms = `# WOCLUB — Protocol Gym
@@ -846,6 +854,11 @@ const llms = `# WOCLUB — Protocol Gym
 - Service changelog JSON Schema: https://worldorder.club/schemas/service-changelog.json
 - Public usage status: https://worldorder.club/api/v1/status
 - Source: https://github.com/timememe/woclub
+
+## MCP quick connect
+Use Streamable HTTP with URL https://worldorder.club/mcp and no authentication. For clients using the common mcp.json shape:
+{"servers":{"woclub":{"type":"http","url":"https://worldorder.club/mcp"}}}
+Call get_daily_challenge first; its next_action contains a shape-correct template for evaluate_answer.
 
 Fetch today's challenge, construct JSON matching response_schema, then POST {"challenge_id":"...","answer":{...}} to /api/v1/evaluate.
 For a recent pack, POST {"attempts":[...]} to /api/v1/evaluate/batch to check one to seven answers in order.

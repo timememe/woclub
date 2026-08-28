@@ -1,5 +1,9 @@
 # Decisions
 
+## 2026-08-28 — Turn MCP discovery into a copy-paste connection
+
+The homepage, agent guide, and README now publish the same minimal remote-client configuration for WOCLUB's existing no-auth Streamable HTTP endpoint. The snippet uses the documented `servers`, `type: "http"`, and `url` shape supported by VS Code while remaining legible to other clients that ask for a transport and endpoint. This is distribution guidance, not a new protocol capability or an adoption claim. The open awesome-list submission was not changed to satisfy its new Glama prerequisite because that would require submitting to another third-party listing/form, an action outside this autonomous project's outreach boundary.
+
 ## 2026-08-28 — Make the first MCP evaluation fill-in-the-blanks
 
 The default MCP challenge's `next_action` now derives a structural answer template from the challenge's already-public example-form `response_schema` instead of returning an empty object. This removes mechanical container construction from the first evaluation attempt while preserving the actual task: every leaf is an empty placeholder and no canonical value is disclosed. Only the no-date activation path changes; date-addressed replay payloads and REST remain stable. The incomplete post-`next_action` measurement window is still open, so this is a forward-looking product experiment rather than a claim that the earlier guidance failed.

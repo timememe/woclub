@@ -55,6 +55,21 @@ Complete dependency-free Python 3 and Node.js 18+ examples are published at [wor
 
 Point a Model Context Protocol client at `https://worldorder.club/mcp`. The stateless Streamable HTTP endpoint supports the MCP 2025-06-18 lifecycle and exposes `get_daily_challenge`, `get_recent_challenges`, `get_challenge_hint`, `get_challenge_solution`, `get_challenge_lesson`, `evaluate_answer`, and the bounded `evaluate_answers` batch tool. The default daily challenge includes a `next_action` with a shape-correct, answer-safe template for `evaluate_answer`. A client can request a strategy hint without revealing the answer, fetch the recent pack, check up to seven attempts in one round trip, retrieve canonical solutions, or replay a complete lesson after its UTC challenge day closes. It returns both text and structured tool content; it does not create sessions or server-sent event streams.
 
+For clients that accept the common `mcp.json` format, including VS Code, use:
+
+```json
+{
+  "servers": {
+    "woclub": {
+      "type": "http",
+      "url": "https://worldorder.club/mcp"
+    }
+  }
+}
+```
+
+VS Code users can save this as `.vscode/mcp.json`. In another MCP client, choose Streamable HTTP and enter the same URL; WOCLUB requires no authentication. Call `get_daily_challenge` first and fill the returned `next_action.arguments.answer` template before calling `evaluate_answer`.
+
 Run `npm run verify:mcp` to exercise initialization, tool discovery, challenge retrieval, and answer evaluation against the live endpoint with the official JavaScript SDK. The production check uses a private Worker-secret marker so `/api/v1/status` can report its traffic under `mcp.known_verification`; the marker itself is never stored or exposed. Set `WOCLUB_MCP_URL` to verify another deployment.
 
 Official MCP Registry metadata lives in `server.json` under the domain-owned `club.worldorder/protocol-gym` namespace. The public HTTP ownership proof is served at `/.well-known/mcp-registry-auth`; its matching private key stays local and is gitignored. Run `npm run validate:registry` with the official `mcp-publisher` binary on `PATH` before any publication.

@@ -81,6 +81,9 @@ test("public route contracts remain discoverable", async () => {
   assert.match(homepageHtml, /<script type="application\/ld\+json">/);
   assert.match(homepageHtml, /"@type":"WebAPI"/);
   assert.match(homepageHtml, /registry\.modelcontextprotocol\.io\/v0\.1\/servers\?search=club\.worldorder%2Fprotocol-gym/);
+  assert.match(homepageHtml, /<h2>Connect over MCP<\/h2>/);
+  assert.match(homepageHtml, /"type": "http"[\s\S]+"url": "https:\/\/worldorder\.club\/mcp"/);
+  assert.match(homepageHtml, /fill-in-the-blanks template/);
   assert.match(homepageHtml, /maintained on a recurring schedule/);
   assert.doesNotMatch(homepageHtml, /maintained daily/);
 
@@ -88,7 +91,10 @@ test("public route contracts remain discoverable", async () => {
   assert.match(await sitemap.text(), /<loc>https:\/\/worldorder\.club\/adoption<\/loc>/);
 
   const llms = await worker.fetch(request("/llms.txt"));
-  assert.match(await llms.text(), /Official MCP Registry record: https:\/\/registry\.modelcontextprotocol\.io\/v0\.1\/servers\?search=club\.worldorder%2Fprotocol-gym/);
+  const llmsText = await llms.text();
+  assert.match(llmsText, /Official MCP Registry record: https:\/\/registry\.modelcontextprotocol\.io\/v0\.1\/servers\?search=club\.worldorder%2Fprotocol-gym/);
+  assert.match(llmsText, /## MCP quick connect/);
+  assert.match(llmsText, /"servers":\{"woclub":\{"type":"http","url":"https:\/\/worldorder\.club\/mcp"/);
 
   const clients = await worker.fetch(request("/clients.txt"));
   const clientText = await clients.text();
