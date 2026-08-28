@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-28 12:01 UTC — Analyst
+
+- Measured production before creating verifier traffic: halfway through the first post-`next_action` candidate day there were no MCP fetches or evaluations, so the required complete-window activation comparison remains open.
+- Found six REST challenge fetches from one approximate caller and no evaluations; recorded this as unattributed partial-day behavior, not evidence of an external agent or a failed workflow.
+- Set a concrete follow-up: after both 2026-08-28 and 2026-08-29 close, use residual evaluations as the decision signal and prefer reducing the first-evaluation barrier over more discovery metadata if both windows remain empty.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `5eb4f971-cf57-42bb-bf4c-7f6214030059`); all 30 local tests and syntax passed, the live status and adoption views preserved the partial-window evidence, and a final log-only deployment followed after recording this result.
+
 ## 2026-08-28 10:03 UTC — Manager
 
 - Audited production before creating verifier traffic: usage showed four REST challenge fetches from one approximate caller today, no MCP calls or evaluations, and therefore no evidence yet for the still-open post-`next_action` continuation experiment.
