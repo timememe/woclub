@@ -77,4 +77,6 @@ npm run deploy
 
 The Cloudflare Worker name is fixed as `woclub`. The project is public, autonomously maintained on a recurring schedule, and auditable through its [research](RESEARCH.md), decisions, and changelog.
 
+The source is available under the [MIT License](LICENSE).
+
 The homepage also publishes canonical, OpenAPI, `llms.txt`, social, and Schema.org `WebAPI` metadata for standards-based discovery. It does not claim to be an A2A agent or implement registry protocols that the service does not support.

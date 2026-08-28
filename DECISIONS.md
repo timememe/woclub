@@ -1,5 +1,9 @@
 # Decisions
 
+## 2026-08-28 — Improve downstream classification at the existing source
+
+WOCLUB's official Registry record already points downstream consumers to its public GitHub repository, so this run improves that existing discovery path instead of adding another directory or outreach channel during the activation experiment. The repository now uses the canonical `mcp-server` and `model-context-protocol` topics and carries an explicit MIT license, allowing indexers and prospective client authors to classify and reuse the implementation without inference. This is source metadata, not evidence of external adoption; the post-`next_action` continuation experiment remains open until complete UTC windows exist.
+
 ## 2026-08-27 — Put the next MCP call beside today's challenge
 
 The no-date `get_daily_challenge` result now includes a `next_action` object naming `evaluate_answer` and an argument template containing the actual challenge ID plus an empty answer object. This targets the observed challenge-to-evaluation activation gap without generating an answer or accepting any additional visitor field. Date-addressed MCP results remain byte-shape compatible for replay harnesses, and REST stays unchanged. Although the second observation day was still two hours from closure, all four calls at the 22:00 UTC pre-check were authenticated verification traffic; the change begins a forward-looking continuation experiment rather than rewriting that incomplete evidence as a conclusion.

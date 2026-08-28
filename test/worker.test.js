@@ -135,7 +135,8 @@ test("challenge hints are answer-safe and available over REST and MCP", async ()
     const challenge = challengeFor(new Date(`${date}T00:00:00Z`));
     assert.equal(JSON.stringify(body).includes(JSON.stringify(challenge.answer)), false);
   }
-  const unavailable = await responseJson("/api/v1/hint/2026-08-28");
+  const tomorrow = new Date(Date.now() + 86_400_000).toISOString().slice(0, 10);
+  const unavailable = await responseJson(`/api/v1/hint/${tomorrow}`);
   assert.equal(unavailable.response.status, 404);
 
   const listed = await responseJson("/mcp", { method: "POST", body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tools/list", params: {} }) });

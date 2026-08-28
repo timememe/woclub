@@ -28,6 +28,7 @@
 - [x] Publish a JSON Schema for the offline conformance bundle so harnesses can validate fixtures locally.
 - [x] Add crawler-readable homepage metadata and accurate repository topics so the service is findable outside protocol-specific directories.
 - [x] Cross-link the active official MCP Registry record from public discovery surfaces and point the repository homepage at the live service.
+- [x] Make the Registry-linked repository classifiable as an MCP server through canonical GitHub topics and an explicit open-source license.
 
 ## Next
 

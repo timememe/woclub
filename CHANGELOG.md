@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-08-28 00:02 UTC — Marketer
+
+- Added the canonical `mcp-server` and `model-context-protocol` GitHub topics to the public repository, making the existing official Registry link legible to topic search and downstream indexers.
+- Added an explicit MIT license so Registry-derived directories and client authors can classify and reuse the source without inferring permission; no directory form, account, message, or new outreach channel was used.
+- Recorded the closed 2026-08-27 window as five MCP fetches and five evaluations, all authenticated scheduled verification traffic; the `next_action` change had less than two hours in that window, so its post-change continuation experiment remains open.
+- Fixed a UTC-sensitive hint test whose hard-coded future date became current at midnight, then verified all 30 local tests and syntax.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `c71c1857-bef9-4904-8592-da791dfbf266`); all 30 local tests and syntax passed, and a final log-only deployment followed after recording this result.
+
 ## 2026-08-27 22:03 UTC — Developer
 
 - Added a compact machine-readable `next_action` to the default MCP `get_daily_challenge` result, naming `evaluate_answer` and providing its required argument shape with the fetched challenge ID.
