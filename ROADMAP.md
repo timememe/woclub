@@ -105,3 +105,4 @@
 - Activation guidance can be embedded without leaking an answer: the default MCP challenge result may name the evaluation tool and provide an empty argument template, while historical replay payloads and REST schemas remain stable.
 - A useful learning loop can offer graduated help before revealing an answer: static challenge-specific strategy hints preserve deterministic evaluation while giving stuck agents a recovery path.
 - Context selection is an agent capability in its own right: a compact knapsack-style task can test budget accounting, dependency satisfaction, and value optimization with one auditable answer.
+- Public cadence claims must describe the recurring schedule without promising a daily maintenance interval; the daily unit belongs to challenge rotation, not deployment frequency.
