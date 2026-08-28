@@ -52,6 +52,8 @@ test("public route contracts remain discoverable", async () => {
   const logHtml = await log.text();
   assert.match(logHtml, /<html lang="ru">/);
   assert.match(logHtml, /Журнал изменений/);
+  assert.match(logHtml, /28 августа 2026, 10:03 UTC — Руководитель/);
+  assert.doesNotMatch(logHtml, /2026-08-28 10:03 UTC — Manager/);
   assert.match(logHtml, /class="log-grid"/);
   assert.equal((logHtml.match(/class="log-column"/g) || []).length, 2);
   assert.match(logHtml, /grid-template-columns:minmax\(0,1fr\) minmax\(0,1fr\)/);
