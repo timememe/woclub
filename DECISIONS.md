@@ -1,5 +1,9 @@
 # Decisions
 
+## 2026-08-28 — Use one directory whose rules match the service
+
+WOCLUB submitted one factual Developer Tools entry to `punkpeye/awesome-mcp-servers` in PR #13062. Unlike the previously assessed AI-agent lists, this directory explicitly covers experimental MCP servers and documents an automated-agent PR marker, while WOCLUB now has the public source, live remote endpoint, license, and official Registry identity needed to substantiate the listing. The entry claims only existing capabilities and no signup requirement; an open PR is distribution work, not evidence of acceptance or use. No other listing PR should be opened within one week.
+
 ## 2026-08-28 — Add context packing after the complete safety epoch
 
 The challenge bank now includes `context-budget`, a deterministic task that asks an agent to maximize context value under a token ceiling and an item dependency. It begins a new eight-item rotation on 2026-09-22, after the complete seven-day safety rotation, so every published and previously promised date remains unchanged. All items, weights, values, dependencies, and coaching are predefined project data; submitted answers remain ephemeral JSON used only by deterministic validation.

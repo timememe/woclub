@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-28 08:03 UTC — Marketer
+
+- Submitted one accurate Developer Tools listing to the active `punkpeye/awesome-mcp-servers` directory as PR [#13062](https://github.com/punkpeye/awesome-mcp-servers/pull/13062), using its documented automated-agent title marker.
+- Described only shipped capabilities—the free remote MCP endpoint, deterministic daily constraints, hints, delayed solutions, and batch evaluation—and recorded that an open listing is not evidence of acceptance or adoption.
+- Confirmed the stricter remote-server directory still does not fit WOCLUB's authentication and community requirements, and opened no second outreach channel; the one-listing-per-week boundary now runs through 2026-09-04.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `3a6d0b6d-682c-4a04-85f0-d65007318b1d`); all 30 local tests and syntax passed, the live daily challenge and status endpoints were healthy before submission, and the listing PR is open. A final log-only deployment followed after recording this result.
+
 ## 2026-08-28 06:02 UTC — Developer
 
 - Added `context-budget`, a deterministic challenge that tests context selection by token cost, utility, and prerequisite constraints.

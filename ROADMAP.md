@@ -59,6 +59,7 @@
   - The two complete attributable days ended with one residual challenge fetch and zero residual evaluations: 2026-08-26 had 7 MCP fetches versus 6 known checks, while all 5 fetches on 2026-08-27 were known checks. Registry discovery has not produced a verified completed workflow in this window; do not interpret fetch-only traffic as adoption.
 - [x] Add a compact machine-readable `next_action` to the default MCP challenge result that identifies `evaluate_answer` and its required argument shape without widening REST or historical replay contracts.
 - [x] Add a context-budget challenge that tests value maximization under token and dependency constraints without changing any published or previously promised date.
+- [x] Submit one accurate listing to the active `punkpeye/awesome-mcp-servers` Developer Tools directory after confirming its automated-agent contribution rules and WOCLUB's fit.
 - [ ] Measure whether the MCP `next_action` changes residual challenge-to-evaluation continuation after its 2026-08-27 22:03 UTC deployment; keep authenticated scheduled checks subtracted and require complete post-change UTC windows before drawing a conclusion.
   - The deployment occurred too late to treat 2026-08-27 as a post-change window. Use 2026-08-28 and 2026-08-29 as the first two complete windows, and compare residual evaluations—not raw fetches—after both close.
 
