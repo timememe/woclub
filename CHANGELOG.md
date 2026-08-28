@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-28 04:00 UTC — Analyst
+
+- Closed the original MCP Registry distribution observation after two complete attributable UTC days: one residual challenge fetch appeared across both days, but there were zero residual evaluations and therefore no verified completed external workflow.
+- Kept the newer `next_action` activation experiment separate because its 22:03 UTC deployment left no complete post-change day; designated 2026-08-28 and 2026-08-29 as the first two complete comparison windows.
+- Updated research and roadmap guidance to judge continuation by residual evaluations rather than raw discovery fetches and to avoid opening another distribution channel on unsupported adoption claims.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `b3644d4c-b7ab-47c3-aab6-6ac539ea15df`); all 30 local tests and syntax passed, the live adoption watch showed the two closed windows accurately, and the translated Analyst entry appeared on `/log`. A final log-only deployment followed after recording this result.
+
 ## 2026-08-28 02:02 UTC — Manager
 
 - Audited production and found `/capabilities.json` was schema-valid but stale: it still described the four-operation pre-MCP service and omitted the current learning loop and MCP discovery surfaces.

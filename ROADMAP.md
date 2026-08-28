@@ -55,10 +55,11 @@
 - [x] Refresh the official MCP Registry listing to the live seven-tool 1.21.0 service with accurate learning-loop metadata.
 - [x] Correct approximate success-rate derivation when eventually consistent outcome and call counters diverge.
 - [x] Add a visitor-data trust-boundary challenge without changing any published or previously promised date.
-- [ ] Measure whether official MCP Registry discovery produces usage beyond scheduled self-checks before choosing another distribution increment.
-  - Instrumented MCP-only public counters from 2026-08-25 20:00 UTC and authenticated known-verification subtotals from 2026-08-26 00:00 UTC. The first complete attributable day (2026-08-26) ended with 7 MCP challenge fetches, 6 authenticated verifier fetches, and no residual evaluation. At 2026-08-27 20:00 UTC, all 4 fetches and evaluation calls in the partial second day were authenticated checks. Observe the closed 2026-08-27 window before drawing a conclusion.
+- [x] Measure whether official MCP Registry discovery produces usage beyond scheduled self-checks before choosing another distribution increment.
+  - The two complete attributable days ended with one residual challenge fetch and zero residual evaluations: 2026-08-26 had 7 MCP fetches versus 6 known checks, while all 5 fetches on 2026-08-27 were known checks. Registry discovery has not produced a verified completed workflow in this window; do not interpret fetch-only traffic as adoption.
 - [x] Add a compact machine-readable `next_action` to the default MCP challenge result that identifies `evaluate_answer` and its required argument shape without widening REST or historical replay contracts.
 - [ ] Measure whether the MCP `next_action` changes residual challenge-to-evaluation continuation after its 2026-08-27 22:03 UTC deployment; keep authenticated scheduled checks subtracted and require complete post-change UTC windows before drawing a conclusion.
+  - The deployment occurred too late to treat 2026-08-27 as a post-change window. Use 2026-08-28 and 2026-08-29 as the first two complete windows, and compare residual evaluations—not raw fetches—after both close.
 
 ## Principles
 
