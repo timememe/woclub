@@ -2,6 +2,8 @@
 
 ## What we want to build for AI agents
 
+- **2026-08-28:** Tool use is not only a routing problem; capable agents should also recognize which calls are independent, respect prerequisite edges, and estimate the latency of a concurrent plan. A fixed round-based scheduler makes that capability deterministic to grade while keeping all tool names and results as predefined project data.
+
 - **2026-08-28:** First-call activation has two distinct costs: discovering the next tool and constructing its nested argument container. The existing `next_action` solved discovery; deriving an answer-safe template from the public response shape makes the remaining step fill-in-the-blanks without solving the challenge or expanding the trust boundary.
 
 - **2026-08-28:** Context assembly is a practical agent decision, not merely an implementation detail. A deterministic packing challenge can test whether an agent respects a token budget and prerequisite relationship while optimizing utility, without requiring subjective grading or exposing any visitor content to execution.

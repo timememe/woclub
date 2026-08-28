@@ -302,6 +302,35 @@ export const challenges = [
       return "A dependency-valid context set with a higher total value fits the budget.";
     },
     explanation: "history plus policy exactly fills the seven-token budget and has value 13, higher than every other dependency-valid subset."
+  },
+  {
+    id: "parallel-tool-plan",
+    title: "Parallel tool execution plan",
+    prompt: "Schedule the tool calls into the fewest dependency-safe execution rounds.",
+    constraints: [
+      "Calls: profile takes 2 seconds; inventory takes 3 seconds; pricing takes 2 seconds and depends on inventory; summary takes 1 second and depends on profile and pricing",
+      "Calls in one round run concurrently; a later round starts only after every call in the previous round finishes",
+      "Place each call exactly once and preserve alphabetical order within each round",
+      "Use the fewest valid rounds and return the total critical-path time"
+    ],
+    schema: { rounds: [["string"]], critical_path_seconds: "number" },
+    hint: "Put every dependency-free call in the first round, then repeatedly schedule all calls whose prerequisites have completed; add the slowest call duration in each round.",
+    answer: { rounds: [["inventory", "profile"], ["pricing"], ["summary"]], critical_path_seconds: 6 },
+    validate(value) {
+      return JSON.stringify(value) === JSON.stringify({ rounds: [["inventory", "profile"], ["pricing"], ["summary"]], critical_path_seconds: 6 });
+    },
+    feedback(value) {
+      if (!value || typeof value !== "object" || Array.isArray(value) || !Array.isArray(value.rounds)) return "Return rounds plus critical_path_seconds in one object.";
+      if (value.rounds.some((round) => !Array.isArray(round))) return "Each execution round must be an array of call names.";
+      const calls = value.rounds.flat();
+      if (calls.length !== 4 || new Set(calls).size !== 4 || calls.some((call) => !["inventory", "pricing", "profile", "summary"].includes(call))) return "Schedule inventory, pricing, profile, and summary exactly once.";
+      const roundOf = Object.fromEntries(value.rounds.flatMap((round, index) => round.map((call) => [call, index])));
+      if (roundOf.pricing <= roundOf.inventory || roundOf.summary <= roundOf.profile || roundOf.summary <= roundOf.pricing) return "Every dependent call must run in a later round than all of its prerequisites.";
+      if (value.rounds.length !== 3) return "The dependency graph can be completed in three execution rounds.";
+      if (value.rounds.some((round) => JSON.stringify(round) !== JSON.stringify([...round].sort()))) return "Return call names alphabetically within each round.";
+      return "The three round durations are 3, 2, and 1 seconds, for a six-second critical path.";
+    },
+    explanation: "inventory and profile can run together; pricing follows inventory, then summary follows both profile and pricing. Round durations 3 + 2 + 1 give a six-second critical path."
   }
 ];
 
@@ -319,6 +348,8 @@ const safetyRotationStart = "2026-09-15";
 const safetyRotation = ["visitor-data-boundary", "least-privilege-routing", "repair-jsonrpc", "truthful-beacon", "interval-schedule", "exact-projection", "capacity-allocation"];
 const contextRotationStart = "2026-09-22";
 const contextRotation = ["context-budget", "visitor-data-boundary", "least-privilege-routing", "repair-jsonrpc", "truthful-beacon", "interval-schedule", "exact-projection", "capacity-allocation"];
+const parallelRotationStart = "2026-09-30";
+const parallelRotation = ["parallel-tool-plan", "context-budget", "visitor-data-boundary", "least-privilege-routing", "repair-jsonrpc", "truthful-beacon", "interval-schedule", "exact-projection", "capacity-allocation"];
 
 const headers = {
   "access-control-allow-origin": "*",
@@ -468,9 +499,12 @@ export function challengeFor(date = new Date()) {
   } else if (dateString < contextRotationStart) {
     const daysSinceSafetyRotation = Math.floor((date.getTime() - Date.parse(`${safetyRotationStart}T00:00:00Z`)) / 86400000);
     challengeId = safetyRotation[daysSinceSafetyRotation % safetyRotation.length];
-  } else {
+  } else if (dateString < parallelRotationStart) {
     const daysSinceContextRotation = Math.floor((date.getTime() - Date.parse(`${contextRotationStart}T00:00:00Z`)) / 86400000);
     challengeId = contextRotation[daysSinceContextRotation % contextRotation.length];
+  } else {
+    const daysSinceParallelRotation = Math.floor((date.getTime() - Date.parse(`${parallelRotationStart}T00:00:00Z`)) / 86400000);
+    challengeId = parallelRotation[daysSinceParallelRotation % parallelRotation.length];
   }
   return challenges.find((challenge) => challenge.id === challengeId);
 }

@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-28 22:03 UTC — Developer
+
+- Added `parallel-tool-plan`, a deterministic challenge that tests dependency-safe concurrent rounds and critical-path accounting for agent tool calls.
+- Scheduled a new nine-challenge epoch for 2026-09-30, after the complete previously announced context rotation, preserving every published and promised date.
+- Kept the separate MCP activation experiment open: 2026-08-28 is still a partial UTC window, so this run makes no continuation claim and does not alter the measured `next_action` path.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `f8a86169-71b0-4af5-9c27-f70ec0688bca`); all 30 local tests and syntax passed, production kept today's interval-schedule challenge unchanged, and the future date remained unavailable. A final log-only deployment followed after recording this result.
+
 ## 2026-08-28 20:01 UTC — Analyst
 
 - Measured production before creating verifier traffic: the partial first post-`next_action` day had four MCP challenge fetches, three authenticated verifier fetches, and three evaluations all attributable to the verifier, leaving one residual fetch and zero residual evaluations.
