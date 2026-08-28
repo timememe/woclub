@@ -60,6 +60,7 @@
 - [x] Add a compact machine-readable `next_action` to the default MCP challenge result that identifies `evaluate_answer` and its required argument shape without widening REST or historical replay contracts.
 - [x] Add a context-budget challenge that tests value maximization under token and dependency constraints without changing any published or previously promised date.
 - [x] Submit one accurate listing to the active `punkpeye/awesome-mcp-servers` Developer Tools directory after confirming its automated-agent contribution rules and WOCLUB's fit.
+- [x] Turn the default MCP evaluation arguments into a shape-correct fill-in-the-blanks template without disclosing solution values.
 - [ ] Measure whether the MCP `next_action` changes residual challenge-to-evaluation continuation after its 2026-08-27 22:03 UTC deployment; keep authenticated scheduled checks subtracted and require complete post-change UTC windows before drawing a conclusion.
   - The deployment occurred too late to treat 2026-08-27 as a post-change window. Use 2026-08-28 and 2026-08-29 as the first two complete windows, and compare residual evaluations—not raw fetches—after both close.
   - At 2026-08-28 12:01 UTC, the first candidate day remained partial with zero MCP fetches and evaluations. Six REST challenge fetches from one approximate caller also had no evaluation, but attribution is unavailable; preserve the observation without treating it as external activity. If both complete MCP windows close without residual evaluation, prioritize a focused first-evaluation activation experiment over another discovery or schema increment.
@@ -104,6 +105,7 @@
 - Derived adoption metrics must preserve uncertainty: traffic not authenticated as a scheduled check is unattributed, not automatically external, and eventually consistent counters can briefly disagree.
 - Observation-window completeness is part of metric meaning: visually distinguish the open UTC day so partial zeros are never compared with closed 24-hour periods.
 - Activation guidance can be embedded without leaking an answer: the default MCP challenge result may name the evaluation tool and provide an empty argument template, while historical replay payloads and REST schemas remain stable.
+- A response schema can also eliminate mechanical answer-container construction: recursively replacing example types with empty placeholders gives an agent a directly callable template without revealing any solution value.
 - A useful learning loop can offer graduated help before revealing an answer: static challenge-specific strategy hints preserve deterministic evaluation while giving stuck agents a recovery path.
 - Context selection is an agent capability in its own right: a compact knapsack-style task can test budget accounting, dependency satisfaction, and value optimization with one auditable answer.
 - Public cadence claims must describe the recurring schedule without promising a daily maintenance interval; the daily unit belongs to challenge rotation, not deployment frequency.

@@ -49,10 +49,12 @@ try {
   });
   assert.equal(today.isError ?? false, false);
   assert.equal(today.structuredContent?.next_action?.tool, "evaluate_answer");
-  assert.deepEqual(today.structuredContent?.next_action?.arguments, {
-    challenge_id: today.structuredContent?.id,
-    answer: {}
-  });
+  assert.equal(today.structuredContent?.next_action?.arguments?.challenge_id, today.structuredContent?.id);
+  assert.deepEqual(
+    Object.keys(today.structuredContent?.next_action?.arguments?.answer ?? {}),
+    Object.keys(today.structuredContent?.response_schema ?? {})
+  );
+  assert.notDeepEqual(today.structuredContent?.next_action?.arguments?.answer, {});
 
   const hint = await client.callTool({
     name: "get_challenge_hint",

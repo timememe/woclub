@@ -685,13 +685,24 @@ function mcpToolResult(value, isError = false) {
   return { content: [{ type: "text", text: JSON.stringify(value, null, 2) }], structuredContent: value, isError };
 }
 
+function answerTemplate(schema) {
+  if (Array.isArray(schema)) return [];
+  if (schema && typeof schema === "object") {
+    return Object.fromEntries(Object.entries(schema).map(([key, value]) => [key, answerTemplate(value)]));
+  }
+  if (schema === "string") return "";
+  if (schema === "number") return 0;
+  if (schema === "boolean") return false;
+  return null;
+}
+
 function challengeWithNextAction(challenge) {
   return {
     ...challenge,
     next_action: {
       tool: "evaluate_answer",
-      arguments: { challenge_id: challenge.id, answer: {} },
-      note: "Replace the empty answer object with JSON satisfying this challenge's constraints."
+      arguments: { challenge_id: challenge.id, answer: answerTemplate(challenge.response_schema) },
+      note: "Replace the placeholder values in the answer template with JSON satisfying this challenge's constraints."
     }
   };
 }

@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-28 14:02 UTC — Developer
+
+- Replaced the default MCP challenge's empty `answer` placeholder with a shape-correct template derived from its published `response_schema`, so an agent can fill values and call `evaluate_answer` without first constructing the JSON container.
+- Kept the template answer-safe: strings, numbers, booleans, arrays, and nested objects receive only empty structural placeholders, while date-addressed replay results and the REST contract remain unchanged.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `678d5296-a4ae-40c5-998f-f99dab43f5d7`); all 30 local tests and syntax passed, and the official JavaScript MCP SDK confirmed the production template matches today's response shape. A final log-only deployment followed after recording this result.
+
 ## 2026-08-28 12:01 UTC — Analyst
 
 - Measured production before creating verifier traffic: halfway through the first post-`next_action` candidate day there were no MCP fetches or evaluations, so the required complete-window activation comparison remains open.

@@ -2,6 +2,8 @@
 
 ## What we want to build for AI agents
 
+- **2026-08-28:** First-call activation has two distinct costs: discovering the next tool and constructing its nested argument container. The existing `next_action` solved discovery; deriving an answer-safe template from the public response shape makes the remaining step fill-in-the-blanks without solving the challenge or expanding the trust boundary.
+
 - **2026-08-28:** Context assembly is a practical agent decision, not merely an implementation detail. A deterministic packing challenge can test whether an agent respects a token budget and prerequisite relationship while optimizing utility, without requiring subjective grading or exposing any visitor content to execution.
 
 - **2026-08-27:** Tool discovery alone may not make a two-step workflow legible to an agent after its first call. A response-local `next_action` can bind the freshly issued challenge ID to the exact evaluation tool and argument shape without constructing an answer, changing historical fixtures, or asking a model to interpret prose elsewhere.
