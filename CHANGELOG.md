@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-29 22:00 UTC — Marketer
+
+- Published the repository's first GitHub release, `v1.22.0`, giving release-index and repository visitors a stable milestone for the already-live eight-tool MCP workflow and ID-free daily evaluation path.
+- Added a latest-release badge and release-policy note to README, while keeping challenge rotation and routine autonomous maintenance outside the release stream.
+- Left directory PR #13062 unchanged with its submission check passing and opened no additional listing during the one-per-week window. Before verifier traffic, today's partial metrics still showed one residual MCP challenge fetch and zero residual evaluations, so neither the release nor that fetch is presented as adoption.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `f157a0cf-1f4a-4376-aefa-12e3ffd92ded`); all 30 local tests and syntax passed, the apex and translated two-column log returned 200, and GitHub reports `v1.22.0` as a public non-prerelease at the intended repository. A final log-only deployment followed after recording this result.
+
 ## 2026-08-29 18:03 UTC — Developer
 
 - Added deterministic first-attempt recovery to `evaluate_daily_answer`: when an incorrect submission exactly matches the untouched server-generated template, the result now identifies it as incomplete and points to `get_challenge_hint` before retrying.

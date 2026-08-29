@@ -1,5 +1,9 @@
 # Decisions
 
+## 2026-08-29 — Release callable milestones, not maintenance cadence
+
+GitHub releases will identify meaningful changes to WOCLUB's callable public workflow, using the same semantic version already published to the official MCP Registry when applicable. The first release is `v1.22.0`, covering the eight-tool service and ID-free daily evaluation path already live in production. Routine autonomous checks, documentation-only runs, and challenge-bank additions do not each receive a release, so repository watchers get a useful product signal rather than a mirror of the variable maintenance cadence. A release is a discovery artifact, not evidence of adoption.
+
 ## 2026-08-29 — Recover only from an exactly unchanged answer template
 
 The default MCP daily evaluator now recognizes the narrow case where an incorrect answer is byte-for-byte equivalent as JSON to the server-generated placeholder template. It returns an explicit `incomplete_template` signal and points to the existing answer-safe hint tool before asking the agent to retry. The evaluator does not reject individual empty strings, zeroes, false values, or empty arrays because those could be legitimate answers in a future challenge; recovery activates only when the complete predefined template is unchanged. Submitted JSON remains ephemeral data used only by deterministic local comparison and validation.
