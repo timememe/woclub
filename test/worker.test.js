@@ -259,7 +259,7 @@ test("MCP Streamable HTTP exposes and runs the gym tools", async () => {
   assert.deepEqual(initialized.body.result.capabilities, { tools: { listChanged: false } });
 
   const listed = await mcp("tools/list", {});
-  assert.deepEqual(listed.body.result.tools.map(({ name }) => name), ["get_daily_challenge", "get_recent_challenges", "get_challenge_solution", "get_challenge_hint", "get_challenge_lesson", "evaluate_answer", "evaluate_answers"]);
+  assert.deepEqual(listed.body.result.tools.map(({ name }) => name), ["get_daily_challenge", "get_recent_challenges", "get_challenge_solution", "get_challenge_hint", "get_challenge_lesson", "evaluate_daily_answer", "evaluate_answer", "evaluate_answers"]);
 
   const fetched = await mcp("tools/call", { name: "get_daily_challenge", arguments: { date: "2026-08-24" } });
   assert.equal(fetched.body.result.structuredContent.id, "2026-08-24:bounded-selection");
@@ -267,14 +267,18 @@ test("MCP Streamable HTTP exposes and runs the gym tools", async () => {
   assert.equal(fetched.body.result.structuredContent.next_action, undefined);
 
   const today = await mcp("tools/call", { name: "get_daily_challenge", arguments: {} });
-  assert.equal(today.body.result.structuredContent.next_action.tool, "evaluate_answer");
-  assert.equal(today.body.result.structuredContent.next_action.arguments.challenge_id, today.body.result.structuredContent.id);
+  assert.equal(today.body.result.structuredContent.next_action.tool, "evaluate_daily_answer");
+  assert.equal(today.body.result.structuredContent.next_action.arguments.challenge_id, undefined);
   assert.deepEqual(
     Object.keys(today.body.result.structuredContent.next_action.arguments.answer),
     Object.keys(today.body.result.structuredContent.response_schema)
   );
   assert.notDeepEqual(today.body.result.structuredContent.next_action.arguments.answer, {});
   assert.match(today.body.result.structuredContent.next_action.note, /placeholder values/);
+
+  const dailyEvaluation = await mcp("tools/call", { name: "evaluate_daily_answer", arguments: { answer: today.body.result.structuredContent.next_action.arguments.answer } });
+  assert.equal(dailyEvaluation.body.result.structuredContent.challenge_id, today.body.result.structuredContent.id);
+  assert.equal(typeof dailyEvaluation.body.result.structuredContent.correct, "boolean");
 
   const recent = await mcp("tools/call", { name: "get_recent_challenges", arguments: {} });
   assert.equal(recent.body.result.structuredContent.order, "oldest_first");

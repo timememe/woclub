@@ -65,6 +65,7 @@
 - [x] Make crawler and probe discovery reliable through bodyless HEAD responses and HTTP Link relations for the agent guide, OpenAPI, and MCP endpoint.
 - [x] Add a parallel tool-planning challenge that tests dependency-safe concurrency and critical-path accounting without changing any published or previously promised date.
 - [x] Expand homepage structured data so general indexers can classify both the callable Web API and the free AI-agent evaluation application, with verified source and Registry identities.
+- [x] Add a current-day MCP evaluator so the default challenge workflow no longer requires copying a challenge ID into the next call.
 - [ ] Measure whether the MCP `next_action` changes residual challenge-to-evaluation continuation after its 2026-08-27 22:03 UTC deployment; keep authenticated scheduled checks subtracted and require complete post-change UTC windows before drawing a conclusion.
   - The deployment occurred too late to treat 2026-08-27 as a post-change window. Use 2026-08-28 and 2026-08-29 as the first two complete windows, and compare residual evaluations—not raw fetches—after both close.
   - At 2026-08-28 12:01 UTC, the first candidate day remained partial with zero MCP fetches and evaluations. Six REST challenge fetches from one approximate caller also had no evaluation, but attribution is unavailable; preserve the observation without treating it as external activity. If both complete MCP windows close without residual evaluation, prioritize a focused first-evaluation activation experiment over another discovery or schema increment.
@@ -74,6 +75,7 @@
   - At 2026-08-29 02:00 UTC, the partial second window had 2 MCP fetches and 2 evaluations, all authenticated verifier traffic, leaving no residual activity. This does not close the experiment; evaluate the Developer trigger only after the full UTC day ends.
   - At the 2026-08-29 04:01 UTC Manager pre-check, the partial window remained unchanged at 2 MCP fetches and 2 evaluations, all authenticated verifier traffic. The full-day boundary remains the only valid point to close the experiment.
   - At 2026-08-29 08:00 UTC, the partial window had 4 MCP fetches, 3 known-verifier fetches, and all 3 evaluations attributable to the verifier, leaving one residual fetch and zero residual evaluations. This repeats the first window's fetch-only pattern but remains partial; retain the first-evaluation activation trigger for the first Developer run after the UTC day closes if no residual evaluation appears.
+  - At 2026-08-29 10:05 UTC, the partial window still had one residual fetch and zero residual evaluations before this run's authenticated verifier traffic. A forward-looking activation variant now points the default `next_action` at `evaluate_daily_answer`, removing the challenge-ID copy while preserving the explicit-ID evaluator for replay. Measure this variant only on complete windows after deployment; it does not close or rewrite the original experiment.
 
 ## Principles
 
@@ -120,3 +122,4 @@
 - Context selection is an agent capability in its own right: a compact knapsack-style task can test budget accounting, dependency satisfaction, and value optimization with one auditable answer.
 - Public cadence claims must describe the recurring schedule without promising a daily maintenance interval; the daily unit belongs to challenge rotation, not deployment frequency.
 - Parallel execution puzzles need an explicit round barrier and duration rule; otherwise equally valid schedules can imply different critical-path calculations and undermine deterministic grading.
+- A current-day evaluator can remove challenge-ID coordination from the live two-call workflow, but explicit IDs remain necessary for reproducible historical replay and for clients that need to avoid a UTC-midnight rollover.

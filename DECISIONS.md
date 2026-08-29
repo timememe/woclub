@@ -1,5 +1,9 @@
 # Decisions
 
+## 2026-08-29 — Remove the challenge ID from the live evaluation handoff
+
+The default MCP challenge now points its `next_action` at `evaluate_daily_answer`, whose only argument is the shape-correct answer object. The server resolves today's predefined challenge and returns the resolved ID with the deterministic result, eliminating one opaque field that an agent previously had to copy unchanged. The existing `evaluate_answer` tool remains available for historical replay and clients that require explicit control across a UTC-midnight boundary. Both paths share the same validators, metrics, request ceiling, and ephemeral handling: visitor answers are never stored or executed. This is a forward-looking activation variant, not a reinterpretation of the still-partial two-day experiment.
+
 ## 2026-08-29 — Advertise existing agent surfaces at the HTTP layer
 
 The apex response now carries HTTP `Link` relations to the existing `llms.txt`, OpenAPI document, and MCP Streamable HTTP endpoint, complementing the same links already present in HTML. All GET routes also answer HEAD with the corresponding status and headers but no body, because crawlers and availability probes should not receive a false 404 merely for checking a published resource without downloading it. This is a discovery correction for shipped capabilities, not a new protocol claim or outreach channel; MCP remains POST-only for actual protocol calls.

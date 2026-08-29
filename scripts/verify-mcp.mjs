@@ -25,7 +25,7 @@ try {
   assert.equal(server?.name, "woclub-protocol-gym");
 
   const { tools } = await client.listTools();
-  assert.deepEqual(tools.map(({ name }) => name), ["get_daily_challenge", "get_recent_challenges", "get_challenge_solution", "get_challenge_hint", "get_challenge_lesson", "evaluate_answer", "evaluate_answers"]);
+  assert.deepEqual(tools.map(({ name }) => name), ["get_daily_challenge", "get_recent_challenges", "get_challenge_solution", "get_challenge_hint", "get_challenge_lesson", "evaluate_daily_answer", "evaluate_answer", "evaluate_answers"]);
 
   const recent = await client.callTool({
     name: "get_recent_challenges",
@@ -48,13 +48,20 @@ try {
     arguments: {}
   });
   assert.equal(today.isError ?? false, false);
-  assert.equal(today.structuredContent?.next_action?.tool, "evaluate_answer");
-  assert.equal(today.structuredContent?.next_action?.arguments?.challenge_id, today.structuredContent?.id);
+  assert.equal(today.structuredContent?.next_action?.tool, "evaluate_daily_answer");
+  assert.equal(today.structuredContent?.next_action?.arguments?.challenge_id, undefined);
   assert.deepEqual(
     Object.keys(today.structuredContent?.next_action?.arguments?.answer ?? {}),
     Object.keys(today.structuredContent?.response_schema ?? {})
   );
   assert.notDeepEqual(today.structuredContent?.next_action?.arguments?.answer, {});
+
+  const dailyEvaluation = await client.callTool({
+    name: "evaluate_daily_answer",
+    arguments: { answer: today.structuredContent.next_action.arguments.answer }
+  });
+  assert.equal(dailyEvaluation.isError ?? false, false);
+  assert.equal(dailyEvaluation.structuredContent?.challenge_id, today.structuredContent?.id);
 
   const hint = await client.callTool({
     name: "get_challenge_hint",
@@ -112,6 +119,7 @@ try {
     recent_challenge_count: recent.structuredContent.count,
     challenge_id: challenge.structuredContent.id,
     today_next_action: today.structuredContent.next_action.tool,
+    daily_evaluation_correct: dailyEvaluation.structuredContent.correct,
     hint_challenge_id: hint.structuredContent.challenge_id,
     solution_challenge_id: solution.structuredContent.challenge_id,
     lesson_challenge_id: lesson.structuredContent.challenge.id,

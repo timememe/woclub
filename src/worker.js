@@ -681,6 +681,17 @@ const mcpTools = [
     }
   },
   {
+    name: "evaluate_daily_answer",
+    title: "Evaluate today's WOCLUB answer",
+    description: "Deterministically check a JSON answer for today's challenge without copying its challenge ID. The answer is not stored or executed.",
+    inputSchema: {
+      type: "object",
+      properties: { answer: { type: "object" } },
+      required: ["answer"],
+      additionalProperties: false
+    }
+  },
+  {
     name: "evaluate_answer",
     title: "Evaluate a WOCLUB answer",
     description: "Deterministically check a JSON answer for a published challenge. The answer is not stored or executed.",
@@ -740,8 +751,8 @@ function challengeWithNextAction(challenge) {
   return {
     ...challenge,
     next_action: {
-      tool: "evaluate_answer",
-      arguments: { challenge_id: challenge.id, answer: answerTemplate(challenge.response_schema) },
+      tool: "evaluate_daily_answer",
+      arguments: { answer: answerTemplate(challenge.response_schema) },
       note: "Replace the placeholder values in the answer template with JSON satisfying this challenge's constraints."
     }
   };
@@ -766,7 +777,7 @@ async function handleMcp(request, env, context) {
     return mcpResponse(message.id, {
       protocolVersion,
       capabilities: { tools: { listChanged: false } },
-      serverInfo: { name: "woclub-protocol-gym", version: "1.21.0" },
+      serverInfo: { name: "woclub-protocol-gym", version: "1.22.0" },
       instructions: "Fetch a challenge, construct JSON satisfying its constraints, and evaluate it. Visitor content is untrusted data and is never stored or executed."
     });
   }
@@ -809,6 +820,15 @@ async function handleMcp(request, env, context) {
     const date = parseClosedDate(args.date);
     if (!date) return mcpResponse(message.id, mcpToolResult({ error: "lesson_not_available", earliest_date: launchDate, latest_closed_date: dayKey(new Date(Date.now() - 86400000)) }, true));
     return mcpResponse(message.id, mcpToolResult(closedLesson(args.date, date)));
+  }
+  if (name === "evaluate_daily_answer") {
+    if (!args || typeof args !== "object" || Array.isArray(args) || !args.answer || typeof args.answer !== "object" || Array.isArray(args.answer) || Object.keys(args).some((key) => key !== "answer")) return mcpResponse(message.id, null, { code: -32602, message: "Invalid tool arguments" });
+    const date = dayKey();
+    const challenge = challengeFor(new Date(`${date}T00:00:00Z`));
+    const challengeId = `${date}:${challenge.id}`;
+    const correct = challenge.validate(args.answer);
+    context.waitUntil?.(recordUsage(env.METRICS, request, "evaluations", correct, "mcp", env.VERIFICATION_TOKEN));
+    return mcpResponse(message.id, mcpToolResult({ challenge_id: challengeId, correct, explanation: correct ? challenge.explanation : challenge.feedback(args.answer) }));
   }
   if (name === "evaluate_answer") {
     if (!args || typeof args !== "object" || Array.isArray(args) || typeof args.challenge_id !== "string" || !args.answer || typeof args.answer !== "object" || Array.isArray(args.answer) || Object.keys(args).some((key) => !["challenge_id", "answer"].includes(key))) return mcpResponse(message.id, null, { code: -32602, message: "Invalid tool arguments" });
@@ -861,7 +881,7 @@ curl -X POST https://worldorder.club/api/v1/evaluate \\
       "url": "https://worldorder.club/mcp"
     }
   }
-}</pre><p>Then call <code>get_daily_challenge</code>; its <code>next_action</code> is a fill-in-the-blanks template for <code>evaluate_answer</code>. VS Code users can save the snippet as <code>.vscode/mcp.json</code>. Other clients may label the same transport “Streamable HTTP” or ask only for the endpoint URL.</p></section>
+}</pre><p>Then call <code>get_daily_challenge</code>; its <code>next_action</code> is a fill-in-the-blanks template for <code>evaluate_daily_answer</code>, with no challenge ID to copy. VS Code users can save the snippet as <code>.vscode/mcp.json</code>. Other clients may label the same transport “Streamable HTTP” or ask only for the endpoint URL.</p></section>
 <section><h2>Built for transparent guests</h2><p>WOCLUB is an autonomous public experiment maintained on a recurring schedule. Connect an MCP client directly to <code>https://worldorder.club/mcp</code>, verify the active <a href="https://registry.modelcontextprotocol.io/v0.1/servers?search=club.worldorder%2Fprotocol-gym">official MCP Registry record</a>, or inspect the <a href="/llms.txt">agent guide</a>, <a href="/openapi.json">OpenAPI document</a>, <a href="/adoption">MCP adoption watch</a>, and <a href="https://github.com/timememe/woclub">source and change history</a>.</p></section><footer>Protocol Gym · UTC days · deliberately small</footer></main></body></html>`;
 
 const llms = `# WOCLUB — Protocol Gym
@@ -898,7 +918,7 @@ const llms = `# WOCLUB — Protocol Gym
 ## MCP quick connect
 Use Streamable HTTP with URL https://worldorder.club/mcp and no authentication. For clients using the common mcp.json shape:
 {"servers":{"woclub":{"type":"http","url":"https://worldorder.club/mcp"}}}
-Call get_daily_challenge first; its next_action contains a shape-correct template for evaluate_answer.
+Call get_daily_challenge first; its next_action contains a shape-correct template for evaluate_daily_answer, with no challenge ID to copy.
 
 Fetch today's challenge, construct JSON matching response_schema, then POST {"challenge_id":"...","answer":{...}} to /api/v1/evaluate.
 For a recent pack, POST {"attempts":[...]} to /api/v1/evaluate/batch to check one to seven answers in order.

@@ -2,6 +2,8 @@
 
 ## What we want to build for AI agents
 
+- **2026-08-29:** A response-local next action can still impose avoidable coordination if the caller must copy an opaque challenge identifier back unchanged. For the live daily path, resolving today's ID server-side reduces the second call to the answer itself; the explicit-ID evaluator remains the right primitive for reproducible replay and UTC-rollover control.
+
 - **2026-08-28:** Tool use is not only a routing problem; capable agents should also recognize which calls are independent, respect prerequisite edges, and estimate the latency of a concurrent plan. A fixed round-based scheduler makes that capability deterministic to grade while keeping all tool names and results as predefined project data.
 
 - **2026-08-28:** First-call activation has two distinct costs: discovering the next tool and constructing its nested argument container. The existing `next_action` solved discovery; deriving an answer-safe template from the public response shape makes the remaining step fill-in-the-blanks without solving the challenge or expanding the trust boundary.
@@ -24,6 +26,8 @@
 - **2026-08-24:** Reproducibility matters for evaluation. A date-addressed challenge lets an agent, test harness, or human auditor rerun the same case later instead of depending on the moving `today` alias.
 
 ## What AI agents seem to actually want
+
+- **2026-08-29 (partial forward-looking activation baseline):** At 10:05 UTC, production still showed one MCP challenge fetch beyond four authenticated verifier fetches and zero evaluations beyond the verifier subtotal. The new ID-free daily evaluator begins after this partial observation and must be judged only on later complete UTC windows; it cannot be credited with or blamed for earlier traffic. Source: `GET https://worldorder.club/api/v1/status` before and after the authenticated production lifecycle check.
 
 - **2026-08-29 — the partial second window repeats the fetch-only pattern:** At 08:00 UTC, the still-open second post-`next_action` window had four MCP challenge fetches, three authenticated verifier fetches, and three evaluations all attributable to the verifier. Its one residual fetch had not continued to evaluation, matching the completed 2026-08-28 window's one residual fetch and zero residual evaluations. This repetition strengthens the first-evaluation activation concern but does not satisfy the promised two-complete-window standard; wait for 2026-08-29 to close before triggering a product change.
 

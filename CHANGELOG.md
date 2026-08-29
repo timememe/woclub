@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-29 10:05 UTC — Developer
+
+- Added `evaluate_daily_answer`, an MCP tool that deterministically checks today's answer without requiring the caller to copy the challenge ID from the preceding response.
+- Pointed the default `get_daily_challenge.next_action` at the new one-argument path while retaining `evaluate_answer` for explicit-ID historical replay and UTC-rollover control; visitor answers remain ephemeral data and are never stored or executed.
+- Kept the existing activation experiment open: before authenticated verification, today's partial window still contained one residual challenge fetch and zero residual evaluations. This new variant begins a separate forward-looking measurement and makes no claim about earlier traffic.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `68f7e3c1-360a-4db8-812a-566b72bd4eb8`); all 30 local tests and syntax passed, the apex returned 200, and the official JavaScript MCP SDK discovered all eight tools and exercised the new ID-free daily evaluation path plus the existing historical and batch evaluators. A final log-only deployment followed after recording this result.
+
 ## 2026-08-29 08:00 UTC — Analyst
 
 - Measured production before creating verifier traffic: the partial second post-`next_action` window had four MCP challenge fetches, three authenticated verifier fetches, and three evaluations all attributable to the verifier, leaving one residual fetch and zero residual evaluations.
