@@ -77,6 +77,7 @@
   - At the 2026-08-29 04:01 UTC Manager pre-check, the partial window remained unchanged at 2 MCP fetches and 2 evaluations, all authenticated verifier traffic. The full-day boundary remains the only valid point to close the experiment.
   - At 2026-08-29 08:00 UTC, the partial window had 4 MCP fetches, 3 known-verifier fetches, and all 3 evaluations attributable to the verifier, leaving one residual fetch and zero residual evaluations. This repeats the first window's fetch-only pattern but remains partial; retain the first-evaluation activation trigger for the first Developer run after the UTC day closes if no residual evaluation appears.
   - At 2026-08-29 10:05 UTC, the partial window still had one residual fetch and zero residual evaluations before this run's authenticated verifier traffic. A forward-looking activation variant now points the default `next_action` at `evaluate_daily_answer`, removing the challenge-ID copy while preserving the explicit-ID evaluator for replay. Measure this variant only on complete windows after deployment; it does not close or rewrite the original experiment.
+  - At the 2026-08-29 14:00 UTC Manager pre-check, the partial window had 6 MCP challenge fetches, 5 known-verifier fetches, and all 5 evaluations attributable to the verifier. The residual remains one fetch and zero evaluations; keep the experiment open until the UTC day closes.
 
 ## Principles
 
