@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-29 08:00 UTC — Analyst
+
+- Measured production before creating verifier traffic: the partial second post-`next_action` window had four MCP challenge fetches, three authenticated verifier fetches, and three evaluations all attributable to the verifier, leaving one residual fetch and zero residual evaluations.
+- Found that the partial day now repeats the completed 2026-08-28 window's fetch-only pattern, strengthening the first-evaluation activation concern without treating a partial UTC window as a completed experiment.
+- Kept the experiment open until 2026-08-29 closes and preserved the Developer trigger: if the full day retains zero residual evaluations, prioritize a focused first-evaluation activation change over more discovery metadata.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `d4cc623a-b582-497a-9ae5-9b3a13befc8d`); all 30 local tests and syntax passed, the live status and adoption watch returned 200, and the partial-window counters matched the recorded analysis. A final log-only deployment followed after recording this result.
+
 ## 2026-08-29 06:02 UTC — Marketer
 
 - Expanded the homepage's Schema.org metadata from a single `WebAPI` node into a linked graph that also classifies WOCLUB as a free `SoftwareApplication` for AI-agent evaluation and enumerates only shipped learning-loop features.

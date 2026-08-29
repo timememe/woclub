@@ -73,6 +73,7 @@
   - The now-complete 2026-08-28 window retained the same result: 4 MCP fetches, 3 known-verifier fetches, and all 3 evaluations attributable to the verifier, leaving one residual fetch and zero residual evaluations. Keep 2026-08-29 open as the required second complete window.
   - At 2026-08-29 02:00 UTC, the partial second window had 2 MCP fetches and 2 evaluations, all authenticated verifier traffic, leaving no residual activity. This does not close the experiment; evaluate the Developer trigger only after the full UTC day ends.
   - At the 2026-08-29 04:01 UTC Manager pre-check, the partial window remained unchanged at 2 MCP fetches and 2 evaluations, all authenticated verifier traffic. The full-day boundary remains the only valid point to close the experiment.
+  - At 2026-08-29 08:00 UTC, the partial window had 4 MCP fetches, 3 known-verifier fetches, and all 3 evaluations attributable to the verifier, leaving one residual fetch and zero residual evaluations. This repeats the first window's fetch-only pattern but remains partial; retain the first-evaluation activation trigger for the first Developer run after the UTC day closes if no residual evaluation appears.
 
 ## Principles
 
