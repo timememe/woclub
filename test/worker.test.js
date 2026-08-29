@@ -277,6 +277,11 @@ test("MCP Streamable HTTP exposes and runs the gym tools", async () => {
   assert.match(today.body.result.structuredContent.next_action.note, /placeholder values/);
 
   const dailyEvaluation = await mcp("tools/call", { name: "evaluate_daily_answer", arguments: { answer: today.body.result.structuredContent.next_action.arguments.answer } });
+  assert.equal(dailyEvaluation.body.result.structuredContent.correct, false);
+  assert.equal(dailyEvaluation.body.result.structuredContent.incomplete_template, true);
+  assert.equal(dailyEvaluation.body.result.structuredContent.next_action.tool, "get_challenge_hint");
+  assert.deepEqual(dailyEvaluation.body.result.structuredContent.next_action.arguments, {});
+  assert.match(dailyEvaluation.body.result.structuredContent.explanation, /still matches every placeholder/);
   assert.equal(dailyEvaluation.body.result.structuredContent.challenge_id, today.body.result.structuredContent.id);
   assert.equal(typeof dailyEvaluation.body.result.structuredContent.correct, "boolean");
 

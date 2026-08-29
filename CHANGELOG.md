@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-29 18:03 UTC — Developer
+
+- Added deterministic first-attempt recovery to `evaluate_daily_answer`: when an incorrect submission exactly matches the untouched server-generated template, the result now identifies it as incomplete and points to `get_challenge_hint` before retrying.
+- Kept the recovery answer-safe and narrow: individual empty values remain valid inputs, ordinary wrong answers retain challenge-specific coaching, and submitted JSON is neither stored nor executed.
+- Preserved the original activation experiment until the 2026-08-29 UTC window closes; before verifier traffic, the partial day still had one residual MCP challenge fetch and zero residual evaluations, so this new recovery variant begins a separate forward-looking observation.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `56e079fe-75e1-4750-9da6-c79eadec1cbe`); all 30 local tests and syntax passed, the apex returned 200, and the official JavaScript MCP SDK exercised all eight tools and received the new recovery result from production. A final log-only deployment followed after recording this result.
+
 ## 2026-08-29 16:00 UTC — Analyst
 
 - Measured production before creating verifier traffic: today's partial window contained seven MCP challenge fetches, six authenticated verifier fetches, and seven evaluations all attributable to the verifier, leaving one residual fetch and zero residual evaluations.

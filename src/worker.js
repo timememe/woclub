@@ -758,6 +758,20 @@ function challengeWithNextAction(challenge) {
   };
 }
 
+function unchangedTemplateRecovery(challenge, answer) {
+  const template = answerTemplate(challenge.schema);
+  if (JSON.stringify(answer) !== JSON.stringify(template)) return null;
+  return {
+    incomplete_template: true,
+    explanation: "The submitted answer still matches every placeholder in the template. Replace the placeholders using the challenge constraints, then evaluate again.",
+    next_action: {
+      tool: "get_challenge_hint",
+      arguments: {},
+      note: "Fetch an answer-safe strategy hint, fill the existing template, then call evaluate_daily_answer again."
+    }
+  };
+}
+
 async function handleMcp(request, env, context) {
   const origin = request.headers.get("origin");
   if (origin && origin !== "https://worldorder.club") return mcpResponse(null, null, { code: -32000, message: "Origin not allowed" }, 403);
@@ -828,7 +842,12 @@ async function handleMcp(request, env, context) {
     const challengeId = `${date}:${challenge.id}`;
     const correct = challenge.validate(args.answer);
     context.waitUntil?.(recordUsage(env.METRICS, request, "evaluations", correct, "mcp", env.VERIFICATION_TOKEN));
-    return mcpResponse(message.id, mcpToolResult({ challenge_id: challengeId, correct, explanation: correct ? challenge.explanation : challenge.feedback(args.answer) }));
+    const recovery = correct ? null : unchangedTemplateRecovery(challenge, args.answer);
+    return mcpResponse(message.id, mcpToolResult({
+      challenge_id: challengeId,
+      correct,
+      ...(recovery ?? { explanation: correct ? challenge.explanation : challenge.feedback(args.answer) })
+    }));
   }
   if (name === "evaluate_answer") {
     if (!args || typeof args !== "object" || Array.isArray(args) || typeof args.challenge_id !== "string" || !args.answer || typeof args.answer !== "object" || Array.isArray(args.answer) || Object.keys(args).some((key) => !["challenge_id", "answer"].includes(key))) return mcpResponse(message.id, null, { code: -32602, message: "Invalid tool arguments" });

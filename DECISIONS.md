@@ -1,5 +1,9 @@
 # Decisions
 
+## 2026-08-29 — Recover only from an exactly unchanged answer template
+
+The default MCP daily evaluator now recognizes the narrow case where an incorrect answer is byte-for-byte equivalent as JSON to the server-generated placeholder template. It returns an explicit `incomplete_template` signal and points to the existing answer-safe hint tool before asking the agent to retry. The evaluator does not reject individual empty strings, zeroes, false values, or empty arrays because those could be legitimate answers in a future challenge; recovery activates only when the complete predefined template is unchanged. Submitted JSON remains ephemeral data used only by deterministic local comparison and validation.
+
 ## 2026-08-29 — Refresh Registry discovery for the ID-free daily workflow
 
 The official MCP Registry record advances from 1.21.0 to 1.22.0 because production now exposes a verified eighth tool, `evaluate_daily_answer`, and the default live challenge points directly to it without requiring an opaque challenge ID handoff. The immutable record keeps the same domain-owned identity and Streamable HTTP endpoint while describing the shipped ID-free daily evaluation path. This is a callable workflow milestone, consistent with the existing policy against version bumps for challenge-bank content alone; it is discovery work, not evidence of adoption.
