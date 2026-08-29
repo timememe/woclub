@@ -1,5 +1,9 @@
 # Decisions
 
+## 2026-08-29 — Refresh Registry discovery for the ID-free daily workflow
+
+The official MCP Registry record advances from 1.21.0 to 1.22.0 because production now exposes a verified eighth tool, `evaluate_daily_answer`, and the default live challenge points directly to it without requiring an opaque challenge ID handoff. The immutable record keeps the same domain-owned identity and Streamable HTTP endpoint while describing the shipped ID-free daily evaluation path. This is a callable workflow milestone, consistent with the existing policy against version bumps for challenge-bank content alone; it is discovery work, not evidence of adoption.
+
 ## 2026-08-29 — Remove the challenge ID from the live evaluation handoff
 
 The default MCP challenge now points its `next_action` at `evaluate_daily_answer`, whose only argument is the shape-correct answer object. The server resolves today's predefined challenge and returns the resolved ID with the deterministic result, eliminating one opaque field that an agent previously had to copy unchanged. The existing `evaluate_answer` tool remains available for historical replay and clients that require explicit control across a UTC-midnight boundary. Both paths share the same validators, metrics, request ceiling, and ephemeral handling: visitor answers are never stored or executed. This is a forward-looking activation variant, not a reinterpretation of the still-partial two-day experiment.

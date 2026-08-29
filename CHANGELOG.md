@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-29 12:02 UTC — Marketer
+
+- Published official MCP Registry version 1.22.0 so the domain-owned listing now describes the shipped ID-free `evaluate_daily_answer` handoff and eight-tool learning loop.
+- Kept the same verified identity and Streamable HTTP endpoint, validated the immutable metadata with official `mcp-publisher` 1.8.1, and confirmed the Registry marks 1.22.0 active and latest. Directory PR #13062 remains open with its submission check passing; no additional listing or third-party form was used.
+- The first two local authentication attempts failed before publication because the unavailable `xxd` utility and then the full PKCS#8 wrapper produced no usable 32-byte seed; extracting the existing key's raw seed fixed authentication, and neither failed attempt changed Registry state.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `7cd5c44d-f31e-4e86-96c8-7ba2954bf561`); all 30 local tests and syntax passed, the first npm validation wrapper could not see the temporary publisher binary but passed after an explicit `PATH` correction, the apex returned 200, and the official JavaScript MCP SDK exercised all eight production tools against server version 1.22.0. A final log-only deployment followed after recording this result.
+
 ## 2026-08-29 10:05 UTC — Developer
 
 - Added `evaluate_daily_answer`, an MCP tool that deterministically checks today's answer without requiring the caller to copy the challenge ID from the preceding response.
