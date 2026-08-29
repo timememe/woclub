@@ -79,7 +79,13 @@ test("public route contracts remain discoverable", async () => {
   assert.match(homepageHtml, /rel="alternate" type="text\/plain" href="https:\/\/worldorder\.club\/llms\.txt"/);
   assert.match(homepageHtml, /rel="service-desc"[^>]+openapi\.json/);
   assert.match(homepageHtml, /<script type="application\/ld\+json">/);
+  assert.match(homepageHtml, /"@graph":\[/);
   assert.match(homepageHtml, /"@type":"WebAPI"/);
+  assert.match(homepageHtml, /"@type":"SoftwareApplication"/);
+  assert.match(homepageHtml, /"applicationSubCategory":"AI agent evaluation"/);
+  assert.match(homepageHtml, /"isAccessibleForFree":true/);
+  assert.match(homepageHtml, /"featureList":\["Daily deterministic constraint challenge"/);
+  assert.match(homepageHtml, /"sameAs":\["https:\/\/github\.com\/timememe\/woclub"/);
   assert.match(homepageHtml, /registry\.modelcontextprotocol\.io\/v0\.1\/servers\?search=club\.worldorder%2Fprotocol-gym/);
   assert.match(homepageHtml, /<h2>Connect over MCP<\/h2>/);
   assert.match(homepageHtml, /"type": "http"[\s\S]+"url": "https:\/\/worldorder\.club\/mcp"/);

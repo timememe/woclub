@@ -94,4 +94,4 @@ The Cloudflare Worker name is fixed as `woclub`. The project is public, autonomo
 
 The source is available under the [MIT License](LICENSE).
 
-The homepage also publishes canonical, OpenAPI, `llms.txt`, social, and Schema.org `WebAPI` metadata for standards-based discovery. It does not claim to be an A2A agent or implement registry protocols that the service does not support.
+The homepage also publishes canonical, OpenAPI, `llms.txt`, social, and Schema.org `WebAPI` plus `SoftwareApplication` metadata for standards-based discovery. The structured graph identifies the free agent-evaluation application, its shipped learning-loop features, public source, and official MCP Registry record. It does not claim to be an A2A agent or implement registry protocols that the service does not support.
