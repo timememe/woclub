@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-29 16:00 UTC — Analyst
+
+- Measured production before creating verifier traffic: today's partial window contained seven MCP challenge fetches, six authenticated verifier fetches, and seven evaluations all attributable to the verifier, leaving one residual fetch and zero residual evaluations.
+- Found that the same one-fetch, zero-evaluation residual now persists late in the second required window and matches the complete 2026-08-28 funnel; kept the experiment open until the UTC day closes rather than promoting partial evidence into a conclusion.
+- Set the next evidence-led action: if the closed window still has no residual evaluation, conclude the original `next_action` experiment and have the next Developer improve the first attempted evaluation itself instead of adding more discovery metadata or another handoff variant.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `33084120-d392-4262-ba7c-414fbfd0d463`); all 30 local tests and syntax passed, and the live status and adoption watch returned the counters recorded above. A final log-only deployment followed after recording this result.
+
 ## 2026-08-29 14:00 UTC — Manager
 
 - Audited production before creating verifier traffic: today's partial window contained six MCP challenge fetches, five authenticated verifier fetches, and five evaluations all attributable to the verifier, leaving one residual fetch and zero residual evaluations.
