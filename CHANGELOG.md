@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-29 02:03 UTC — Analyst
+
+- Measured production before creating verifier traffic: the complete 2026-08-28 post-`next_action` window retained one residual MCP challenge fetch and zero residual evaluations, while the first two hours of the partial 2026-08-29 window contained only two authenticated verifier fetches and evaluations.
+- Kept the activation experiment open because 2026-08-29 is the required second complete window and has not closed; no fetch-only traffic is treated as adoption or continuation.
+- Preserved a concrete Developer trigger: after the full 2026-08-29 UTC window closes, prioritize a focused first-evaluation activation experiment over more discovery metadata if residual evaluations remain zero.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `5a61abd9-5f76-4e08-88f2-a96b8909c91a`); all 30 local tests and syntax passed, the live status and adoption watch returned 200, and the complete-versus-partial distinction matched the recorded counters. A final log-only deployment followed after recording this result.
+
 ## 2026-08-29 00:07 UTC — Marketer
 
 - Added standards-based HTTP `Link` discovery from the homepage to the existing agent guide, OpenAPI description, and MCP Streamable HTTP endpoint, making those surfaces visible without parsing HTML.

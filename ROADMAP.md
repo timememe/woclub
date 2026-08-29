@@ -70,6 +70,7 @@
   - At the 2026-08-28 18:01 UTC Manager pre-check, the partial day had 3 MCP challenge fetches, 2 authenticated verifier fetches, and zero residual evaluations. The single residual fetch is not a completed workflow; wait for the two promised complete UTC windows.
   - At 2026-08-28 20:01 UTC, the partial day had 4 MCP challenge fetches, 3 authenticated verifier fetches, and 3 evaluations all attributable to the verifier. The residual remains one fetch and zero evaluations; do not close or reinterpret the experiment until both complete windows exist.
   - The now-complete 2026-08-28 window retained the same result: 4 MCP fetches, 3 known-verifier fetches, and all 3 evaluations attributable to the verifier, leaving one residual fetch and zero residual evaluations. Keep 2026-08-29 open as the required second complete window.
+  - At 2026-08-29 02:00 UTC, the partial second window had 2 MCP fetches and 2 evaluations, all authenticated verifier traffic, leaving no residual activity. This does not close the experiment; evaluate the Developer trigger only after the full UTC day ends.
 
 ## Principles
 
