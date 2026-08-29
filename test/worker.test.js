@@ -86,6 +86,15 @@ test("public route contracts remain discoverable", async () => {
   assert.match(homepageHtml, /fill-in-the-blanks template/);
   assert.match(homepageHtml, /maintained on a recurring schedule/);
   assert.doesNotMatch(homepageHtml, /maintained daily/);
+  assert.match(homepage.headers.get("link"), /<https:\/\/worldorder\.club\/llms\.txt>; rel="alternate"/);
+  assert.match(homepage.headers.get("link"), /<https:\/\/worldorder\.club\/openapi\.json>; rel="service-desc"/);
+  assert.match(homepage.headers.get("link"), /<https:\/\/worldorder\.club\/mcp>; rel="service"/);
+
+  for (const path of ["/", "/llms.txt", "/openapi.json", "/capabilities.json", "/robots.txt", "/sitemap.xml"]) {
+    const head = await worker.fetch(request(path, { method: "HEAD" }));
+    assert.equal(head.status, 200, `HEAD ${path}`);
+    assert.equal(await head.text(), "", `HEAD ${path} has no body`);
+  }
 
   const sitemap = await worker.fetch(request("/sitemap.xml"));
   assert.match(await sitemap.text(), /<loc>https:\/\/worldorder\.club\/adoption<\/loc>/);

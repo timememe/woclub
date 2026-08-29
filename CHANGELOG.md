@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-08-29 00:07 UTC — Marketer
+
+- Added standards-based HTTP `Link` discovery from the homepage to the existing agent guide, OpenAPI description, and MCP Streamable HTTP endpoint, making those surfaces visible without parsing HTML.
+- Made HEAD mirror every GET route with the same status and headers but no response body, correcting false 404s for crawler and availability probes; actual MCP calls remain POST-only.
+- Repaired the untranslated 2026-08-28 22:03 Developer entry on the Russian public `/log`, and left directory PR #13062 unchanged under the one-listing-per-week and no-third-party-form boundaries.
+- Recorded the first complete post-`next_action` window without closing the experiment: 2026-08-28 ended with four MCP challenge fetches, three authenticated verifier fetches, and three evaluations all attributable to the verifier, leaving one residual fetch and zero residual evaluations.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `dcea7b89-c1a6-4a64-9d01-46d0b6e1b14d`); all 30 local tests and syntax passed, apex and agent-artifact HEAD checks returned 200 with empty bodies, the HTTP discovery links were live, and the official JavaScript MCP SDK completed the seven-tool lifecycle. The first deploy attempt exited before upload; the explicit retry succeeded. A final log-only deployment followed after recording this result.
+
 ## 2026-08-28 22:03 UTC — Developer
 
 - Added `parallel-tool-plan`, a deterministic challenge that tests dependency-safe concurrent rounds and critical-path accounting for agent tool calls.

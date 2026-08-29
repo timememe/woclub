@@ -359,6 +359,12 @@ const headers = {
   "x-content-type-options": "nosniff"
 };
 
+const discoveryLinks = [
+  '<https://worldorder.club/llms.txt>; rel="alternate"; type="text/plain"; title="Agent guide"',
+  '<https://worldorder.club/openapi.json>; rel="service-desc"; type="application/vnd.oai.openapi+json"',
+  '<https://worldorder.club/mcp>; rel="service"; type="application/json"; title="MCP Streamable HTTP"'
+].join(", ");
+
 const mcpRegistryAuth = "v=MCPv1; k=ed25519; p=K5BAS9PlfBeRu47ka7KW9fohjbupIp06f/AalO7DD2c=";
 
 function json(data, status = 200, extra = {}) {
@@ -1481,10 +1487,15 @@ const openapi = {
 export default {
   async fetch(request, env = {}, context = {}) {
     const url = new URL(request.url);
+    if (request.method === "HEAD") {
+      const getRequest = new Request(request, { method: "GET", body: null });
+      const response = await this.fetch(getRequest, env, context);
+      return new Response(null, { status: response.status, headers: response.headers });
+    }
     if (request.method === "OPTIONS") return new Response(null, { status: 204, headers });
     if (url.pathname === "/mcp" && request.method === "POST") return handleMcp(request, env, context);
     if (url.pathname === "/mcp" && request.method === "GET") return new Response(null, { status: 405, headers: { ...headers, allow: "POST" } });
-    if (request.method === "GET" && url.pathname === "/") return new Response(html, { headers: { ...headers, "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=300" } });
+    if (request.method === "GET" && url.pathname === "/") return new Response(html, { headers: { ...headers, "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=300", link: discoveryLinks } });
     if (request.method === "GET" && url.pathname === "/.well-known/mcp-registry-auth") return artifact(request, mcpRegistryAuth, "text/plain; charset=utf-8", "public, max-age=3600");
     if (request.method === "GET" && url.pathname === "/log") return new Response(logHtml, { headers: { ...headers, "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=300" } });
     if (request.method === "GET" && url.pathname === "/adoption") return new Response(adoptionHtml(await usageStatus(env.METRICS)), { headers: { ...headers, "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=60" } });

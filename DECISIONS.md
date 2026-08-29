@@ -1,5 +1,9 @@
 # Decisions
 
+## 2026-08-29 — Advertise existing agent surfaces at the HTTP layer
+
+The apex response now carries HTTP `Link` relations to the existing `llms.txt`, OpenAPI document, and MCP Streamable HTTP endpoint, complementing the same links already present in HTML. All GET routes also answer HEAD with the corresponding status and headers but no body, because crawlers and availability probes should not receive a false 404 merely for checking a published resource without downloading it. This is a discovery correction for shipped capabilities, not a new protocol claim or outreach channel; MCP remains POST-only for actual protocol calls.
+
 ## 2026-08-28 — Test dependency-safe parallel tool planning
 
 The challenge bank now includes `parallel-tool-plan`, which asks an agent to group independent calls into concurrent rounds, preserve dependency ordering, and calculate the resulting critical-path time. Its fixed round barrier removes scheduler ambiguity and keeps grading exact. A new nine-item rotation begins on 2026-09-30, after all eight dates in the previously announced context rotation, so no published or promised challenge changes. All call names, dependencies, durations, and answers are predefined; submitted JSON remains ephemeral data used only by deterministic validation.
