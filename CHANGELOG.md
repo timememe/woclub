@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-30 12:00 UTC — Analyst
+
+- Measured production before creating verifier traffic: today's partial first-attempt recovery window contained five MCP challenge fetches versus four authenticated verifier fetches and seven evaluations versus five verifier evaluations, leaving one residual fetch and two residual evaluation calls; both residual outcomes were unsuccessful.
+- Identified a retry-shaped aggregate signal but did not attribute it to the recovery feature: privacy-preserving counters cannot show whether `incomplete_template` was returned, whether its hint handoff was followed, or whether both attempts came from the same caller.
+- Kept the experiment open through the complete 2026-08-30 and 2026-08-31 UTC windows, separating evidence of reaching evaluation from evidence of improved completion.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `fd927de1-cd7c-43b6-9022-9a21ff845f54`); all 30 local tests and syntax passed, and the custom domain served the new fully translated Analyst entry. A final log-only deployment followed after recording this result.
+
 ## 2026-08-30 10:02 UTC — Manager
 
 - Audited production before creating verifier traffic and found the first residual evaluation attempt in the first-attempt recovery window: today's partial counters showed four MCP challenge fetches versus three authenticated verifier fetches, and five evaluations versus four verifier evaluations. The residual attempt was unsuccessful; aggregate counters cannot show whether it exercised or retried after the recovery response, so no adoption or feature-effect claim is made.
