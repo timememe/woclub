@@ -358,6 +358,33 @@ export const challenges = [
       return "Include both agreeing authoritative sources in alphabetical order.";
     },
     explanation: "Filtering by authority removes the mirror and unverified note; the registry and newer live probe agree on version 1.22.0 with eight tools."
+  },
+  {
+    id: "idempotent-retry",
+    title: "Idempotent tool retry",
+    prompt: "Choose the safe recovery action for each timed-out tool call.",
+    constraints: [
+      "Calls: catalog.read is read-only; order.create uses idempotency key order-17; message.send has no idempotency key",
+      "Every call timed out after dispatch, so its completion state is unknown",
+      "Actions: retry, lookup_then_retry, do_not_retry",
+      "Read-only calls may be retried directly",
+      "Keyed writes must be looked up by key before retrying; unkeyed writes must not be retried automatically"
+    ],
+    schema: { actions: { "catalog.read": "string", "message.send": "string", "order.create": "string" } },
+    hint: "Classify each call by side effects first, then use the idempotency key only for the write that has one.",
+    answer: { actions: { "catalog.read": "retry", "message.send": "do_not_retry", "order.create": "lookup_then_retry" } },
+    validate(value) {
+      return JSON.stringify(value) === JSON.stringify({ actions: { "catalog.read": "retry", "message.send": "do_not_retry", "order.create": "lookup_then_retry" } });
+    },
+    feedback(value) {
+      if (!value?.actions || typeof value.actions !== "object" || Array.isArray(value.actions)) return "Return one actions object mapping every call to a recovery action.";
+      if (Object.keys(value.actions).sort().join(",") !== "catalog.read,message.send,order.create") return "Assign exactly catalog.read, message.send, and order.create.";
+      if (Object.values(value.actions).some((action) => !["retry", "lookup_then_retry", "do_not_retry"].includes(action))) return "Use only retry, lookup_then_retry, or do_not_retry.";
+      if (value.actions["catalog.read"] !== "retry") return "The read-only catalog call is safe to retry directly.";
+      if (value.actions["order.create"] !== "lookup_then_retry") return "Check the keyed write's recorded outcome before retrying it with the same idempotency key.";
+      return "The unkeyed message write has an unknown outcome and must not be retried automatically.";
+    },
+    explanation: "The read is safe to repeat, the keyed order write can be reconciled before a same-key retry, and the unkeyed message write requires human or application-level reconciliation."
   }
 ];
 
@@ -379,6 +406,8 @@ const parallelRotationStart = "2026-09-30";
 const parallelRotation = ["parallel-tool-plan", "context-budget", "visitor-data-boundary", "least-privilege-routing", "repair-jsonrpc", "truthful-beacon", "interval-schedule", "exact-projection", "capacity-allocation"];
 const evidenceRotationStart = "2026-10-09";
 const evidenceRotation = ["evidence-freshness", "parallel-tool-plan", "context-budget", "visitor-data-boundary", "least-privilege-routing", "repair-jsonrpc", "truthful-beacon", "interval-schedule", "exact-projection", "capacity-allocation"];
+const retryRotationStart = "2026-10-20";
+const retryRotation = ["idempotent-retry", "evidence-freshness", "parallel-tool-plan", "context-budget", "visitor-data-boundary", "least-privilege-routing", "repair-jsonrpc", "truthful-beacon", "interval-schedule", "exact-projection", "capacity-allocation"];
 
 const headers = {
   "access-control-allow-origin": "*",
@@ -542,9 +571,12 @@ export function challengeFor(date = new Date()) {
   } else if (dateString < evidenceRotationStart) {
     const daysSinceParallelRotation = Math.floor((date.getTime() - Date.parse(`${parallelRotationStart}T00:00:00Z`)) / 86400000);
     challengeId = parallelRotation[daysSinceParallelRotation % parallelRotation.length];
-  } else {
+  } else if (dateString < retryRotationStart) {
     const daysSinceEvidenceRotation = Math.floor((date.getTime() - Date.parse(`${evidenceRotationStart}T00:00:00Z`)) / 86400000);
     challengeId = evidenceRotation[daysSinceEvidenceRotation % evidenceRotation.length];
+  } else {
+    const daysSinceRetryRotation = Math.floor((date.getTime() - Date.parse(`${retryRotationStart}T00:00:00Z`)) / 86400000);
+    challengeId = retryRotation[daysSinceRetryRotation % retryRotation.length];
   }
   return challenges.find((challenge) => challenge.id === challengeId);
 }

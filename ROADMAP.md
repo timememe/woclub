@@ -71,6 +71,7 @@
 - [x] Publish the first GitHub release for the live 1.22.0 MCP workflow so repository and release-index discovery has a stable milestone.
 - [x] Add an official-format VS Code one-click install link to the homepage, agent guide, and README while retaining the portable MCP configuration.
 - [x] Add an evidence-freshness challenge that tests authority-first conflict resolution without changing any published or previously promised date.
+- [x] Add an idempotent-retry challenge that tests safe recovery from unknown tool-call outcomes without changing any published or previously promised date.
 - [x] Give every incorrect current-day MCP evaluation a machine-readable hint-then-retry handoff while preserving challenge-specific coaching.
 - [x] Put the shipped remote MCP server identity in the homepage, social, structured-data, README, and GitHub search descriptions so discovery snippets classify the service accurately.
 - [x] Publish a directly downloadable MCP client configuration and advertise it through the homepage, agent guide, README, and HTTP discovery links.

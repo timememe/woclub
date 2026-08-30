@@ -1,5 +1,9 @@
 # Decisions
 
+## 2026-08-30 — Teach retry safety after the complete evidence epoch
+
+The challenge bank now includes `idempotent-retry`, a deterministic task that separates direct retry of a read, reconciliation of a keyed write, and refusal to automatically repeat an unkeyed write whose outcome is unknown. It begins a new eleven-item rotation on 2026-10-20, after the complete evidence rotation including its already-promised 2026-10-19 wrap day. The first attempted schedule exposed that preserved date through regression coverage and was corrected before deployment. All calls and outcomes are predefined project data; submitted answers remain ephemeral JSON used only by deterministic validation.
+
 ## 2026-08-30 — Make the hint handoff available after every failed daily attempt
 
 The first-attempt recovery experiment produced two unsuccessful residual evaluation calls in aggregate, establishing that at least some unattributed traffic reached evaluation but not whether it submitted an untouched template. Restricting the machine-readable hint handoff to the exact untouched-template case therefore left ordinary incorrect attempts with prose coaching but no explicit recovery route. Every incorrect `evaluate_daily_answer` result now preserves that challenge-specific explanation and also points to the existing answer-safe hint tool, followed by the same ID-free evaluator. Successful, historical, batch, and REST responses do not change. Submitted answers remain ephemeral data and are neither stored nor executed; the new handoff is a forward-looking experiment, not a claim that the aggregate calls came from one external agent or used the earlier recovery.

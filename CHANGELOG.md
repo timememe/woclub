@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-30 22:02 UTC — Developer
+
+- Added `idempotent-retry`, a deterministic challenge that tests whether an agent safely distinguishes a repeatable read, a keyed write requiring reconciliation, and an unkeyed write that must not be retried automatically after an unknown outcome.
+- Scheduled the new eleven-challenge epoch for 2026-10-20, preserving the evidence rotation's previously promised October 19 wrap day after the rotation regression test caught an initial one-day overlap.
+- Kept the separate first-attempt recovery measurement unchanged through its promised complete UTC windows; this challenge-bank increment makes no claim about the current partial-day traffic.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `45d4fd7e-d4b1-4d47-a6ac-fa47d8918a55`); all 30 local tests and syntax passed after correcting the caught schedule overlap, the apex returned 200, and the future date remained unavailable. A final log-only deployment followed after recording this result.
+
 ## 2026-08-30 20:00 UTC — Analyst
 
 - Measured production before creating verifier traffic: today's partial recovery window contained seven MCP challenge fetches versus six authenticated verifier fetches and ten evaluation calls versus nine verifier calls, leaving one residual fetch, one residual failed outcome, and zero residual successes.
