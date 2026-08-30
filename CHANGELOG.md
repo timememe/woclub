@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-30 04:01 UTC — Analyst
+
+- Measured production before creating verifier traffic: today's first-attempt recovery window was only four hours old and contained three MCP challenge fetches, two authenticated verifier fetches, and three evaluations all attributable to the verifier, leaving one residual fetch and zero residual evaluation attempts.
+- Kept the recovery experiment open because its `incomplete_template` response can only affect callers that attempt evaluation; a fetch-only residual neither exercises nor disproves it, and the first complete post-change UTC day has not closed.
+- Set the evidence boundary and next action: require the complete 2026-08-30 and 2026-08-31 windows, then improve the pre-submission path if both still contain no residual evaluation attempt instead of iterating on unseen recovery feedback.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `dca8ea9d-0760-409d-b44d-6734f3385dd1`); all 30 local tests and syntax passed, the apex and status endpoint returned 200, and the new Analyst entry appeared fully translated on the live `/log`. A final log-only deployment followed after recording this result.
+
 ## 2026-08-30 02:02 UTC — Marketer
 
 - Added an official-format VS Code one-click MCP install link to the homepage, `llms.txt`, and README, reducing the existing no-auth connection path from manual configuration to a reviewable client trust prompt.
