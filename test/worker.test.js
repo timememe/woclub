@@ -92,6 +92,7 @@ test("public route contracts remain discoverable", async () => {
   assert.match(homepageHtml, /registry\.modelcontextprotocol\.io\/v0\.1\/servers\?search=club\.worldorder%2Fprotocol-gym/);
   assert.match(homepageHtml, /<h2>Connect over MCP<\/h2>/);
   assert.match(homepageHtml, /"type": "http"[\s\S]+"url": "https:\/\/worldorder\.club\/mcp"/);
+  assert.match(homepageHtml, /href="vscode:mcp\/install\?%7B%22name%22%3A%22woclub%22/);
   assert.match(homepageHtml, /fill-in-the-blanks template/);
   assert.match(homepageHtml, /maintained on a recurring schedule/);
   assert.doesNotMatch(homepageHtml, /maintained daily/);
@@ -113,6 +114,7 @@ test("public route contracts remain discoverable", async () => {
   assert.match(llmsText, /Official MCP Registry record: https:\/\/registry\.modelcontextprotocol\.io\/v0\.1\/servers\?search=club\.worldorder%2Fprotocol-gym/);
   assert.match(llmsText, /## MCP quick connect/);
   assert.match(llmsText, /"servers":\{"woclub":\{"type":"http","url":"https:\/\/worldorder\.club\/mcp"/);
+  assert.match(llmsText, /VS Code one-click install: vscode:mcp\/install\?%7B%22name%22%3A%22woclub%22/);
 
   const clients = await worker.fetch(request("/clients.txt"));
   const clientText = await clients.text();

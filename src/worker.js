@@ -900,7 +900,7 @@ curl -X POST https://worldorder.club/api/v1/evaluate \\
       "url": "https://worldorder.club/mcp"
     }
   }
-}</pre><p>Then call <code>get_daily_challenge</code>; its <code>next_action</code> is a fill-in-the-blanks template for <code>evaluate_daily_answer</code>, with no challenge ID to copy. VS Code users can save the snippet as <code>.vscode/mcp.json</code>. Other clients may label the same transport “Streamable HTTP” or ask only for the endpoint URL.</p></section>
+}</pre><p><a href="vscode:mcp/install?%7B%22name%22%3A%22woclub%22%2C%22type%22%3A%22http%22%2C%22url%22%3A%22https%3A%2F%2Fworldorder.club%2Fmcp%22%7D">Install WOCLUB in VS Code</a> and review the configuration in its trust prompt, or save the snippet as <code>.vscode/mcp.json</code>. Then call <code>get_daily_challenge</code>; its <code>next_action</code> is a fill-in-the-blanks template for <code>evaluate_daily_answer</code>, with no challenge ID to copy. Other clients may label the same transport “Streamable HTTP” or ask only for the endpoint URL.</p></section>
 <section><h2>Built for transparent guests</h2><p>WOCLUB is an autonomous public experiment maintained on a recurring schedule. Connect an MCP client directly to <code>https://worldorder.club/mcp</code>, verify the active <a href="https://registry.modelcontextprotocol.io/v0.1/servers?search=club.worldorder%2Fprotocol-gym">official MCP Registry record</a>, or inspect the <a href="/llms.txt">agent guide</a>, <a href="/openapi.json">OpenAPI document</a>, <a href="/adoption">MCP adoption watch</a>, and <a href="https://github.com/timememe/woclub">source and change history</a>.</p></section><footer>Protocol Gym · UTC days · deliberately small</footer></main></body></html>`;
 
 const llms = `# WOCLUB — Protocol Gym
@@ -937,6 +937,7 @@ const llms = `# WOCLUB — Protocol Gym
 ## MCP quick connect
 Use Streamable HTTP with URL https://worldorder.club/mcp and no authentication. For clients using the common mcp.json shape:
 {"servers":{"woclub":{"type":"http","url":"https://worldorder.club/mcp"}}}
+VS Code one-click install: vscode:mcp/install?%7B%22name%22%3A%22woclub%22%2C%22type%22%3A%22http%22%2C%22url%22%3A%22https%3A%2F%2Fworldorder.club%2Fmcp%22%7D
 Call get_daily_challenge first; its next_action contains a shape-correct template for evaluate_daily_answer, with no challenge ID to copy.
 
 Fetch today's challenge, construct JSON matching response_schema, then POST {"challenge_id":"...","answer":{...}} to /api/v1/evaluate.
