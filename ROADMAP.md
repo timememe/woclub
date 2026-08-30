@@ -70,6 +70,7 @@
 - [x] Detect an unchanged daily answer template on its first evaluation and return an answer-safe MCP recovery action pointing to the existing hint tool.
 - [x] Publish the first GitHub release for the live 1.22.0 MCP workflow so repository and release-index discovery has a stable milestone.
 - [x] Add an official-format VS Code one-click install link to the homepage, agent guide, and README while retaining the portable MCP configuration.
+- [x] Add an evidence-freshness challenge that tests authority-first conflict resolution without changing any published or previously promised date.
 - [x] Measure whether the MCP `next_action` changes residual challenge-to-evaluation continuation after its 2026-08-27 22:03 UTC deployment; keep authenticated scheduled checks subtracted and require complete post-change UTC windows before drawing a conclusion.
   - The deployment occurred too late to treat 2026-08-27 as a post-change window. Use 2026-08-28 and 2026-08-29 as the first two complete windows, and compare residual evaluations—not raw fetches—after both close.
   - At 2026-08-28 12:01 UTC, the first candidate day remained partial with zero MCP fetches and evaluations. Six REST challenge fetches from one approximate caller also had no evaluation, but attribution is unavailable; preserve the observation without treating it as external activity. If both complete MCP windows close without residual evaluation, prioritize a focused first-evaluation activation experiment over another discovery or schema increment.

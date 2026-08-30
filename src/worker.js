@@ -331,6 +331,33 @@ export const challenges = [
       return "The three round durations are 3, 2, and 1 seconds, for a six-second critical path.";
     },
     explanation: "inventory and profile can run together; pricing follows inventory, then summary follows both profile and pricing. Round durations 3 + 2 + 1 give a six-second critical path."
+  },
+  {
+    id: "evidence-freshness",
+    title: "Evidence freshness resolution",
+    prompt: "Resolve the current deployment facts from conflicting timestamped observations.",
+    constraints: [
+      "Observations: cache-a=(mirror, 09:58, version 1.21.0, tools 7); registry=(authoritative, 10:01, version 1.22.0, tools 8); live-probe=(authoritative, 10:04, version 1.22.0, tools 8); note=(unverified, 10:06, version 1.23.0, tools 9)",
+      "Use only authoritative observations when any exist",
+      "Select the most recent mutually consistent authoritative facts",
+      "Return the selected version and tool count plus contributing source names alphabetically",
+      "Do not treat a newer unverified claim as authoritative evidence"
+    ],
+    schema: { version: "string", tools: "number", sources: ["string"] },
+    hint: "Filter by authority before comparing timestamps; then retain the newest consistent authoritative observations and ignore recency from excluded sources.",
+    answer: { version: "1.22.0", tools: 8, sources: ["live-probe", "registry"] },
+    validate(value) {
+      return JSON.stringify(value) === JSON.stringify({ version: "1.22.0", tools: 8, sources: ["live-probe", "registry"] });
+    },
+    feedback(value) {
+      if (!value || typeof value !== "object" || Array.isArray(value) || !Array.isArray(value.sources)) return "Return version, tools, and a sources array in one object.";
+      if (value.sources.some((source) => !["cache-a", "live-probe", "note", "registry"].includes(source))) return "The sources list contains an unknown observation.";
+      if (value.sources.includes("note")) return "The newest timestamp does not override the note's unverified authority level.";
+      if (value.sources.includes("cache-a")) return "The mirror is neither authoritative nor as fresh as the agreeing authoritative observations.";
+      if (value.version !== "1.22.0" || value.tools !== 8) return "The authoritative registry and live probe agree on version 1.22.0 with eight tools.";
+      return "Include both agreeing authoritative sources in alphabetical order.";
+    },
+    explanation: "Filtering by authority removes the mirror and unverified note; the registry and newer live probe agree on version 1.22.0 with eight tools."
   }
 ];
 
@@ -350,6 +377,8 @@ const contextRotationStart = "2026-09-22";
 const contextRotation = ["context-budget", "visitor-data-boundary", "least-privilege-routing", "repair-jsonrpc", "truthful-beacon", "interval-schedule", "exact-projection", "capacity-allocation"];
 const parallelRotationStart = "2026-09-30";
 const parallelRotation = ["parallel-tool-plan", "context-budget", "visitor-data-boundary", "least-privilege-routing", "repair-jsonrpc", "truthful-beacon", "interval-schedule", "exact-projection", "capacity-allocation"];
+const evidenceRotationStart = "2026-10-09";
+const evidenceRotation = ["evidence-freshness", "parallel-tool-plan", "context-budget", "visitor-data-boundary", "least-privilege-routing", "repair-jsonrpc", "truthful-beacon", "interval-schedule", "exact-projection", "capacity-allocation"];
 
 const headers = {
   "access-control-allow-origin": "*",
@@ -508,9 +537,12 @@ export function challengeFor(date = new Date()) {
   } else if (dateString < parallelRotationStart) {
     const daysSinceContextRotation = Math.floor((date.getTime() - Date.parse(`${contextRotationStart}T00:00:00Z`)) / 86400000);
     challengeId = contextRotation[daysSinceContextRotation % contextRotation.length];
-  } else {
+  } else if (dateString < evidenceRotationStart) {
     const daysSinceParallelRotation = Math.floor((date.getTime() - Date.parse(`${parallelRotationStart}T00:00:00Z`)) / 86400000);
     challengeId = parallelRotation[daysSinceParallelRotation % parallelRotation.length];
+  } else {
+    const daysSinceEvidenceRotation = Math.floor((date.getTime() - Date.parse(`${evidenceRotationStart}T00:00:00Z`)) / 86400000);
+    challengeId = evidenceRotation[daysSinceEvidenceRotation % evidenceRotation.length];
   }
   return challenges.find((challenge) => challenge.id === challengeId);
 }

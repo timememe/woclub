@@ -672,7 +672,10 @@ test("published rotations stay immutable and future epochs wrap", () => {
   assert.deepEqual(contextSequence, ["context-budget", "visitor-data-boundary", "least-privilege-routing", "repair-jsonrpc", "truthful-beacon", "interval-schedule", "exact-projection", "capacity-allocation"]);
   const parallelStart = new Date("2026-09-30T00:00:00Z");
   const parallelSequence = Array.from({ length: 10 }, (_, offset) => challengeFor(new Date(parallelStart.getTime() + offset * 86_400_000)).id);
-  assert.deepEqual(parallelSequence, ["parallel-tool-plan", "context-budget", "visitor-data-boundary", "least-privilege-routing", "repair-jsonrpc", "truthful-beacon", "interval-schedule", "exact-projection", "capacity-allocation", "parallel-tool-plan"]);
+  assert.deepEqual(parallelSequence, ["parallel-tool-plan", "context-budget", "visitor-data-boundary", "least-privilege-routing", "repair-jsonrpc", "truthful-beacon", "interval-schedule", "exact-projection", "capacity-allocation", "evidence-freshness"]);
+  const evidenceStart = new Date("2026-10-09T00:00:00Z");
+  const evidenceSequence = Array.from({ length: 11 }, (_, offset) => challengeFor(new Date(evidenceStart.getTime() + offset * 86_400_000)).id);
+  assert.deepEqual(evidenceSequence, ["evidence-freshness", "parallel-tool-plan", "context-budget", "visitor-data-boundary", "least-privilege-routing", "repair-jsonrpc", "truthful-beacon", "interval-schedule", "exact-projection", "capacity-allocation", "evidence-freshness"]);
   assert.equal(dayKey(new Date("2026-08-24T23:59:59Z")), "2026-08-24");
 });
 
@@ -686,7 +689,8 @@ test("expanded challenges accept only their canonical answers", () => {
     "least-privilege-routing": { routes: { browse_catalog: "catalog.read", inspect_order: "orders.read", cancel_order: "orders.write" } },
     "visitor-data-boundary": { actions: { store: ["callback_url", "display_name", "task_text"], display: ["callback_url", "display_name", "task_text"], execute: [], fetch: [] } },
     "context-budget": { selected: ["history", "policy"], total_tokens: 7, total_value: 13 },
-    "parallel-tool-plan": { rounds: [["inventory", "profile"], ["pricing"], ["summary"]], critical_path_seconds: 6 }
+    "parallel-tool-plan": { rounds: [["inventory", "profile"], ["pricing"], ["summary"]], critical_path_seconds: 6 },
+    "evidence-freshness": { version: "1.22.0", tools: 8, sources: ["live-probe", "registry"] }
   };
   for (const challenge of challenges.slice(3)) {
     assert.equal(challenge.validate(answers[challenge.id]), true, challenge.id);
@@ -704,6 +708,9 @@ test("expanded challenges accept only their canonical answers", () => {
   const parallel = challenges.find(({ id }) => id === "parallel-tool-plan");
   assert.equal(parallel.validate({ rounds: [["inventory"], ["pricing", "profile"], ["summary"]], critical_path_seconds: 6 }), false, "independent calls must use the minimum-round canonical schedule");
   assert.match(parallel.feedback({ rounds: [["profile"], ["summary"], ["inventory"], ["pricing"]], critical_path_seconds: 8 }), /dependent call/);
+  const evidence = challenges.find(({ id }) => id === "evidence-freshness");
+  assert.equal(evidence.validate({ version: "1.23.0", tools: 9, sources: ["note"] }), false, "newer unverified evidence is rejected");
+  assert.match(evidence.feedback({ version: "1.23.0", tools: 9, sources: ["note"] }), /unverified/);
 });
 
 test("today's published answer evaluates successfully", async () => {

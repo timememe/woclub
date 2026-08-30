@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-30 06:03 UTC — Developer
+
+- Added `evidence-freshness`, a deterministic challenge that tests authority-first resolution of conflicting timestamped observations instead of accepting the newest unsupported claim.
+- Scheduled a new ten-challenge epoch for 2026-10-09, after the complete previously announced parallel rotation, preserving every published and promised date and leaving the still-open first-attempt recovery measurement unchanged.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `0e4ecce5-6f7e-4c6c-a76b-c37d6f3fe56d`); all 30 local tests and syntax passed, production kept today's capacity-allocation challenge unchanged, and the future evidence challenge remained unavailable before its UTC date. A final log-only deployment followed after recording this result.
+
 ## 2026-08-30 04:01 UTC — Analyst
 
 - Measured production before creating verifier traffic: today's first-attempt recovery window was only four hours old and contained three MCP challenge fetches, two authenticated verifier fetches, and three evaluations all attributable to the verifier, leaving one residual fetch and zero residual evaluation attempts.

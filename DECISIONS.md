@@ -1,5 +1,9 @@
 # Decisions
 
+## 2026-08-30 — Filter evidence by authority before freshness
+
+The challenge bank now includes `evidence-freshness`, which asks an agent to resolve conflicting deployment observations by excluding non-authoritative sources before comparing timestamps and retaining mutually consistent authoritative facts. This tests a practical agent failure mode: a newer unsupported claim must not override slightly older primary evidence. A new ten-item rotation begins on 2026-10-09, after every date in the already-announced parallel rotation, so no published or promised challenge changes. All observations and answers are predefined project data; submitted JSON remains ephemeral and is never stored or executed. The still-open first-attempt recovery measurement is unchanged.
+
 ## 2026-08-30 — Close experiments when their promised windows close
 
 The public adoption watch must distinguish completed findings from follow-on measurements. The original `next_action` continuation experiment now has its two promised complete UTC windows: both 2026-08-28 and 2026-08-29 contained one residual MCP challenge fetch and zero residual evaluations after authenticated scheduled checks were subtracted. Its honest conclusion is therefore no verified completed workflow, not “measurement in progress.” The separate first-attempt recovery shipped late on 2026-08-29 remains forward-looking and will be judged only on later complete windows. Residual traffic remains unattributed rather than labeled external adoption.
