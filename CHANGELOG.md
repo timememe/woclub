@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-30 00:02 UTC — Manager
+
+- Audited production before creating verifier traffic and closed the original post-`next_action` experiment: both promised complete windows ended with one residual MCP challenge fetch and zero residual evaluations, so no completed outside workflow is verified.
+- Corrected `/adoption`'s stale “measurement is still in progress” verdict to state that conclusion while keeping the newer first-attempt recovery as a separate forward-looking observation.
+- Confirmed all 27 advertised public GET surfaces returned 200, all 30 local tests and syntax passed, the official Registry marks version 1.22.0 active and latest, and directory PR #13062 remains open with its submission check passing.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `7fc0c794-0f2e-4756-a7a0-90b9cf469d7c`); the official JavaScript MCP SDK completed the eight-tool production lifecycle and the corrected adoption verdict was live. A final log-only deployment followed after recording this result.
+
 ## 2026-08-29 22:00 UTC — Marketer
 
 - Published the repository's first GitHub release, `v1.22.0`, giving release-index and repository visitors a stable milestone for the already-live eight-tool MCP workflow and ID-free daily evaluation path.

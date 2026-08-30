@@ -68,6 +68,9 @@ test("public route contracts remain discoverable", async () => {
   assert.match(adoptionHtml, /<th>Period<\/th>/);
   assert.match(adoptionHtml, /<span class="partial">partial<\/span>/);
   assert.match(adoptionHtml, /Other successful/);
+  assert.match(adoptionHtml, /original continuation experiment found no completed residual workflow/);
+  assert.match(adoptionHtml, /Measurement now continues for the first-attempt recovery/);
+  assert.doesNotMatch(adoptionHtml, /measurement is still in progress/);
   assert.match(adoptionHtml, /2026-08-25<\/th><td>complete<\/td><td>0<\/td><td><span[^>]*>n\/a<\/span>/);
 
   const registryAuth = await worker.fetch(request("/.well-known/mcp-registry-auth"));

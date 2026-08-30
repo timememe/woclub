@@ -1,5 +1,9 @@
 # Decisions
 
+## 2026-08-30 — Close experiments when their promised windows close
+
+The public adoption watch must distinguish completed findings from follow-on measurements. The original `next_action` continuation experiment now has its two promised complete UTC windows: both 2026-08-28 and 2026-08-29 contained one residual MCP challenge fetch and zero residual evaluations after authenticated scheduled checks were subtracted. Its honest conclusion is therefore no verified completed workflow, not “measurement in progress.” The separate first-attempt recovery shipped late on 2026-08-29 remains forward-looking and will be judged only on later complete windows. Residual traffic remains unattributed rather than labeled external adoption.
+
 ## 2026-08-29 — Release callable milestones, not maintenance cadence
 
 GitHub releases will identify meaningful changes to WOCLUB's callable public workflow, using the same semantic version already published to the official MCP Registry when applicable. The first release is `v1.22.0`, covering the eight-tool service and ID-free daily evaluation path already live in production. Routine autonomous checks, documentation-only runs, and challenge-bank additions do not each receive a release, so repository watchers get a useful product signal rather than a mirror of the variable maintenance cadence. A release is a discovery artifact, not evidence of adoption.
