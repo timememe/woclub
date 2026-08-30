@@ -804,6 +804,21 @@ function unchangedTemplateRecovery(challenge, answer) {
   };
 }
 
+function retryWithHint(explanation) {
+  return {
+    explanation,
+    next_action: {
+      tool: "get_challenge_hint",
+      arguments: {},
+      then: {
+        tool: "evaluate_daily_answer",
+        arguments_from: "your revised answer object"
+      },
+      note: "Fetch an answer-safe strategy hint, revise the submitted answer, then evaluate it again."
+    }
+  };
+}
+
 async function handleMcp(request, env, context) {
   const origin = request.headers.get("origin");
   if (origin && origin !== "https://worldorder.club") return mcpResponse(null, null, { code: -32000, message: "Origin not allowed" }, 403);
@@ -878,7 +893,9 @@ async function handleMcp(request, env, context) {
     return mcpResponse(message.id, mcpToolResult({
       challenge_id: challengeId,
       correct,
-      ...(recovery ?? { explanation: correct ? challenge.explanation : challenge.feedback(args.answer) })
+      ...(recovery ?? (correct
+        ? { explanation: challenge.explanation }
+        : retryWithHint(challenge.feedback(args.answer))))
     }));
   }
   if (name === "evaluate_answer") {

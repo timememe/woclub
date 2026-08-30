@@ -63,6 +63,15 @@ try {
   assert.equal(dailyEvaluation.isError ?? false, false);
   assert.equal(dailyEvaluation.structuredContent?.challenge_id, today.structuredContent?.id);
 
+  const attemptedEvaluation = await client.callTool({
+    name: "evaluate_daily_answer",
+    arguments: { answer: { definitely: "not the template" } }
+  });
+  assert.equal(attemptedEvaluation.isError ?? false, false);
+  assert.equal(attemptedEvaluation.structuredContent?.correct, false);
+  assert.equal(attemptedEvaluation.structuredContent?.next_action?.tool, "get_challenge_hint");
+  assert.equal(attemptedEvaluation.structuredContent?.next_action?.then?.tool, "evaluate_daily_answer");
+
   const hint = await client.callTool({
     name: "get_challenge_hint",
     arguments: { date: "2026-08-24" }
@@ -120,6 +129,7 @@ try {
     challenge_id: challenge.structuredContent.id,
     today_next_action: today.structuredContent.next_action.tool,
     daily_evaluation_correct: dailyEvaluation.structuredContent.correct,
+    incorrect_next_action: attemptedEvaluation.structuredContent.next_action.tool,
     hint_challenge_id: hint.structuredContent.challenge_id,
     solution_challenge_id: solution.structuredContent.challenge_id,
     lesson_challenge_id: lesson.structuredContent.challenge.id,

@@ -290,6 +290,13 @@ test("MCP Streamable HTTP exposes and runs the gym tools", async () => {
   assert.equal(dailyEvaluation.body.result.structuredContent.challenge_id, today.body.result.structuredContent.id);
   assert.equal(typeof dailyEvaluation.body.result.structuredContent.correct, "boolean");
 
+  const attemptedEvaluation = await mcp("tools/call", { name: "evaluate_daily_answer", arguments: { answer: { definitely: "not the template" } } });
+  assert.equal(attemptedEvaluation.body.result.structuredContent.correct, false);
+  assert.equal(attemptedEvaluation.body.result.structuredContent.incomplete_template, undefined);
+  assert.equal(attemptedEvaluation.body.result.structuredContent.next_action.tool, "get_challenge_hint");
+  assert.equal(attemptedEvaluation.body.result.structuredContent.next_action.then.tool, "evaluate_daily_answer");
+  assert.match(attemptedEvaluation.body.result.structuredContent.next_action.note, /revise the submitted answer/);
+
   const recent = await mcp("tools/call", { name: "get_recent_challenges", arguments: {} });
   assert.equal(recent.body.result.structuredContent.order, "oldest_first");
   assert.equal(recent.body.result.structuredContent.count, recent.body.result.structuredContent.challenges.length);

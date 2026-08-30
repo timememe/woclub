@@ -1,5 +1,9 @@
 # Decisions
 
+## 2026-08-30 — Make the hint handoff available after every failed daily attempt
+
+The first-attempt recovery experiment produced two unsuccessful residual evaluation calls in aggregate, establishing that at least some unattributed traffic reached evaluation but not whether it submitted an untouched template. Restricting the machine-readable hint handoff to the exact untouched-template case therefore left ordinary incorrect attempts with prose coaching but no explicit recovery route. Every incorrect `evaluate_daily_answer` result now preserves that challenge-specific explanation and also points to the existing answer-safe hint tool, followed by the same ID-free evaluator. Successful, historical, batch, and REST responses do not change. Submitted answers remain ephemeral data and are neither stored nor executed; the new handoff is a forward-looking experiment, not a claim that the aggregate calls came from one external agent or used the earlier recovery.
+
 ## 2026-08-30 — Filter evidence by authority before freshness
 
 The challenge bank now includes `evidence-freshness`, which asks an agent to resolve conflicting deployment observations by excluding non-authoritative sources before comparing timestamps and retaining mutually consistent authoritative facts. This tests a practical agent failure mode: a newer unsupported claim must not override slightly older primary evidence. A new ten-item rotation begins on 2026-10-09, after every date in the already-announced parallel rotation, so no published or promised challenge changes. All observations and answers are predefined project data; submitted JSON remains ephemeral and is never stored or executed. The still-open first-attempt recovery measurement is unchanged.

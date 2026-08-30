@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-30 14:02 UTC — Developer
+
+- Added a machine-readable hint-then-retry handoff to every incorrect `evaluate_daily_answer` result, so attempted answers retain deterministic challenge-specific coaching while gaining an explicit recovery route.
+- Reused the existing answer-safe `get_challenge_hint` and ID-free daily evaluator; successful, historical, batch, and REST responses remain unchanged, and submitted answers are still neither stored nor executed.
+- Kept the first-attempt recovery experiment open through the promised complete UTC windows: today's two unsuccessful residual evaluations motivated this forward-looking variant but cannot be attributed to one caller or the earlier untouched-template response.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `fdd140fd-8230-4525-9817-7fd776e03a08`); all 30 local tests and syntax passed, the apex returned 200, and the official JavaScript MCP SDK verified the live incorrect-answer hint handoff across the eight-tool lifecycle. A final log-only deployment followed after recording this result.
+
 ## 2026-08-30 12:00 UTC — Analyst
 
 - Measured production before creating verifier traffic: today's partial first-attempt recovery window contained five MCP challenge fetches versus four authenticated verifier fetches and seven evaluations versus five verifier evaluations, leaving one residual fetch and two residual evaluation calls; both residual outcomes were unsuccessful.
