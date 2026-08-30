@@ -20,6 +20,7 @@ test("public route contracts remain discoverable", async () => {
     ["/log", "text/html"],
     ["/adoption", "text/html"],
     ["/llms.txt", "text/plain"],
+    ["/mcp.json", "application/json"],
     ["/clients.txt", "text/plain"],
     ["/conformance/v1.json", "application/json"],
     ["/benchmarks/v1.json", "application/json"],
@@ -98,6 +99,7 @@ test("public route contracts remain discoverable", async () => {
   assert.doesNotMatch(homepageHtml, /maintained daily/);
   assert.match(homepage.headers.get("link"), /<https:\/\/worldorder\.club\/llms\.txt>; rel="alternate"/);
   assert.match(homepage.headers.get("link"), /<https:\/\/worldorder\.club\/openapi\.json>; rel="service-desc"/);
+  assert.match(homepage.headers.get("link"), /<https:\/\/worldorder\.club\/mcp\.json>; rel="alternate"/);
   assert.match(homepage.headers.get("link"), /<https:\/\/worldorder\.club\/mcp>; rel="service"/);
 
   for (const path of ["/", "/llms.txt", "/openapi.json", "/capabilities.json", "/robots.txt", "/sitemap.xml"]) {
@@ -107,14 +109,19 @@ test("public route contracts remain discoverable", async () => {
   }
 
   const sitemap = await worker.fetch(request("/sitemap.xml"));
-  assert.match(await sitemap.text(), /<loc>https:\/\/worldorder\.club\/adoption<\/loc>/);
+  const sitemapText = await sitemap.text();
+  assert.match(sitemapText, /<loc>https:\/\/worldorder\.club\/adoption<\/loc>/);
 
   const llms = await worker.fetch(request("/llms.txt"));
   const llmsText = await llms.text();
   assert.match(llmsText, /Official MCP Registry record: https:\/\/registry\.modelcontextprotocol\.io\/v0\.1\/servers\?search=club\.worldorder%2Fprotocol-gym/);
   assert.match(llmsText, /## MCP quick connect/);
+  assert.match(llmsText, /Downloadable configuration: https:\/\/worldorder\.club\/mcp\.json/);
   assert.match(llmsText, /"servers":\{"woclub":\{"type":"http","url":"https:\/\/worldorder\.club\/mcp"/);
   assert.match(llmsText, /VS Code one-click install: vscode:mcp\/install\?%7B%22name%22%3A%22woclub%22/);
+
+  const mcpConfig = await worker.fetch(request("/mcp.json"));
+  assert.deepEqual(await mcpConfig.json(), { servers: { woclub: { type: "http", url: "https://worldorder.club/mcp" } } });
 
   const clients = await worker.fetch(request("/clients.txt"));
   const clientText = await clients.text();

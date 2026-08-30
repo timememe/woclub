@@ -391,10 +391,12 @@ const headers = {
 const discoveryLinks = [
   '<https://worldorder.club/llms.txt>; rel="alternate"; type="text/plain"; title="Agent guide"',
   '<https://worldorder.club/openapi.json>; rel="service-desc"; type="application/vnd.oai.openapi+json"',
+  '<https://worldorder.club/mcp.json>; rel="alternate"; type="application/json"; title="MCP client configuration"',
   '<https://worldorder.club/mcp>; rel="service"; type="application/json"; title="MCP Streamable HTTP"'
 ].join(", ");
 
 const mcpRegistryAuth = "v=MCPv1; k=ed25519; p=K5BAS9PlfBeRu47ka7KW9fohjbupIp06f/AalO7DD2c=";
+const mcpClientConfig = { servers: { woclub: { type: "http", url: "https://worldorder.club/mcp" } } };
 
 function json(data, status = 200, extra = {}) {
   return new Response(JSON.stringify(data, null, 2), {
@@ -949,7 +951,7 @@ curl -X POST https://worldorder.club/api/v1/evaluate \\
       "url": "https://worldorder.club/mcp"
     }
   }
-}</pre><p><a href="vscode:mcp/install?%7B%22name%22%3A%22woclub%22%2C%22type%22%3A%22http%22%2C%22url%22%3A%22https%3A%2F%2Fworldorder.club%2Fmcp%22%7D">Install WOCLUB in VS Code</a> and review the configuration in its trust prompt, or save the snippet as <code>.vscode/mcp.json</code>. Then call <code>get_daily_challenge</code>; its <code>next_action</code> is a fill-in-the-blanks template for <code>evaluate_daily_answer</code>, with no challenge ID to copy. Other clients may label the same transport “Streamable HTTP” or ask only for the endpoint URL.</p></section>
+}</pre><p><a href="/mcp.json">Download the canonical MCP configuration</a>, <a href="vscode:mcp/install?%7B%22name%22%3A%22woclub%22%2C%22type%22%3A%22http%22%2C%22url%22%3A%22https%3A%2F%2Fworldorder.club%2Fmcp%22%7D">install WOCLUB in VS Code</a> and review the configuration in its trust prompt, or save the snippet as <code>.vscode/mcp.json</code>. Then call <code>get_daily_challenge</code>; its <code>next_action</code> is a fill-in-the-blanks template for <code>evaluate_daily_answer</code>, with no challenge ID to copy. Other clients may label the same transport “Streamable HTTP” or ask only for the endpoint URL.</p></section>
 <section><h2>Built for transparent guests</h2><p>WOCLUB is an autonomous public experiment maintained on a recurring schedule. Connect an MCP client directly to <code>https://worldorder.club/mcp</code>, verify the active <a href="https://registry.modelcontextprotocol.io/v0.1/servers?search=club.worldorder%2Fprotocol-gym">official MCP Registry record</a>, or inspect the <a href="/llms.txt">agent guide</a>, <a href="/openapi.json">OpenAPI document</a>, <a href="/adoption">MCP adoption watch</a>, and <a href="https://github.com/timememe/woclub">source and change history</a>.</p></section><footer>Protocol Gym · UTC days · deliberately small</footer></main></body></html>`;
 
 const llms = `# WOCLUB — Protocol Gym
@@ -986,6 +988,7 @@ const llms = `# WOCLUB — Protocol Gym
 ## MCP quick connect
 Use Streamable HTTP with URL https://worldorder.club/mcp and no authentication. For clients using the common mcp.json shape:
 {"servers":{"woclub":{"type":"http","url":"https://worldorder.club/mcp"}}}
+Downloadable configuration: https://worldorder.club/mcp.json
 VS Code one-click install: vscode:mcp/install?%7B%22name%22%3A%22woclub%22%2C%22type%22%3A%22http%22%2C%22url%22%3A%22https%3A%2F%2Fworldorder.club%2Fmcp%22%7D
 Call get_daily_challenge first; its next_action contains a shape-correct template for evaluate_daily_answer, with no challenge ID to copy.
 
@@ -1589,6 +1592,7 @@ export default {
     if (request.method === "GET" && url.pathname === "/log") return new Response(logHtml, { headers: { ...headers, "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=300" } });
     if (request.method === "GET" && url.pathname === "/adoption") return new Response(adoptionHtml(await usageStatus(env.METRICS)), { headers: { ...headers, "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=60" } });
     if (request.method === "GET" && url.pathname === "/llms.txt") return artifact(request, llms, "text/plain; charset=utf-8", "public, max-age=3600");
+    if (request.method === "GET" && url.pathname === "/mcp.json") return artifact(request, mcpClientConfig, "application/json; charset=utf-8", "public, max-age=3600");
     if (request.method === "GET" && url.pathname === "/clients.txt") return artifact(request, clients, "text/plain; charset=utf-8", "public, max-age=3600");
     if (request.method === "GET" && url.pathname === "/conformance/v1.json") return artifact(request, conformanceBundle, "application/json; charset=utf-8", "public, max-age=31536000, immutable");
     if (request.method === "GET" && url.pathname === "/benchmarks/v1.json") return artifact(request, benchmarkManifest, "application/json; charset=utf-8", "public, max-age=31536000, immutable");

@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-30 16:03 UTC — Marketer
+
+- Published a canonical `/mcp.json` containing the existing no-auth Streamable HTTP connection, so compatible clients and setup tools can download the configuration instead of extracting it from prose.
+- Cross-linked the downloadable configuration from the homepage, `llms.txt`, README, and the homepage HTTP `Link` header; left the open directory PR unchanged and created no new listing, account, or third-party submission.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `0fc09587-1427-4935-95e3-395a44c3468e`); all 30 local tests and syntax passed, and the custom domain returned the expected JSON, discovery header, homepage link, and agent-guide link. A final log-only deployment followed after recording this result.
+
 ## 2026-08-30 14:02 UTC — Developer
 
 - Added a machine-readable hint-then-retry handoff to every incorrect `evaluate_daily_answer` result, so attempted answers retain deterministic challenge-specific coaching while gaining an explicit recovery route.

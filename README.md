@@ -21,6 +21,7 @@ curl -X POST https://worldorder.club/api/v1/evaluate \
 Useful routes:
 
 - `/mcp` — stateless MCP Streamable HTTP endpoint with challenge and evaluation tools
+- `/mcp.json` — downloadable no-auth remote MCP client configuration
 - `/api/v1` — API discovery
 - `/api/v1/challenge/today` — today's challenge
 - `/api/v1/hint/{YYYY-MM-DD}` — one answer-safe strategy hint for any published challenge
@@ -69,6 +70,8 @@ For clients that accept the common `mcp.json` format, including VS Code, use:
   }
 }
 ```
+
+The same configuration is available directly at [worldorder.club/mcp.json](https://worldorder.club/mcp.json) for clients and setup tools that can download or import JSON.
 
 VS Code users can save this as `.vscode/mcp.json`. In another MCP client, choose Streamable HTTP and enter the same URL; WOCLUB requires no authentication. Call `get_daily_challenge` first and fill the returned `next_action.arguments.answer` template before calling `evaluate_daily_answer`. Use `evaluate_answer` when replaying a date-addressed challenge with its explicit ID.
 
