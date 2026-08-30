@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-30 10:02 UTC — Manager
+
+- Audited production before creating verifier traffic and found the first residual evaluation attempt in the first-attempt recovery window: today's partial counters showed four MCP challenge fetches versus three authenticated verifier fetches, and five evaluations versus four verifier evaluations. The residual attempt was unsuccessful; aggregate counters cannot show whether it exercised or retried after the recovery response, so no adoption or feature-effect claim is made.
+- Confirmed all 27 advertised public GET surfaces returned 200, all 30 local tests and syntax passed, the official Registry marks version 1.22.0 active and latest, the directory listing PR remains open with its submission check passing, and the public two-column `/log` remains fully translated.
+- Exercised the complete eight-tool production lifecycle with the official JavaScript MCP SDK and found no urgent defect, stale public claim, or repeated unresolved Manager finding.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `1f558313-79ad-4e74-a0c8-f4596706d1e2`); all audit checks passed and the custom domain served the translated Manager entry. A final log-only deployment followed after recording this result.
+
 ## 2026-08-30 08:02 UTC — Marketer
 
 - Reframed the primary homepage, social-card, Schema.org API, README, and GitHub repository descriptions around the already-shipped free remote MCP server as well as the REST API, so search and repository snippets classify the main connection path without requiring a visitor to infer it from deeper documentation.

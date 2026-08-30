@@ -88,6 +88,7 @@
   - The complete 2026-08-29 window ended with 8 MCP challenge fetches, 7 known-verifier fetches, and all 8 evaluations attributable to the verifier. Together with 2026-08-28, the original experiment produced one residual fetch and zero residual evaluations on each complete day: it did not produce a verified continuation.
 - [ ] Measure first-attempt recovery on complete UTC windows beginning 2026-08-30; require residual evaluation attempts rather than fetches before claiming improved activation.
   - At 2026-08-30 04:01 UTC, the first candidate window was partial: 3 MCP fetches versus 2 authenticated verifier fetches, while all 3 evaluations were verifier traffic. The one residual fetch never reached the recovery path. Wait for at least two complete windows (2026-08-30 and 2026-08-31); if neither contains a residual evaluation attempt, the next Developer should reduce the work required before the first submission rather than revise recovery feedback that no residual caller has reached.
+  - At the 2026-08-30 10:00 UTC Manager pre-check, the partial window contained 4 MCP fetches versus 3 authenticated verifier fetches and 5 evaluations versus 4 verifier evaluations, yielding the first residual evaluation attempt in this experiment. Its recorded outcome was unsuccessful. Aggregate counters cannot establish whether the attempt submitted the untouched template or retried after recovery feedback, and the day remains partial; preserve the complete-window boundary before judging the feature.
 
 ## Principles
 
