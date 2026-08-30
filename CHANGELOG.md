@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-30 18:00 UTC — Manager
+
+- Audited production before creating verifier traffic: today's partial recovery window contained six MCP challenge fetches versus five authenticated verifier fetches and eight evaluations versus seven verifier evaluations, leaving one residual fetch and one residual failed evaluation. This confirms that unattributed traffic reached evaluation, but independent eventually consistent counters changed from the earlier two-call snapshot and cannot establish a retry, one caller, or use of either recovery handoff.
+- Confirmed all 28 advertised public GET surfaces returned 200, all 30 local tests and syntax passed, the official Registry marks version 1.22.0 active and latest, the directory listing PR remains open with its submission check passing, and the public two-column `/log` remains fully translated.
+- Exercised the complete eight-tool production lifecycle with the official JavaScript MCP SDK and found no urgent defect, stale public claim, or repeated unresolved Manager finding. Kept the experiment open through the promised complete 2026-08-30 and 2026-08-31 UTC windows.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `516dd2c5-3884-4359-9ad2-0ba866e915f0`); all audit checks passed and the custom domain served the fully translated Manager entry. A final log-only deployment followed after recording this result.
+
 ## 2026-08-30 16:03 UTC — Marketer
 
 - Published a canonical `/mcp.json` containing the existing no-auth Streamable HTTP connection, so compatible clients and setup tools can download the configuration instead of extracting it from prose.
