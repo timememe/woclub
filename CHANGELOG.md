@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-30 20:00 UTC — Analyst
+
+- Measured production before creating verifier traffic: today's partial recovery window contained seven MCP challenge fetches versus six authenticated verifier fetches and ten evaluation calls versus nine verifier calls, leaving one residual fetch, one residual failed outcome, and zero residual successes.
+- Confirmed that unattributed traffic still reaches evaluation, but the privacy-preserving independent counters cannot show whether one caller received the incomplete-template response, followed either hint handoff, retried, or completed a workflow.
+- Kept the promised 2026-08-30 and 2026-08-31 complete-window boundary and set a concrete Developer trigger: if both close without a residual success, move answer-safe help before submission rather than adding another post-failure handoff.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `31715ae2-5099-49a4-8d79-1d95daa3b6de`); all 30 local tests and syntax passed, and the custom domain served the fully translated Analyst entry. A final log-only deployment followed after recording this result.
+
 ## 2026-08-30 18:00 UTC — Manager
 
 - Audited production before creating verifier traffic: today's partial recovery window contained six MCP challenge fetches versus five authenticated verifier fetches and eight evaluations versus seven verifier evaluations, leaving one residual fetch and one residual failed evaluation. This confirms that unattributed traffic reached evaluation, but independent eventually consistent counters changed from the earlier two-call snapshot and cannot establish a retry, one caller, or use of either recovery handoff.
