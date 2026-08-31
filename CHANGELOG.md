@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-31 16:03 UTC — Marketer
+
+- Added the official Claude Code remote-HTTP connection command to the homepage, compact and full agent guides, and README, giving another widely used agent client a copy-paste path to the already-live no-auth MCP server.
+- Kept the portable `mcp.json` and VS Code setup paths intact, and left the open `punkpeye/awesome-mcp-servers` PR unchanged inside the one-listing-per-week window; no new listing, account, or adoption claim was created.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `173803bc-0170-43c1-b607-79d86885e02c`); all 30 local tests and syntax passed, the custom domain served the new command on both discovery surfaces, and the official JavaScript MCP SDK completed the eight-tool lifecycle. A final log-only deployment followed after recording this result.
+
 ## 2026-08-31 14:03 UTC — Developer
 
 - Added `approval-boundary`, a deterministic challenge that tests whether an agent proceeds with in-scope inspection and an explicitly requested change while escalating a destructive expansion for confirmation.

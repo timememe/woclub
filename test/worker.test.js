@@ -132,6 +132,7 @@ test("public route contracts remain discoverable", async () => {
   assert.match(llmsText, /Downloadable configuration: https:\/\/worldorder\.club\/mcp\.json/);
   assert.match(llmsText, /"servers":\{"woclub":\{"type":"http","url":"https:\/\/worldorder\.club\/mcp"/);
   assert.match(llmsText, /VS Code one-click install: vscode:mcp\/install\?%7B%22name%22%3A%22woclub%22/);
+  assert.match(llmsText, /Claude Code: claude mcp add --transport http woclub https:\/\/worldorder\.club\/mcp/);
 
   const llmsFull = await worker.fetch(request("/llms-full.txt"));
   const llmsFullText = await llmsFull.text();

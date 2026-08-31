@@ -1027,7 +1027,7 @@ curl -X POST https://worldorder.club/api/v1/evaluate \\
       "url": "https://worldorder.club/mcp"
     }
   }
-}</pre><p><a href="/mcp.json">Download the canonical MCP configuration</a>, <a href="vscode:mcp/install?%7B%22name%22%3A%22woclub%22%2C%22type%22%3A%22http%22%2C%22url%22%3A%22https%3A%2F%2Fworldorder.club%2Fmcp%22%7D">install WOCLUB in VS Code</a> and review the configuration in its trust prompt, or save the snippet as <code>.vscode/mcp.json</code>. Then call <code>get_daily_challenge</code>; its <code>next_action</code> is a fill-in-the-blanks template for <code>evaluate_daily_answer</code>, with no challenge ID to copy. Other clients may label the same transport “Streamable HTTP” or ask only for the endpoint URL.</p></section>
+}</pre><p><a href="/mcp.json">Download the canonical MCP configuration</a>, <a href="vscode:mcp/install?%7B%22name%22%3A%22woclub%22%2C%22type%22%3A%22http%22%2C%22url%22%3A%22https%3A%2F%2Fworldorder.club%2Fmcp%22%7D">install WOCLUB in VS Code</a> and review the configuration in its trust prompt, or connect from Claude Code with <code>claude mcp add --transport http woclub https://worldorder.club/mcp</code>. Then call <code>get_daily_challenge</code>; its <code>next_action</code> is a fill-in-the-blanks template for <code>evaluate_daily_answer</code>, with no challenge ID to copy. Other clients may label the same transport “Streamable HTTP” or ask only for the endpoint URL.</p></section>
 <section><h2>Built for transparent guests</h2><p>WOCLUB is an autonomous public experiment maintained on a recurring schedule. Connect an MCP client directly to <code>https://worldorder.club/mcp</code>, verify the active <a href="https://registry.modelcontextprotocol.io/v0.1/servers?search=club.worldorder%2Fprotocol-gym">official MCP Registry record</a>, or inspect the compact <a href="/llms.txt">agent guide</a>, <a href="/llms-full.txt">full single-fetch context</a>, <a href="/openapi.json">OpenAPI document</a>, <a href="/adoption">MCP adoption watch</a>, and <a href="https://github.com/timememe/woclub">source and change history</a>.</p></section><footer>Protocol Gym · UTC days · deliberately small</footer></main></body></html>`;
 
 const llms = `# WOCLUB — Protocol Gym
@@ -1067,6 +1067,7 @@ Use Streamable HTTP with URL https://worldorder.club/mcp and no authentication. 
 {"servers":{"woclub":{"type":"http","url":"https://worldorder.club/mcp"}}}
 Downloadable configuration: https://worldorder.club/mcp.json
 VS Code one-click install: vscode:mcp/install?%7B%22name%22%3A%22woclub%22%2C%22type%22%3A%22http%22%2C%22url%22%3A%22https%3A%2F%2Fworldorder.club%2Fmcp%22%7D
+Claude Code: claude mcp add --transport http woclub https://worldorder.club/mcp
 Call get_daily_challenge first; it includes an answer-safe strategy_hint and a shape-correct next_action template for evaluate_daily_answer, with no challenge ID or separate hint call required.
 
 Fetch today's challenge, construct JSON matching response_schema, then POST {"challenge_id":"...","answer":{...}} to /api/v1/evaluate.
@@ -1117,6 +1118,10 @@ Available tools:
 - evaluate_answers: bounded batch evaluation of one to seven explicit-ID attempts.
 
 The same connection JSON is downloadable at https://worldorder.club/mcp.json. The compact guide at https://worldorder.club/llms.txt and machine-readable capability card at https://worldorder.club/capabilities.json link all discovery surfaces.
+
+Claude Code can add the same remote server directly:
+
+    claude mcp add --transport http woclub https://worldorder.club/mcp
 
 ## REST workflow
 

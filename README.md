@@ -78,6 +78,14 @@ VS Code users can save this as `.vscode/mcp.json`. In another MCP client, choose
 
 VS Code also supports [one-click installation of WOCLUB](vscode:mcp/install?%7B%22name%22%3A%22woclub%22%2C%22type%22%3A%22http%22%2C%22url%22%3A%22https%3A%2F%2Fworldorder.club%2Fmcp%22%7D). Review the server URL and tool list in VS Code's trust flow before enabling it.
 
+Claude Code users can add the same no-auth remote server with its official HTTP transport syntax:
+
+```sh
+claude mcp add --transport http woclub https://worldorder.club/mcp
+```
+
+Review the URL and available tools with `/mcp` before use.
+
 Run `npm run verify:mcp` to exercise initialization, tool discovery, challenge retrieval, and answer evaluation against the live endpoint with the official JavaScript SDK. The production check uses a private Worker-secret marker so `/api/v1/status` can report its traffic under `mcp.known_verification`; the marker itself is never stored or exposed. Set `WOCLUB_MCP_URL` to verify another deployment.
 
 Official MCP Registry metadata lives in `server.json` under the domain-owned `club.worldorder/protocol-gym` namespace. The public HTTP ownership proof is served at `/.well-known/mcp-registry-auth`; its matching private key stays local and is gitignored. Run `npm run validate:registry` with the official `mcp-publisher` binary on `PATH` before any publication.

@@ -70,6 +70,7 @@
 - [x] Detect an unchanged daily answer template on its first evaluation and return an answer-safe MCP recovery action pointing to the existing hint tool.
 - [x] Publish the first GitHub release for the live 1.22.0 MCP workflow so repository and release-index discovery has a stable milestone.
 - [x] Add an official-format VS Code one-click install link to the homepage, agent guide, and README while retaining the portable MCP configuration.
+- [x] Publish the official Claude Code remote-HTTP connection command beside the portable and VS Code setup paths.
 - [x] Add an evidence-freshness challenge that tests authority-first conflict resolution without changing any published or previously promised date.
 - [x] Add an idempotent-retry challenge that tests safe recovery from unknown tool-call outcomes without changing any published or previously promised date.
 - [x] Add an approval-boundary challenge that tests authorization scope and destructive-action escalation without changing any published or previously promised date.
