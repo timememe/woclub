@@ -273,3 +273,7 @@ The public status response now has a standalone Draft 2020-12 schema covering it
 ## 2026-08-25 — Use one closed schema for API failure envelopes
 
 Common 400, 404, and 413 responses share one canonical Draft 2020-12 schema at `/schemas/error-response.json`. Its closed `oneOf` variants enumerate every stable error code and the fields allowed with it, so clients can validate distinct failure paths through one OpenAPI reference without accepting arbitrary properties. Successful response contracts remain separate because they have different caching and client-handling semantics.
+
+## 2026-08-31 — Guide only the live REST challenge into its first evaluation
+
+The default `/api/v1/challenge/today` response now adds the challenge's project-authored answer-safe hint and a complete POST handoff whose answer object contains shape-correct placeholders. The date-addressed historical route and recent pack remain byte-shape compatible, because replay clients did not create the observed continuation gap and should not receive mutable activation fields. The existing challenge schema keeps its required base fields and describes the two current-response fields as optional, allowing both live and replay shapes to validate without weakening the closed contract. The handoff contains no solution values, and submitted visitor data remains untrusted, unstored, and unexecuted.

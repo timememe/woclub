@@ -545,6 +545,8 @@ test("published JSON Schemas describe live success responses", async () => {
   assert.equal(challengeSchema.$schema, "https://json-schema.org/draft/2020-12/schema");
   assert.equal(challengeSchema.$id, `${origin}/schemas/challenge.json`);
   assert.deepEqual(challengeSchema.required, ["date", "id", "title", "prompt", "constraints", "response_schema", "evaluate_url", "note"]);
+  assert.deepEqual(challengeSchema.properties.next_action.required, ["method", "url", "body", "note"]);
+  assert.deepEqual(challengeSchema.properties.next_action.properties.body.required, ["challenge_id", "answer"]);
   assert.equal(evaluationSchema.$id, `${origin}/schemas/evaluation.json`);
   assert.deepEqual(evaluationSchema.required, ["challenge_id", "correct", "explanation"]);
 
@@ -552,6 +554,22 @@ test("published JSON Schemas describe live success responses", async () => {
   assert.equal(openapi.info.version, "1.21.0");
   assert.equal(openapi.paths["/api/v1/challenge/today"].get.responses["200"].content["application/json"].schema.$ref, challengeSchema.$id);
   assert.equal(openapi.paths["/api/v1/evaluate"].post.responses["200"].content["application/json"].schema.$ref, evaluationSchema.$id);
+});
+
+test("today's REST challenge provides an answer-safe evaluation handoff", async () => {
+  const today = (await responseJson("/api/v1/challenge/today")).body;
+  assert.equal(typeof today.strategy_hint, "string");
+  assert.ok(today.strategy_hint.length > 0);
+  assert.equal(today.next_action.method, "POST");
+  assert.equal(today.next_action.url, `${origin}/api/v1/evaluate`);
+  assert.equal(today.next_action.body.challenge_id, today.id);
+  assert.deepEqual(Object.keys(today.next_action.body.answer), Object.keys(today.response_schema));
+  assert.notDeepEqual(today.next_action.body.answer, {});
+  assert.match(today.next_action.note, /strategy_hint/);
+
+  const historical = (await responseJson("/api/v1/challenge/2026-08-24")).body;
+  assert.equal(historical.strategy_hint, undefined);
+  assert.equal(historical.next_action, undefined);
 });
 
 test("usage status exposes aggregate counts without stored visitor content", async () => {

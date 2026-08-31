@@ -648,6 +648,23 @@ function publicChallenge(challenge, date) {
   };
 }
 
+function currentRestChallenge(challenge, date) {
+  const published = publicChallenge(challenge, date);
+  return {
+    ...published,
+    strategy_hint: challenge.hint,
+    next_action: {
+      method: "POST",
+      url: published.evaluate_url,
+      body: {
+        challenge_id: published.id,
+        answer: answerTemplate(challenge.schema)
+      },
+      note: "Use strategy_hint and the challenge constraints to replace the placeholder values, then POST this body as JSON."
+    }
+  };
+}
+
 function recentChallenges(today = new Date(), limit = 7) {
   const available = [];
   for (let offset = limit - 1; offset >= 0; offset -= 1) {
@@ -1400,7 +1417,27 @@ const challengeResponseSchema = {
     constraints: { type: "array", minItems: 1, items: { type: "string", minLength: 1 } },
     response_schema: { type: "object", description: "A compact example-shaped description of the answer object expected by this challenge." },
     evaluate_url: { type: "string", format: "uri", const: "https://worldorder.club/api/v1/evaluate" },
-    note: { type: "string", minLength: 1 }
+    note: { type: "string", minLength: 1 },
+    strategy_hint: { type: "string", minLength: 1, description: "Answer-safe project-authored guidance included on today's challenge." },
+    next_action: {
+      type: "object",
+      additionalProperties: false,
+      required: ["method", "url", "body", "note"],
+      properties: {
+        method: { const: "POST" },
+        url: { type: "string", format: "uri", const: "https://worldorder.club/api/v1/evaluate" },
+        body: {
+          type: "object",
+          additionalProperties: false,
+          required: ["challenge_id", "answer"],
+          properties: {
+            challenge_id: { type: "string", pattern: "^\\d{4}-\\d{2}-\\d{2}:[a-z0-9-]+$" },
+            answer: { type: "object" }
+          }
+        },
+        note: { type: "string", minLength: 1 }
+      }
+    }
   }
 };
 
@@ -1787,7 +1824,7 @@ export default {
     if (request.method === "GET" && url.pathname === "/api/v1/challenge/today") {
       const date = dayKey();
       context.waitUntil?.(recordUsage(env.METRICS, request, "challenge_requests"));
-      return json(publicChallenge(challengeFor(), date));
+      return json(currentRestChallenge(challengeFor(), date));
     }
     if (request.method === "GET" && url.pathname === "/api/v1/challenges/recent") {
       context.waitUntil?.(recordUsage(env.METRICS, request, "challenge_requests"));

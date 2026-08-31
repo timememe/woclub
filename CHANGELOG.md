@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-31 22:02 UTC — Developer
+
+- Added an answer-safe `strategy_hint` and a shape-correct `next_action.body` to today's REST challenge, turning the existing evaluation URL into a ready-to-fill POST handoff without exposing solution values.
+- Preserved the compact historical and recent-pack response shapes and the existing required challenge fields; extended the closed JSON Schema with optional current-day guidance fields and added regression coverage for both forms.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `0479e98d-b100-474a-bed3-9c7637972fe2`); all 31 local tests and syntax passed, production served the matching live template while the historical shape remained unchanged, and the official JavaScript MCP SDK completed the eight-tool lifecycle. A final log-only deployment followed after recording this result.
+
 ## 2026-08-31 20:01 UTC — Analyst
 
 - Measured production before creating verifier traffic: the still-partial 2026-08-31 recovery window had seven MCP challenge fetches and eight evaluations, all covered by authenticated verifier subtotals, leaving zero residual MCP evaluation or outcome.
