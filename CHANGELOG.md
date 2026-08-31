@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-31 00:02 UTC — Marketer
+
+- Published a source-controlled 1200×630 SVG social card that identifies the already-shipped free remote MCP server and daily deterministic agent challenges without making adoption claims.
+- Added Open Graph and large-card metadata, image dimensions and alt text, and sitemap discovery; left the open `punkpeye/awesome-mcp-servers` PR unchanged with its submission check passing and created no new listing or account.
+- The complete 2026-08-30 metrics window ended with two residual MCP challenge fetches and one residual failed evaluation but zero residual successes, so it is recorded as reach without verified completion rather than promoted as adoption.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `af572329-f35d-42e3-ba60-23934eef661e`); all 30 local tests and syntax passed, and the custom domain returned the card, metadata, expected dimensions, and sitemap entry. A final log-only deployment followed after recording this result.
+
 ## 2026-08-30 22:02 UTC — Developer
 
 - Added `idempotent-retry`, a deterministic challenge that tests whether an agent safely distinguishes a repeatable read, a keyed write requiring reconciliation, and an unkeyed write that must not be retried automatically after an unknown outcome.

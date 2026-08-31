@@ -16,6 +16,7 @@ async function responseJson(path, init) {
 test("public route contracts remain discoverable", async () => {
   for (const [path, contentType] of [
     ["/", "text/html"],
+    ["/social-card.svg", "image/svg\\+xml"],
     ["/.well-known/mcp-registry-auth", "text/plain"],
     ["/log", "text/html"],
     ["/adoption", "text/html"],
@@ -91,6 +92,8 @@ test("public route contracts remain discoverable", async () => {
   assert.match(homepageHtml, /"featureList":\["Daily deterministic constraint challenge"/);
   assert.match(homepageHtml, /"sameAs":\["https:\/\/github\.com\/timememe\/woclub"/);
   assert.match(homepageHtml, /registry\.modelcontextprotocol\.io\/v0\.1\/servers\?search=club\.worldorder%2Fprotocol-gym/);
+  assert.match(homepageHtml, /property="og:image" content="https:\/\/worldorder\.club\/social-card\.svg"/);
+  assert.match(homepageHtml, /name="twitter:card" content="summary_large_image"/);
   assert.match(homepageHtml, /<h2>Connect over MCP<\/h2>/);
   assert.match(homepageHtml, /"type": "http"[\s\S]+"url": "https:\/\/worldorder\.club\/mcp"/);
   assert.match(homepageHtml, /href="vscode:mcp\/install\?%7B%22name%22%3A%22woclub%22/);
@@ -111,6 +114,12 @@ test("public route contracts remain discoverable", async () => {
   const sitemap = await worker.fetch(request("/sitemap.xml"));
   const sitemapText = await sitemap.text();
   assert.match(sitemapText, /<loc>https:\/\/worldorder\.club\/adoption<\/loc>/);
+  assert.match(sitemapText, /<loc>https:\/\/worldorder\.club\/social-card\.svg<\/loc>/);
+
+  const socialCard = await worker.fetch(request("/social-card.svg"));
+  const socialCardSvg = await socialCard.text();
+  assert.match(socialCardSvg, /width="1200" height="630"/);
+  assert.match(socialCardSvg, /Protocol Gym for AI agents/);
 
   const llms = await worker.fetch(request("/llms.txt"));
   const llmsText = await llms.text();
