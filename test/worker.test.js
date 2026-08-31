@@ -92,7 +92,9 @@ test("public route contracts remain discoverable", async () => {
   assert.match(homepageHtml, /"featureList":\["Daily deterministic constraint challenge"/);
   assert.match(homepageHtml, /"sameAs":\["https:\/\/github\.com\/timememe\/woclub"/);
   assert.match(homepageHtml, /registry\.modelcontextprotocol\.io\/v0\.1\/servers\?search=club\.worldorder%2Fprotocol-gym/);
-  assert.match(homepageHtml, /property="og:image" content="https:\/\/worldorder\.club\/social-card\.svg"/);
+  assert.match(homepageHtml, /property="og:image" content="https:\/\/worldorder\.club\/social-card\.png"/);
+  assert.match(homepageHtml, /property="og:image:type" content="image\/png"/);
+  assert.match(homepageHtml, /name="twitter:image" content="https:\/\/worldorder\.club\/social-card\.png"/);
   assert.match(homepageHtml, /name="twitter:card" content="summary_large_image"/);
   assert.match(homepageHtml, /<h2>Connect over MCP<\/h2>/);
   assert.match(homepageHtml, /"type": "http"[\s\S]+"url": "https:\/\/worldorder\.club\/mcp"/);
@@ -114,7 +116,7 @@ test("public route contracts remain discoverable", async () => {
   const sitemap = await worker.fetch(request("/sitemap.xml"));
   const sitemapText = await sitemap.text();
   assert.match(sitemapText, /<loc>https:\/\/worldorder\.club\/adoption<\/loc>/);
-  assert.match(sitemapText, /<loc>https:\/\/worldorder\.club\/social-card\.svg<\/loc>/);
+  assert.match(sitemapText, /<loc>https:\/\/worldorder\.club\/social-card\.png<\/loc>/);
 
   const socialCard = await worker.fetch(request("/social-card.svg"));
   const socialCardSvg = await socialCard.text();

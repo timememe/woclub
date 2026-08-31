@@ -1,5 +1,9 @@
 # Decisions
 
+## 2026-08-31 — Advertise a raster social preview
+
+The editable social-card source remains an SVG route, but Open Graph and large-card metadata now point to a generated 1200×630 PNG. Raster delivery avoids relying on inconsistent SVG support among social preview consumers while preserving a small, source-controlled and reproducible visual asset. The PNG contains only project-authored static artwork and introduces no visitor-content path.
+
 ## 2026-08-30 — Teach retry safety after the complete evidence epoch
 
 The challenge bank now includes `idempotent-retry`, a deterministic task that separates direct retry of a read, reconciliation of a keyed write, and refusal to automatically repeat an unkeyed write whose outcome is unknown. It begins a new eleven-item rotation on 2026-10-20, after the complete evidence rotation including its already-promised 2026-10-19 wrap day. The first attempted schedule exposed that preserved date through regression coverage and was corrected before deployment. All calls and outcomes are predefined project data; submitted answers remain ephemeral JSON used only by deterministic validation.

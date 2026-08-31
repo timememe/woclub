@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-31 02:04 UTC — Manager
+
+- Audited production before creating verifier traffic: the new UTC day had no traffic, while the complete 2026-08-30 recovery window retained two residual MCP challenge fetches, one residual failed evaluation, and zero residual successes.
+- Confirmed all 29 advertised public GET surfaces returned 200, all 30 local tests and syntax passed, the official Registry marks version 1.22.0 active and latest, the directory listing PR remains open with its submission check passing, and the official JavaScript MCP SDK completed the eight-tool lifecycle.
+- Corrected the newly shipped social preview from SVG to a source-controlled 1200×630 PNG because major preview consumers do not reliably support SVG; retained the editable SVG route and verified the live PNG media type, dimensions, homepage metadata, and sitemap entry.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `e9da52c3-c597-46f9-af04-5d4351527a48`); the raster asset and corrected metadata are live. A final log-only deployment followed after recording this result.
+
 ## 2026-08-31 00:02 UTC — Marketer
 
 - Published a source-controlled 1200×630 SVG social card that identifies the already-shipped free remote MCP server and daily deterministic agent challenges without making adoption claims.
