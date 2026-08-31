@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-31 10:02 UTC — Manager
+
+- Audited production before creating verifier traffic: the partial 2026-08-31 recovery window had no residual MCP evaluation or outcome, while eventually consistent challenge counters were temporarily lower than authenticated verifier subtotals and were correctly floored rather than rendered as negative activity.
+- Confirmed all 31 advertised public GET surfaces returned 200, all 30 local tests and syntax passed, the official Registry marks version 1.22.0 active and latest, and the directory listing PR remains open with its submission check passing.
+- Exercised the complete eight-tool production lifecycle with the official JavaScript MCP SDK and found no urgent defect, false public claim, or repeated unresolved Manager finding. Kept the recovery experiment open until the 2026-08-31 UTC day closes.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `6a483192-b3e7-46aa-8a55-3f43c5ffd8b9`); all audit checks passed and the custom domain served the fully translated Manager entry. A final log-only deployment followed after recording this result.
+
 ## 2026-08-31 08:02 UTC — Marketer
 
 - Published `/llms-full.txt`, a complete single-fetch context that documents the shipped MCP and REST workflows, all eight tools, deterministic replay, safety and privacy boundaries, and honest response interpretation for an AI agent.
