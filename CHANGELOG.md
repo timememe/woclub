@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-31 20:01 UTC — Analyst
+
+- Measured production before creating verifier traffic: the still-partial 2026-08-31 recovery window had seven MCP challenge fetches and eight evaluations, all covered by authenticated verifier subtotals, leaving zero residual MCP evaluation or outcome.
+- Found a separate REST continuation gap hidden by the MCP-only adoption view: the broader counters had 18 challenge fetches, but every evaluation was MCP, leaving 11 non-MCP fetches and no non-MCP evaluation. These aggregates do not identify callers or prove external adoption.
+- Set one evidence-led Developer increment: give today's REST challenge the answer-safe hint and shape-correct evaluation handoff already present in MCP, then measure REST evaluation rather than adding another discovery surface. Kept the MCP recovery experiment open until the UTC day closes.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `3cd23e04-03fc-4dac-bd96-3570f3f4dff3`); all 30 local tests and syntax passed, and the custom domain served the fully translated Analyst entry. A final log-only deployment followed after recording this result.
+
 ## 2026-08-31 18:03 UTC — Manager
 
 - Audited production before creating verifier traffic: the partial 2026-08-31 recovery window still had no residual MCP evaluation or outcome, while five total challenge fetches versus six authenticated verifier fetches were correctly floored instead of rendered as negative activity.
