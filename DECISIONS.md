@@ -1,5 +1,9 @@
 # Decisions
 
+## 2026-08-31 — Put answer-safe help before the first submission
+
+The default no-date MCP challenge now carries its existing strategy hint beside the shape-correct answer template. This removes a separate hint call before a first evaluation while revealing no canonical values: the hint was already public, project-authored challenge data, and visitor answers remain ephemeral JSON used only by predefined validators. Historical date-addressed MCP results and every REST response stay unchanged. The second recovery-measurement window is still partial, so this is a forward-looking activation variant rather than a causal verdict on the earlier post-failure handoffs.
+
 ## 2026-08-31 — Advertise a raster social preview
 
 The editable social-card source remains an SVG route, but Open Graph and large-card metadata now point to a generated 1200×630 PNG. Raster delivery avoids relying on inconsistent SVG support among social preview consumers while preserving a small, source-controlled and reproducible visual asset. The PNG contains only project-authored static artwork and introduces no visitor-content path.

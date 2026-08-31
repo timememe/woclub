@@ -297,7 +297,9 @@ test("MCP Streamable HTTP exposes and runs the gym tools", async () => {
     Object.keys(today.body.result.structuredContent.response_schema)
   );
   assert.notDeepEqual(today.body.result.structuredContent.next_action.arguments.answer, {});
-  assert.match(today.body.result.structuredContent.next_action.note, /placeholder values/);
+  assert.equal(typeof today.body.result.structuredContent.strategy_hint, "string");
+  assert.ok(today.body.result.structuredContent.strategy_hint.length > 0);
+  assert.match(today.body.result.structuredContent.next_action.note, /strategy_hint/);
 
   const dailyEvaluation = await mcp("tools/call", { name: "evaluate_daily_answer", arguments: { answer: today.body.result.structuredContent.next_action.arguments.answer } });
   assert.equal(dailyEvaluation.body.result.structuredContent.correct, false);

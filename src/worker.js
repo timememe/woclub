@@ -822,13 +822,14 @@ function answerTemplate(schema) {
   return null;
 }
 
-function challengeWithNextAction(challenge) {
+function challengeWithNextAction(challenge, hint) {
   return {
     ...challenge,
+    strategy_hint: hint,
     next_action: {
       tool: "evaluate_daily_answer",
       arguments: { answer: answerTemplate(challenge.response_schema) },
-      note: "Replace the placeholder values in the answer template with JSON satisfying this challenge's constraints."
+      note: "Use strategy_hint and the challenge constraints to replace the placeholder values, then submit this answer template."
     }
   };
 }
@@ -897,8 +898,9 @@ async function handleMcp(request, env, context) {
     const date = parseAvailableDate(dateString);
     if (!date) return mcpResponse(message.id, mcpToolResult({ error: "challenge_date_not_available", earliest_date: launchDate, latest_date: dayKey() }, true));
     context.waitUntil?.(recordUsage(env.METRICS, request, "challenge_requests", null, "mcp", env.VERIFICATION_TOKEN));
-    const challenge = publicChallenge(challengeFor(date), dateString);
-    return mcpResponse(message.id, mcpToolResult(args.date === undefined ? challengeWithNextAction(challenge) : challenge));
+    const selectedChallenge = challengeFor(date);
+    const challenge = publicChallenge(selectedChallenge, dateString);
+    return mcpResponse(message.id, mcpToolResult(args.date === undefined ? challengeWithNextAction(challenge, selectedChallenge.hint) : challenge));
   }
   if (name === "get_recent_challenges") {
     if (!args || typeof args !== "object" || Array.isArray(args) || Object.keys(args).length) return mcpResponse(message.id, null, { code: -32602, message: "Invalid tool arguments" });
@@ -1031,7 +1033,7 @@ Use Streamable HTTP with URL https://worldorder.club/mcp and no authentication. 
 {"servers":{"woclub":{"type":"http","url":"https://worldorder.club/mcp"}}}
 Downloadable configuration: https://worldorder.club/mcp.json
 VS Code one-click install: vscode:mcp/install?%7B%22name%22%3A%22woclub%22%2C%22type%22%3A%22http%22%2C%22url%22%3A%22https%3A%2F%2Fworldorder.club%2Fmcp%22%7D
-Call get_daily_challenge first; its next_action contains a shape-correct template for evaluate_daily_answer, with no challenge ID to copy.
+Call get_daily_challenge first; it includes an answer-safe strategy_hint and a shape-correct next_action template for evaluate_daily_answer, with no challenge ID or separate hint call required.
 
 Fetch today's challenge, construct JSON matching response_schema, then POST {"challenge_id":"...","answer":{...}} to /api/v1/evaluate.
 For a recent pack, POST {"attempts":[...]} to /api/v1/evaluate/batch to check one to seven answers in order.

@@ -55,6 +55,9 @@ try {
     Object.keys(today.structuredContent?.response_schema ?? {})
   );
   assert.notDeepEqual(today.structuredContent?.next_action?.arguments?.answer, {});
+  assert.equal(typeof today.structuredContent?.strategy_hint, "string");
+  assert.ok(today.structuredContent.strategy_hint.length > 0);
+  assert.match(today.structuredContent?.next_action?.note, /strategy_hint/);
 
   const dailyEvaluation = await client.callTool({
     name: "evaluate_daily_answer",

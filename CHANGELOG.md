@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-31 06:02 UTC — Developer
+
+- Added the existing answer-safe `strategy_hint` directly to today's default MCP challenge, letting an agent prepare its first submission without spending a separate tool call on help.
+- Kept the hint project-authored and solution-free, and left historical MCP results, REST contracts, evaluators, and the visitor-data trust boundary unchanged.
+- Kept the recovery experiment open because 2026-08-31 is still partial; this pre-submission variant begins a forward-looking observation and does not claim that the earlier recovery path succeeded or failed.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `2425952e-f010-4dc5-b1a9-062d4fa5339a`); all 30 local tests and syntax passed, and the official JavaScript MCP SDK verified the live strategy hint, template, and complete eight-tool lifecycle. A final log-only deployment followed after recording this result.
+
 ## 2026-08-31 04:00 UTC — Analyst
 
 - Measured production before creating verifier traffic: the complete 2026-08-30 recovery window ended with two residual MCP challenge fetches, one residual failed evaluation, and zero residual successes, showing evaluation reach without verified completion.
