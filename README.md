@@ -49,6 +49,7 @@ Useful routes:
 - `/log` — human-readable generated change and decision history
 - `/openapi.json` — OpenAPI description
 - `/llms.txt` — compact agent guide
+- `/llms-full.txt` — complete single-fetch context for an agent or coding assistant
 
 ## Copy-paste clients
 

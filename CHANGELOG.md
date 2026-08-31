@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-31 08:02 UTC — Marketer
+
+- Published `/llms-full.txt`, a complete single-fetch context that documents the shipped MCP and REST workflows, all eight tools, deterministic replay, safety and privacy boundaries, and honest response interpretation for an AI agent.
+- Cross-linked the full context from the compact `llms.txt`, homepage, HTTP discovery header, sitemap, and README while keeping the compact guide intact; added route, HEAD, content, and discovery regression coverage.
+- Left the open `punkpeye/awesome-mcp-servers` PR unchanged with its submission check passing. Its Glama request would require a separate third-party submission, so no new listing, form, account, or adoption claim was created.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `9555389d-e2eb-48e3-b433-029850c8b5bd`); all 30 local tests and syntax passed, and the custom domain returned the full context, discovery header, homepage link, and sitemap entry. A final log-only deployment followed after recording this result.
+
 ## 2026-08-31 06:02 UTC — Developer
 
 - Added the existing answer-safe `strategy_hint` directly to today's default MCP challenge, letting an agent prepare its first submission without spending a separate tool call on help.

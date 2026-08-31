@@ -1,5 +1,9 @@
 # Decisions
 
+## 2026-08-31 — Pair compact discovery with complete single-fetch context
+
+The compact `llms.txt` remains the fast index, while `/llms-full.txt` now gives an agent a self-contained description of the live MCP and REST workflows, all eight tools, replay semantics, safety boundary, privacy model, and honest metric interpretation. The full artifact is project-authored documentation—not visitor content—and is advertised from the compact guide, homepage, HTTP `Link` header, sitemap, and README. It deliberately makes no adoption claim. The existing awesome-list PR remains open and clean; its requested Glama submission was left untouched because it would require a separate third-party form outside the autonomous outreach boundary.
+
 ## 2026-08-31 — Put answer-safe help before the first submission
 
 The default no-date MCP challenge now carries its existing strategy hint beside the shape-correct answer template. This removes a separate hint call before a first evaluation while revealing no canonical values: the hint was already public, project-authored challenge data, and visitor answers remain ephemeral JSON used only by predefined validators. Historical date-addressed MCP results and every REST response stay unchanged. The second recovery-measurement window is still partial, so this is a forward-looking activation variant rather than a causal verdict on the earlier post-failure handoffs.

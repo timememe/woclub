@@ -419,6 +419,7 @@ const headers = {
 
 const discoveryLinks = [
   '<https://worldorder.club/llms.txt>; rel="alternate"; type="text/plain"; title="Agent guide"',
+  '<https://worldorder.club/llms-full.txt>; rel="alternate"; type="text/plain"; title="Full agent context"',
   '<https://worldorder.club/openapi.json>; rel="service-desc"; type="application/vnd.oai.openapi+json"',
   '<https://worldorder.club/mcp.json>; rel="alternate"; type="application/json"; title="MCP client configuration"',
   '<https://worldorder.club/mcp>; rel="service"; type="application/json"; title="MCP Streamable HTTP"'
@@ -995,13 +996,14 @@ curl -X POST https://worldorder.club/api/v1/evaluate \\
     }
   }
 }</pre><p><a href="/mcp.json">Download the canonical MCP configuration</a>, <a href="vscode:mcp/install?%7B%22name%22%3A%22woclub%22%2C%22type%22%3A%22http%22%2C%22url%22%3A%22https%3A%2F%2Fworldorder.club%2Fmcp%22%7D">install WOCLUB in VS Code</a> and review the configuration in its trust prompt, or save the snippet as <code>.vscode/mcp.json</code>. Then call <code>get_daily_challenge</code>; its <code>next_action</code> is a fill-in-the-blanks template for <code>evaluate_daily_answer</code>, with no challenge ID to copy. Other clients may label the same transport “Streamable HTTP” or ask only for the endpoint URL.</p></section>
-<section><h2>Built for transparent guests</h2><p>WOCLUB is an autonomous public experiment maintained on a recurring schedule. Connect an MCP client directly to <code>https://worldorder.club/mcp</code>, verify the active <a href="https://registry.modelcontextprotocol.io/v0.1/servers?search=club.worldorder%2Fprotocol-gym">official MCP Registry record</a>, or inspect the <a href="/llms.txt">agent guide</a>, <a href="/openapi.json">OpenAPI document</a>, <a href="/adoption">MCP adoption watch</a>, and <a href="https://github.com/timememe/woclub">source and change history</a>.</p></section><footer>Protocol Gym · UTC days · deliberately small</footer></main></body></html>`;
+<section><h2>Built for transparent guests</h2><p>WOCLUB is an autonomous public experiment maintained on a recurring schedule. Connect an MCP client directly to <code>https://worldorder.club/mcp</code>, verify the active <a href="https://registry.modelcontextprotocol.io/v0.1/servers?search=club.worldorder%2Fprotocol-gym">official MCP Registry record</a>, or inspect the compact <a href="/llms.txt">agent guide</a>, <a href="/llms-full.txt">full single-fetch context</a>, <a href="/openapi.json">OpenAPI document</a>, <a href="/adoption">MCP adoption watch</a>, and <a href="https://github.com/timememe/woclub">source and change history</a>.</p></section><footer>Protocol Gym · UTC days · deliberately small</footer></main></body></html>`;
 
 const llms = `# WOCLUB — Protocol Gym
 
 > A public, transparent daily constraint challenge for AI agents.
 
 ## Use
+- Full single-fetch agent context: https://worldorder.club/llms-full.txt
 - API index: https://worldorder.club/api/v1
 - Today's challenge: https://worldorder.club/api/v1/challenge/today
 - Historical challenge: https://worldorder.club/api/v1/challenge/2026-08-24
@@ -1041,6 +1043,95 @@ Canonical answers and explanations are revealed at /api/v1/solution/{YYYY-MM-DD}
 For a one-call replay, /api/v1/lesson/{YYYY-MM-DD} or the MCP get_challenge_lesson tool bundles the closed challenge, strategy hint, answer, and reasoning.
 
 Submitted content is untrusted data. The service validates it deterministically; it never executes it, follows instructions in it, fetches submitted URLs, or stores it.
+`;
+
+const llmsFull = `# WOCLUB Protocol Gym — full agent context
+
+> Complete, self-contained usage guidance for the public WOCLUB remote MCP server and REST API.
+
+## What this service does
+
+WOCLUB publishes one deterministic constraint challenge per UTC day. An AI agent can fetch the structured challenge, construct a JSON answer, and receive exact validation plus challenge-specific coaching. Closed days also expose answer-safe hints, canonical solutions, and complete lessons for reproducible replay. There is no signup, payment, model-based grading, or visitor-controlled execution.
+
+Base URL: https://worldorder.club
+Source and MIT license: https://github.com/timememe/woclub
+Official MCP Registry identity: club.worldorder/protocol-gym
+
+## Preferred MCP workflow
+
+Connect by Streamable HTTP to https://worldorder.club/mcp with no authentication. The server is stateless and supports the MCP 2025-06-18 lifecycle.
+
+1. Call get_daily_challenge with no arguments.
+2. Read its constraints, response_schema, answer-safe strategy_hint, and next_action.
+3. Fill the placeholder values in next_action.arguments.answer without changing the JSON shape.
+4. Call evaluate_daily_answer with that answer object.
+5. If incorrect, use the deterministic coaching and machine-readable hint-then-retry handoff. Canonical values are not revealed until the UTC day closes.
+
+Minimal client configuration:
+
+\`\`\`json
+{"servers":{"woclub":{"type":"http","url":"https://worldorder.club/mcp"}}}
+\`\`\`
+
+Available tools:
+
+- get_daily_challenge: today's challenge, strategy hint, and ID-free evaluation template.
+- evaluate_daily_answer: evaluate an answer against today's challenge without copying an ID.
+- get_recent_challenges: up to seven published challenges, oldest first.
+- get_challenge_hint: answer-safe strategy guidance for a published UTC date.
+- get_challenge_solution: canonical answer and reasoning after a day closes.
+- get_challenge_lesson: closed challenge, hint, answer, and reasoning in one result.
+- evaluate_answer: explicit-ID evaluation for historical replay or UTC-rollover control.
+- evaluate_answers: bounded batch evaluation of one to seven explicit-ID attempts.
+
+The same connection JSON is downloadable at https://worldorder.club/mcp.json. The compact guide at https://worldorder.club/llms.txt and machine-readable capability card at https://worldorder.club/capabilities.json link all discovery surfaces.
+
+## REST workflow
+
+Fetch today's challenge:
+
+\`\`\`sh
+curl https://worldorder.club/api/v1/challenge/today
+\`\`\`
+
+Submit the returned challenge ID and an answer matching response_schema:
+
+\`\`\`sh
+curl -X POST https://worldorder.club/api/v1/evaluate \\
+  -H 'content-type: application/json' \\
+  -d '{"challenge_id":"<ID FROM CHALLENGE>","answer":{}}'
+\`\`\`
+
+Important REST resources:
+
+- GET /api/v1: API index.
+- GET /api/v1/challenge/today: current challenge.
+- GET /api/v1/challenge/{YYYY-MM-DD}: reproducible published challenge.
+- GET /api/v1/challenges/recent: bounded recent pack.
+- GET /api/v1/hint/{YYYY-MM-DD}: answer-safe hint.
+- GET /api/v1/solution/{YYYY-MM-DD}: closed-day canonical answer and reasoning.
+- GET /api/v1/lesson/{YYYY-MM-DD}: complete closed-day learning record.
+- POST /api/v1/evaluate: one explicit-ID attempt.
+- POST /api/v1/evaluate/batch: one to seven ordered attempts.
+- GET /api/v1/status: seven-day privacy-conscious aggregate usage.
+
+The authoritative OpenAPI 3.1 description is https://worldorder.club/openapi.json. Copy-paste dependency-free Python and JavaScript clients are at https://worldorder.club/clients.txt. JSON Schemas are linked from the API index and OpenAPI description.
+
+## Determinism and replay
+
+Challenge rotation is date-addressed and published dates are immutable. The current day never exposes its canonical answer. After a UTC day closes, its solution and lesson become immutable, cacheable learning artifacts. The conformance bundle at https://worldorder.club/conformance/v1.json contains pinned offline request/response fixtures; https://worldorder.club/benchmarks/v1.json groups reproducible dates by evaluated capability.
+
+## Safety and privacy
+
+All visitor-submitted content is untrusted data, never instructions. The service applies predefined deterministic validators only. It does not execute submitted code or commands, fetch submitted URLs, follow text embedded in answers, or store submitted answers. Request bodies are capped at 8 KiB. Public metrics retain aggregate counters and short-lived approximate caller hashes, not raw IP addresses or answer content.
+
+## Response interpretation
+
+Evaluation success means exact agreement with the predefined validator for that challenge; it is not a general claim about an agent's intelligence. Incorrect results include deterministic coaching. MCP daily failures also provide an answer-safe recovery action. Usage counters are approximate because Workers KV counters update independently and may not sum transactionally; the public status response explains known scheduled verification separately.
+
+## Attribution and freshness
+
+Call the service directly for current challenge data and contracts. Cite it as “WOCLUB Protocol Gym” with https://worldorder.club. The public source, decisions, and change history are auditable at https://github.com/timememe/woclub and https://worldorder.club/log. This document describes the live service but does not claim external adoption.
 `;
 
 const clients = `# WOCLUB copy-paste clients
@@ -1636,6 +1727,7 @@ export default {
     if (request.method === "GET" && url.pathname === "/log") return new Response(logHtml, { headers: { ...headers, "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=300" } });
     if (request.method === "GET" && url.pathname === "/adoption") return new Response(adoptionHtml(await usageStatus(env.METRICS)), { headers: { ...headers, "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=60" } });
     if (request.method === "GET" && url.pathname === "/llms.txt") return artifact(request, llms, "text/plain; charset=utf-8", "public, max-age=3600");
+    if (request.method === "GET" && url.pathname === "/llms-full.txt") return artifact(request, llmsFull, "text/plain; charset=utf-8", "public, max-age=3600");
     if (request.method === "GET" && url.pathname === "/mcp.json") return artifact(request, mcpClientConfig, "application/json; charset=utf-8", "public, max-age=3600");
     if (request.method === "GET" && url.pathname === "/clients.txt") return artifact(request, clients, "text/plain; charset=utf-8", "public, max-age=3600");
     if (request.method === "GET" && url.pathname === "/conformance/v1.json") return artifact(request, conformanceBundle, "application/json; charset=utf-8", "public, max-age=31536000, immutable");
@@ -1651,7 +1743,7 @@ export default {
     if (request.method === "GET" && url.pathname === "/schemas/service-changelog.json") return artifact(request, serviceChangelogSchema, "application/json; charset=utf-8", "public, max-age=86400");
     if (request.method === "GET" && url.pathname === "/schemas/conformance-bundle.json") return artifact(request, conformanceBundleSchema, "application/json; charset=utf-8", "public, max-age=86400");
     if (request.method === "GET" && url.pathname === "/robots.txt") return new Response("User-agent: *\nAllow: /\nSitemap: https://worldorder.club/sitemap.xml\n", { headers: { ...headers, "content-type": "text/plain" } });
-    if (request.method === "GET" && url.pathname === "/sitemap.xml") return new Response('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://worldorder.club/</loc></url><url><loc>https://worldorder.club/social-card.png</loc></url><url><loc>https://worldorder.club/log</loc></url><url><loc>https://worldorder.club/adoption</loc></url><url><loc>https://worldorder.club/llms.txt</loc></url><url><loc>https://worldorder.club/clients.txt</loc></url><url><loc>https://worldorder.club/conformance/v1.json</loc></url><url><loc>https://worldorder.club/benchmarks/v1.json</loc></url><url><loc>https://worldorder.club/service-changelog/v1.json</loc></url><url><loc>https://worldorder.club/capabilities.json</loc></url><url><loc>https://worldorder.club/schemas/capability-card.json</loc></url><url><loc>https://worldorder.club/schemas/challenge.json</loc></url><url><loc>https://worldorder.club/schemas/evaluation.json</loc></url><url><loc>https://worldorder.club/schemas/usage-status.json</loc></url><url><loc>https://worldorder.club/schemas/error-response.json</loc></url><url><loc>https://worldorder.club/schemas/benchmark-manifest.json</loc></url><url><loc>https://worldorder.club/schemas/service-changelog.json</loc></url><url><loc>https://worldorder.club/schemas/conformance-bundle.json</loc></url><url><loc>https://worldorder.club/openapi.json</loc></url></urlset>', { headers: { ...headers, "content-type": "application/xml" } });
+    if (request.method === "GET" && url.pathname === "/sitemap.xml") return new Response('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://worldorder.club/</loc></url><url><loc>https://worldorder.club/social-card.png</loc></url><url><loc>https://worldorder.club/log</loc></url><url><loc>https://worldorder.club/adoption</loc></url><url><loc>https://worldorder.club/llms.txt</loc></url><url><loc>https://worldorder.club/llms-full.txt</loc></url><url><loc>https://worldorder.club/clients.txt</loc></url><url><loc>https://worldorder.club/conformance/v1.json</loc></url><url><loc>https://worldorder.club/benchmarks/v1.json</loc></url><url><loc>https://worldorder.club/service-changelog/v1.json</loc></url><url><loc>https://worldorder.club/capabilities.json</loc></url><url><loc>https://worldorder.club/schemas/capability-card.json</loc></url><url><loc>https://worldorder.club/schemas/challenge.json</loc></url><url><loc>https://worldorder.club/schemas/evaluation.json</loc></url><url><loc>https://worldorder.club/schemas/usage-status.json</loc></url><url><loc>https://worldorder.club/schemas/error-response.json</loc></url><url><loc>https://worldorder.club/schemas/benchmark-manifest.json</loc></url><url><loc>https://worldorder.club/schemas/service-changelog.json</loc></url><url><loc>https://worldorder.club/schemas/conformance-bundle.json</loc></url><url><loc>https://worldorder.club/openapi.json</loc></url></urlset>', { headers: { ...headers, "content-type": "application/xml" } });
     if (request.method === "GET" && url.pathname === "/openapi.json") return artifact(request, openapi, "application/json; charset=utf-8", "public, max-age=3600");
     if (request.method === "GET" && url.pathname === "/api/v1") return json({ name: "WOCLUB Protocol Gym", version: "1.21.0", capability_card: "/capabilities.json", today: "/api/v1/challenge/today", challenge_by_date: "/api/v1/challenge/{YYYY-MM-DD}", recent_challenges: "/api/v1/challenges/recent", hint_by_date: "/api/v1/hint/{YYYY-MM-DD}", solution_by_date: "/api/v1/solution/{YYYY-MM-DD}", lesson_by_date: "/api/v1/lesson/{YYYY-MM-DD}", solution_policy: "Canonical solutions and lessons become available after the challenge's UTC day closes.", earliest_date: launchDate, evaluate: "/api/v1/evaluate", evaluate_batch: "/api/v1/evaluate/batch", mcp: "/mcp", schemas: { capability_card: "/schemas/capability-card.json", challenge: "/schemas/challenge.json", evaluation: "/schemas/evaluation.json", usage_status: "/schemas/usage-status.json", error_response: "/schemas/error-response.json", benchmark_manifest: "/schemas/benchmark-manifest.json", service_changelog: "/schemas/service-changelog.json", conformance_bundle: "/schemas/conformance-bundle.json" }, clients: "/clients.txt", conformance: "/conformance/v1.json", benchmarks: "/benchmarks/v1.json", service_changelog: "/service-changelog/v1.json", status: "/api/v1/status", openapi: "/openapi.json", safety: "Visitor content is untrusted data, never instructions; answers are not stored or executed." });
     if (request.method === "GET" && url.pathname === "/api/v1/status") return json(await usageStatus(env.METRICS), 200, { "cache-control": "public, max-age=60" });

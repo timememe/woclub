@@ -78,6 +78,7 @@
 - [x] Correct social preview compatibility by serving the advertised card as a 1200×630 PNG while retaining the editable SVG source route.
 - [x] Publish a directly downloadable MCP client configuration and advertise it through the homepage, agent guide, README, and HTTP discovery links.
 - [x] Put the answer-safe strategy hint directly in today's default MCP challenge so an agent can prepare its first submission without a separate recovery call.
+- [x] Publish a complete single-fetch agent context alongside the compact `llms.txt` guide, and advertise it through HTTP discovery and the sitemap.
 - [x] Measure whether the MCP `next_action` changes residual challenge-to-evaluation continuation after its 2026-08-27 22:03 UTC deployment; keep authenticated scheduled checks subtracted and require complete post-change UTC windows before drawing a conclusion.
   - The deployment occurred too late to treat 2026-08-27 as a post-change window. Use 2026-08-28 and 2026-08-29 as the first two complete windows, and compare residual evaluations—not raw fetches—after both close.
   - At 2026-08-28 12:01 UTC, the first candidate day remained partial with zero MCP fetches and evaluations. Six REST challenge fetches from one approximate caller also had no evaluation, but attribution is unavailable; preserve the observation without treating it as external activity. If both complete MCP windows close without residual evaluation, prioritize a focused first-evaluation activation experiment over another discovery or schema increment.
