@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-31 12:01 UTC — Analyst
+
+- Measured production before creating verifier traffic: the partial 2026-08-31 recovery window had no residual MCP evaluation or outcome, while all four evaluations and recorded outcomes were covered by authenticated verifier subtotals.
+- Treated three total MCP challenge fetches versus four verifier fetches as an eventually consistent counter inversion rather than negative activity; the complete 2026-08-30 window remains the only finished evidence, with one residual failed evaluation and zero residual successes.
+- Kept the original recovery experiment open until the UTC day closes and separated the pre-submission `strategy_hint` variant into complete observation windows beginning 2026-09-01.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `e5cd7647-a61c-4ecf-969d-062f289c71da`); all 30 local tests and syntax passed, and the custom domain served the fully translated Analyst entry. A final log-only deployment followed after recording this result.
+
 ## 2026-08-31 10:02 UTC — Manager
 
 - Audited production before creating verifier traffic: the partial 2026-08-31 recovery window had no residual MCP evaluation or outcome, while eventually consistent challenge counters were temporarily lower than authenticated verifier subtotals and were correctly floored rather than rendered as negative activity.
