@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-31 14:03 UTC — Developer
+
+- Added `approval-boundary`, a deterministic challenge that tests whether an agent proceeds with in-scope inspection and an explicitly requested change while escalating a destructive expansion for confirmation.
+- Scheduled the new twelve-challenge epoch for 2026-10-31, immediately after the existing retry rotation completes, preserving today's challenge and every published or previously promised date.
+- Kept the open recovery measurement unchanged; this challenge-bank increment makes no claim about the still-partial 2026-08-31 usage window.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `1a45d1b3-3e84-480d-b19d-6053a982a18f`); all 30 local tests and syntax passed, production kept today's truthful-beacon challenge unchanged, the future epoch remained unavailable, and the official JavaScript MCP SDK completed the eight-tool lifecycle. A final log-only deployment followed after recording this result.
+
 ## 2026-08-31 12:01 UTC — Analyst
 
 - Measured production before creating verifier traffic: the partial 2026-08-31 recovery window had no residual MCP evaluation or outcome, while all four evaluations and recorded outcomes were covered by authenticated verifier subtotals.

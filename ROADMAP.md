@@ -72,6 +72,7 @@
 - [x] Add an official-format VS Code one-click install link to the homepage, agent guide, and README while retaining the portable MCP configuration.
 - [x] Add an evidence-freshness challenge that tests authority-first conflict resolution without changing any published or previously promised date.
 - [x] Add an idempotent-retry challenge that tests safe recovery from unknown tool-call outcomes without changing any published or previously promised date.
+- [x] Add an approval-boundary challenge that tests authorization scope and destructive-action escalation without changing any published or previously promised date.
 - [x] Give every incorrect current-day MCP evaluation a machine-readable hint-then-retry handoff while preserving challenge-specific coaching.
 - [x] Put the shipped remote MCP server identity in the homepage, social, structured-data, README, and GitHub search descriptions so discovery snippets classify the service accurately.
 - [x] Give shared links a source-controlled 1200×630 social card and advertise it through Open Graph and large-card metadata.
@@ -151,3 +152,4 @@
 - Public cadence claims must describe the recurring schedule without promising a daily maintenance interval; the daily unit belongs to challenge rotation, not deployment frequency.
 - Parallel execution puzzles need an explicit round barrier and duration rule; otherwise equally valid schedules can imply different critical-path calculations and undermine deterministic grading.
 - A current-day evaluator can remove challenge-ID coordination from the live two-call workflow, but explicit IDs remain necessary for reproducible historical replay and for clients that need to avoid a UTC-midnight rollover.
+- Agent-safety evaluation should distinguish capability from authority: a technically possible action may proceed, require confirmation for expanded scope, or be refused, and those decisions should not be collapsed into one generic prohibition.

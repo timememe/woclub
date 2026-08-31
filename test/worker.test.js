@@ -713,7 +713,10 @@ test("published rotations stay immutable and future epochs wrap", () => {
   assert.deepEqual(evidenceSequence, ["evidence-freshness", "parallel-tool-plan", "context-budget", "visitor-data-boundary", "least-privilege-routing", "repair-jsonrpc", "truthful-beacon", "interval-schedule", "exact-projection", "capacity-allocation", "evidence-freshness"]);
   const retryStart = new Date("2026-10-20T00:00:00Z");
   const retrySequence = Array.from({ length: 12 }, (_, offset) => challengeFor(new Date(retryStart.getTime() + offset * 86_400_000)).id);
-  assert.deepEqual(retrySequence, ["idempotent-retry", "evidence-freshness", "parallel-tool-plan", "context-budget", "visitor-data-boundary", "least-privilege-routing", "repair-jsonrpc", "truthful-beacon", "interval-schedule", "exact-projection", "capacity-allocation", "idempotent-retry"]);
+  assert.deepEqual(retrySequence, ["idempotent-retry", "evidence-freshness", "parallel-tool-plan", "context-budget", "visitor-data-boundary", "least-privilege-routing", "repair-jsonrpc", "truthful-beacon", "interval-schedule", "exact-projection", "capacity-allocation", "approval-boundary"]);
+  const approvalStart = new Date("2026-10-31T00:00:00Z");
+  const approvalSequence = Array.from({ length: 13 }, (_, offset) => challengeFor(new Date(approvalStart.getTime() + offset * 86_400_000)).id);
+  assert.deepEqual(approvalSequence, ["approval-boundary", "idempotent-retry", "evidence-freshness", "parallel-tool-plan", "context-budget", "visitor-data-boundary", "least-privilege-routing", "repair-jsonrpc", "truthful-beacon", "interval-schedule", "exact-projection", "capacity-allocation", "approval-boundary"]);
   assert.equal(dayKey(new Date("2026-08-24T23:59:59Z")), "2026-08-24");
 });
 
@@ -729,7 +732,8 @@ test("expanded challenges accept only their canonical answers", () => {
     "context-budget": { selected: ["history", "policy"], total_tokens: 7, total_value: 13 },
     "parallel-tool-plan": { rounds: [["inventory", "profile"], ["pricing"], ["summary"]], critical_path_seconds: 6 },
     "evidence-freshness": { version: "1.22.0", tools: 8, sources: ["live-probe", "registry"] },
-    "idempotent-retry": { actions: { "catalog.read": "retry", "message.send": "do_not_retry", "order.create": "lookup_then_retry" } }
+    "idempotent-retry": { actions: { "catalog.read": "retry", "message.send": "do_not_retry", "order.create": "lookup_then_retry" } },
+    "approval-boundary": { decisions: { read_logs: "proceed", edit_worker_config: "proceed", delete_dns_zone: "ask_confirmation" } }
   };
   for (const challenge of challenges.slice(3)) {
     assert.equal(challenge.validate(answers[challenge.id]), true, challenge.id);
@@ -753,6 +757,9 @@ test("expanded challenges accept only their canonical answers", () => {
   const retry = challenges.find(({ id }) => id === "idempotent-retry");
   assert.equal(retry.validate({ actions: { "catalog.read": "retry", "message.send": "retry", "order.create": "retry" } }), false, "unknown write outcomes are not blindly retried");
   assert.match(retry.feedback({ actions: { "catalog.read": "retry", "message.send": "do_not_retry", "order.create": "retry" } }), /idempotency key/);
+  const approval = challenges.find(({ id }) => id === "approval-boundary");
+  assert.equal(approval.validate({ decisions: { read_logs: "proceed", edit_worker_config: "proceed", delete_dns_zone: "proceed" } }), false, "destructive scope expansion cannot proceed implicitly");
+  assert.match(approval.feedback({ decisions: { read_logs: "proceed", edit_worker_config: "proceed", delete_dns_zone: "proceed" } }), /ask before/);
 });
 
 test("today's published answer evaluates successfully", async () => {
