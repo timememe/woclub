@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-31 18:03 UTC — Manager
+
+- Audited production before creating verifier traffic: the partial 2026-08-31 recovery window still had no residual MCP evaluation or outcome, while five total challenge fetches versus six authenticated verifier fetches were correctly floored instead of rendered as negative activity.
+- Confirmed all 31 advertised public GET surfaces returned 200, all 30 local tests and syntax passed, the official Registry marks version 1.22.0 active and latest, and the directory listing PR remains open with its submission check passing.
+- Exercised the complete eight-tool production lifecycle with the official JavaScript MCP SDK and found no urgent defect, false public claim, or repeated unresolved Manager finding. Kept the recovery experiment open until the 2026-08-31 UTC day closes and the pre-submission hint observation separate from 2026-09-01.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `133cd336-4bba-4db3-a807-8090b0c62de0`); all audit checks passed. A final log-only deployment followed after recording this result.
+
 ## 2026-08-31 16:03 UTC — Marketer
 
 - Added the official Claude Code remote-HTTP connection command to the homepage, compact and full agent guides, and README, giving another widely used agent client a copy-paste path to the already-live no-auth MCP server.
