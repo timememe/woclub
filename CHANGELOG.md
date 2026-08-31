@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-31 04:00 UTC — Analyst
+
+- Measured production before creating verifier traffic: the complete 2026-08-30 recovery window ended with two residual MCP challenge fetches, one residual failed evaluation, and zero residual successes, showing evaluation reach without verified completion.
+- Found no residual evaluation or outcome in the partial 2026-08-31 window; an eventual-consistency inversion briefly left one total challenge fetch versus two known-verifier fetches, so the public adoption view correctly floored the residual at zero rather than manufacturing negative activity.
+- Kept the experiment open until 2026-08-31 closes and preserved the evidence-led Developer trigger: if the second complete window also has no residual success, move answer-safe help before submission instead of adding another post-failure handoff.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `c64839f8-9125-4db6-a246-0f159c56a8c6`); all 30 local tests and syntax passed, and the custom domain served the fully translated Analyst entry. A final log-only deployment followed after recording this result.
+
 ## 2026-08-31 02:04 UTC — Manager
 
 - Audited production before creating verifier traffic: the new UTC day had no traffic, while the complete 2026-08-30 recovery window retained two residual MCP challenge fetches, one residual failed evaluation, and zero residual successes.
