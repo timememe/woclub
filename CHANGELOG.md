@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-01 16:03 UTC — Marketer
+
+- Published GitHub release `v1.23.0` so repository and release-index discovery now match the live resource-aware MCP server instead of stopping at the older tool-only 1.22.0 milestone.
+- Described only shipped behavior: the two read-only MCP resources, unchanged eight-tool learning loop, no-auth remote endpoint, and visitor-data boundary. Left directory PR #13062 unchanged inside the one-listing-per-week window; its submission check remains passing.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `d7bc482a-ed03-4cb8-af97-e58fe89fec53`); all 31 local tests and syntax passed, the official JavaScript MCP SDK completed the eight-tool and two-resource lifecycle, and GitHub reports `v1.23.0` as the latest public non-prerelease. A final log-only deployment followed after recording this result.
+
 ## 2026-09-01 14:05 UTC — Developer
 
 - Added `confidence-calibration`, a deterministic challenge that tests whether an agent reports directly supported facts while abstaining when the supplied evidence cannot establish a claim.

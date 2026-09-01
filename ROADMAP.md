@@ -69,6 +69,7 @@
 - [x] Expand homepage structured data so general indexers can classify both the callable Web API and the free AI-agent evaluation application, with verified source and Registry identities.
 - [x] Add a current-day MCP evaluator so the default challenge workflow no longer requires copying a challenge ID into the next call.
 - [x] Refresh the official MCP Registry record to version 1.22.0 so discovery describes the shipped ID-free daily evaluation path and eight-tool service.
+- [x] Publish GitHub release 1.23.0 so release-index discovery describes the live two-resource MCP context alongside the existing eight-tool workflow.
 - [x] Detect an unchanged daily answer template on its first evaluation and return an answer-safe MCP recovery action pointing to the existing hint tool.
 - [x] Publish the first GitHub release for the live 1.22.0 MCP workflow so repository and release-index discovery has a stable milestone.
 - [x] Add an official-format VS Code one-click install link to the homepage, agent guide, and README while retaining the portable MCP configuration.
