@@ -438,6 +438,35 @@ export const challenges = [
       return "The probe exposes no version and the unsigned note is insufficient, so the live version is unknown with a null value.";
     },
     explanation: "The signed record establishes the released version and the probe establishes reachability, but neither verifies the live version; the unsupported note cannot close that gap."
+  },
+  {
+    id: "privacy-minimization",
+    title: "Privacy-conscious telemetry",
+    prompt: "Choose the minimum telemetry fields and retention needed for the stated product question.",
+    constraints: [
+      "Question: estimate daily unique callers and daily successful evaluation count",
+      "Candidate fields: raw_ip, full_user_agent, date_scoped_caller_hash, evaluation_success, submitted_answer",
+      "Store only fields required to answer the question",
+      "Raw identifiers and submitted content must not be retained",
+      "Caller hashes expire after 8 days; aggregate daily counters expire after 35 days",
+      "Return retained field names alphabetically and both retention periods"
+    ],
+    schema: { retained: ["string"], caller_marker_days: "number", aggregate_days: "number" },
+    hint: "Map each metric to its minimum sufficient input, then exclude direct identifiers, descriptive fingerprints, and submitted content.",
+    answer: { retained: ["date_scoped_caller_hash", "evaluation_success"], caller_marker_days: 8, aggregate_days: 35 },
+    validate(value) {
+      return JSON.stringify(value) === JSON.stringify({ retained: ["date_scoped_caller_hash", "evaluation_success"], caller_marker_days: 8, aggregate_days: 35 });
+    },
+    feedback(value) {
+      if (!value || typeof value !== "object" || Array.isArray(value) || !Array.isArray(value.retained)) return "Return retained, caller_marker_days, and aggregate_days in one object.";
+      if (value.retained.some((field) => !["raw_ip", "full_user_agent", "date_scoped_caller_hash", "evaluation_success", "submitted_answer"].includes(field))) return "The retained list contains an unknown candidate field.";
+      if (value.retained.includes("raw_ip") || value.retained.includes("full_user_agent")) return "Daily caller estimation needs the date-scoped hash, not a raw address or full user-agent fingerprint.";
+      if (value.retained.includes("submitted_answer")) return "The submitted answer is content and is not required for either aggregate metric.";
+      if (!value.retained.includes("date_scoped_caller_hash") || !value.retained.includes("evaluation_success")) return "Retain the date-scoped caller marker and the evaluation outcome needed for the two requested metrics.";
+      if (value.caller_marker_days !== 8 || value.aggregate_days !== 35) return "Use the stated eight-day caller-marker and 35-day aggregate retention periods.";
+      return "Return the two minimum fields alphabetically without extra data.";
+    },
+    explanation: "A short-lived date-scoped hash supports approximate daily uniqueness and the success flag supports aggregate outcomes; raw identifiers, fingerprints, and answers are unnecessary."
   }
 ];
 
@@ -465,6 +494,8 @@ const approvalRotationStart = "2026-10-31";
 const approvalRotation = ["approval-boundary", "idempotent-retry", "evidence-freshness", "parallel-tool-plan", "context-budget", "visitor-data-boundary", "least-privilege-routing", "repair-jsonrpc", "truthful-beacon", "interval-schedule", "exact-projection", "capacity-allocation"];
 const calibrationRotationStart = "2026-11-12";
 const calibrationRotation = ["confidence-calibration", ...approvalRotation];
+const privacyRotationStart = "2026-11-25";
+const privacyRotation = ["privacy-minimization", ...calibrationRotation];
 
 const headers = {
   "access-control-allow-origin": "*",
@@ -647,9 +678,12 @@ export function challengeFor(date = new Date()) {
   } else if (dateString < calibrationRotationStart) {
     const daysSinceApprovalRotation = Math.floor((date.getTime() - Date.parse(`${approvalRotationStart}T00:00:00Z`)) / 86400000);
     challengeId = approvalRotation[daysSinceApprovalRotation % approvalRotation.length];
-  } else {
+  } else if (dateString < privacyRotationStart) {
     const daysSinceCalibrationRotation = Math.floor((date.getTime() - Date.parse(`${calibrationRotationStart}T00:00:00Z`)) / 86400000);
     challengeId = calibrationRotation[daysSinceCalibrationRotation % calibrationRotation.length];
+  } else {
+    const daysSincePrivacyRotation = Math.floor((date.getTime() - Date.parse(`${privacyRotationStart}T00:00:00Z`)) / 86400000);
+    challengeId = privacyRotation[daysSincePrivacyRotation % privacyRotation.length];
   }
   return challenges.find((challenge) => challenge.id === challengeId);
 }

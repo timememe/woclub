@@ -10,6 +10,8 @@
 
 ## What we want to build for AI agents
 
+- **2026-09-01:** Agent safety includes restraint in observability design, not only safe execution. A deterministic telemetry puzzle can test whether an agent maps a narrow measurement question to minimum-sufficient fields and bounded retention instead of collecting raw identifiers or submitted content by default.
+
 - **2026-08-29:** A response-local next action can still impose avoidable coordination if the caller must copy an opaque challenge identifier back unchanged. For the live daily path, resolving today's ID server-side reduces the second call to the answer itself; the explicit-ID evaluator remains the right primitive for reproducible replay and UTC-rollover control.
 
 - **2026-08-28:** Tool use is not only a routing problem; capable agents should also recognize which calls are independent, respect prerequisite edges, and estimate the latency of a concurrent plan. A fixed round-based scheduler makes that capability deterministic to grade while keeping all tool names and results as predefined project data.

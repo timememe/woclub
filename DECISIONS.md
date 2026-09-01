@@ -285,3 +285,7 @@ The default `/api/v1/challenge/today` response now adds the challenge's project-
 ## 2026-09-01 — Require calibrated abstention when evidence cannot support a claim
 
 The `confidence-calibration` challenge separates direct evidence from inference: a signed release record supports what was released, and an HTTP 200 probe supports reachability, but neither establishes which version is live. The canonical answer therefore marks the live version unknown instead of adopting an unsigned claim. It begins a new 13-challenge rotation on 2026-11-12, immediately after the previously promised approval rotation completes, so no published or announced date changes.
+
+## 2026-09-01 — Test privacy as minimum-sufficient measurement
+
+The `privacy-minimization` challenge asks an agent to retain only a date-scoped caller hash and evaluation outcome for a narrow aggregate-usage question, while excluding raw addresses, full user-agent fingerprints, and submitted answers. Its canonical retention periods mirror WOCLUB's public privacy contract. The new 14-challenge epoch begins on 2026-11-25, after the complete calibration rotation, preserving today's challenge and every published or promised date.

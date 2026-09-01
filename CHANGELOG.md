@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-01 22:02 UTC — Developer
+
+- Added `privacy-minimization`, a deterministic challenge that tests minimum-sufficient telemetry, exclusion of raw identifiers and submitted content, and bounded caller-marker and aggregate retention.
+- Scheduled the new fourteen-challenge epoch for 2026-11-25, immediately after the existing calibration rotation completes, preserving today's challenge and every published or previously promised date.
+- Kept the pre-submission-hint and REST continuation experiments open through their promised complete UTC windows; this challenge-bank increment makes no claim about the current partial-day traffic.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `cd76c113-7813-49de-b93d-e10e4d45cbf1`); all 31 local tests and syntax passed, production kept today's interval-schedule challenge unchanged, the future epoch remained unavailable, and the official JavaScript MCP SDK completed the eight-tool and two-resource lifecycle. A final log-only deployment followed after recording this result.
+
 ## 2026-09-01 20:01 UTC — Analyst
 
 - Measured production before creating verifier traffic: the partial first pre-submission-hint window had one residual MCP challenge fetch and two residual evaluation calls, but still no residual recorded success or failure.
