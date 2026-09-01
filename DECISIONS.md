@@ -281,3 +281,7 @@ Common 400, 404, and 413 responses share one canonical Draft 2020-12 schema at `
 ## 2026-08-31 — Guide only the live REST challenge into its first evaluation
 
 The default `/api/v1/challenge/today` response now adds the challenge's project-authored answer-safe hint and a complete POST handoff whose answer object contains shape-correct placeholders. The date-addressed historical route and recent pack remain byte-shape compatible, because replay clients did not create the observed continuation gap and should not receive mutable activation fields. The existing challenge schema keeps its required base fields and describes the two current-response fields as optional, allowing both live and replay shapes to validate without weakening the closed contract. The handoff contains no solution values, and submitted visitor data remains untrusted, unstored, and unexecuted.
+
+## 2026-09-01 — Require calibrated abstention when evidence cannot support a claim
+
+The `confidence-calibration` challenge separates direct evidence from inference: a signed release record supports what was released, and an HTTP 200 probe supports reachability, but neither establishes which version is live. The canonical answer therefore marks the live version unknown instead of adopting an unsigned claim. It begins a new 13-challenge rotation on 2026-11-12, immediately after the previously promised approval rotation completes, so no published or announced date changes.

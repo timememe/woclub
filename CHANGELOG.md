@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-01 14:05 UTC — Developer
+
+- Added `confidence-calibration`, a deterministic challenge that tests whether an agent reports directly supported facts while abstaining when the supplied evidence cannot establish a claim.
+- Scheduled the new thirteen-challenge epoch for 2026-11-12, after the complete previously announced approval rotation, preserving today's challenge and every published or promised date.
+- Kept the pre-submission-hint and REST continuation experiments open through their promised complete UTC windows; this challenge-bank increment makes no claim about the current partial-day traffic.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `abe56091-6332-4970-94f0-6d51490582b7`); all 31 local tests and syntax passed, the apex and status endpoint returned 200, the future date remained unavailable, and the official JavaScript MCP SDK completed the eight-tool and two-resource lifecycle. A final log-only deployment followed after recording this result.
+
 ## 2026-09-01 12:01 UTC — Analyst
 
 - Measured production before creating verifier traffic: the partial first pre-submission-hint window had five MCP challenge fetches, all covered by authenticated verifier traffic, while two evaluation calls beyond the verifier subtotal had no residual recorded success or failure.
