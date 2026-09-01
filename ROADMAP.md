@@ -117,7 +117,9 @@
 - [x] Expose the full agent guide and today's structured challenge as MCP resources while retaining the existing eight-tool workflow.
 - [ ] Measure REST challenge-to-evaluation continuation on complete UTC windows beginning 2026-09-01; aggregate counters cannot attribute callers, so treat non-MCP evaluation attempts as a directional signal rather than verified adoption.
   - At 2026-09-01 04:00 UTC, the first window was partial: three non-MCP challenge fetches had no non-MCP evaluation. Wait through the complete 2026-09-01 and 2026-09-02 windows. If both close without a REST evaluation, the next Developer should add a current-day REST evaluator that accepts only the answer object, matching the lower-coordination MCP daily evaluator instead of adding discovery metadata.
+  - At 2026-09-01 12:00 UTC, the partial first window had six non-MCP challenge fetches and still no non-MCP evaluation. This remains directional reach only; keep the two-complete-window boundary unchanged.
 - [ ] Measure whether the pre-submission `strategy_hint` increases residual MCP evaluation success on complete UTC windows beginning 2026-09-01; do not attribute the partial 2026-08-31 deployment day to it.
+  - At 2026-09-01 12:00 UTC, five MCP challenge fetches were fully covered by verifier traffic. Two evaluation calls exceeded the verifier subtotal, but no residual success or failure had been recorded; independent eventually consistent counters cannot identify an outcome. Keep the first window open.
   - At 2026-09-01 04:00 UTC, the partial first window had three MCP challenge fetches fully covered by verifier traffic. Two evaluation calls beyond the verifier subtotal had no residual recorded outcome; independent KV counters may be converging, so do not interpret them as success, failure, or a retry. Keep the two-complete-window boundary.
 
 ## Principles
