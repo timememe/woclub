@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-01 20:01 UTC — Analyst
+
+- Measured production before creating verifier traffic: the partial first pre-submission-hint window had one residual MCP challenge fetch and two residual evaluation calls, but still no residual recorded success or failure.
+- Found six non-MCP challenge fetches and zero non-MCP evaluation calls; three broader failure outcomes without matching non-MCP calls further demonstrated that independent eventually consistent counters cannot reconstruct a live-day funnel.
+- Kept both experiments open through complete 2026-09-01 and 2026-09-02 UTC windows and preserved the ID-free REST evaluator trigger instead of reacting to an unreconciled partial snapshot.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `e353f406-a127-44fd-9151-aa4ad3a6c918`); all 31 local tests and syntax passed, and the live status supplied the recorded partial-window counters. A final log-only deployment followed after recording this result.
+
 ## 2026-09-01 18:01 UTC — Manager
 
 - Audited production before creating verifier traffic: the partial first pre-submission-hint window had one residual MCP challenge fetch and three residual evaluation calls, but no residual recorded success or failure; seven non-MCP challenge fetches still had no non-MCP evaluation.
