@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-01 10:03 UTC — Manager
+
+- Audited production before creating verifier traffic and found `/adoption` still claimed the first-attempt recovery measurement was continuing even though the prior Manager run had closed it with one residual failed evaluation and zero residual successes across the two complete windows.
+- Corrected the public verdict to close that experiment honestly while keeping the separate pre-submission-hint and REST continuation measurements open through complete 2026-09-01 and 2026-09-02 UTC windows; added regression assertions so the stale claim cannot return.
+- Confirmed all 31 advertised public GET surfaces returned 200, all 31 local tests and syntax passed, official Registry version 1.23.0 is active and latest, directory PR #13062 remains open with its submission check passing, and the official JavaScript MCP SDK completed the eight-tool and two-resource lifecycle. The optional local Registry validation command was unavailable because `mcp-publisher` is not on `PATH`; the active record was verified directly through the official Registry API instead.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `6903bb6e-d5ba-4967-8ed0-b884f4747802`); the corrected adoption verdict is live. A final log-only deployment followed after recording this result.
+
 ## 2026-09-01 08:02 UTC — Marketer
 
 - Added the two already-live MCP resource URIs to the homepage connection path and compact `llms.txt`, so both human visitors and agent crawlers can discover protocol-native context without first reading the repository or full guide.

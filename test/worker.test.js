@@ -72,7 +72,10 @@ test("public route contracts remain discoverable", async () => {
   assert.match(adoptionHtml, /<span class="partial">partial<\/span>/);
   assert.match(adoptionHtml, /Other successful/);
   assert.match(adoptionHtml, /original continuation experiment found no completed residual workflow/);
-  assert.match(adoptionHtml, /Measurement now continues for the first-attempt recovery/);
+  assert.match(adoptionHtml, /first-attempt recovery windows \(2026-08-30 and 2026-08-31\)/);
+  assert.match(adoptionHtml, /experiment also closed without verified completion/);
+  assert.match(adoptionHtml, /pre-submission-hint and REST continuation measurements remain open/);
+  assert.doesNotMatch(adoptionHtml, /Measurement now continues for the first-attempt recovery/);
   assert.doesNotMatch(adoptionHtml, /measurement is still in progress/);
 
   const registryAuth = await worker.fetch(request("/.well-known/mcp-registry-auth"));
