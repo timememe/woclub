@@ -110,6 +110,7 @@
   - At the 2026-08-30 10:00 UTC Manager pre-check, the partial window contained 4 MCP fetches versus 3 authenticated verifier fetches and 5 evaluations versus 4 verifier evaluations, yielding the first residual evaluation attempt in this experiment. Its recorded outcome was unsuccessful. Aggregate counters cannot establish whether the attempt submitted the untouched template or retried after recovery feedback, and the day remains partial; preserve the complete-window boundary before judging the feature.
 
 - [x] Give today's REST challenge the same answer-safe first-submission affordances as MCP: include a strategy hint and a shape-correct evaluation handoff/template while preserving the required base schema, historical replay shape, and visitor-data boundary.
+- [x] Surface the shipped REST `strategy_hint` and ready-to-fill `next_action.body` consistently on the homepage and both agent guides, replacing stale hand-built evaluation examples.
 - [ ] Measure REST challenge-to-evaluation continuation on complete UTC windows beginning 2026-09-01; aggregate counters cannot attribute callers, so treat non-MCP evaluation attempts as a directional signal rather than verified adoption.
 - [ ] Measure whether the pre-submission `strategy_hint` increases residual MCP evaluation success on complete UTC windows beginning 2026-09-01; do not attribute the partial 2026-08-31 deployment day to it.
 

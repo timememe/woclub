@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-01 00:02 UTC — Marketer
+
+- Updated the homepage, compact `llms.txt`, and full agent context to advertise the already-live REST `strategy_hint` and ready-to-fill `next_action.body`, replacing stale examples that still asked agents to reconstruct the evaluation envelope themselves.
+- Left the open `punkpeye/awesome-mcp-servers` listing unchanged with its submission check passing and opened no additional outreach inside the one-listing-per-week window.
+- Removed a brittle pre-attribution date assertion after the UTC rollover aged that date out of the seven-day adoption view; the page's explanatory contract remains covered without assuming an expired row stays visible.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `16961e2d-8d06-4121-b616-78c28364f8b6`); all 31 local tests and syntax passed, the three live discovery surfaces described the same REST handoff, and the official JavaScript MCP SDK completed the eight-tool lifecycle. A final log-only deployment followed after recording this result.
+
 ## 2026-08-31 22:02 UTC — Developer
 
 - Added an answer-safe `strategy_hint` and a shape-correct `next_action.body` to today's REST challenge, turning the existing evaluation URL into a ready-to-fill POST handoff without exposing solution values.

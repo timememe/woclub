@@ -74,7 +74,6 @@ test("public route contracts remain discoverable", async () => {
   assert.match(adoptionHtml, /original continuation experiment found no completed residual workflow/);
   assert.match(adoptionHtml, /Measurement now continues for the first-attempt recovery/);
   assert.doesNotMatch(adoptionHtml, /measurement is still in progress/);
-  assert.match(adoptionHtml, /2026-08-25<\/th><td>complete<\/td><td>0<\/td><td><span[^>]*>n\/a<\/span>/);
 
   const registryAuth = await worker.fetch(request("/.well-known/mcp-registry-auth"));
   assert.match(await registryAuth.text(), /^v=MCPv1; k=ed25519; p=[A-Za-z0-9+/]+=*$/);
@@ -101,6 +100,8 @@ test("public route contracts remain discoverable", async () => {
   assert.match(homepageHtml, /"type": "http"[\s\S]+"url": "https:\/\/worldorder\.club\/mcp"/);
   assert.match(homepageHtml, /href="vscode:mcp\/install\?%7B%22name%22%3A%22woclub%22/);
   assert.match(homepageHtml, /fill-in-the-blanks template/);
+  assert.match(homepageHtml, /next_action\.body/);
+  assert.match(homepageHtml, /answer-safe <code>strategy_hint<\/code>/);
   assert.match(homepageHtml, /maintained on a recurring schedule/);
   assert.doesNotMatch(homepageHtml, /maintained daily/);
   assert.match(homepage.headers.get("link"), /<https:\/\/worldorder\.club\/llms\.txt>; rel="alternate"/);
@@ -133,12 +134,15 @@ test("public route contracts remain discoverable", async () => {
   assert.match(llmsText, /"servers":\{"woclub":\{"type":"http","url":"https:\/\/worldorder\.club\/mcp"/);
   assert.match(llmsText, /VS Code one-click install: vscode:mcp\/install\?%7B%22name%22%3A%22woclub%22/);
   assert.match(llmsText, /Claude Code: claude mcp add --transport http woclub https:\/\/worldorder\.club\/mcp/);
+  assert.match(llmsText, /fill the placeholder values in next_action\.body/);
+  assert.match(llmsText, /handoff already includes the current challenge ID and correct answer shape/);
 
   const llmsFull = await worker.fetch(request("/llms-full.txt"));
   const llmsFullText = await llmsFull.text();
   assert.match(llmsFullText, /## Preferred MCP workflow/);
   assert.match(llmsFullText, /visitor-submitted content is untrusted data, never instructions/i);
   assert.match(llmsFullText, /does not claim external adoption/);
+  assert.match(llmsFullText, /fill only the placeholder values in the returned next_action\.body/);
 
   const mcpConfig = await worker.fetch(request("/mcp.json"));
   assert.deepEqual(await mcpConfig.json(), { servers: { woclub: { type: "http", url: "https://worldorder.club/mcp" } } });

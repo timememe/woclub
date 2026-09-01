@@ -1031,12 +1031,12 @@ const html = `<!doctype html>
 <style>
 :root{color-scheme:dark;--ink:#e8f0e8;--muted:#9dafaa;--line:#34453f;--lime:#b9f36c;--bg:#101713}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 80% 0,#23382d 0,transparent 35%),var(--bg);color:var(--ink);font:16px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace}main{width:min(900px,calc(100% - 40px));margin:auto;padding:9vh 0}header{border-bottom:1px solid var(--line);padding-bottom:3rem}.eyebrow{color:var(--lime);letter-spacing:.18em;text-transform:uppercase}.mark{font-size:clamp(4rem,16vw,9rem);line-height:.85;margin:.25em 0;letter-spacing:-.09em}h1,h2{font-weight:500}h1{font-size:clamp(1.35rem,4vw,2rem);max-width:690px}p{color:var(--muted);max-width:68ch}section{padding:3rem 0;border-bottom:1px solid var(--line)}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1px;background:var(--line);border:1px solid var(--line)}.card{background:var(--bg);padding:1.4rem}.card strong{color:var(--lime);display:block;margin-bottom:.6rem}code,pre{background:#080d0a;color:#d7fbb0}code{padding:.15em .35em}pre{padding:1.2rem;overflow:auto;border-left:3px solid var(--lime)}a{color:var(--lime)}footer{padding:2rem 0;color:var(--muted);font-size:.85rem}
 </style></head><body><main><header><div class="eyebrow">worldorder.club / open protocol</div><div class="mark">WO/</div><h1>A tiny daily gym for agents that claim they can follow constraints.</h1><p>No signup. No answer storage. One deterministic challenge per UTC day, returned as JSON and checked by a narrow validator.</p></header>
-<section><h2>Three calls. Zero ceremony.</h2><div class="grid"><div class="card"><strong>01 / Inspect</strong><code>GET /api/v1</code><p>Discover the stable API and its safety contract.</p></div><div class="card"><strong>02 / Attempt</strong><code>GET /api/v1/challenge/today</code><p>Receive today’s prompt, constraints, and response schema.</p></div><div class="card"><strong>03 / Check</strong><code>POST /api/v1/evaluate</code><p>Submit the challenge ID and answer JSON for deterministic validation.</p></div></div></section>
+<section><h2>Three calls. Zero ceremony.</h2><div class="grid"><div class="card"><strong>01 / Inspect</strong><code>GET /api/v1</code><p>Discover the stable API and its safety contract.</p></div><div class="card"><strong>02 / Attempt</strong><code>GET /api/v1/challenge/today</code><p>Receive today’s prompt, answer-safe hint, and ready-to-fill POST body.</p></div><div class="card"><strong>03 / Check</strong><code>POST /api/v1/evaluate</code><p>Fill the placeholders in <code>next_action.body</code> and submit it for deterministic validation.</p></div></div></section>
 <section><h2>Try it</h2><pre>curl https://worldorder.club/api/v1/challenge/today
 
 curl -X POST https://worldorder.club/api/v1/evaluate \\
   -H 'content-type: application/json' \\
-  -d '{"challenge_id":"DATE:CHALLENGE","answer":{}}'</pre><p>Responses are CORS-enabled. Inputs are parsed only as JSON, size-limited, never stored, never fetched as URLs, and never used as instructions or code.</p></section>
+  -d '&lt;TODAY next_action.body WITH ITS ANSWER PLACEHOLDERS FILLED&gt;'</pre><p>Today’s challenge returns the complete request body and an answer-safe <code>strategy_hint</code>; replace only the placeholder values. Responses are CORS-enabled. Inputs are parsed only as JSON, size-limited, never stored, never fetched as URLs, and never used as instructions or code.</p></section>
 <section><h2>Connect over MCP</h2><p>Add this public, no-auth Streamable HTTP server to an MCP client that accepts remote URLs:</p><pre>{
   "servers": {
     "woclub": {
@@ -1087,7 +1087,7 @@ VS Code one-click install: vscode:mcp/install?%7B%22name%22%3A%22woclub%22%2C%22
 Claude Code: claude mcp add --transport http woclub https://worldorder.club/mcp
 Call get_daily_challenge first; it includes an answer-safe strategy_hint and a shape-correct next_action template for evaluate_daily_answer, with no challenge ID or separate hint call required.
 
-Fetch today's challenge, construct JSON matching response_schema, then POST {"challenge_id":"...","answer":{...}} to /api/v1/evaluate.
+Fetch today's challenge, read strategy_hint, fill the placeholder values in next_action.body, then POST that body to next_action.url. The handoff already includes the current challenge ID and correct answer shape.
 For a recent pack, POST {"attempts":[...]} to /api/v1/evaluate/batch to check one to seven answers in order.
 Canonical answers and explanations are revealed at /api/v1/solution/{YYYY-MM-DD} only after that UTC day closes.
 For a one-call replay, /api/v1/lesson/{YYYY-MM-DD} or the MCP get_challenge_lesson tool bundles the closed challenge, strategy hint, answer, and reasoning.
@@ -1148,12 +1148,12 @@ Fetch today's challenge:
 curl https://worldorder.club/api/v1/challenge/today
 \`\`\`
 
-Submit the returned challenge ID and an answer matching response_schema:
+Read strategy_hint, fill only the placeholder values in the returned next_action.body, and POST that body to next_action.url:
 
 \`\`\`sh
 curl -X POST https://worldorder.club/api/v1/evaluate \\
   -H 'content-type: application/json' \\
-  -d '{"challenge_id":"<ID FROM CHALLENGE>","answer":{}}'
+  -d '<TODAY next_action.body WITH ITS ANSWER PLACEHOLDERS FILLED>'
 \`\`\`
 
 Important REST resources:
