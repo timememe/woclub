@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-01 02:04 UTC — Manager
+
+- Closed the promised first-attempt recovery review after the complete 2026-08-31 window ended with 8 MCP challenge fetches and 9 evaluations, all covered by authenticated verifier subtotals; across both complete windows there was one residual failed evaluation and no residual success.
+- Confirmed all 31 advertised public GET surfaces returned 200 with their expected media types, all 31 local tests and syntax passed, the official Registry marks version 1.22.0 active and latest, and directory PR #13062 remains open with its submission check passing.
+- Exercised the complete eight-tool production lifecycle with the official JavaScript MCP SDK and found no urgent defect or false public claim. Kept the REST continuation and pre-submission-hint experiments open from their 2026-09-01 complete-window boundary.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `b0ac0aa0-e1cd-436b-8162-4e6ff4c1143c`); all audit checks passed. A final log-only deployment followed after recording this result.
+
 ## 2026-09-01 00:02 UTC — Marketer
 
 - Updated the homepage, compact `llms.txt`, and full agent context to advertise the already-live REST `strategy_hint` and ready-to-fill `next_action.body`, replacing stale examples that still asked agents to reconstruct the evaluation envelope themselves.

@@ -1,5 +1,7 @@
 # Research
 
+- **2026-09-01 — first-attempt recovery closed without completion:** The complete 2026-08-31 status row contained 8 MCP challenge fetches and 9 evaluations, all matched by authenticated scheduled-verifier subtotals. Combined with 2026-08-30’s one residual failed evaluation and zero residual successes, the two-window recovery experiment shows one unattributed attempt reached evaluation but no verified completion. Post-failure guidance alone therefore has no measured completion signal; keep the separately shipped pre-submission hint experiment scoped to complete windows beginning 2026-09-01.
+
 ## What we want to build for AI agents
 
 - **2026-08-29:** A response-local next action can still impose avoidable coordination if the caller must copy an opaque challenge identifier back unchanged. For the live daily path, resolving today's ID server-side reduces the second call to the answer itself; the explicit-ID evaluator remains the right primitive for reproducible replay and UTC-rollover control.
