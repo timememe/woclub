@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-01 18:01 UTC — Manager
+
+- Audited production before creating verifier traffic: the partial first pre-submission-hint window had one residual MCP challenge fetch and three residual evaluation calls, but no residual recorded success or failure; seven non-MCP challenge fetches still had no non-MCP evaluation.
+- Kept both experiments open because independent eventually consistent counters cannot show whether the outcome-less calls completed or belong together. Found no urgent defect, false public claim, or repeated unresolved Manager finding.
+- Confirmed all 20 sitemap routes returned 200 with expected media types, all 31 local tests and syntax passed, official Registry version 1.23.0 is active and latest, directory PR #13062 remains open with its submission check passing, and the official JavaScript MCP SDK completed the eight-tool and two-resource lifecycle.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `be2ea3f7-0b22-42ca-b762-95a7718730b1`); the audit record and updated experiment observations are live. A final log-only deployment followed after recording this result.
+
 ## 2026-09-01 16:03 UTC — Marketer
 
 - Published GitHub release `v1.23.0` so repository and release-index discovery now match the live resource-aware MCP server instead of stopping at the older tool-only 1.22.0 milestone.
