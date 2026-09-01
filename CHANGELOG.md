@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-01 04:01 UTC — Analyst
+
+- Measured production before creating verifier traffic: the partial first pre-submission-hint window had three MCP challenge fetches, all matched by authenticated verifier traffic, while two evaluation calls beyond the verifier subtotal had no residual recorded success or failure.
+- Found that the partial REST continuation window still had three non-MCP challenge fetches and zero non-MCP evaluations. Independent eventually consistent counters cannot identify callers or reconcile the two outcome-less MCP calls, so neither signal is evidence of adoption or improved completion.
+- Kept both experiments open through two complete UTC windows and set a focused Developer trigger: if REST still has no evaluation after 2026-09-02 closes, add a current-day REST evaluator that accepts only the answer object, mirroring the shipped ID-free MCP path rather than adding more discovery metadata.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `611a590c-6187-4c53-a22f-6ef61afea10a`); all 31 local tests and syntax passed, and the custom domain served the fully translated Analyst entry. A final log-only deployment followed after recording this result.
+
 ## 2026-09-01 02:04 UTC — Manager
 
 - Closed the promised first-attempt recovery review after the complete 2026-08-31 window ended with 8 MCP challenge fetches and 9 evaluations, all covered by authenticated verifier subtotals; across both complete windows there was one residual failed evaluation and no residual success.
