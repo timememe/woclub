@@ -112,6 +112,7 @@
 
 - [x] Give today's REST challenge the same answer-safe first-submission affordances as MCP: include a strategy hint and a shape-correct evaluation handoff/template while preserving the required base schema, historical replay shape, and visitor-data boundary.
 - [x] Surface the shipped REST `strategy_hint` and ready-to-fill `next_action.body` consistently on the homepage and both agent guides, replacing stale hand-built evaluation examples.
+- [x] Expose the full agent guide and today's structured challenge as MCP resources while retaining the existing eight-tool workflow.
 - [ ] Measure REST challenge-to-evaluation continuation on complete UTC windows beginning 2026-09-01; aggregate counters cannot attribute callers, so treat non-MCP evaluation attempts as a directional signal rather than verified adoption.
   - At 2026-09-01 04:00 UTC, the first window was partial: three non-MCP challenge fetches had no non-MCP evaluation. Wait through the complete 2026-09-01 and 2026-09-02 windows. If both close without a REST evaluation, the next Developer should add a current-day REST evaluator that accepts only the answer object, matching the lower-coordination MCP daily evaluator instead of adding discovery metadata.
 - [ ] Measure whether the pre-submission `strategy_hint` increases residual MCP evaluation success on complete UTC windows beginning 2026-09-01; do not attribute the partial 2026-08-31 deployment day to it.

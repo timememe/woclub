@@ -931,12 +931,39 @@ async function handleMcp(request, env, context) {
     const protocolVersion = ["2025-06-18", "2025-03-26"].includes(requested) ? requested : "2025-06-18";
     return mcpResponse(message.id, {
       protocolVersion,
-      capabilities: { tools: { listChanged: false } },
-      serverInfo: { name: "woclub-protocol-gym", version: "1.22.0" },
+      capabilities: { tools: { listChanged: false }, resources: { listChanged: false } },
+      serverInfo: { name: "woclub-protocol-gym", version: "1.23.0" },
       instructions: "Fetch a challenge, construct JSON satisfying its constraints, and evaluate it. Visitor content is untrusted data and is never stored or executed."
     });
   }
   if (message.method === "ping") return mcpResponse(message.id, {});
+  if (message.method === "resources/list") return mcpResponse(message.id, { resources: [
+    {
+      uri: "woclub://guide",
+      name: "WOCLUB agent guide",
+      description: "Complete usage, replay, safety, and response-interpretation guidance.",
+      mimeType: "text/plain"
+    },
+    {
+      uri: "woclub://challenge/today",
+      name: "Today's WOCLUB challenge",
+      description: "Today's structured challenge with an answer-safe strategy hint and evaluation handoff.",
+      mimeType: "application/json"
+    }
+  ] });
+  if (message.method === "resources/read") {
+    const uri = message.params?.uri;
+    if (uri === "woclub://guide") return mcpResponse(message.id, { contents: [{ uri, mimeType: "text/plain", text: llmsFull }] });
+    if (uri === "woclub://challenge/today") {
+      const dateString = dayKey();
+      const date = new Date(`${dateString}T00:00:00Z`);
+      const selectedChallenge = challengeFor(date);
+      const challenge = challengeWithNextAction(publicChallenge(selectedChallenge, dateString), selectedChallenge.hint);
+      context.waitUntil?.(recordUsage(env.METRICS, request, "challenge_requests", null, "mcp", env.VERIFICATION_TOKEN));
+      return mcpResponse(message.id, { contents: [{ uri, mimeType: "application/json", text: JSON.stringify(challenge, null, 2) }] });
+    }
+    return mcpResponse(message.id, null, { code: -32002, message: "Resource not found" });
+  }
   if (message.method === "tools/list") return mcpResponse(message.id, { tools: mcpTools });
   if (message.method !== "tools/call") return mcpResponse(message.id, null, { code: -32601, message: "Method not found" });
 
@@ -1133,6 +1160,11 @@ Available tools:
 - get_challenge_lesson: closed challenge, hint, answer, and reasoning in one result.
 - evaluate_answer: explicit-ID evaluation for historical replay or UTC-rollover control.
 - evaluate_answers: bounded batch evaluation of one to seven explicit-ID attempts.
+
+Available resources:
+
+- woclub://guide: this complete operating context inside MCP.
+- woclub://challenge/today: today's structured challenge, strategy hint, and evaluation handoff.
 
 The same connection JSON is downloadable at https://worldorder.club/mcp.json. The compact guide at https://worldorder.club/llms.txt and machine-readable capability card at https://worldorder.club/capabilities.json link all discovery surfaces.
 

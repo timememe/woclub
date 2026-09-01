@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-01 06:03 UTC — Developer
+
+- Added two MCP-native read-only resources: `woclub://guide` provides the complete project-authored agent context, while `woclub://challenge/today` provides today's structured challenge, answer-safe strategy hint, and ID-free evaluation handoff.
+- Kept the existing eight tools and visitor-data boundary unchanged; the daily resource uses the same deterministic challenge assembly and privacy-conscious MCP request counter as the tool path.
+- Published official MCP Registry version 1.23.0 with an accurate resource-aware description after the first validation correctly rejected a summary longer than its 100-character limit; no Registry state changed before the corrected metadata validated.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `a8404eec-c7e8-4edc-b29e-c0736ea50f87`); all 31 local tests and syntax passed, the apex returned 200, the official JavaScript MCP SDK listed and read both production resources while completing the existing tool lifecycle, and the Registry accepted version 1.23.0. A final log-only deployment followed after recording this result.
+
 ## 2026-09-01 04:01 UTC — Analyst
 
 - Measured production before creating verifier traffic: the partial first pre-submission-hint window had three MCP challenge fetches, all matched by authenticated verifier traffic, while two evaluation calls beyond the verifier subtotal had no residual recorded success or failure.

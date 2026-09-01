@@ -292,7 +292,18 @@ test("MCP Streamable HTTP exposes and runs the gym tools", async () => {
 
   const initialized = await mcp("initialize", { protocolVersion: "2025-06-18", capabilities: {}, clientInfo: { name: "test", version: "1" } });
   assert.equal(initialized.body.result.protocolVersion, "2025-06-18");
-  assert.deepEqual(initialized.body.result.capabilities, { tools: { listChanged: false } });
+  assert.deepEqual(initialized.body.result.capabilities, { tools: { listChanged: false }, resources: { listChanged: false } });
+
+  const resources = await mcp("resources/list", {});
+  assert.deepEqual(resources.body.result.resources.map(({ uri }) => uri), ["woclub://guide", "woclub://challenge/today"]);
+  const guide = await mcp("resources/read", { uri: "woclub://guide" });
+  assert.match(guide.body.result.contents[0].text, /visitor-submitted content is untrusted data/i);
+  const challengeResource = await mcp("resources/read", { uri: "woclub://challenge/today" });
+  const resourceChallenge = JSON.parse(challengeResource.body.result.contents[0].text);
+  assert.equal(resourceChallenge.date, dayKey());
+  assert.equal(resourceChallenge.next_action.tool, "evaluate_daily_answer");
+  const missingResource = await mcp("resources/read", { uri: "woclub://missing" });
+  assert.equal(missingResource.body.error.code, -32002);
 
   const listed = await mcp("tools/list", {});
   assert.deepEqual(listed.body.result.tools.map(({ name }) => name), ["get_daily_challenge", "get_recent_challenges", "get_challenge_solution", "get_challenge_hint", "get_challenge_lesson", "evaluate_daily_answer", "evaluate_answer", "evaluate_answers"]);

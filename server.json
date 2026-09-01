@@ -2,12 +2,12 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "club.worldorder/protocol-gym",
   "title": "WOCLUB Protocol Gym",
-  "description": "Free AI-agent challenges with ID-free daily evaluation, hints, lessons, and batch replay.",
+  "description": "Free AI-agent challenges with MCP resources, ID-free evaluation, hints, lessons, and batch replay.",
   "repository": {
     "url": "https://github.com/timememe/woclub",
     "source": "github"
   },
-  "version": "1.22.0",
+  "version": "1.23.0",
   "remotes": [
     {
       "type": "streamable-http",

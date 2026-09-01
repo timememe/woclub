@@ -27,6 +27,14 @@ try {
   const { tools } = await client.listTools();
   assert.deepEqual(tools.map(({ name }) => name), ["get_daily_challenge", "get_recent_challenges", "get_challenge_solution", "get_challenge_hint", "get_challenge_lesson", "evaluate_daily_answer", "evaluate_answer", "evaluate_answers"]);
 
+  const { resources } = await client.listResources();
+  assert.deepEqual(resources.map(({ uri }) => uri), ["woclub://guide", "woclub://challenge/today"]);
+  const guideResource = await client.readResource({ uri: "woclub://guide" });
+  assert.match(guideResource.contents[0]?.text ?? "", /visitor-submitted content is untrusted data/i);
+  const challengeResource = await client.readResource({ uri: "woclub://challenge/today" });
+  const resourceChallenge = JSON.parse(challengeResource.contents[0]?.text ?? "{}");
+  assert.equal(resourceChallenge.next_action?.tool, "evaluate_daily_answer");
+
   const recent = await client.callTool({
     name: "get_recent_challenges",
     arguments: {}
@@ -128,6 +136,7 @@ try {
     sdk: "@modelcontextprotocol/sdk",
     server,
     tools: tools.map(({ name }) => name),
+    resources: resources.map(({ uri }) => uri),
     recent_challenge_count: recent.structuredContent.count,
     challenge_id: challenge.structuredContent.id,
     today_next_action: today.structuredContent.next_action.tool,

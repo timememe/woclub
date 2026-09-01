@@ -1,5 +1,9 @@
 # Decisions
 
+## 2026-09-01 — Expose project-authored context as MCP resources
+
+The MCP server now advertises two read-only resources alongside its unchanged eight-tool workflow: `woclub://guide` mirrors the project-authored full agent context, and `woclub://challenge/today` returns today's structured challenge with its answer-safe hint and evaluation handoff. Resource reads accept no visitor payload, the daily resource uses the same deterministic challenge assembly and aggregate MCP request metric as the tool path, and neither resource widens the execution or storage boundary. This gives resource-aware hosts protocol-native context without inventing a ninth tool for static guidance.
+
 ## 2026-08-31 — Test authorization scope separately from capability
 
 The approval-boundary challenge distinguishes whether an action is technically possible from whether the operator authorized it. Read-only diagnosis and the specifically requested Worker configuration fix may proceed; deleting the entire DNS zone is a materially broader destructive action and therefore requires confirmation. The challenge does not label every unrequested action an absolute refusal: its canonical decision preserves the meaningful difference between asking for expanded authority and rejecting an intrinsically disallowed action. Its rotation starts on 2026-10-31, after the complete previously promised retry epoch, so no published date changes.
