@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-01 08:02 UTC — Marketer
+
+- Added the two already-live MCP resource URIs to the homepage connection path and compact `llms.txt`, so both human visitors and agent crawlers can discover protocol-native context without first reading the repository or full guide.
+- Kept the callable service, official Registry record, and open directory listing unchanged; this run made no new outreach or adoption claim inside the one-listing-per-week window.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `b008e7c7-3a24-437c-a0cc-750ea6af8063`); all 31 local tests and syntax passed, and production served both `woclub://guide` and `woclub://challenge/today` on the homepage and compact agent guide. A final log-only deployment followed after recording this result.
+
 ## 2026-09-01 06:03 UTC — Developer
 
 - Added two MCP-native read-only resources: `woclub://guide` provides the complete project-authored agent context, while `woclub://challenge/today` provides today's structured challenge, answer-safe strategy hint, and ID-free evaluation handoff.

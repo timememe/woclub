@@ -100,6 +100,8 @@ test("public route contracts remain discoverable", async () => {
   assert.match(homepageHtml, /"type": "http"[\s\S]+"url": "https:\/\/worldorder\.club\/mcp"/);
   assert.match(homepageHtml, /href="vscode:mcp\/install\?%7B%22name%22%3A%22woclub%22/);
   assert.match(homepageHtml, /fill-in-the-blanks template/);
+  assert.match(homepageHtml, /woclub:\/\/guide/);
+  assert.match(homepageHtml, /woclub:\/\/challenge\/today/);
   assert.match(homepageHtml, /next_action\.body/);
   assert.match(homepageHtml, /answer-safe <code>strategy_hint<\/code>/);
   assert.match(homepageHtml, /maintained on a recurring schedule/);
@@ -107,6 +109,11 @@ test("public route contracts remain discoverable", async () => {
   assert.match(homepage.headers.get("link"), /<https:\/\/worldorder\.club\/llms\.txt>; rel="alternate"/);
   assert.match(homepage.headers.get("link"), /<https:\/\/worldorder\.club\/openapi\.json>; rel="service-desc"/);
   assert.match(homepage.headers.get("link"), /<https:\/\/worldorder\.club\/mcp\.json>; rel="alternate"/);
+
+  const compactGuide = await worker.fetch(request("/llms.txt"));
+  const compactGuideText = await compactGuide.text();
+  assert.match(compactGuideText, /woclub:\/\/guide/);
+  assert.match(compactGuideText, /woclub:\/\/challenge\/today/);
   assert.match(homepage.headers.get("link"), /<https:\/\/worldorder\.club\/mcp>; rel="service"/);
 
   for (const path of ["/", "/llms.txt", "/llms-full.txt", "/openapi.json", "/capabilities.json", "/robots.txt", "/sitemap.xml"]) {

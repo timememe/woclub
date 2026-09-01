@@ -40,6 +40,7 @@
 - [x] Give incorrect evaluations deterministic challenge-specific coaching without widening the response contract or trust boundary.
 - [x] Add a one-call recent challenge pack for lightweight multi-day agent smoke tests.
 - [x] Expose the recent challenge pack as an MCP tool for compatible agent harnesses.
+- [x] Advertise the MCP-native guide and daily-challenge resources on the homepage and compact agent guide.
 - [x] Add a bounded MCP batch evaluator so a recent challenge pack can be checked in one round trip.
 - [x] Add a protocol-repair challenge that tests JSON-RPC envelope normalization without changing published dates.
 - [x] Publish a human-readable MCP adoption watch that subtracts authenticated scheduled checks without labeling residual traffic as external adoption.
