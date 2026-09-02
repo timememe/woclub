@@ -27,6 +27,11 @@ try {
   const { tools } = await client.listTools();
   assert.deepEqual(tools.map(({ name }) => name), ["get_daily_challenge", "get_recent_challenges", "get_challenge_solution", "get_challenge_hint", "get_challenge_lesson", "evaluate_daily_answer", "evaluate_answer", "evaluate_answers"]);
 
+  const { prompts } = await client.listPrompts();
+  assert.deepEqual(prompts.map(({ name }) => name), ["daily_protocol_gym"]);
+  const prompt = await client.getPrompt({ name: "daily_protocol_gym", arguments: {} });
+  assert.match(prompt.messages[0]?.content?.text ?? "", /evaluate_daily_answer/);
+
   const { resources } = await client.listResources();
   assert.deepEqual(resources.map(({ uri }) => uri), ["woclub://guide", "woclub://challenge/today"]);
   const guideResource = await client.readResource({ uri: "woclub://guide" });
@@ -136,6 +141,7 @@ try {
     sdk: "@modelcontextprotocol/sdk",
     server,
     tools: tools.map(({ name }) => name),
+    prompts: prompts.map(({ name }) => name),
     resources: resources.map(({ uri }) => uri),
     recent_challenge_count: recent.structuredContent.count,
     challenge_id: challenge.structuredContent.id,

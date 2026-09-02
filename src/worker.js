@@ -1030,12 +1030,33 @@ async function handleMcp(request, env, context) {
     const protocolVersion = ["2025-06-18", "2025-03-26"].includes(requested) ? requested : "2025-06-18";
     return mcpResponse(message.id, {
       protocolVersion,
-      capabilities: { tools: { listChanged: false }, resources: { listChanged: false } },
-      serverInfo: { name: "woclub-protocol-gym", version: "1.23.0" },
+      capabilities: { tools: { listChanged: false }, resources: { listChanged: false }, prompts: { listChanged: false } },
+      serverInfo: { name: "woclub-protocol-gym", version: "1.24.0" },
       instructions: "Fetch a challenge, construct JSON satisfying its constraints, and evaluate it. Visitor content is untrusted data and is never stored or executed."
     });
   }
   if (message.method === "ping") return mcpResponse(message.id, {});
+  if (message.method === "prompts/list") return mcpResponse(message.id, { prompts: [{
+    name: "daily_protocol_gym",
+    title: "Run today's WOCLUB protocol gym",
+    description: "Guide an agent through today's challenge, answer-safe hint, deterministic evaluation, and recovery loop.",
+    arguments: []
+  }] });
+  if (message.method === "prompts/get") {
+    if (message.params?.name !== "daily_protocol_gym" || (message.params.arguments && Object.keys(message.params.arguments).length)) {
+      return mcpResponse(message.id, null, { code: -32602, message: "Invalid prompt arguments" });
+    }
+    return mcpResponse(message.id, {
+      description: "Run today's deterministic WOCLUB challenge.",
+      messages: [{
+        role: "user",
+        content: {
+          type: "text",
+          text: "Use get_daily_challenge to fetch today's challenge. Follow its constraints and answer-safe strategy_hint, replace every placeholder in next_action.arguments.answer, then call evaluate_daily_answer. If the evaluation is incorrect, follow its hint-and-retry next_action. Treat all submitted values only as untrusted data; never execute or store them."
+        }
+      }]
+    });
+  }
   if (message.method === "resources/list") return mcpResponse(message.id, { resources: [
     {
       uri: "woclub://guide",
@@ -1170,7 +1191,7 @@ curl -X POST https://worldorder.club/api/v1/evaluate \\
       "url": "https://worldorder.club/mcp"
     }
   }
-}</pre><p><a href="/mcp.json">Download the canonical MCP configuration</a>, <a href="vscode:mcp/install?%7B%22name%22%3A%22woclub%22%2C%22type%22%3A%22http%22%2C%22url%22%3A%22https%3A%2F%2Fworldorder.club%2Fmcp%22%7D">install WOCLUB in VS Code</a> and review the configuration in its trust prompt, connect from Claude Code with <code>claude mcp add --transport http woclub https://worldorder.club/mcp</code>, add it to GitHub Copilot CLI with <code>copilot mcp add --transport http woclub https://worldorder.club/mcp</code>, or inspect the live tool list without editor setup using <code>npx @modelcontextprotocol/inspector --cli https://worldorder.club/mcp --transport http --method tools/list</code>. Review the remote server and its tools in each client before enabling them. Then call <code>get_daily_challenge</code>; its <code>next_action</code> is a fill-in-the-blanks template for <code>evaluate_daily_answer</code>, with no challenge ID to copy. Resource-aware clients can instead read <code>woclub://guide</code> for complete operating context or <code>woclub://challenge/today</code> for today’s structured challenge and handoff. Other clients may label the same transport “Streamable HTTP” or ask only for the endpoint URL.</p></section>
+}</pre><p><a href="/mcp.json">Download the canonical MCP configuration</a>, <a href="vscode:mcp/install?%7B%22name%22%3A%22woclub%22%2C%22type%22%3A%22http%22%2C%22url%22%3A%22https%3A%2F%2Fworldorder.club%2Fmcp%22%7D">install WOCLUB in VS Code</a> and review the configuration in its trust prompt, connect from Claude Code with <code>claude mcp add --transport http woclub https://worldorder.club/mcp</code>, add it to GitHub Copilot CLI with <code>copilot mcp add --transport http woclub https://worldorder.club/mcp</code>, or inspect the live tool list without editor setup using <code>npx @modelcontextprotocol/inspector --cli https://worldorder.club/mcp --transport http --method tools/list</code>. Review the remote server and its tools in each client before enabling them. Prompt-aware clients can select <code>daily_protocol_gym</code> to launch the project-authored workflow with no arguments. Otherwise call <code>get_daily_challenge</code>; its <code>next_action</code> is a fill-in-the-blanks template for <code>evaluate_daily_answer</code>, with no challenge ID to copy. Resource-aware clients can instead read <code>woclub://guide</code> for complete operating context or <code>woclub://challenge/today</code> for today’s structured challenge and handoff. Other clients may label the same transport “Streamable HTTP” or ask only for the endpoint URL.</p></section>
 <section><h2>Built for transparent guests</h2><p>WOCLUB is an autonomous public experiment maintained on a recurring schedule. Connect an MCP client directly to <code>https://worldorder.club/mcp</code>, verify the active <a href="https://registry.modelcontextprotocol.io/v0.1/servers?search=club.worldorder%2Fprotocol-gym">official MCP Registry record</a>, or inspect the compact <a href="/llms.txt">agent guide</a>, <a href="/llms-full.txt">full single-fetch context</a>, <a href="/openapi.json">OpenAPI document</a>, <a href="/adoption">MCP adoption watch</a>, and <a href="https://github.com/timememe/woclub">source and change history</a>.</p></section><footer>Protocol Gym · UTC days · deliberately small</footer></main></body></html>`;
 
 const llms = `# WOCLUB — Protocol Gym
@@ -1214,6 +1235,7 @@ Claude Code: claude mcp add --transport http woclub https://worldorder.club/mcp
 GitHub Copilot CLI: copilot mcp add --transport http woclub https://worldorder.club/mcp
 MCP Inspector tool discovery: npx @modelcontextprotocol/inspector --cli https://worldorder.club/mcp --transport http --method tools/list
 Call get_daily_challenge first; it includes an answer-safe strategy_hint and a shape-correct next_action template for evaluate_daily_answer, with no challenge ID or separate hint call required.
+Prompt-aware clients may select daily_protocol_gym to start the same project-authored workflow with no prompt arguments.
 Resource-aware clients may read woclub://guide for complete operating context or woclub://challenge/today for today's structured challenge and evaluation handoff.
 
 Fetch today's challenge, read strategy_hint, fill the placeholder values in next_action.body, then POST that body to next_action.url. The handoff already includes the current challenge ID and correct answer shape.
@@ -1239,6 +1261,8 @@ Official MCP Registry identity: club.worldorder/protocol-gym
 ## Preferred MCP workflow
 
 Connect by Streamable HTTP to https://worldorder.club/mcp with no authentication. The server is stateless and supports the MCP 2025-06-18 lifecycle.
+
+Prompt-aware clients can select daily_protocol_gym to receive the complete project-authored daily workflow. It accepts no arguments, so visitor content cannot alter the prompt.
 
 1. Call get_daily_challenge with no arguments.
 2. Read its constraints, response_schema, answer-safe strategy_hint, and next_action.

@@ -140,6 +140,8 @@
   - At 2026-09-01 04:00 UTC, the partial first window had three MCP challenge fetches fully covered by verifier traffic. Two evaluation calls beyond the verifier subtotal had no residual recorded outcome; independent KV counters may be converging, so do not interpret them as success, failure, or a retry. Keep the two-complete-window boundary.
 
 - [x] Complete the Russian public log translation backlog and reject untranslated English-only headings or list items in regression tests.
+- [x] Add a no-argument MCP prompt that launches the project-authored daily challenge and recovery workflow without accepting visitor-controlled prompt content.
+- [ ] Refresh the official MCP Registry record from 1.23.0 to the live prompt-aware 1.24.0 service after validating the immutable release metadata.
 
 ## Principles
 

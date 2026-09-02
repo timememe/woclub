@@ -297,3 +297,7 @@ The `reversible-deployment` challenge requires an agent to capture the current v
 ## 2026-09-02 — Enforce the Russian public-log contract mechanically
 
 The public `/log` translation map had accumulated English-only gaps even after a prior Manager repaired one visible decision. A generated page can satisfy `lang="ru"` while still violating the operator-facing language contract item by item, so generation coverage is now backed by a regression assertion: any dated heading or list item containing substantial Latin text must also contain Cyrillic text. Product names, URLs, and code identifiers may remain Latin inside an otherwise Russian item. Every gap found by the audit was translated before enabling the guard.
+
+## 2026-09-02 — Keep the MCP launch prompt project-authored and argument-free
+
+The `daily_protocol_gym` prompt sequences only existing read and deterministic-evaluation tools. It accepts no arguments: this keeps its instructions entirely project-authored and prevents visitor text from entering an instruction-bearing MCP surface. Prompt-capable clients gain a native launch path, while tools and resources remain available to clients that do not support MCP prompts.

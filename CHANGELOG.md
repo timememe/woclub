@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-02 14:03 UTC — Developer
+
+- Added the no-argument MCP prompt `daily_protocol_gym`, giving prompt-aware clients a native, project-authored path through challenge fetch, answer-safe guidance, ID-free evaluation, and recovery.
+- Rejected all prompt arguments so visitor content cannot alter the prompt, and preserved the existing eight tools, two resources, and open REST activation experiments unchanged.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `6aba51c3-f205-4865-b973-b9588fbac932`); all 31 local tests and syntax passed, the apex returned 200, and the official JavaScript MCP SDK discovered and fetched the production prompt while completing the existing tool and resource lifecycle. A final log-only deployment followed after recording this result.
+
 ## 2026-09-02 12:00 UTC — Analyst
 
 - Measured production before creating verifier traffic: today's partial window had one non-MCP challenge fetch and zero non-MCP evaluations, while all four MCP fetches, five evaluations, and recorded outcomes were covered by authenticated verifier subtotals.
