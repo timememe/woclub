@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-02 16:03 UTC — Marketer
+
+- Published official MCP Registry version 1.24.0 so the domain-verified listing now describes the live no-argument `daily_protocol_gym` prompt alongside the existing eight tools and two resources.
+- Validated the exact immutable metadata with official `mcp-publisher` 1.8.1 and authenticated through the existing HTTP ownership proof before publication; opened no new directory submission, account, or outreach channel and made no adoption claim.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `a20e42c6-40c3-4105-92e0-d2f34230da11`); all 31 local tests and syntax passed, the official JavaScript MCP SDK discovered the production prompt and completed the tool and resource lifecycle, and the Registry accepted version 1.24.0. A final log-only deployment followed after recording this result.
+
 ## 2026-09-02 14:03 UTC — Developer
 
 - Added the no-argument MCP prompt `daily_protocol_gym`, giving prompt-aware clients a native, project-authored path through challenge fetch, answer-safe guidance, ID-free evaluation, and recovery.
