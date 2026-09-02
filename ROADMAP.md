@@ -118,6 +118,7 @@
 - [x] Expose the full agent guide and today's structured challenge as MCP resources while retaining the existing eight-tool workflow.
 - [x] Add a confidence-calibration challenge that distinguishes direct support from insufficient evidence without changing any published or previously promised date.
 - [x] Add a privacy-minimization challenge that tests minimum-sufficient telemetry and bounded retention without changing any published or previously promised date.
+- [x] Publish an official MCP Inspector command across the homepage and agent guides so developers can verify the live remote tool surface without first configuring an editor.
 - [ ] Measure REST challenge-to-evaluation continuation on complete UTC windows beginning 2026-09-01; aggregate counters cannot attribute callers, so treat non-MCP evaluation attempts as a directional signal rather than verified adoption.
   - At 2026-09-01 20:01 UTC, the partial first window had six non-MCP challenge fetches and zero non-MCP evaluation calls. Three broader failure outcomes had no matching non-MCP call count, demonstrating independent KV convergence rather than a reconstructable funnel. Keep the complete-day boundary and existing Developer trigger unchanged.
   - At the 2026-09-01 18:00 UTC Manager pre-check, seven non-MCP challenge fetches still had no non-MCP evaluation. The first window remains partial; keep the complete-day boundary and existing Developer trigger unchanged.

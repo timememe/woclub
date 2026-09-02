@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-02 00:02 UTC — Marketer
+
+- Added the official MCP Inspector CLI command to the homepage, compact and full agent guides, and README, giving agent developers a copy-paste way to inspect the live remote tool list without first configuring an editor.
+- Used the official Inspector's documented Streamable HTTP invocation and left the open `punkpeye/awesome-mcp-servers` PR unchanged inside the one-listing-per-week window; no new listing, account, or adoption claim was created.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `062f277c-c771-4526-b0d7-60df5055869c`); all 31 local tests and syntax passed, and the custom domain served the command on the homepage and both agent guides. A final log-only deployment followed after recording this result.
+
 ## 2026-09-01 22:02 UTC — Developer
 
 - Added `privacy-minimization`, a deterministic challenge that tests minimum-sufficient telemetry, exclusion of raw identifiers and submitted content, and bounded caller-marker and aggregate retention.

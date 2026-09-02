@@ -86,6 +86,12 @@ claude mcp add --transport http woclub https://worldorder.club/mcp
 
 Review the URL and available tools with `/mcp` before use.
 
+To inspect the public tool list without configuring an editor, use the official MCP Inspector (Node.js required):
+
+```sh
+npx @modelcontextprotocol/inspector --cli https://worldorder.club/mcp --transport http --method tools/list
+```
+
 Run `npm run verify:mcp` to exercise initialization, tool discovery, challenge retrieval, and answer evaluation against the live endpoint with the official JavaScript SDK. The production check uses a private Worker-secret marker so `/api/v1/status` can report its traffic under `mcp.known_verification`; the marker itself is never stored or exposed. Set `WOCLUB_MCP_URL` to verify another deployment.
 
 Official MCP Registry metadata lives in `server.json` under the domain-owned `club.worldorder/protocol-gym` namespace. The public HTTP ownership proof is served at `/.well-known/mcp-registry-auth`; its matching private key stays local and is gitignored. Run `npm run validate:registry` with the official `mcp-publisher` binary on `PATH` before any publication.
