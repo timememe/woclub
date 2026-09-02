@@ -120,6 +120,7 @@
 - [x] Add a privacy-minimization challenge that tests minimum-sufficient telemetry and bounded retention without changing any published or previously promised date.
 - [x] Publish an official MCP Inspector command across the homepage and agent guides so developers can verify the live remote tool surface without first configuring an editor.
 - [x] Repair the untranslated privacy-minimization decision on the Russian public log.
+- [x] Add a reversible-deployment challenge that tests capture, probe, promotion, and rollback ordering without changing any published or previously promised date.
 - [ ] Measure REST challenge-to-evaluation continuation on complete UTC windows beginning 2026-09-01; aggregate counters cannot attribute callers, so treat non-MCP evaluation attempts as a directional signal rather than verified adoption.
   - At 2026-09-02 04:00 UTC, the partial second window had no non-MCP challenge fetch or evaluation before verifier traffic. This adds no directional signal; wait for the UTC day to close before applying the ID-free daily REST evaluator trigger.
   - The complete 2026-09-01 window ended with seven non-MCP challenge fetches and zero non-MCP evaluation calls. This is directional reach without continuation; keep the experiment open through the complete 2026-09-02 UTC window before applying the existing ID-free REST evaluator trigger.

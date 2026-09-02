@@ -467,6 +467,35 @@ export const challenges = [
       return "Return the two minimum fields alphabetically without extra data.";
     },
     explanation: "A short-lived date-scoped hash supports approximate daily uniqueness and the success flag supports aggregate outcomes; raw identifiers, fingerprints, and answers are unnecessary."
+  },
+  {
+    id: "reversible-deployment",
+    title: "Reversible deployment plan",
+    prompt: "Order the deployment actions and choose the automatic rollback condition.",
+    constraints: [
+      "Actions: capture_current_version, deploy_candidate, probe_candidate, promote_candidate, rollback_current",
+      "Capture the current version before changing production",
+      "Probe only after deploying the candidate",
+      "Promote only after a successful probe",
+      "If the probe fails, restore the captured current version instead of promoting",
+      "Return the happy-path actions in order and the failure action"
+    ],
+    schema: { happy_path: ["string"], on_probe_failure: "string" },
+    hint: "Separate the shared preparation steps from the probe result branch; the rollback target must exist before production changes.",
+    answer: { happy_path: ["capture_current_version", "deploy_candidate", "probe_candidate", "promote_candidate"], on_probe_failure: "rollback_current" },
+    validate(value) {
+      return JSON.stringify(value) === JSON.stringify({ happy_path: ["capture_current_version", "deploy_candidate", "probe_candidate", "promote_candidate"], on_probe_failure: "rollback_current" });
+    },
+    feedback(value) {
+      if (!value || typeof value !== "object" || Array.isArray(value) || !Array.isArray(value.happy_path)) return "Return a happy_path array and one on_probe_failure action.";
+      const actions = ["capture_current_version", "deploy_candidate", "probe_candidate", "promote_candidate"];
+      if (value.happy_path.length !== actions.length || new Set(value.happy_path).size !== actions.length || value.happy_path.some((action) => !actions.includes(action))) return "The happy path must contain each non-rollback action exactly once.";
+      if (value.happy_path[0] !== "capture_current_version") return "Capture the current version before changing production so rollback has a known target.";
+      if (value.happy_path.indexOf("deploy_candidate") > value.happy_path.indexOf("probe_candidate")) return "Deploy the candidate before probing it.";
+      if (value.happy_path.indexOf("probe_candidate") > value.happy_path.indexOf("promote_candidate")) return "Promote only after the candidate probe succeeds.";
+      return "A failed probe must trigger rollback_current rather than promotion.";
+    },
+    explanation: "The plan preserves a rollback target, deploys and probes before promotion, and restores the captured version when the probe fails."
   }
 ];
 
@@ -496,6 +525,8 @@ const calibrationRotationStart = "2026-11-12";
 const calibrationRotation = ["confidence-calibration", ...approvalRotation];
 const privacyRotationStart = "2026-11-25";
 const privacyRotation = ["privacy-minimization", ...calibrationRotation];
+const reversibleRotationStart = "2026-12-09";
+const reversibleRotation = ["reversible-deployment", ...privacyRotation];
 
 const headers = {
   "access-control-allow-origin": "*",
@@ -681,9 +712,12 @@ export function challengeFor(date = new Date()) {
   } else if (dateString < privacyRotationStart) {
     const daysSinceCalibrationRotation = Math.floor((date.getTime() - Date.parse(`${calibrationRotationStart}T00:00:00Z`)) / 86400000);
     challengeId = calibrationRotation[daysSinceCalibrationRotation % calibrationRotation.length];
-  } else {
+  } else if (dateString < reversibleRotationStart) {
     const daysSincePrivacyRotation = Math.floor((date.getTime() - Date.parse(`${privacyRotationStart}T00:00:00Z`)) / 86400000);
     challengeId = privacyRotation[daysSincePrivacyRotation % privacyRotation.length];
+  } else {
+    const daysSinceReversibleRotation = Math.floor((date.getTime() - Date.parse(`${reversibleRotationStart}T00:00:00Z`)) / 86400000);
+    challengeId = reversibleRotation[daysSinceReversibleRotation % reversibleRotation.length];
   }
   return challenges.find((challenge) => challenge.id === challengeId);
 }

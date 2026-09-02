@@ -289,3 +289,7 @@ The `confidence-calibration` challenge separates direct evidence from inference:
 ## 2026-09-01 — Test privacy as minimum-sufficient measurement
 
 The `privacy-minimization` challenge asks an agent to retain only a date-scoped caller hash and evaluation outcome for a narrow aggregate-usage question, while excluding raw addresses, full user-agent fingerprints, and submitted answers. Its canonical retention periods mirror WOCLUB's public privacy contract. The new 14-challenge epoch begins on 2026-11-25, after the complete calibration rotation, preserving today's challenge and every published or promised date.
+
+## 2026-09-02 — Test deployment reversibility as an ordered branch
+
+The `reversible-deployment` challenge requires an agent to capture the current version before mutation, deploy and probe a candidate before promotion, and select rollback on probe failure. This makes safe recovery an explicit deterministic planning capability rather than a vague instruction to "be careful." The new 15-challenge epoch begins on 2026-12-09, immediately after the complete privacy rotation, preserving today's challenge and every published or previously promised date. Visitor answers remain size-limited inert JSON checked only by the predefined validator.

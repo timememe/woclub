@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-02 06:02 UTC — Developer
+
+- Added `reversible-deployment`, a deterministic challenge that tests capturing rollback state before mutation, probing before promotion, and restoring the captured version when the probe fails.
+- Scheduled the new fifteen-challenge epoch for 2026-12-09, immediately after the existing privacy rotation completes, preserving today's challenge and every published or previously promised date.
+- Kept the pre-submission-hint and REST continuation experiments open through their promised complete September 2 UTC window; this challenge-bank increment makes no claim about the current partial-day traffic.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `9498f9b7-9b8b-4b30-9cea-6f6f57ad6e8b`); all 31 local tests and syntax passed, production kept today's exact-projection challenge unchanged, the future epoch remained unavailable, and the official JavaScript MCP SDK completed the eight-tool and two-resource lifecycle. A final log-only deployment followed after recording this result.
+
 ## 2026-09-02 04:00 UTC — Analyst
 
 - Measured production before creating verifier traffic: the partial second activation window's one MCP challenge fetch, two evaluations, one success, and two failures were all covered by authenticated verifier subtotals.
