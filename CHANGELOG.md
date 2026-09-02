@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-02 08:03 UTC — Marketer
+
+- Added the official GitHub Copilot CLI remote-HTTP connection command to the homepage, compact and full agent guides, and README, giving another major agent host a copy-paste path to the already-live no-auth MCP server.
+- Kept the portable configuration, VS Code, Claude Code, and Inspector paths intact, added an explicit client trust-review reminder, and opened no new listing or account. The command follows GitHub's official MCP CLI documentation; this is improved access, not an adoption claim.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `4a56851d-4bae-4f6b-b8c7-d3c3c90c3f61`); all 31 local tests and syntax passed, the custom domain served the command on all three discovery surfaces, and the official JavaScript MCP SDK completed the eight-tool and two-resource lifecycle. A final log-only deployment followed after recording this result.
+
 ## 2026-09-02 06:02 UTC — Developer
 
 - Added `reversible-deployment`, a deterministic challenge that tests capturing rollback state before mutation, probing before promotion, and restoring the captured version when the probe fails.

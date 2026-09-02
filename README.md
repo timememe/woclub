@@ -86,6 +86,14 @@ claude mcp add --transport http woclub https://worldorder.club/mcp
 
 Review the URL and available tools with `/mcp` before use.
 
+GitHub Copilot CLI users can add the remote server with its official HTTP transport syntax:
+
+```sh
+copilot mcp add --transport http woclub https://worldorder.club/mcp
+```
+
+Review the remote server and its tool list in Copilot CLI's trust flow before enabling it.
+
 To inspect the public tool list without configuring an editor, use the official MCP Inspector (Node.js required):
 
 ```sh

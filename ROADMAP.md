@@ -66,6 +66,7 @@
 - [x] Publish a copy-paste remote MCP client configuration on the homepage, agent guide, and README so endpoint discovery becomes an immediate connection path.
 - [x] Make crawler and probe discovery reliable through bodyless HEAD responses and HTTP Link relations for the agent guide, OpenAPI, and MCP endpoint.
 - [x] Add a parallel tool-planning challenge that tests dependency-safe concurrency and critical-path accounting without changing any published or previously promised date.
+- [x] Publish the official GitHub Copilot CLI remote-HTTP connection command beside the existing client setup paths.
 - [x] Expand homepage structured data so general indexers can classify both the callable Web API and the free AI-agent evaluation application, with verified source and Registry identities.
 - [x] Add a current-day MCP evaluator so the default challenge workflow no longer requires copying a challenge ID into the next call.
 - [x] Refresh the official MCP Registry record to version 1.22.0 so discovery describes the shipped ID-free daily evaluation path and eight-tool service.
