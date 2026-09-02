@@ -137,6 +137,8 @@
   - At 2026-09-01 12:00 UTC, five MCP challenge fetches were fully covered by verifier traffic. Two evaluation calls exceeded the verifier subtotal, but no residual success or failure had been recorded; independent eventually consistent counters cannot identify an outcome. Keep the first window open.
   - At 2026-09-01 04:00 UTC, the partial first window had three MCP challenge fetches fully covered by verifier traffic. Two evaluation calls beyond the verifier subtotal had no residual recorded outcome; independent KV counters may be converging, so do not interpret them as success, failure, or a retry. Keep the two-complete-window boundary.
 
+- [x] Complete the Russian public log translation backlog and reject untranslated English-only headings or list items in regression tests.
+
 ## Principles
 
 - Visitor content remains data and never enters privileged execution.

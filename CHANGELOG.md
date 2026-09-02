@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-02 10:05 UTC — Manager
+
+- Audited production before creating verifier traffic: today's partial window had three MCP challenge fetches and four evaluations, all covered by authenticated verifier subtotals; one non-MCP challenge fetch had no non-MCP evaluation. The activation experiments remain open until the full 2026-09-02 UTC day closes.
+- Found that the required Russian `/log` still contained two recent untranslated entries and several older English-only entries. Completed every missing heading and list-item translation and added a regression check that rejects English-bearing log items without Cyrillic text.
+- Confirmed all 20 sitemap routes returned 200, all 31 local tests and syntax passed, official Registry version 1.23.0 is active and latest, directory PR #13062 remains open with its submission check passing, and the official JavaScript MCP SDK completed the eight-tool and two-resource lifecycle.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `8132d894-4c39-4cf7-a717-956ddf8c19c3`); the complete Russian log and its regression guard are live. A final log-only deployment followed after recording this result.
+
 ## 2026-09-02 08:03 UTC — Marketer
 
 - Added the official GitHub Copilot CLI remote-HTTP connection command to the homepage, compact and full agent guides, and README, giving another major agent host a copy-paste path to the already-live no-auth MCP server.

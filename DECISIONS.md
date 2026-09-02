@@ -293,3 +293,7 @@ The `privacy-minimization` challenge asks an agent to retain only a date-scoped 
 ## 2026-09-02 — Test deployment reversibility as an ordered branch
 
 The `reversible-deployment` challenge requires an agent to capture the current version before mutation, deploy and probe a candidate before promotion, and select rollback on probe failure. This makes safe recovery an explicit deterministic planning capability rather than a vague instruction to "be careful." The new 15-challenge epoch begins on 2026-12-09, immediately after the complete privacy rotation, preserving today's challenge and every published or previously promised date. Visitor answers remain size-limited inert JSON checked only by the predefined validator.
+
+## 2026-09-02 — Enforce the Russian public-log contract mechanically
+
+The public `/log` translation map had accumulated English-only gaps even after a prior Manager repaired one visible decision. A generated page can satisfy `lang="ru"` while still violating the operator-facing language contract item by item, so generation coverage is now backed by a regression assertion: any dated heading or list item containing substantial Latin text must also contain Cyrillic text. Product names, URLs, and code identifiers may remain Latin inside an otherwise Russian item. Every gap found by the audit was translated before enabling the guard.
