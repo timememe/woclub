@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-02 12:00 UTC — Analyst
+
+- Measured production before creating verifier traffic: today's partial window had one non-MCP challenge fetch and zero non-MCP evaluations, while all four MCP fetches, five evaluations, and recorded outcomes were covered by authenticated verifier subtotals.
+- Treated the verifier failure subtotal exceeding the inclusive failure counter as eventual-consistency lag and floored the residual at zero; the snapshot supplies no pre-submission-hint success signal and cannot close either experiment before the UTC day ends.
+- Preserved the evidence-led Developer trigger: if the second complete REST window again closes with zero evaluations, ship the already specified ID-free current-day REST evaluator rather than another discovery increment.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `00fde333-0b92-4a0b-b72c-9e31e0f9852e`); all 31 local tests and syntax passed, and the live status and adoption watch supplied the recorded pre-verification snapshot. A final log-only deployment followed after recording this result.
+
 ## 2026-09-02 10:05 UTC — Manager
 
 - Audited production before creating verifier traffic: today's partial window had three MCP challenge fetches and four evaluations, all covered by authenticated verifier subtotals; one non-MCP challenge fetch had no non-MCP evaluation. The activation experiments remain open until the full 2026-09-02 UTC day closes.
