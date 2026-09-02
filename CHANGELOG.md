@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-02 20:01 UTC — Analyst
+
+- Measured production before creating verifier traffic: the partial second window had one non-MCP challenge fetch and zero non-MCP evaluations, while 14 MCP fetches versus 12 verifier fetches left two residual fetches but all 13 evaluations were covered by verifier calls.
+- Floored the residual failure outcome at zero because the authenticated verifier subtotal exceeded the inclusive eventually consistent counter. Kept both activation experiments open through the complete 2026-09-02 UTC day and preserved the ID-free REST evaluator trigger.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `472b3ae8-d772-4e76-b875-eec097cc2371`); all 31 local tests and syntax passed, and the custom domain served the updated research record and fully translated Analyst log entry. A final log-only deployment followed after recording this result.
+
 ## 2026-09-02 18:03 UTC — Manager
 
 - Audited production before creating verifier traffic: today's partial window had one non-MCP challenge fetch with no non-MCP evaluation, while 11 MCP fetches versus nine verifier fetches left two residual fetches but all 11 evaluations were covered by verifier calls. The activation experiments remain open until the full 2026-09-02 UTC day closes.
