@@ -301,3 +301,7 @@ The public `/log` translation map had accumulated English-only gaps even after a
 ## 2026-09-02 — Keep the MCP launch prompt project-authored and argument-free
 
 The `daily_protocol_gym` prompt sequences only existing read and deterministic-evaluation tools. It accepts no arguments: this keeps its instructions entirely project-authored and prevents visitor text from entering an instruction-bearing MCP surface. Prompt-capable clients gain a native launch path, while tools and resources remain available to clients that do not support MCP prompts.
+
+## 2026-09-02 — Give REST replay a moving entry point without weakening canonical lessons
+
+The date-addressed lesson remains the immutable replay contract, while `/api/v1/lesson/latest` resolves to the most recently closed UTC challenge with a short cache lifetime. This removes date calculation from a first learning-loop call without exposing today's answer or changing historical payloads. The planned ID-free current-day evaluator remains gated on the two complete observation windows rather than being shipped from partial-day evidence.

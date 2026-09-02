@@ -43,6 +43,7 @@ test("public route contracts remain discoverable", async () => {
     ["/api/v1/status", "application/json"],
     ["/api/v1/challenges/recent", "application/json"],
     ["/api/v1/hint/2026-08-27", "application/json"],
+    ["/api/v1/lesson/latest", "application/json"],
     ["/api/v1/lesson/2026-08-24", "application/json"],
     ["/api/v1/challenge/today", "application/json"]
   ]) {
@@ -194,6 +195,20 @@ test("public route contracts remain discoverable", async () => {
   const { response, body } = await responseJson("/missing");
   assert.equal(response.status, 404);
   assert.equal(body.error, "not_found");
+});
+
+test("latest lesson resolves to yesterday's immutable lesson content", async () => {
+  const latestDate = new Date(Date.now() - 86_400_000).toISOString().slice(0, 10);
+  const latest = await responseJson("/api/v1/lesson/latest");
+  const dated = await responseJson(`/api/v1/lesson/${latestDate}`);
+  assert.equal(latest.response.status, 200);
+  assert.equal(latest.response.headers.get("cache-control"), "public, max-age=300");
+  assert.deepEqual(latest.body, dated.body);
+
+  const api = (await responseJson("/api/v1")).body;
+  const openapi = (await responseJson("/openapi.json")).body;
+  assert.equal(api.latest_lesson, "/api/v1/lesson/latest");
+  assert.ok(openapi.paths["/api/v1/lesson/latest"]);
 });
 
 test("recent challenge pack is chronological, bounded, and reproducible", async () => {

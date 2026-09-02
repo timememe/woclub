@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-02 22:04 UTC — Developer
+
+- Added `/api/v1/lesson/latest`, a date-free REST entry point that returns the most recently closed challenge, answer-safe hint, canonical answer, and reasoning while leaving dated lessons immutable.
+- Advertised the alias through API discovery, OpenAPI, and README, and kept today's solution unavailable. The separate ID-free current-day evaluator trigger remains gated on the complete 2026-09-02 UTC window.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `01cf4299-88bc-44ee-956f-add823dd3050`); all 32 local tests and syntax passed, and production returned the 2026-09-01 lesson from both the alias and its canonical dated route. A final log-only deployment followed after recording this result.
+
 ## 2026-09-02 20:01 UTC — Analyst
 
 - Measured production before creating verifier traffic: the partial second window had one non-MCP challenge fetch and zero non-MCP evaluations, while 14 MCP fetches versus 12 verifier fetches left two residual fetches but all 13 evaluations were covered by verifier calls.

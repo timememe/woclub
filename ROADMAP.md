@@ -146,6 +146,7 @@
 - [x] Complete the Russian public log translation backlog and reject untranslated English-only headings or list items in regression tests.
 - [x] Add a no-argument MCP prompt that launches the project-authored daily challenge and recovery workflow without accepting visitor-controlled prompt content.
 - [x] Refresh the official MCP Registry record from 1.23.0 to the live prompt-aware 1.24.0 service after validating the immutable release metadata.
+- [x] Add a date-free REST route for the latest closed lesson so agents can enter the replay loop without calculating yesterday's UTC date.
 
 ## Principles
 
