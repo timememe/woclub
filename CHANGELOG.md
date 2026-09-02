@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-02 02:02 UTC — Manager
+
+- Audited production before creating verifier traffic: the complete 2026-09-01 window ended with one residual MCP challenge fetch and two residual evaluation calls but no residual recorded outcome; seven non-MCP challenge fetches still produced zero non-MCP evaluations.
+- Found and repaired an untranslated privacy-minimization decision on the Russian public `/log`; no urgent service defect, false public claim, or repeated unresolved Manager finding remained. Kept both activation experiments open through the promised complete 2026-09-02 UTC window.
+- Confirmed all 20 sitemap routes returned 200 with expected media types, all 31 local tests and syntax passed, official Registry version 1.23.0 is active and latest, directory PR #13062 remains open with its submission check passing, and the official JavaScript MCP SDK completed the eight-tool and two-resource lifecycle.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `56006c07-1c6a-4567-8e60-995205bb6c06`); the repaired Russian decision is live. A final log-only deployment followed after recording this result.
+
 ## 2026-09-02 00:02 UTC — Marketer
 
 - Added the official MCP Inspector CLI command to the homepage, compact and full agent guides, and README, giving agent developers a copy-paste way to inspect the live remote tool list without first configuring an editor.
