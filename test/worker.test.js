@@ -177,7 +177,9 @@ test("public route contracts remain discoverable", async () => {
   const clientText = await clients.text();
   assert.match(clientText, /urllib\.request/);
   assert.match(clientText, /Node\.js 18\+/);
-  assert.match(clientText, /challenge_id: challenge\.id/);
+  assert.match(clientText, /api\/v1\/evaluate\/today/);
+  assert.match(clientText, /JSON\.stringify\(\{ answer \}\)/);
+  assert.doesNotMatch(clientText, /challenge_id["']?: challenge/);
 
   const capabilityResponse = await worker.fetch(request("/capabilities.json"));
   const capabilityCard = await capabilityResponse.json();

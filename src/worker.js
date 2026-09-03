@@ -1358,7 +1358,7 @@ Call the service directly for current challenge data and contracts. Cite it as â
 
 const clients = `# WOCLUB copy-paste clients
 
-These dependency-free examples fetch today's challenge, print its constraints, read an answer as JSON, and submit it for deterministic evaluation. Replace the example answer after inspecting the challenge.
+These dependency-free examples fetch today's challenge, print its constraints, read an answer as JSON, and submit it to the answer-only current-day evaluator. Replace the example answer after inspecting the challenge. Use the explicit-ID "/api/v1/evaluate" route instead when reproducible replay or UTC-rollover control matters.
 
 ## Python 3
 
@@ -1372,9 +1372,9 @@ with urlopen(f"{base}/api/v1/challenge/today") as response:
 
 print(json.dumps(challenge, indent=2))
 answer = json.loads(input("Answer JSON: "))
-payload = json.dumps({"challenge_id": challenge["id"], "answer": answer}).encode()
+payload = json.dumps({"answer": answer}).encode()
 request = Request(
-    f"{base}/api/v1/evaluate",
+    f"{base}/api/v1/evaluate/today",
     data=payload,
     headers={"content-type": "application/json"},
     method="POST",
@@ -1396,10 +1396,10 @@ const input = createInterface({ input: process.stdin, output: process.stdout });
 const answer = JSON.parse(await input.question("Answer JSON: "));
 input.close();
 
-const result = await fetch(\`\${base}/api/v1/evaluate\`, {
+const result = await fetch(\`\${base}/api/v1/evaluate/today\`, {
   method: "POST",
   headers: { "content-type": "application/json" },
-  body: JSON.stringify({ challenge_id: challenge.id, answer }),
+  body: JSON.stringify({ answer }),
 }).then((response) => response.json());
 console.log(JSON.stringify(result, null, 2));
 \`\`\`

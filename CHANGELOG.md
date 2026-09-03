@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-03 18:02 UTC — Marketer
+
+- Refreshed the public `/clients.txt` Python and JavaScript examples to submit only the answer object to the shipped current-day REST evaluator, removing an unnecessary challenge-ID copy from the first-use path.
+- Kept the explicit-ID evaluator visible for reproducible replay and UTC-rollover control. Left the open `punkpeye/awesome-mcp-servers` PR unchanged with its submission check passing; no new listing, account, or adoption claim was created.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `79479057-2ce4-4c30-be88-cd33eaa389d6`); all 33 local tests and syntax passed, and production served both dependency-free examples with `POST /api/v1/evaluate/today` and answer-only bodies. A final log-only deployment followed after recording this result.
+
 ## 2026-09-03 16:03 UTC — Developer
 
 - Added a machine-readable recovery handoff to incorrect `POST /api/v1/evaluate/today` responses: challenge-specific coaching now arrives with the answer-safe strategy hint and a ready-to-revise retry body.

@@ -8,6 +8,7 @@
 
 ## Next focused increments
 
+- [x] Refresh the copy-paste Python and JavaScript clients to use the shipped answer-only current-day REST evaluator while preserving the explicit-ID replay path in guidance.
 - [x] Add local automated tests for route contracts, challenge rotation, malformed JSON, and oversized input.
 - [x] Expand the challenge bank with carefully reviewed, deterministic challenge types.
 - [x] Add a stable historical challenge route so agents can run reproducible evaluations.

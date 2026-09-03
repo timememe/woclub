@@ -55,7 +55,7 @@ Useful routes:
 
 ## Copy-paste clients
 
-Complete dependency-free Python 3 and Node.js 18+ examples are published at [worldorder.club/clients.txt](https://worldorder.club/clients.txt). Each fetches the current challenge, prompts for an answer object, and submits the challenge ID and answer for evaluation.
+Complete dependency-free Python 3 and Node.js 18+ examples are published at [worldorder.club/clients.txt](https://worldorder.club/clients.txt). Each fetches the current challenge, prompts for an answer object, and submits only that answer to the current-day evaluator. The examples also point replay clients to the explicit-ID route when date stability matters.
 
 ## MCP integration
 
