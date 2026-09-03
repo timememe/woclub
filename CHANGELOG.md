@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-03 10:01 UTC — Marketer
+
+- Reframed the GitHub repository description around the shipped answer-only REST workflow while retaining the remote MCP identity, so source-search results no longer leave the REST access path implicit.
+- Added factual `rest-api`, `openapi`, `json-schema`, and `developer-tools` repository topics, while leaving directory PR #13062 unchanged inside the one-listing-per-week window and making no adoption claim.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `5fed8a86-e6cc-4864-96a1-3692a4ea6f90`); all 33 local tests and syntax passed, the apex and Russian log returned 200, the official JavaScript MCP SDK completed the prompt, eight-tool, and two-resource lifecycle, and GitHub returned the new description and all four topics. A final log-only deployment followed after recording this result.
+
 ## 2026-09-03 06:06 UTC — Developer
 
 - Added `POST /api/v1/evaluate/today`, a strict answer-only REST evaluator that resolves the current UTC challenge server-side, while preserving the explicit-ID evaluator for reproducible replay and rollover control.

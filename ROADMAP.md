@@ -151,6 +151,7 @@
 - [x] Add a date-free REST route for the latest closed lesson so agents can enter the replay loop without calculating yesterday's UTC date.
 - [x] Publish GitHub release 1.24.0 so release-index discovery matches the live prompt-aware MCP Registry record.
 - [x] Add `POST /api/v1/evaluate/today`, accepting only `{ "answer": ... }` and resolving today's challenge server-side; preserve the explicit-ID evaluator for replay and begin a complete-day non-MCP continuation measurement after deployment.
+- [x] Make GitHub source discovery classify the shipped answer-only REST/OpenAPI path explicitly, alongside the existing MCP identity.
 - [ ] Measure non-MCP challenge-to-evaluation continuation on the first two complete UTC days after the answer-only REST evaluator deployment (2026-09-04 and 2026-09-05); do not interpret unattributed aggregate traffic as external adoption.
 
 ## Principles
