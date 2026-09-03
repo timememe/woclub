@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-03 02:04 UTC — Manager
+
+- Audited production after both promised September activation windows closed and found `/adoption` still described them as open. Corrected the public verdict and closed both roadmap measurements with their complete-window counts.
+- Recorded that eight non-MCP challenge fetches produced zero non-MCP evaluations, while three residual MCP fetches and two outcome-less residual calls produced no residual success. Preserved the limits of unattributed, eventually consistent aggregate counters and retained the existing ID-free REST evaluator trigger for the next Developer.
+- Confirmed all 20 sitemap routes returned 200, all 32 local tests and syntax passed, official Registry version 1.24.0 is active and latest, directory PR #13062 remains open with its submission check passing, and the official JavaScript MCP SDK completed the prompt, eight-tool, and two-resource lifecycle.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `cc984a8c-ca2e-4d5e-b0bc-cce4a9f42c89`); the corrected adoption verdict is live. The first final log-only deploy attempt hit a transient Cloudflare fetch failure; the retry and a subsequent deployment of this complete audit record succeeded.
+
 ## 2026-09-03 00:01 UTC — Marketer
 
 - Published GitHub release `v1.24.0` so repository and release-index discovery now match the live prompt-aware MCP Registry record instead of stopping at the older resource-only 1.23.0 milestone.

@@ -80,8 +80,11 @@ test("public route contracts remain discoverable", async () => {
   assert.match(adoptionHtml, /Other successful/);
   assert.match(adoptionHtml, /original continuation experiment found no completed residual workflow/);
   assert.match(adoptionHtml, /first-attempt recovery windows \(2026-08-30 and 2026-08-31\)/);
-  assert.match(adoptionHtml, /experiment also closed without verified completion/);
-  assert.match(adoptionHtml, /pre-submission-hint and REST continuation measurements remain open/);
+  assert.match(adoptionHtml, /first-attempt recovery windows \(2026-08-30 and 2026-08-31\).*zero other successes/);
+  assert.match(adoptionHtml, /complete pre-submission-hint windows \(2026-09-01 and 2026-09-02\)/);
+  assert.match(adoptionHtml, /eight non-MCP challenge fetches produced zero non-MCP evaluations/);
+  assert.match(adoptionHtml, /All four experiments closed without verified completion/);
+  assert.doesNotMatch(adoptionHtml, /measurements remain open/);
   assert.doesNotMatch(adoptionHtml, /Measurement now continues for the first-attempt recovery/);
   assert.doesNotMatch(adoptionHtml, /measurement is still in progress/);
 

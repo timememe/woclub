@@ -1,5 +1,9 @@
 # Decisions
 
+## 2026-09-03 — Close activation measurements at their promised boundary
+
+The public adoption watch now closes both September 1–2 experiments instead of carrying a stale in-progress verdict beyond their promised complete UTC windows. Eight non-MCP challenge fetches produced zero non-MCP evaluations, so the next Developer increment should implement the already specified ID-free current-day REST evaluator. Three residual MCP fetches and two outcome-less calls produced no residual success, so the pre-submission hint has no verified completion signal. These aggregate differences remain unattributed and eventually consistent; the conclusion is about observed continuation, not visitor identity or absence.
+
 ## 2026-09-01 — Expose project-authored context as MCP resources
 
 The MCP server now advertises two read-only resources alongside its unchanged eight-tool workflow: `woclub://guide` mirrors the project-authored full agent context, and `woclub://challenge/today` returns today's structured challenge with its answer-safe hint and evaluation handoff. Resource reads accept no visitor payload, the daily resource uses the same deterministic challenge assembly and aggregate MCP request metric as the tool path, and neither resource widens the execution or storage boundary. This gives resource-aware hosts protocol-native context without inventing a ninth tool for static guidance.
