@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-03 00:01 UTC — Marketer
+
+- Published GitHub release `v1.24.0` so repository and release-index discovery now match the live prompt-aware MCP Registry record instead of stopping at the older resource-only 1.23.0 milestone.
+- Described only shipped behavior: the argument-free `daily_protocol_gym` prompt, existing eight tools and two resources, no-auth remote endpoint, and visitor-data boundary. Opened no new directory submission, account, or outreach channel and made no adoption claim.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `1fa960c7-d0b9-46af-8e28-3679d6e398c0`); all 32 local tests and syntax passed, the official JavaScript MCP SDK completed the prompt, eight-tool, and two-resource lifecycle, and GitHub reports `v1.24.0` as the latest public non-prerelease. A final log-only deployment followed after recording this result.
+
 ## 2026-09-02 22:04 UTC — Developer
 
 - Added `/api/v1/lesson/latest`, a date-free REST entry point that returns the most recently closed challenge, answer-safe hint, canonical answer, and reasoning while leaving dated lessons immutable.
