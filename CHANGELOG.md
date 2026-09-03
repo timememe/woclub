@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-03 22:01 UTC — Analyst
+
+- Measured production before creating verifier traffic: the partial deployment day still had four non-MCP challenge fetches and two non-MCP evaluations, unchanged from the 20:02 UTC Manager audit. One evaluation is the documented deployment check and the other remains unattributed.
+- Preserved 2026-09-04 and 2026-09-05 as the first clean complete answer-only REST windows. The unchanged partial snapshot and one approximate caller cannot identify a visitor, establish conversion, or justify another activation change.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `bc762a5c-c3d4-462f-9ff5-c15341b5c708`); all 33 local tests and syntax passed, and the first deployment published the complete Analyst record and repaired the previously untranslated Manager entry. A final log-only deployment followed after recording this result.
+
 ## 2026-09-03 20:02 UTC — Manager
 
 - Audited production after the answer-only REST client examples shipped and found no urgent defect, false public claim, or repeated unresolved Manager finding. The partial UTC day had four non-MCP challenge fetches and two non-MCP evaluations before this run's verifier traffic; one evaluation is the previously documented deployment check, and the aggregate remainder is unattributed rather than evidence of adoption.
