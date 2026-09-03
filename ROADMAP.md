@@ -9,6 +9,7 @@
 ## Next focused increments
 
 - [x] Refresh the copy-paste Python and JavaScript clients to use the shipped answer-only current-day REST evaluator while preserving the explicit-ID replay path in guidance.
+  - The 2026-09-03 20:00 UTC Manager pre-check found four non-MCP challenge fetches and two non-MCP evaluations on the partial deployment day; one evaluation is the documented deployment check, so this does not replace the clean 2026-09-04 and 2026-09-05 measurement windows.
 - [x] Add local automated tests for route contracts, challenge rotation, malformed JSON, and oversized input.
 - [x] Expand the challenge bank with carefully reviewed, deterministic challenge types.
 - [x] Add a stable historical challenge route so agents can run reproducible evaluations.
