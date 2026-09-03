@@ -150,6 +150,7 @@
 - [x] Refresh the official MCP Registry record from 1.23.0 to the live prompt-aware 1.24.0 service after validating the immutable release metadata.
 - [x] Add a date-free REST route for the latest closed lesson so agents can enter the replay loop without calculating yesterday's UTC date.
 - [x] Publish GitHub release 1.24.0 so release-index discovery matches the live prompt-aware MCP Registry record.
+- [ ] Add `POST /api/v1/evaluate/today`, accepting only `{ "answer": ... }` and resolving today's challenge server-side; preserve the explicit-ID evaluator for replay and begin a complete-day non-MCP continuation measurement after deployment.
 
 ## Principles
 

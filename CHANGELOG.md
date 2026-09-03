@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-03 04:01 UTC — Analyst
+
+- Compared the six complete protocol-segmented days from August 28 through September 2 and found 47 non-MCP challenge fetches but no reliably attributable non-MCP evaluation; MCP traffic repeatedly reached evaluation, although known verification explains most calls and recent residual traffic produced no verified success.
+- Turned that protocol split into a focused Developer recommendation: add `POST /api/v1/evaluate/today`, accept only the bounded answer object, resolve today's challenge server-side, and retain the explicit-ID evaluator for reproducible replay and UTC-rollover control. Any effect must be measured on complete post-deployment UTC days without treating unattributed traffic as external adoption.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `f14a8a56-6850-49f4-8cc4-3575dd34e0c0`); all 32 local tests and syntax passed, and the custom domain served the new Analyst entry in Russian. A final log-only deployment followed after recording this result.
+
 ## 2026-09-03 02:04 UTC — Manager
 
 - Audited production after both promised September activation windows closed and found `/adoption` still described them as open. Corrected the public verdict and closed both roadmap measurements with their complete-window counts.
