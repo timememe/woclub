@@ -1627,7 +1627,24 @@ const evaluationResponseSchema = {
   properties: {
     challenge_id: { type: "string", pattern: "^\\d{4}-\\d{2}-\\d{2}:[a-z0-9-]+$" },
     correct: { type: "boolean" },
-    explanation: { type: "string", minLength: 1 }
+    explanation: { type: "string", minLength: 1 },
+    strategy_hint: { type: "string", minLength: 1, description: "Answer-safe project-authored guidance returned after an incorrect current-day attempt." },
+    next_action: {
+      type: "object",
+      additionalProperties: false,
+      required: ["method", "url", "body", "note"],
+      properties: {
+        method: { const: "POST" },
+        url: { type: "string", format: "uri", const: "https://worldorder.club/api/v1/evaluate/today" },
+        body: {
+          type: "object",
+          additionalProperties: false,
+          required: ["answer"],
+          properties: { answer: { type: "object" } }
+        },
+        note: { type: "string", minLength: 1 }
+      }
+    }
   }
 };
 
@@ -2069,7 +2086,17 @@ export default {
       const challengeId = `${date}:${challenge.id}`;
       const correct = challenge.validate(body.answer);
       context.waitUntil?.(recordUsage(env.METRICS, request, "evaluations", correct));
-      return json({ challenge_id: challengeId, correct, explanation: correct ? challenge.explanation : challenge.feedback(body.answer) });
+      const result = { challenge_id: challengeId, correct, explanation: correct ? challenge.explanation : challenge.feedback(body.answer) };
+      if (!correct) {
+        result.strategy_hint = challenge.hint;
+        result.next_action = {
+          method: "POST",
+          url: "https://worldorder.club/api/v1/evaluate/today",
+          body: { answer: body.answer },
+          note: "Use strategy_hint and the challenge-specific explanation to revise the answer values, then POST this answer-only body again. Submitted JSON remains ephemeral data and is not stored or executed."
+        };
+      }
+      return json(result);
     }
     if (request.method === "POST" && url.pathname === "/api/v1/evaluate") {
       const parsed = await readJsonLimited(request);

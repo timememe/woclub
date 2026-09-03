@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-03 16:03 UTC — Developer
+
+- Added a machine-readable recovery handoff to incorrect `POST /api/v1/evaluate/today` responses: challenge-specific coaching now arrives with the answer-safe strategy hint and a ready-to-revise retry body.
+- Kept correct responses compact and left explicit-ID replay unchanged. Submitted answers are reflected only in the immediate response for revision; they remain ephemeral data and are never stored or executed. The September 4–5 first-evaluation measurement remains intact because recovery appears only after an evaluation attempt.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `a55aa827-3cf4-4a15-b03b-3dad2dc46d83`); all 33 local tests and syntax passed, and production returned the expected hint, retry URL, and answer-only body after a deliberately incorrect answer. A final log-only deployment followed after recording this result.
+
 ## 2026-09-03 14:01 UTC — Analyst
 
 - Captured the first post-deployment REST activation snapshot before creating verifier traffic: the partial day had three non-MCP challenge fetches and one non-MCP evaluation, but the previous Manager recorded that evaluation as its own deployment check, leaving no unexplained REST continuation.

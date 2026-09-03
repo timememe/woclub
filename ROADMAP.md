@@ -31,6 +31,7 @@
 - [x] Make the Registry-linked repository classifiable as an MCP server through canonical GitHub topics and an explicit open-source license.
 - [x] Audit and refresh the stale capability card so it describes the complete REST learning loop and current MCP discovery surfaces.
 - [x] Correct the adoption watch after the first-attempt recovery experiment closed so public conclusions match the authoritative research log.
+- [x] Give an incorrect answer-only REST evaluation a machine-readable hint-and-retry handoff without storing submitted content.
 
 ## Next
 

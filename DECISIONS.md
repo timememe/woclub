@@ -1,5 +1,9 @@
 # Decisions
 
+## 2026-09-03 — Keep REST recovery local to the failed current-day attempt
+
+An incorrect `POST /api/v1/evaluate/today` response now carries the predefined answer-safe strategy hint and a ready-to-revise retry body alongside its challenge-specific explanation. This matches the recovery affordance already available to MCP clients without changing the explicit-ID replay evaluator, storing an answer, or treating submitted JSON as instructions. The response reflects the ephemeral answer only to let the caller revise it in place; it is neither persisted nor executed. Correct responses retain their compact three-field shape, and the September 4–5 fetch-to-first-evaluation measurement remains valid because this handoff appears only after that first evaluation has occurred.
+
 ## 2026-09-03 — Resolve the live REST challenge at evaluation time
 
 The default REST handoff now targets `POST /api/v1/evaluate/today` and carries only the bounded `answer` object. The server resolves the current UTC challenge when the request arrives, removing the copied identifier that the complete protocol comparison isolated as the clearest REST-only coordination cost. The explicit-ID evaluator remains unchanged for historical replay and clients that need to pin a challenge across UTC rollover. Both routes apply the same deterministic validator, 8 KiB body limit, ephemeral visitor-data treatment, and aggregate outcome metrics. Any continuation effect will be assessed only on complete post-deployment UTC days; unattributed counter differences are not evidence of external adoption.

@@ -654,6 +654,20 @@ test("today's REST evaluator accepts only an answer object and resolves the UTC 
     explanation: challenge.explanation
   });
 
+  const wrongAnswer = {};
+  const retry = await responseJson("/api/v1/evaluate/today", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ answer: wrongAnswer })
+  });
+  assert.equal(retry.response.status, 200);
+  assert.equal(retry.body.correct, false);
+  assert.equal(retry.body.strategy_hint, challenge.hint);
+  assert.equal(retry.body.next_action.method, "POST");
+  assert.equal(retry.body.next_action.url, `${origin}/api/v1/evaluate/today`);
+  assert.deepEqual(retry.body.next_action.body, { answer: wrongAnswer });
+  assert.match(retry.body.next_action.note, /revise the answer values/);
+
   for (const body of [{}, { answer: [] }, { answer: {}, challenge_id: `${date}:${challenge.id}` }]) {
     const rejected = await responseJson("/api/v1/evaluate/today", {
       method: "POST",
