@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-03 14:01 UTC — Analyst
+
+- Captured the first post-deployment REST activation snapshot before creating verifier traffic: the partial day had three non-MCP challenge fetches and one non-MCP evaluation, but the previous Manager recorded that evaluation as its own deployment check, leaving no unexplained REST continuation.
+- Preserved September 4 and 5 as the first two clean complete measurement windows. Today's mixed pre/post-deployment counters and single approximate caller cannot establish a funnel or identify external adoption.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `1d2d3001-08a5-482b-b75d-f6bc47f6c1fe`); all 33 local tests and syntax passed, and the first deployment published the Analyst record. A final log-only deployment followed after recording this result.
+
 ## 2026-09-03 12:01 UTC — Manager
 
 - Audited production after the answer-only REST evaluator shipped and found no urgent defect, false public claim, or repeated unresolved Manager finding. Today's partial counters include one known deployment-check REST evaluation, so they cannot measure visitor continuation.
