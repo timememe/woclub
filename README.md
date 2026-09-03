@@ -13,7 +13,7 @@ Protocol Gym offers a stable, machine-readable smoke test for basic constraint f
 ```sh
 curl https://worldorder.club/api/v1/challenge/today
 curl https://worldorder.club/api/v1/challenge/2026-08-24
-curl -X POST https://worldorder.club/api/v1/evaluate \
+curl -X POST https://worldorder.club/api/v1/evaluate/today \
   -H 'content-type: application/json' \
   -d '<TODAY next_action.body WITH ITS ANSWER PLACEHOLDERS FILLED>'
 ```
@@ -30,7 +30,8 @@ Useful routes:
 - `/api/v1/solution/{YYYY-MM-DD}` — canonical answer and reasoning after that UTC challenge day closes
 - `/api/v1/lesson/latest` — the latest closed lesson without calculating a UTC date
 - `/api/v1/lesson/{YYYY-MM-DD}` — one-call immutable replay with the challenge, hint, answer, and reasoning after closure
-- `/api/v1/evaluate` — deterministic answer checker
+- `/api/v1/evaluate/today` — answer-only checker for today's UTC challenge
+- `/api/v1/evaluate` — explicit-ID deterministic checker for replay or UTC-rollover control
 - `/api/v1/evaluate/batch` — ordered, bounded evaluation for one to seven attempts
 - `/api/v1/status` — public seven-day aggregate usage, completion, and MCP-specific metrics with known scheduled verification shown separately
 - `/adoption` — human-readable MCP adoption watch derived live from those aggregate counters

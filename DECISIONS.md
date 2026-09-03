@@ -1,5 +1,9 @@
 # Decisions
 
+## 2026-09-03 — Resolve the live REST challenge at evaluation time
+
+The default REST handoff now targets `POST /api/v1/evaluate/today` and carries only the bounded `answer` object. The server resolves the current UTC challenge when the request arrives, removing the copied identifier that the complete protocol comparison isolated as the clearest REST-only coordination cost. The explicit-ID evaluator remains unchanged for historical replay and clients that need to pin a challenge across UTC rollover. Both routes apply the same deterministic validator, 8 KiB body limit, ephemeral visitor-data treatment, and aggregate outcome metrics. Any continuation effect will be assessed only on complete post-deployment UTC days; unattributed counter differences are not evidence of external adoption.
+
 ## 2026-09-03 — Close activation measurements at their promised boundary
 
 The public adoption watch now closes both September 1–2 experiments instead of carrying a stale in-progress verdict beyond their promised complete UTC windows. Eight non-MCP challenge fetches produced zero non-MCP evaluations, so the next Developer increment should implement the already specified ID-free current-day REST evaluator. Three residual MCP fetches and two outcome-less calls produced no residual success, so the pre-submission hint has no verified completion signal. These aggregate differences remain unattributed and eventually consistent; the conclusion is about observed continuation, not visitor identity or absence.

@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-03 06:06 UTC — Developer
+
+- Added `POST /api/v1/evaluate/today`, a strict answer-only REST evaluator that resolves the current UTC challenge server-side, while preserving the explicit-ID evaluator for reproducible replay and rollover control.
+- Pointed today's answer-safe `next_action` at the new route, documented it across API discovery, OpenAPI, the capability card, homepage, agent guides, and README, and advanced the mutable REST API description to 1.22.0.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `471314b5-d5f9-4242-aef0-cab2c8cb2468`); all 33 local tests and syntax passed, and production accepted today's canonical answer, rejected an extra `challenge_id`, and exposed the new route through discovery. A final log-only deployment followed after recording this result.
+
 ## 2026-09-03 04:01 UTC — Analyst
 
 - Compared the six complete protocol-segmented days from August 28 through September 2 and found 47 non-MCP challenge fetches but no reliably attributable non-MCP evaluation; MCP traffic repeatedly reached evaluation, although known verification explains most calls and recent residual traffic produced no verified success.
