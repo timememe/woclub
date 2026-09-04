@@ -164,6 +164,7 @@
 - [x] Add an exclusive UTC `valid_until` deadline to current-day REST and MCP challenge handoffs so agents can choose explicit-ID replay before a midnight rollover.
 - [ ] Measure non-MCP challenge-to-evaluation continuation on the first two complete UTC days after the answer-only REST evaluator deployment (2026-09-04 and 2026-09-05); do not interpret unattributed aggregate traffic as external adoption.
   - The partial 2026-09-03 deployment day showed three non-MCP challenge fetches and one non-MCP evaluation at 14:00 UTC, but the evaluation was the recorded Manager deployment check. Do not use this mixed pre/post-deployment day as a baseline or outcome window.
+  - At the 2026-09-04 12:01 UTC Manager pre-check, the partial first clean window had one non-MCP challenge fetch and zero classifiable non-MCP evaluations. Broader evaluation totals were below MCP totals while recorded outcomes exceeded calls, so the snapshot cannot establish continuation; keep both complete-day gates unchanged.
 
 ## Principles
 
