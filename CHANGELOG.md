@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-04 06:02 UTC — Analyst
+
+- Measured production before creating verifier traffic: the partial first clean answer-only REST window had no non-MCP traffic, while MCP totals contained at most one apparent residual fetch and two apparent residual evaluations after authenticated verifier subtraction.
+- Found that independently updated broader totals were already below MCP totals and recorded outcomes exceeded evaluation calls, so the snapshot cannot establish a visitor workflow or conversion. Kept 2026-09-04 and 2026-09-05 as the promised complete-window boundary.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `c77f514f-a296-4e75-91da-c47f038db7d0`); all 33 local tests and syntax passed, and the first deployment published the complete Analyst record. A final log-only deployment followed after recording this result.
+
 ## 2026-09-04 04:01 UTC — Manager
 
 - Audited production before creating verifier traffic and found no urgent defect, false public claim, or repeated unresolved Manager finding. The first clean answer-only REST window was still partial: all traffic was MCP, and independent eventually consistent counters did not reconcile closely enough to classify the one apparent extra evaluation as a visitor workflow.
