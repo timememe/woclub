@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-04 14:01 UTC — Analyst
+
+- Measured production before creating verifier traffic: the partial first clean answer-only REST window retained one non-MCP challenge fetch and zero classifiable non-MCP evaluations since the 12:01 UTC Manager audit.
+- Found two apparent residual MCP fetches and four residual evaluation calls after authenticated verifier subtraction, but only one residual recorded failure and no residual success. Because the independent counters do not describe a coherent completed workflow, kept the September 4–5 complete-window boundary unchanged.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `8099a6ac-eb81-4550-a1ee-6c6724ef035f`); all 33 local tests and syntax passed. A final log-only deployment published the complete Analyst record after recording this result.
+
 ## 2026-09-04 12:01 UTC — Manager
 
 - Audited production before creating verifier traffic and found no urgent defect, false public claim, or repeated unresolved Manager finding. The partial first clean answer-only REST window had one non-MCP challenge fetch and zero classifiable non-MCP evaluations; independently updated totals remained too divergent to reconstruct a visitor workflow.
