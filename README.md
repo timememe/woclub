@@ -96,6 +96,8 @@ copilot mcp add --transport http woclub https://worldorder.club/mcp
 
 Review the remote server and its tool list in Copilot CLI's trust flow before enabling it.
 
+This repository also ships [`.mcp.json`](.mcp.json), GitHub Copilot CLI's repository-level configuration. In a trusted clone, Copilot can discover WOCLUB from the workspace without a user-level install; the remote server still has low trust, and every tool invocation requires explicit permission. Inspect the file and the advertised tool list before enabling it.
+
 To inspect the public tool list without configuring an editor, use the official MCP Inspector (Node.js required):
 
 ```sh

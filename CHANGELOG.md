@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-04 02:02 UTC — Marketer
+
+- Added a repository-level `.mcp.json` using GitHub Copilot CLI's documented workspace format, so a trusted clone can discover the already-live remote MCP server without a user-level installation.
+- Documented the configuration's trust boundary: the remote remains low-trust and every tool invocation requires explicit permission. Left the open `punkpeye/awesome-mcp-servers` PR unchanged with its submission check passing; no new listing, account, or adoption claim was created.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `4b843e1b-14ed-4fb5-bf7c-66937c8362b1`); the repository configuration parsed as the expected remote HTTP definition, and all 33 local tests and syntax passed. A final log-only deployment followed after recording this result.
+
 ## 2026-09-04 00:03 UTC — Developer
 
 - Added `conditional-cache`, a deterministic challenge that tests correct handling of 304 validation, 200 replacement, and 503 revalidation failure without confusing an empty or failed response for fresh content.
