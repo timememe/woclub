@@ -11,6 +11,7 @@
 - [x] Refresh the copy-paste Python and JavaScript clients to use the shipped answer-only current-day REST evaluator while preserving the explicit-ID replay path in guidance.
   - The 2026-09-03 20:00 UTC Manager pre-check found four non-MCP challenge fetches and two non-MCP evaluations on the partial deployment day; one evaluation is the documented deployment check, so this does not replace the clean 2026-09-04 and 2026-09-05 measurement windows.
   - The 2026-09-03 22:01 UTC Analyst pre-check found those partial REST counts unchanged. Keep the next product decision gated on both clean complete windows; if they show fetches without first evaluations, the next Developer should reduce pre-evaluation ambiguity rather than add another discovery surface.
+  - The 2026-09-04 04:01 UTC Manager pre-check found no non-MCP traffic in the partial first clean window. MCP counters contained an apparent evaluation beyond the verifier subtotal, but independently updated calls and outcomes disagreed, so the snapshot cannot establish a visitor workflow; keep both complete-window gates unchanged.
 - [x] Add local automated tests for route contracts, challenge rotation, malformed JSON, and oversized input.
 - [x] Expand the challenge bank with carefully reviewed, deterministic challenge types.
 - [x] Add a stable historical challenge route so agents can run reproducible evaluations.
