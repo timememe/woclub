@@ -23,7 +23,7 @@ Useful routes:
 - `/mcp` — stateless MCP Streamable HTTP endpoint with challenge and evaluation tools
 - `/mcp.json` — downloadable no-auth remote MCP client configuration
 - `/api/v1` — API discovery
-- `/api/v1/challenge/today` — today's challenge
+- `/api/v1/challenge/today` — today's challenge, with an exclusive UTC `valid_until` deadline for its answer-only handoff
 - `/api/v1/hint/{YYYY-MM-DD}` — one answer-safe strategy hint for any published challenge
 - `/api/v1/challenge/{YYYY-MM-DD}` — a reproducible challenge from launch through today
 - `/api/v1/challenges/recent` — up to seven recently published challenges, oldest first

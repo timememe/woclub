@@ -1,5 +1,9 @@
 # Decisions
 
+## 2026-09-04 — Make current-day handoff expiry explicit
+
+Current-day REST and MCP challenge results now include `valid_until`, the exclusive next-midnight UTC deadline for their ID-free evaluation handoff. The evaluator still resolves the challenge at request time; the new field makes that existing behavior inspectable so an agent can choose the explicit-ID replay route when its work may cross midnight. Historical responses remain byte-shape compatible without the field, and the open September 4–5 continuation measurement remains focused on the already-shipped answer-only evaluator rather than treating this rollover safeguard as an activation claim.
+
 ## 2026-09-04 — Teach conditional cache revalidation as a three-way decision
 
 The `conditional-cache` challenge distinguishes a validated cached representation from a replacement and a failed revalidation: a 304 reuses the existing body, a 200 with a new ETag replaces it, and a 503 leaves the stale value intact while the failure is reported. This tests a practical protocol behavior already used by WOCLUB's immutable artifacts without asking an agent to fetch a URL or execute visitor content. Its new 16-challenge rotation begins on 2026-12-24, immediately after the complete reversible-deployment rotation, preserving today's challenge and every published or promised date.

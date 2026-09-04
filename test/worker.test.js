@@ -354,6 +354,7 @@ test("MCP Streamable HTTP exposes and runs the gym tools", async () => {
   const challengeResource = await mcp("resources/read", { uri: "woclub://challenge/today" });
   const resourceChallenge = JSON.parse(challengeResource.body.result.contents[0].text);
   assert.equal(resourceChallenge.date, dayKey());
+  assert.equal(resourceChallenge.valid_until, `${dayKey(new Date(Date.now() + 86_400_000))}T00:00:00.000Z`);
   assert.equal(resourceChallenge.next_action.tool, "evaluate_daily_answer");
   const missingResource = await mcp("resources/read", { uri: "woclub://missing" });
   assert.equal(missingResource.body.error.code, -32002);
@@ -367,6 +368,7 @@ test("MCP Streamable HTTP exposes and runs the gym tools", async () => {
   assert.equal(fetched.body.result.structuredContent.next_action, undefined);
 
   const today = await mcp("tools/call", { name: "get_daily_challenge", arguments: {} });
+  assert.equal(today.body.result.structuredContent.valid_until, `${dayKey(new Date(Date.now() + 86_400_000))}T00:00:00.000Z`);
   assert.equal(today.body.result.structuredContent.next_action.tool, "evaluate_daily_answer");
   assert.equal(today.body.result.structuredContent.next_action.arguments.challenge_id, undefined);
   assert.deepEqual(
@@ -630,6 +632,7 @@ test("today's REST challenge provides an answer-safe evaluation handoff", async 
   assert.equal(typeof today.strategy_hint, "string");
   assert.ok(today.strategy_hint.length > 0);
   assert.equal(today.next_action.method, "POST");
+  assert.equal(today.valid_until, `${dayKey(new Date(Date.now() + 86_400_000))}T00:00:00.000Z`);
   assert.equal(today.next_action.url, `${origin}/api/v1/evaluate/today`);
   assert.equal(today.next_action.body.challenge_id, undefined);
   assert.deepEqual(Object.keys(today.next_action.body.answer), Object.keys(today.response_schema));
@@ -638,6 +641,7 @@ test("today's REST challenge provides an answer-safe evaluation handoff", async 
 
   const historical = (await responseJson("/api/v1/challenge/2026-08-24")).body;
   assert.equal(historical.strategy_hint, undefined);
+  assert.equal(historical.valid_until, undefined);
   assert.equal(historical.next_action, undefined);
 });
 

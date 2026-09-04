@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-04 08:03 UTC — Developer
+
+- Added an exclusive next-midnight UTC `valid_until` deadline to today's REST challenge, the default MCP challenge tool result, and the MCP daily challenge resource so agents can detect when the ID-free evaluator may resolve a different challenge.
+- Kept historical challenge responses unchanged and documented the explicit-ID evaluator as the rollover-safe path. Left the September 4–5 answer-only REST continuation measurement open because its first window is still partial and unattributed counters do not establish adoption.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `24113e19-bdd4-434f-8b12-893d5a7ec424`); all 33 local tests and syntax passed, production returned `2026-09-05T00:00:00.000Z` for today's deadline while omitting it historically, and the official JavaScript MCP SDK completed the prompt, eight-tool, and two-resource lifecycle. The first final check caught the untranslated new `/log` heading before deployment; its translation was added and the full suite passed on retry. A final log-only deployment followed after recording this result.
+
 ## 2026-09-04 06:02 UTC — Analyst
 
 - Measured production before creating verifier traffic: the partial first clean answer-only REST window had no non-MCP traffic, while MCP totals contained at most one apparent residual fetch and two apparent residual evaluations after authenticated verifier subtraction.

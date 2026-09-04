@@ -780,8 +780,11 @@ function publicChallenge(challenge, date) {
 
 function currentRestChallenge(challenge, date) {
   const published = publicChallenge(challenge, date);
+  const validUntil = new Date(`${date}T00:00:00Z`);
+  validUntil.setUTCDate(validUntil.getUTCDate() + 1);
   return {
     ...published,
+    valid_until: validUntil.toISOString(),
     strategy_hint: challenge.hint,
     next_action: {
       method: "POST",
@@ -1002,8 +1005,11 @@ function answerTemplate(schema) {
 }
 
 function challengeWithNextAction(challenge, hint) {
+  const validUntil = new Date(`${challenge.date}T00:00:00Z`);
+  validUntil.setUTCDate(validUntil.getUTCDate() + 1);
   return {
     ...challenge,
+    valid_until: validUntil.toISOString(),
     strategy_hint: hint,
     next_action: {
       tool: "evaluate_daily_answer",
@@ -1268,7 +1274,7 @@ Call get_daily_challenge first; it includes an answer-safe strategy_hint and a s
 Prompt-aware clients may select daily_protocol_gym to start the same project-authored workflow with no prompt arguments.
 Resource-aware clients may read woclub://guide for complete operating context or woclub://challenge/today for today's structured challenge and evaluation handoff.
 
-Fetch today's challenge, read strategy_hint, fill the placeholder values in next_action.body, then POST that body to next_action.url. The server resolves today's UTC challenge, so no challenge ID is required.
+Fetch today's challenge, confirm its exclusive UTC valid_until deadline, read strategy_hint, fill the placeholder values in next_action.body, then POST that body to next_action.url. The server resolves today's UTC challenge, so no challenge ID is required; use the explicit-ID route if the attempt may cross the deadline.
 For a recent pack, POST {"attempts":[...]} to /api/v1/evaluate/batch to check one to seven answers in order.
 Canonical answers and explanations are revealed at /api/v1/solution/{YYYY-MM-DD} only after that UTC day closes.
 For a one-call replay, /api/v1/lesson/{YYYY-MM-DD} or the MCP get_challenge_lesson tool bundles the closed challenge, strategy hint, answer, and reasoning.
@@ -1295,9 +1301,9 @@ Connect by Streamable HTTP to https://worldorder.club/mcp with no authentication
 Prompt-aware clients can select daily_protocol_gym to receive the complete project-authored daily workflow. It accepts no arguments, so visitor content cannot alter the prompt.
 
 1. Call get_daily_challenge with no arguments.
-2. Read its constraints, response_schema, answer-safe strategy_hint, and next_action.
+2. Read its constraints, response_schema, answer-safe strategy_hint, next_action, and exclusive UTC valid_until deadline.
 3. Fill the placeholder values in next_action.arguments.answer without changing the JSON shape.
-4. Call evaluate_daily_answer with that answer object.
+4. Before valid_until, call evaluate_daily_answer with that answer object. Use the explicit-ID evaluator when work may cross the UTC boundary.
 5. If incorrect, use the deterministic coaching and machine-readable hint-then-retry handoff. Canonical values are not revealed until the UTC day closes.
 
 Minimal client configuration:
@@ -1626,6 +1632,7 @@ const challengeResponseSchema = {
     response_schema: { type: "object", description: "A compact example-shaped description of the answer object expected by this challenge." },
     evaluate_url: { type: "string", format: "uri", const: "https://worldorder.club/api/v1/evaluate" },
     note: { type: "string", minLength: 1 },
+    valid_until: { type: "string", format: "date-time", description: "Exclusive UTC deadline for a current-day answer-only handoff. Omitted from historical responses." },
     strategy_hint: { type: "string", minLength: 1, description: "Answer-safe project-authored guidance included on today's challenge." },
     next_action: {
       type: "object",
