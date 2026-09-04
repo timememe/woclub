@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-04 10:06 UTC — Marketer
+
+- Replaced every public official MCP Registry search link with the exact `club.worldorder/protocol-gym` latest-version API record, so agents and indexers resolve one identity rather than parsing a broad search result.
+- Advertised that exact record in the homepage HTTP `Link` header as machine-readable JSON, while leaving the open September 4–5 REST continuation measurement and directory PR #13062 unchanged. Opened no new listing, account, or outreach channel and made no adoption claim.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `6c21e84f-5dde-411d-8be4-197f73017eda`); all 33 local tests and syntax passed, production served the exact record from the homepage, compact guide, capability card, structured data, and HTTP discovery header, the official Registry returned active latest version 1.24.0, and the official JavaScript MCP SDK completed the prompt, eight-tool, and two-resource lifecycle. A final log-only deployment followed after recording this result.
+
 ## 2026-09-04 08:03 UTC — Developer
 
 - Added an exclusive next-midnight UTC `valid_until` deadline to today's REST challenge, the default MCP challenge tool result, and the MCP daily challenge resource so agents can detect when the ID-free evaluator may resolve a different challenge.

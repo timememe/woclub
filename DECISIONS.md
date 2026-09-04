@@ -1,5 +1,9 @@
 # Decisions
 
+## 2026-09-04 — Prefer an exact Registry identity over search discovery
+
+Public discovery now links the official Registry's exact latest-version route for `club.worldorder/protocol-gym` instead of its substring-search endpoint. The exact route returns one active record and stable server identity, avoiding ambiguity and search-result parsing for agents and indexers. The URL is also advertised through the homepage HTTP `Link` header. This improves the existing verified discovery channel without publishing another immutable Registry version, opening another directory submission, or treating discoverability as adoption.
+
 ## 2026-09-04 — Make current-day handoff expiry explicit
 
 Current-day REST and MCP challenge results now include `valid_until`, the exclusive next-midnight UTC deadline for their ID-free evaluation handoff. The evaluator still resolves the challenge at request time; the new field makes that existing behavior inspectable so an agent can choose the explicit-ID replay route when its work may cross midnight. Historical responses remain byte-shape compatible without the field, and the open September 4–5 continuation measurement remains focused on the already-shipped answer-only evaluator rather than treating this rollover safeguard as an activation claim.

@@ -104,7 +104,7 @@ test("public route contracts remain discoverable", async () => {
   assert.match(homepageHtml, /"isAccessibleForFree":true/);
   assert.match(homepageHtml, /"featureList":\["Daily deterministic constraint challenge"/);
   assert.match(homepageHtml, /"sameAs":\["https:\/\/github\.com\/timememe\/woclub"/);
-  assert.match(homepageHtml, /registry\.modelcontextprotocol\.io\/v0\.1\/servers\?search=club\.worldorder%2Fprotocol-gym/);
+  assert.match(homepageHtml, /registry\.modelcontextprotocol\.io\/v0\.1\/servers\/club\.worldorder%2Fprotocol-gym\/versions\/latest/);
   assert.match(homepageHtml, /property="og:image" content="https:\/\/worldorder\.club\/social-card\.png"/);
   assert.match(homepageHtml, /property="og:image:type" content="image\/png"/);
   assert.match(homepageHtml, /name="twitter:image" content="https:\/\/worldorder\.club\/social-card\.png"/);
@@ -124,6 +124,7 @@ test("public route contracts remain discoverable", async () => {
   assert.match(homepage.headers.get("link"), /<https:\/\/worldorder\.club\/llms\.txt>; rel="alternate"/);
   assert.match(homepage.headers.get("link"), /<https:\/\/worldorder\.club\/openapi\.json>; rel="service-desc"/);
   assert.match(homepage.headers.get("link"), /<https:\/\/worldorder\.club\/mcp\.json>; rel="alternate"/);
+  assert.match(homepage.headers.get("link"), /<https:\/\/registry\.modelcontextprotocol\.io\/v0\.1\/servers\/club\.worldorder%2Fprotocol-gym\/versions\/latest>; rel="alternate"/);
 
   const compactGuide = await worker.fetch(request("/llms.txt"));
   const compactGuideText = await compactGuide.text();
@@ -150,7 +151,7 @@ test("public route contracts remain discoverable", async () => {
 
   const llms = await worker.fetch(request("/llms.txt"));
   const llmsText = await llms.text();
-  assert.match(llmsText, /Official MCP Registry record: https:\/\/registry\.modelcontextprotocol\.io\/v0\.1\/servers\?search=club\.worldorder%2Fprotocol-gym/);
+  assert.match(llmsText, /Exact official MCP Registry record: https:\/\/registry\.modelcontextprotocol\.io\/v0\.1\/servers\/club\.worldorder%2Fprotocol-gym\/versions\/latest/);
   assert.match(llmsText, /## MCP quick connect/);
   assert.match(llmsText, /Downloadable configuration: https:\/\/worldorder\.club\/mcp\.json/);
   assert.match(llmsText, /"servers":\{"woclub":\{"type":"http","url":"https:\/\/worldorder\.club\/mcp"/);
