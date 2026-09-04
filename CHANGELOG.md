@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-04 16:03 UTC — Developer
+
+- Added `cursor-pagination`, a deterministic challenge that tests following opaque continuation cursors, preserving cross-page order, and stopping at the terminal null cursor.
+- Scheduled the new seventeen-challenge epoch for 2027-01-09, immediately after the complete conditional-cache rotation, preserving today's challenge and every published or previously promised date. Kept the September 4–5 REST continuation measurement unchanged while its first window remains partial.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `83b678b2-f962-4bec-b98d-a442c2a40b41`); all 33 local tests and syntax passed, production kept today's repair-jsonrpc challenge unchanged, the future epoch remained unavailable, and the official JavaScript MCP SDK completed the prompt, eight-tool, and two-resource lifecycle. A final log-only deployment followed after recording this result.
+
 ## 2026-09-04 14:01 UTC — Analyst
 
 - Measured production before creating verifier traffic: the partial first clean answer-only REST window retained one non-MCP challenge fetch and zero classifiable non-MCP evaluations since the 12:01 UTC Manager audit.

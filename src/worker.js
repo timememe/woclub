@@ -522,6 +522,31 @@ export const challenges = [
       return "A 503 is not a fresh representation; keep the stale value available and report the failed revalidation.";
     },
     explanation: "A 304 reuses the validated cached body, a 200 supplies its replacement, and a 503 leaves the stale representation intact while the client reports the failure."
+  },
+  {
+    id: "cursor-pagination",
+    title: "Cursor-safe pagination",
+    prompt: "Assemble the complete ordered record list from cursor-paginated responses.",
+    constraints: [
+      "Initial response: items=[atlas, birch], next_cursor=c2",
+      "Request with cursor c2 returns items=[cedar, dune], next_cursor=c3",
+      "Request with cursor c3 returns items=[ember], next_cursor=null",
+      "Follow each server-provided non-null cursor exactly once and stop only at null",
+      "Preserve item order across pages and return the cursors used after the initial response"
+    ],
+    schema: { items: ["string"], cursors_used: ["string"] },
+    hint: "Treat next_cursor as continuation state: append the current page, request each non-null cursor once, and stop when the server returns null.",
+    answer: { items: ["atlas", "birch", "cedar", "dune", "ember"], cursors_used: ["c2", "c3"] },
+    validate(value) {
+      return JSON.stringify(value) === JSON.stringify({ items: ["atlas", "birch", "cedar", "dune", "ember"], cursors_used: ["c2", "c3"] });
+    },
+    feedback(value) {
+      if (!value || typeof value !== "object" || Array.isArray(value) || !Array.isArray(value.items) || !Array.isArray(value.cursors_used)) return "Return items and cursors_used arrays in one object.";
+      if (JSON.stringify(value.cursors_used) !== JSON.stringify(["c2", "c3"])) return "Follow c2 and then c3 exactly once; stop when the next cursor is null.";
+      if (value.items.length !== 5 || new Set(value.items).size !== 5) return "Collect every item exactly once across all three pages.";
+      return "Preserve the server's item order while appending each page to the result.";
+    },
+    explanation: "The two non-null cursors lead through all three pages; appending each page in traversal order yields atlas, birch, cedar, dune, and ember."
   }
 ];
 
@@ -555,6 +580,8 @@ const reversibleRotationStart = "2026-12-09";
 const reversibleRotation = ["reversible-deployment", ...privacyRotation];
 const cacheRotationStart = "2026-12-24";
 const cacheRotation = ["conditional-cache", ...reversibleRotation];
+const paginationRotationStart = "2027-01-09";
+const paginationRotation = ["cursor-pagination", ...cacheRotation];
 
 const headers = {
   "access-control-allow-origin": "*",
@@ -747,9 +774,12 @@ export function challengeFor(date = new Date()) {
   } else if (dateString < cacheRotationStart) {
     const daysSinceReversibleRotation = Math.floor((date.getTime() - Date.parse(`${reversibleRotationStart}T00:00:00Z`)) / 86400000);
     challengeId = reversibleRotation[daysSinceReversibleRotation % reversibleRotation.length];
-  } else {
+  } else if (dateString < paginationRotationStart) {
     const daysSinceCacheRotation = Math.floor((date.getTime() - Date.parse(`${cacheRotationStart}T00:00:00Z`)) / 86400000);
     challengeId = cacheRotation[daysSinceCacheRotation % cacheRotation.length];
+  } else {
+    const daysSincePaginationRotation = Math.floor((date.getTime() - Date.parse(`${paginationRotationStart}T00:00:00Z`)) / 86400000);
+    challengeId = paginationRotation[daysSincePaginationRotation % paginationRotation.length];
   }
   return challenges.find((challenge) => challenge.id === challengeId);
 }

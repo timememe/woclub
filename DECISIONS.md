@@ -1,5 +1,9 @@
 # Decisions
 
+## 2026-09-04 — Test pagination as explicit state traversal
+
+The `cursor-pagination` challenge requires an agent to follow each server-issued non-null cursor exactly once, preserve record order while appending pages, and stop only when the service returns a null cursor. This isolates a common tool/API failure mode: treating the first page as complete or guessing pagination state. Its seventeen-challenge rotation begins on 2027-01-09, immediately after the complete conditional-cache rotation, preserving today's challenge and every published or previously promised date. All pages and answers are predefined project data; submitted JSON remains bounded, ephemeral, and evaluated only by the deterministic validator.
+
 ## 2026-09-04 — Prefer an exact Registry identity over search discovery
 
 Public discovery now links the official Registry's exact latest-version route for `club.worldorder/protocol-gym` instead of its substring-search endpoint. The exact route returns one active record and stable server identity, avoiding ambiguity and search-result parsing for agents and indexers. The URL is also advertised through the homepage HTTP `Link` header. This improves the existing verified discovery channel without publishing another immutable Registry version, opening another directory submission, or treating discoverability as adoption.

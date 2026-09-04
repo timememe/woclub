@@ -866,7 +866,10 @@ test("published rotations stay immutable and future epochs wrap", () => {
   assert.deepEqual(reversibleSequence, ["reversible-deployment", "privacy-minimization", "confidence-calibration", "approval-boundary", "idempotent-retry", "evidence-freshness", "parallel-tool-plan", "context-budget", "visitor-data-boundary", "least-privilege-routing", "repair-jsonrpc", "truthful-beacon", "interval-schedule", "exact-projection", "capacity-allocation", "conditional-cache"]);
   const cacheStart = new Date("2026-12-24T00:00:00Z");
   const cacheSequence = Array.from({ length: 17 }, (_, offset) => challengeFor(new Date(cacheStart.getTime() + offset * 86_400_000)).id);
-  assert.deepEqual(cacheSequence, ["conditional-cache", "reversible-deployment", "privacy-minimization", "confidence-calibration", "approval-boundary", "idempotent-retry", "evidence-freshness", "parallel-tool-plan", "context-budget", "visitor-data-boundary", "least-privilege-routing", "repair-jsonrpc", "truthful-beacon", "interval-schedule", "exact-projection", "capacity-allocation", "conditional-cache"]);
+  assert.deepEqual(cacheSequence, ["conditional-cache", "reversible-deployment", "privacy-minimization", "confidence-calibration", "approval-boundary", "idempotent-retry", "evidence-freshness", "parallel-tool-plan", "context-budget", "visitor-data-boundary", "least-privilege-routing", "repair-jsonrpc", "truthful-beacon", "interval-schedule", "exact-projection", "capacity-allocation", "cursor-pagination"]);
+  const paginationStart = new Date("2027-01-09T00:00:00Z");
+  const paginationSequence = Array.from({ length: 18 }, (_, offset) => challengeFor(new Date(paginationStart.getTime() + offset * 86_400_000)).id);
+  assert.deepEqual(paginationSequence, ["cursor-pagination", "conditional-cache", "reversible-deployment", "privacy-minimization", "confidence-calibration", "approval-boundary", "idempotent-retry", "evidence-freshness", "parallel-tool-plan", "context-budget", "visitor-data-boundary", "least-privilege-routing", "repair-jsonrpc", "truthful-beacon", "interval-schedule", "exact-projection", "capacity-allocation", "cursor-pagination"]);
   assert.equal(dayKey(new Date("2026-08-24T23:59:59Z")), "2026-08-24");
 });
 
@@ -887,7 +890,8 @@ test("expanded challenges accept only their canonical answers", () => {
     "confidence-calibration": { claims: { released_version: { status: "supported", value: "4.2" }, service_reachable: { status: "supported", value: true }, live_version: { status: "unknown", value: null } } },
     "privacy-minimization": { retained: ["date_scoped_caller_hash", "evaluation_success"], caller_marker_days: 8, aggregate_days: 35 },
     "reversible-deployment": { happy_path: ["capture_current_version", "deploy_candidate", "probe_candidate", "promote_candidate"], on_probe_failure: "rollback_current" },
-    "conditional-cache": { actions: { not_modified: "reuse_cached", changed: "replace_with_response", unavailable: "keep_stale_and_report_error" } }
+    "conditional-cache": { actions: { not_modified: "reuse_cached", changed: "replace_with_response", unavailable: "keep_stale_and_report_error" } },
+    "cursor-pagination": { items: ["atlas", "birch", "cedar", "dune", "ember"], cursors_used: ["c2", "c3"] }
   };
   for (const challenge of challenges.slice(3)) {
     assert.equal(challenge.validate(answers[challenge.id]), true, challenge.id);
@@ -926,6 +930,9 @@ test("expanded challenges accept only their canonical answers", () => {
   const cache = challenges.find(({ id }) => id === "conditional-cache");
   assert.equal(cache.validate({ actions: { not_modified: "replace_with_response", changed: "replace_with_response", unavailable: "keep_stale_and_report_error" } }), false, "an empty 304 body cannot replace cached content");
   assert.match(cache.feedback({ actions: { not_modified: "replace_with_response", changed: "replace_with_response", unavailable: "keep_stale_and_report_error" } }), /304 validates/);
+  const pagination = challenges.find(({ id }) => id === "cursor-pagination");
+  assert.equal(pagination.validate({ items: ["atlas", "birch"], cursors_used: [] }), false, "the first page alone is incomplete");
+  assert.match(pagination.feedback({ items: ["atlas", "birch"], cursors_used: [] }), /Follow c2/);
 });
 
 test("today's published answer evaluates successfully", async () => {
