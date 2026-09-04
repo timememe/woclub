@@ -496,6 +496,32 @@ export const challenges = [
       return "A failed probe must trigger rollback_current rather than promotion.";
     },
     explanation: "The plan preserves a rollback target, deploys and probes before promotion, and restores the captured version when the probe fails."
+  },
+  {
+    id: "conditional-cache",
+    title: "Conditional cache revalidation",
+    prompt: "Choose the correct cache action for each conditional HTTP response.",
+    constraints: [
+      "A client has a cached representation with ETag \"v1\" and sends If-None-Match: \"v1\"",
+      "Cases: not_modified returns 304 with no body; changed returns 200 with body version-v2 and ETag \"v2\"; unavailable returns 503",
+      "Actions: reuse_cached, replace_with_response, keep_stale_and_report_error",
+      "Assign exactly one action to each case",
+      "Never replace a cached representation with an empty 304 body or an error response"
+    ],
+    schema: { actions: { not_modified: "string", changed: "string", unavailable: "string" } },
+    hint: "Treat 304 as validation of the existing representation, 200 as a new representation, and 503 as neither.",
+    answer: { actions: { not_modified: "reuse_cached", changed: "replace_with_response", unavailable: "keep_stale_and_report_error" } },
+    validate(value) {
+      return JSON.stringify(value) === JSON.stringify({ actions: { not_modified: "reuse_cached", changed: "replace_with_response", unavailable: "keep_stale_and_report_error" } });
+    },
+    feedback(value) {
+      if (!value?.actions || typeof value.actions !== "object" || Array.isArray(value.actions)) return "Return an actions object with not_modified, changed, and unavailable.";
+      if (Object.keys(value.actions).sort().join(",") !== "changed,not_modified,unavailable") return "Assign exactly one action to each of the three response cases.";
+      if (value.actions.not_modified !== "reuse_cached") return "A 304 validates the cached representation; its empty body is not a replacement.";
+      if (value.actions.changed !== "replace_with_response") return "A successful 200 response with a new ETag replaces the cached representation.";
+      return "A 503 is not a fresh representation; keep the stale value available and report the failed revalidation.";
+    },
+    explanation: "A 304 reuses the validated cached body, a 200 supplies its replacement, and a 503 leaves the stale representation intact while the client reports the failure."
   }
 ];
 
@@ -527,6 +553,8 @@ const privacyRotationStart = "2026-11-25";
 const privacyRotation = ["privacy-minimization", ...calibrationRotation];
 const reversibleRotationStart = "2026-12-09";
 const reversibleRotation = ["reversible-deployment", ...privacyRotation];
+const cacheRotationStart = "2026-12-24";
+const cacheRotation = ["conditional-cache", ...reversibleRotation];
 
 const headers = {
   "access-control-allow-origin": "*",
@@ -715,9 +743,12 @@ export function challengeFor(date = new Date()) {
   } else if (dateString < reversibleRotationStart) {
     const daysSincePrivacyRotation = Math.floor((date.getTime() - Date.parse(`${privacyRotationStart}T00:00:00Z`)) / 86400000);
     challengeId = privacyRotation[daysSincePrivacyRotation % privacyRotation.length];
-  } else {
+  } else if (dateString < cacheRotationStart) {
     const daysSinceReversibleRotation = Math.floor((date.getTime() - Date.parse(`${reversibleRotationStart}T00:00:00Z`)) / 86400000);
     challengeId = reversibleRotation[daysSinceReversibleRotation % reversibleRotation.length];
+  } else {
+    const daysSinceCacheRotation = Math.floor((date.getTime() - Date.parse(`${cacheRotationStart}T00:00:00Z`)) / 86400000);
+    challengeId = cacheRotation[daysSinceCacheRotation % cacheRotation.length];
   }
   return challenges.find((challenge) => challenge.id === challengeId);
 }

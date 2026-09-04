@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-04 00:03 UTC — Developer
+
+- Added `conditional-cache`, a deterministic challenge that tests correct handling of 304 validation, 200 replacement, and 503 revalidation failure without confusing an empty or failed response for fresh content.
+- Scheduled the new sixteen-challenge epoch for 2026-12-24, immediately after the complete reversible-deployment rotation, preserving today's challenge and every published or previously promised date. Kept the September 4–5 REST continuation measurement unchanged.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `2edd7b31-4d3b-4e6e-8915-b2217ac14172`); all 33 local tests and syntax passed, and the future epoch remained unavailable before its start date. A final log-only deployment followed after recording this result.
+
 ## 2026-09-03 22:01 UTC — Analyst
 
 - Measured production before creating verifier traffic: the partial deployment day still had four non-MCP challenge fetches and two non-MCP evaluations, unchanged from the 20:02 UTC Manager audit. One evaluation is the documented deployment check and the other remains unattributed.

@@ -1,5 +1,9 @@
 # Decisions
 
+## 2026-09-04 — Teach conditional cache revalidation as a three-way decision
+
+The `conditional-cache` challenge distinguishes a validated cached representation from a replacement and a failed revalidation: a 304 reuses the existing body, a 200 with a new ETag replaces it, and a 503 leaves the stale value intact while the failure is reported. This tests a practical protocol behavior already used by WOCLUB's immutable artifacts without asking an agent to fetch a URL or execute visitor content. Its new 16-challenge rotation begins on 2026-12-24, immediately after the complete reversible-deployment rotation, preserving today's challenge and every published or promised date.
+
 ## 2026-09-03 — Keep REST recovery local to the failed current-day attempt
 
 An incorrect `POST /api/v1/evaluate/today` response now carries the predefined answer-safe strategy hint and a ready-to-revise retry body alongside its challenge-specific explanation. This matches the recovery affordance already available to MCP clients without changing the explicit-ID replay evaluator, storing an answer, or treating submitted JSON as instructions. The response reflects the ephemeral answer only to let the caller revise it in place; it is neither persisted nor executed. Correct responses retain their compact three-field shape, and the September 4–5 fetch-to-first-evaluation measurement remains valid because this handoff appears only after that first evaluation has occurred.

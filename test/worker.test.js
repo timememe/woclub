@@ -858,7 +858,10 @@ test("published rotations stay immutable and future epochs wrap", () => {
   assert.deepEqual(privacySequence, ["privacy-minimization", "confidence-calibration", "approval-boundary", "idempotent-retry", "evidence-freshness", "parallel-tool-plan", "context-budget", "visitor-data-boundary", "least-privilege-routing", "repair-jsonrpc", "truthful-beacon", "interval-schedule", "exact-projection", "capacity-allocation"]);
   const reversibleStart = new Date("2026-12-09T00:00:00Z");
   const reversibleSequence = Array.from({ length: 16 }, (_, offset) => challengeFor(new Date(reversibleStart.getTime() + offset * 86_400_000)).id);
-  assert.deepEqual(reversibleSequence, ["reversible-deployment", "privacy-minimization", "confidence-calibration", "approval-boundary", "idempotent-retry", "evidence-freshness", "parallel-tool-plan", "context-budget", "visitor-data-boundary", "least-privilege-routing", "repair-jsonrpc", "truthful-beacon", "interval-schedule", "exact-projection", "capacity-allocation", "reversible-deployment"]);
+  assert.deepEqual(reversibleSequence, ["reversible-deployment", "privacy-minimization", "confidence-calibration", "approval-boundary", "idempotent-retry", "evidence-freshness", "parallel-tool-plan", "context-budget", "visitor-data-boundary", "least-privilege-routing", "repair-jsonrpc", "truthful-beacon", "interval-schedule", "exact-projection", "capacity-allocation", "conditional-cache"]);
+  const cacheStart = new Date("2026-12-24T00:00:00Z");
+  const cacheSequence = Array.from({ length: 17 }, (_, offset) => challengeFor(new Date(cacheStart.getTime() + offset * 86_400_000)).id);
+  assert.deepEqual(cacheSequence, ["conditional-cache", "reversible-deployment", "privacy-minimization", "confidence-calibration", "approval-boundary", "idempotent-retry", "evidence-freshness", "parallel-tool-plan", "context-budget", "visitor-data-boundary", "least-privilege-routing", "repair-jsonrpc", "truthful-beacon", "interval-schedule", "exact-projection", "capacity-allocation", "conditional-cache"]);
   assert.equal(dayKey(new Date("2026-08-24T23:59:59Z")), "2026-08-24");
 });
 
@@ -878,7 +881,8 @@ test("expanded challenges accept only their canonical answers", () => {
     "approval-boundary": { decisions: { read_logs: "proceed", edit_worker_config: "proceed", delete_dns_zone: "ask_confirmation" } },
     "confidence-calibration": { claims: { released_version: { status: "supported", value: "4.2" }, service_reachable: { status: "supported", value: true }, live_version: { status: "unknown", value: null } } },
     "privacy-minimization": { retained: ["date_scoped_caller_hash", "evaluation_success"], caller_marker_days: 8, aggregate_days: 35 },
-    "reversible-deployment": { happy_path: ["capture_current_version", "deploy_candidate", "probe_candidate", "promote_candidate"], on_probe_failure: "rollback_current" }
+    "reversible-deployment": { happy_path: ["capture_current_version", "deploy_candidate", "probe_candidate", "promote_candidate"], on_probe_failure: "rollback_current" },
+    "conditional-cache": { actions: { not_modified: "reuse_cached", changed: "replace_with_response", unavailable: "keep_stale_and_report_error" } }
   };
   for (const challenge of challenges.slice(3)) {
     assert.equal(challenge.validate(answers[challenge.id]), true, challenge.id);
@@ -914,6 +918,9 @@ test("expanded challenges accept only their canonical answers", () => {
   const reversible = challenges.find(({ id }) => id === "reversible-deployment");
   assert.equal(reversible.validate({ happy_path: ["deploy_candidate", "probe_candidate", "promote_candidate", "capture_current_version"], on_probe_failure: "rollback_current" }), false, "rollback state must be captured before deployment");
   assert.match(reversible.feedback({ happy_path: ["deploy_candidate", "probe_candidate", "promote_candidate", "capture_current_version"], on_probe_failure: "rollback_current" }), /Capture the current version/);
+  const cache = challenges.find(({ id }) => id === "conditional-cache");
+  assert.equal(cache.validate({ actions: { not_modified: "replace_with_response", changed: "replace_with_response", unavailable: "keep_stale_and_report_error" } }), false, "an empty 304 body cannot replace cached content");
+  assert.match(cache.feedback({ actions: { not_modified: "replace_with_response", changed: "replace_with_response", unavailable: "keep_stale_and_report_error" } }), /304 validates/);
 });
 
 test("today's published answer evaluates successfully", async () => {
