@@ -20,7 +20,7 @@ const REGION_MAX_CUBES = 8192;         // cubes one /region read returns
 const OVERVIEW_RES = 200;              // top-down raster is OVERVIEW_RES x OVERVIEW_RES
 const OVERVIEW_UNIT = WORLD / OVERVIEW_RES; // world units per raster cell
 const OVERVIEW_SCAN_CHUNKS = 2500;    // chunk keys scanned when rebuilding the raster
-const OVERVIEW_TTL = 20;               // seconds the raster is cached
+const OVERVIEW_TTL = 60;               // seconds the raster is cached (KV minimum)
 const CLEAR_SCAN_CHUNKS = 4000;
 const CLEAR_MAX_REMOVED = 20000;
 const BUILDER_MAX = 40;               // characters kept from a builder handle
@@ -316,6 +316,7 @@ async function getCube(kv, x, y, z) {
 }
 
 function clampInt(value, lo, hi, fallback) {
+  if (value === null || value === undefined || value === "") return fallback;
   const n = Number(value);
   if (!Number.isFinite(n)) return fallback;
   return Math.max(lo, Math.min(hi, Math.trunc(n)));
@@ -399,7 +400,11 @@ async function buildOverview(kv) {
     truncated,
     grid
   };
-  await kv.put("w:ov", JSON.stringify(overview), { expirationTtl: OVERVIEW_TTL });
+  try {
+    await kv.put("w:ov", JSON.stringify(overview), { expirationTtl: OVERVIEW_TTL });
+  } catch {
+    // caching is best-effort; still return the freshly built raster
+  }
   return { ...overview, cached: false };
 }
 

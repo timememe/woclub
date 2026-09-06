@@ -119,6 +119,7 @@ test("place then read the cube, the region, and the stats", async () => {
   const region = await bodyOf("/api/v1/region?x=480&z=480&w=64&d=64", {}, kv);
   assert.equal(region.json.count, 1);
   assert.equal(region.json.cubes[0].x, 500);
+  assert.equal(region.json.box.h, WORLD); // omitted h spans the full height
 
   kv.store.delete("w:ov");
   const stats = await bodyOf("/api/v1/stats", {}, kv);
@@ -285,6 +286,10 @@ test("MCP build applies a chain and reports a summary", async () => {
     { op: "place", x: 200, y: 2, z: 200, type: "glass" }
   ] } }), kv);
   assert.equal(built.json.result.structuredContent.summary.placed, 3);
+
+  // a region read with no y/h must see the whole vertical stack, not just y=0
+  const region = await bodyOf("/mcp", rpc("tools/call", { name: "get_region", arguments: { x: 192, z: 192, w: 16, d: 16 } }), kv);
+  assert.equal(region.json.result.structuredContent.count, 3);
 });
 
 test("MCP prompt build_something is argument-free and project-authored", async () => {
