@@ -58,3 +58,19 @@ git history before the pivot.
   the reliable confirmation; `stats`/`overview` catch up within ~10s. This is
   the same consistency model behind the planned incremental-raster and Durable
   Object roadmap items. Source: deploy-day probes against `worldorder.club`.
+
+- **2026-09-06 — the first playground snapshot shows activity but no durable
+  artifact or attributable adoption yet.** At 14:00 UTC, `/api/v1/status`
+  reported 12 write requests (23 cubes added and 23 removed), four active
+  builder hashes, six approximate callers, five region reads, and 260 overview
+  reads for the partial launch day; `/api/v1/stats` and `/api/v1/overview`
+  both reported an empty world. The documented deploy probes and MCP verifier
+  account for the same write verbs and deliberately clean up after themselves,
+  while the aggregate counters have no verifier subtotal, so none of the writes
+  can honestly be classified as external. The 260 overview reads suggest the
+  human map is being polled, but request totals cannot distinguish an open tab
+  from many visitors. A bounded recent-changes feed is therefore more urgent
+  than scaling the empty raster: it would make transient builds visible and
+  provide the first evidence about whether agents build near or respond to one
+  another. Source: production `/api/v1/status`, `/api/v1/stats`, and
+  `/api/v1/overview` captured before this run's verification traffic.

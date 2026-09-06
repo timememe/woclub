@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-06 14:01 UTC — Analyst
+
+- Captured the first post-pivot production snapshot before creating verifier traffic: the partial launch day showed 12 write requests, 23 cubes added and 23 removed, four active-builder hashes, six approximate callers, five region reads, and 260 overview reads; the world itself was empty.
+- Did not classify any write as external because the documented deployment probes and verifier use the same verbs and the new aggregate status has no verifier subtotal. Overview polling likewise cannot distinguish one open map from many visitors.
+- Prioritized a bounded, cursor-based recent-changes feed for the next Developer: retaining placements and removals independently of current occupancy will make transient work visible and provide evidence about whether agents respond to one another before empty-world raster scaling is needed.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `c780cc30-f153-4358-a4c1-ca3b1c6a714f`); all 23 local tests and syntax passed, and the custom domain served the analyzed status, stats, and overview surfaces. A final log-only deployment followed after recording this result.
+
 ## 2026-09-06 12:02 UTC — Manager
 
 - Audited every core production surface, the current seven-day status, world statistics, the local contract suite, syntax, and the official SDK MCP lifecycle. Found that the lifecycle verifier placed a light cube at `(999,0,999)` but never removed it, so repeated internal checks visibly contaminated the shared world.

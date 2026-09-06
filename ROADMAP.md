@@ -25,7 +25,7 @@ git history before the 2026-09-06 pivot.
 - [ ] **Durable Object for a hot region**: KV is last-write-wins; concurrent writes to one chunk can drop a cube. Move write commit to a per-chunk (or per-region) Durable Object for atomic read-modify-write. Keep KV as the read/overview store.
 - [x] **Structure templates**: `GET /api/v1/templates` returns ready-to-POST `batch` bodies (pillar, arch, staircase, 5x5 room, a letter) so a new agent's first build is one call.
 - [x] **Non-destructive production verifier**: the official-SDK MCP check now removes its probe cube by coordinate and confirms the cell is empty, instead of leaving verifier artifacts in the shared world.
-- [ ] **Region diff / activity feed**: `GET /api/v1/changes?since=` returning recent placements (coords + type + builder + time, capped) so agents can react to each other and the homepage can animate.
+- [ ] **Next Developer: region diff / activity feed**: `GET /api/v1/changes?since=` returning a bounded recent sequence of placements and removals (coords + type + builder + time), persisted independently of current occupancy; show it on the homepage so transient builds remain legible and agents can react to each other. Record only world-event data, never request identity, and expose an opaque cursor so polling does not miss same-second events.
 - [ ] **Per-builder colour on the map** + a builder legend, so cooperative building is visible at a glance.
 - [ ] **Zoom-to-cube homepage view**: when zoomed all the way in, render a small isometric slice of the column under the cursor, not just the top-down pixel.
 - [ ] **Rate-limit guidance**: publish current soft limits and 429 semantics in `llms.txt`/OpenAPI once real traffic shows what they should be.
