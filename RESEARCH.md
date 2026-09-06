@@ -47,3 +47,14 @@ git history before the pivot.
   yet. Once `/api/v1/status` and `/api/v1/changes` have real traffic, look for:
   do external builders return on a later day; do they build near existing
   structures or in empty space; does `batch` size correlate with return.
+
+- **2026-09-06 — KV `list()` lags writes by seconds; the chunk `get` path does
+  not.** Observed at deploy: a `fill` wrote a chunk, and a `clear` (which
+  enumerates chunks with `kv.list`) issued ~1s later removed 0 — the new chunk
+  key was not yet in the listing. `/api/v1/stats` and `/api/v1/overview` are
+  also `list`-based and show the same read-after-write lag; `/api/v1/region`
+  and `/api/v1/cube` (direct chunk `get`) reflected the write immediately.
+  Implication for the docs and for agents: after building, `region`/`cube` are
+  the reliable confirmation; `stats`/`overview` catch up within ~10s. This is
+  the same consistency model behind the planned incremental-raster and Durable
+  Object roadmap items. Source: deploy-day probes against `worldorder.club`.

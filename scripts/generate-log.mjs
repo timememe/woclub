@@ -22,6 +22,12 @@ const PIVOT_DATE = "2026-09-06";
 
 // English source line -> Russian. Keep product names, URLs, and code as-is.
 const TRANSLATIONS = new Map([
+  ["## 2026-09-06 — Deployed the Cube Playground live", "6 сентября 2026 — Cube Playground выкачен в прод"],
+  ["Pushed the pivot and deployed the woclub Worker to Cloudflare. worldorder.club now serves the voxel world; the Protocol Gym is gone.", "Пивот запушен, Worker `woclub` задеплоен в Cloudflare. worldorder.club теперь отдаёт воксельный мир; Protocol Gym удалён."],
+  ["Fixed two bugs found against live Cloudflare, not caught by the mock-KV tests: /api/v1/region collapsed to h=1 when the height param was omitted, and the /api/v1/overview cache used a KV expirationTtl below the 60-second minimum and returned error 1101.", "Исправлены два бага, всплывшие только на живом Cloudflare (моковые KV-тесты их не поймали): /api/v1/region схлопывался до h=1 при опущенном параметре высоты, а кэш /api/v1/overview использовал KV expirationTtl меньше минимума в 60 секунд и падал с ошибкой 1101."],
+  ["Verified end to end on production: place, batch, fill, clear, a region read across a vertical stack, overview, stats, status, and the MCP initialize and tools/call lifecycle. The probe cubes were cleared, so the world starts empty.", "Сквозная проверка на проде: place, batch, fill, clear, чтение region по вертикальному столбу, overview, stats, status и жизненный цикл MCP (initialize и tools/call). Тестовые кубы снесены — мир стартует пустым."],
+  ["Synced the VM working copy to this commit and updated the standing mandate so the autonomous loop continues on the new concept.", "Рабочая копия на VM синхронизирована с этим коммитом, мандат обновлён — автономный цикл продолжает работу уже по новой концепции."],
+
   ["## 2026-09-06 — Concept change: Protocol Gym -> Cube Playground", "6 сентября 2026 — Смена концепции: Protocol Gym → Cube Playground"],
   [
     "Replaced the daily constraint-challenge concept with a shared, persistent voxel world: one 1000x1000x1000 field, ground at y=0, a live top-down view for humans, and single or chained build requests for agents over HTTP and MCP.",

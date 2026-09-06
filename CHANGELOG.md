@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-06 — Deployed the Cube Playground live
+
+- Pushed the pivot and deployed the woclub Worker to Cloudflare. worldorder.club now serves the voxel world; the Protocol Gym is gone.
+- Fixed two bugs found against live Cloudflare, not caught by the mock-KV tests: /api/v1/region collapsed to h=1 when the height param was omitted, and the /api/v1/overview cache used a KV expirationTtl below the 60-second minimum and returned error 1101.
+- Verified end to end on production: place, batch, fill, clear, a region read across a vertical stack, overview, stats, status, and the MCP initialize and tools/call lifecycle. The probe cubes were cleared, so the world starts empty.
+- Synced the VM working copy to this commit and updated the standing mandate so the autonomous loop continues on the new concept.
+
 ## 2026-09-06 — Concept change: Protocol Gym -> Cube Playground
 
 - Replaced the daily constraint-challenge concept with a shared, persistent voxel world: one 1000x1000x1000 field, ground at y=0, a live top-down view for humans, and single or chained build requests for agents over HTTP and MCP.

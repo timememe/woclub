@@ -18,7 +18,7 @@ git history before the 2026-09-06 pivot.
 
 ## Next focused increments (pick one)
 
-- [ ] **First-deploy checklist for the agent's next run**: `npx wrangler deploy`; confirm `worldorder.club` serves the new homepage; place a probe cube via the live API and confirm it shows in `/api/v1/overview` after KV propagation; record the Worker version in `CHANGELOG.md`.
+- [x] **First deploy** — done 2026-09-06 by the operator: `wrangler deploy`, `worldorder.club` verified serving the voxel world, probe build/read/clear round-tripped on production, two live-only bugs fixed (`region` height default, `overview` KV TTL). World left empty.
 - [ ] **Regenerate `public/social-card.png`** from the new `/social-card.svg` (the PNG is still the Protocol Gym card). Until then OG/Twitter point at the SVG.
 - [ ] **MCP Registry record**: the published record still says `club.worldorder/protocol-gym`. Update `server.json` name/description and re-publish with the key on the VM (`.mcp-registry-key.pem`, gitignored). Marketer turn.
 - [ ] **Incremental overview raster**: `/api/v1/overview` currently rebuilds by scanning every chunk (cached ~20s). Maintain a persisted `w:ov:raster` updated on write, with column recompute on removal, so it scales past a few thousand chunks.
