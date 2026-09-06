@@ -24,6 +24,8 @@ const OVERVIEW_TTL = 60;               // seconds the raster is cached (KV minim
 const CLEAR_SCAN_CHUNKS = 4000;
 const CLEAR_MAX_REMOVED = 20000;
 const BUILDER_MAX = 40;               // characters kept from a builder handle
+const CHANGE_LOG_MAX = 256;           // recent world events retained in one bounded KV record
+const CHANGE_PAGE_MAX = 100;
 
 function templateOps(points, type) {
   return points.map(([x, y, z]) => ({ op: "place", x, y, z, type, builder: "your-handle" }));
@@ -274,6 +276,56 @@ async function bumpMeta(kv, delta) {
   await kv.put("w:meta", JSON.stringify(meta));
 }
 
+// Recent world events are public world data, not request telemetry: coordinates,
+// block type, builder handle, and time only. The bounded record makes transient
+// builds observable without retaining caller identity or arbitrary request data.
+async function appendChanges(kv, results) {
+  const changed = results.filter((result) => result.ok && (result.op === "place" || result.removed));
+  if (!changed.length) return;
+  const raw = await kv.get("w:changes");
+  const log = raw ? JSON.parse(raw) : { sequence: 0, events: [] };
+  const now = Date.now();
+  for (const result of changed) {
+    log.sequence += 1;
+    const event = {
+      cursor: `${now.toString(36)}-${log.sequence.toString(36)}`,
+      op: result.op,
+      x: result.x, y: result.y, z: result.z,
+      type: result.type ?? null,
+      builder: result.builder ?? null,
+      at: new Date(now).toISOString()
+    };
+    if (result.op === "place") event.replaced = result.replaced;
+    log.events.push(event);
+  }
+  log.events = log.events.slice(-CHANGE_LOG_MAX);
+  await kv.put("w:changes", JSON.stringify(log));
+}
+
+async function readChanges(kv, params) {
+  const raw = await kv.get("w:changes");
+  const log = raw ? JSON.parse(raw) : { sequence: 0, events: [] };
+  const limit = clampInt(params.get("limit"), 1, CHANGE_PAGE_MAX, 50);
+  const since = params.get("since");
+  let start = Math.max(0, log.events.length - limit);
+  let cursorExpired = false;
+  if (since) {
+    const found = log.events.findIndex((event) => event.cursor === since);
+    if (found >= 0) start = found + 1;
+    else { start = 0; cursorExpired = log.events.length > 0; }
+  }
+  const events = log.events.slice(start, start + limit);
+  const hasMore = start + events.length < log.events.length;
+  return {
+    events,
+    next_cursor: events.at(-1)?.cursor ?? since ?? null,
+    has_more: hasMore,
+    cursor_expired: cursorExpired,
+    retained: log.events.length,
+    max_retained: CHANGE_LOG_MAX
+  };
+}
+
 // Apply a list of {op, x, y, z, type, builder} to one chunk, in order.
 // Returns { results, added, removed, replaced } without persisting.
 function applyOpsToChunk(chunk, ops, worldCount) {
@@ -285,9 +337,10 @@ function applyOpsToChunk(chunk, ops, worldCount) {
     const key = cellKey(op.x, op.y, op.z);
     if (op.op === "remove") {
       if (key in chunk) {
+        const removedCell = chunk[key];
         delete chunk[key];
         removed += 1;
-        results.push({ op: "remove", x: op.x, y: op.y, z: op.z, ok: true, removed: true });
+        results.push({ op: "remove", x: op.x, y: op.y, z: op.z, ok: true, removed: true, type: TYPES[removedCell[0]] || "stone", builder: removedCell[1] ?? null });
       } else {
         results.push({ op: "remove", x: op.x, y: op.y, z: op.z, ok: true, removed: false });
       }
@@ -311,7 +364,7 @@ function applyOpsToChunk(chunk, ops, worldCount) {
     }
     chunk[key] = [ti, op.builder ?? null, Date.now()];
     if (existed) replaced += 1; else added += 1;
-    results.push({ op: "place", x: op.x, y: op.y, z: op.z, ok: true, type: op.type, replaced: existed });
+    results.push({ op: "place", x: op.x, y: op.y, z: op.z, ok: true, type: op.type, builder: op.builder ?? null, replaced: existed });
   }
   return { results, added, removed, replaced };
 }
@@ -341,6 +394,7 @@ async function commitOps(kv, ops) {
     groupOps.forEach((op, i) => { ordered[op._i] = outcome.results[i]; });
   }
   await bumpMeta(kv, added - removed);
+  await appendChanges(kv, ordered);
   const rejected = ordered.filter((r) => r.ok === false).length;
   return { results: ordered, summary: { placed: added, removed, replaced, rejected }, added, removed };
 }
@@ -577,6 +631,7 @@ async function clearBuilder(kv, builder) {
   let cursor;
   let scanned = 0;
   let removed = 0;
+  const removedEvents = [];
   let truncated = false;
   do {
     const list = await kv.list({ prefix: "w:c:", limit: 1000, cursor });
@@ -591,6 +646,10 @@ async function clearBuilder(kv, builder) {
         if (cell[1] === target) {
           delete chunk[key];
           removed += 1;
+          if (removedEvents.length < CHANGE_LOG_MAX) {
+            const [x, y, z] = key.split(",").map(Number);
+            removedEvents.push({ op: "remove", x, y, z, ok: true, removed: true, type: TYPES[cell[0]] || "stone", builder: target });
+          }
           changed = true;
           if (removed >= CLEAR_MAX_REMOVED) { truncated = true; break; }
         }
@@ -602,6 +661,7 @@ async function clearBuilder(kv, builder) {
     if (scanned >= CLEAR_SCAN_CHUNKS || removed >= CLEAR_MAX_REMOVED) break;
   } while (cursor);
   await bumpMeta(kv, -removed);
+  await appendChanges(kv, removedEvents);
   return { ok: true, builder: target, removed, truncated };
 }
 
@@ -803,6 +863,8 @@ p{color:var(--muted);margin:.5rem 0}
 .legend i{display:inline-block;width:10px;height:10px;margin-right:4px;vertical-align:middle;border:1px solid #0008}
 .builders{font-size:12px;color:var(--muted)}
 .builders div{display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding:.2rem 0}
+.activity{font-size:12px;color:var(--muted);max-height:12rem;overflow:auto}
+.activity div{border-bottom:1px solid var(--line);padding:.35rem 0}.activity b{color:var(--ink)}
 footer{color:var(--muted);font-size:11px;margin-top:2rem}
 </style></head><body>
 <div class="wrap">
@@ -820,6 +882,9 @@ footer{color:var(--muted);font-size:11px;margin-top:2rem}
 
     <h2>Top builders</h2>
     <div class="builders" id="builders">—</div>
+
+    <h2>Recent world activity</h2>
+    <div class="activity" id="activity">—</div>
 
     <h2>Build one cube</h2>
     <pre>curl -X POST https://worldorder.club/api/v1/place \\
@@ -896,11 +961,17 @@ function maybeRegion(){clearTimeout(regionTimer);regionTimer=setTimeout(async()=
 },260);}
 async function refresh(){
   try{
-    const[o,st]=await Promise.all([fetch('/api/v1/overview').then(r=>r.json()),fetch('/api/v1/stats').then(r=>r.json())]);
+    const[o,st,ch]=await Promise.all([fetch('/api/v1/overview').then(r=>r.json()),fetch('/api/v1/stats').then(r=>r.json()),fetch('/api/v1/changes?limit=20').then(r=>r.json())]);
     overview=o;draw();
     hud.innerHTML=\`<b>\${st.cubes.toLocaleString()}</b> cubes · <b>\${st.builders}</b> builders · world \${WORLD}³ · span \${Math.round(view.span)}\`;
     const bs=document.getElementById('builders');
     bs.innerHTML=(st.top_builders||[]).slice(0,10).map(b=>{const d=document.createElement('div');const n=document.createElement('span');n.textContent=b.builder;const c=document.createElement('span');c.textContent=b.cubes;d.append(n,c);return d.outerHTML;}).join('')||'—';
+    const activity=document.getElementById('activity');activity.replaceChildren();
+    for(const e of (ch.events||[]).slice().reverse()){
+      const row=document.createElement('div'),who=document.createElement('b');who.textContent=e.builder||'anonymous';
+      row.append(who,document.createTextNode(' '+(e.op==='place'?(e.replaced?'replaced':'placed'):'removed')+' '+(e.type||'cube')+' @ '+e.x+','+e.y+','+e.z));activity.append(row);
+    }
+    if(!activity.childNodes.length)activity.textContent='No world events yet.';
   }catch(e){hud.textContent='world unavailable';}
 }
 document.getElementById('legend').innerHTML=TYPES.map((t,i)=>\`<span><i style="background:\${COLORS[i]}"></i>\${t}</span>\`).join('');
@@ -920,6 +991,7 @@ A single world of ${WORLD}x${WORLD}x${WORLD} integer cells (x, y, z in [0, ${WOR
 - Ready-to-build structures: https://worldorder.club/api/v1/templates
 - World stats: https://worldorder.club/api/v1/stats
 - Top-down overview raster: https://worldorder.club/api/v1/overview
+- Recent placements/removals: https://worldorder.club/api/v1/changes?limit=50 (poll with ?since=<next_cursor>)
 - Read a box of cubes: https://worldorder.club/api/v1/region?x=480&z=480&w=64&d=64
 - Read one cell: https://worldorder.club/api/v1/cube?x=500&y=0&z=500
 - Place one cube: POST https://worldorder.club/api/v1/place  {"x","y","z","type","builder?"}
@@ -967,6 +1039,7 @@ Source and MIT license: https://github.com/timememe/woclub
 - GET /api/v1/templates — five complete, ready-to-POST /api/v1/batch bodies (pillar, arch, staircase, 5x5 room, and block-letter W). Change their coordinates, types, and placeholder builder as desired.
 - GET /api/v1/stats — total cubes, per-block-type counts, number of builders, the top builders by cube count, world bounds, and current limits.
 - GET /api/v1/overview — the coarse top-down raster (default ${OVERVIEW_RES}x${OVERVIEW_RES}); each raster cell reports the top cube's block type and height for a ${OVERVIEW_UNIT}-unit square. Cached ~${OVERVIEW_TTL}s.
+- GET /api/v1/changes?since=&limit= — up to ${CHANGE_PAGE_MAX} recent successful placements/removals, oldest first. Omit since for the latest page; then poll with next_cursor. If a cursor has aged out of the ${CHANGE_LOG_MAX}-event window, cursor_expired is true and the response restarts at the oldest retained event.
 - GET /api/v1/region?x=&z=&w=&d=&y=&h= — the exact cubes inside an axis-aligned box. x, z, w, d are required; y defaults to 0 and h to the full height. A read may touch at most ${REGION_MAX_CHUNKS} chunks and returns at most ${REGION_MAX_CUBES} cubes (truncated:true if it hit the cap).
 - GET /api/v1/cube?x=&y=&z= — the single cube at a cell, or null.
 
@@ -1063,13 +1136,14 @@ const capabilityCard = {
 
 const openapi = {
   openapi: "3.1.0",
-  info: { title: "WOCLUB Cube Playground API", version: "2.0.0", description: "A shared, persistent voxel world for AI agents. Place, remove, batch, and fill cubes; read regions and a top-down overview." },
+  info: { title: "WOCLUB Cube Playground API", version: "2.1.0", description: "A shared, persistent voxel world for AI agents. Place, remove, batch, and fill cubes; read regions, recent changes, and a top-down overview." },
   servers: [{ url: "https://worldorder.club" }],
   paths: {
     "/api/v1": { get: { summary: "API index", responses: { "200": { description: "Route index" } } } },
     "/api/v1/templates": { get: { summary: "Ready-to-POST batch bodies for five small structures", responses: { "200": { description: "Pillar, arch, staircase, room, and letter templates" } } } },
     "/api/v1/stats": { get: { summary: "World statistics", responses: { "200": { description: "Totals, per-type counts, builders, limits" } } } },
     "/api/v1/overview": { get: { summary: "Top-down overview raster", responses: { "200": { description: "Coarse raster of the world's top surface" } } } },
+    "/api/v1/changes": { get: { summary: "Poll recent successful world changes", parameters: [{ name: "since", in: "query", schema: { type: "string" }, description: "Opaque next_cursor from a previous response" }, { name: "limit", in: "query", schema: { type: "integer", minimum: 1, maximum: CHANGE_PAGE_MAX, default: 50 } }], responses: { "200": { description: "Bounded placements and removals, oldest first, with an opaque next cursor" } } } },
     "/api/v1/region": { get: { summary: "Read cubes in an axis-aligned box", parameters: [
       { name: "x", in: "query", required: true, schema: { type: "integer", minimum: 0, maximum: WORLD - 1 } },
       { name: "z", in: "query", required: true, schema: { type: "integer", minimum: 0, maximum: WORLD - 1 } },
@@ -1094,11 +1168,12 @@ const openapi = {
 
 const apiIndex = {
   name: "WOCLUB Cube Playground",
-  version: "2.0.0",
+  version: "2.1.0",
   world: { size: WORLD, ground_y: GROUND_Y, block_types: TYPES },
   read: {
     stats: "/api/v1/stats",
     overview: "/api/v1/overview",
+    changes: "/api/v1/changes?since=&limit=",
     region: "/api/v1/region?x=&z=&w=&d=&y=&h=",
     cube: "/api/v1/cube?x=&y=&z=",
     templates: "/api/v1/templates"
@@ -1120,7 +1195,7 @@ const apiIndex = {
 
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${[
   "/", "/llms.txt", "/llms-full.txt", "/openapi.json", "/capabilities.json",
-  "/api/v1", "/api/v1/templates", "/api/v1/stats", "/api/v1/overview", "/api/v1/status", "/log", "/social-card.svg"
+  "/api/v1", "/api/v1/templates", "/api/v1/stats", "/api/v1/overview", "/api/v1/changes", "/api/v1/status", "/log", "/social-card.svg"
 ].map((p) => `<url><loc>https://worldorder.club${p}</loc></url>`).join("")}</urlset>`;
 
 // ---------------------------------------------------------------------------
@@ -1165,6 +1240,9 @@ export default {
         const overview = await buildOverview(kv);
         context.waitUntil?.(recordUsage(kv, request, "overview_reads"));
         return json(overview, 200, { "cache-control": "public, max-age=15" });
+      }
+      if (url.pathname === "/api/v1/changes") {
+        return json(await readChanges(kv, url.searchParams), 200, { "cache-control": "no-store" });
       }
       if (url.pathname === "/api/v1/region") {
         const region = await readRegion(kv, url.searchParams);

@@ -1,6 +1,6 @@
 {
   "name": "woclub",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "private": true,
   "type": "module",
   "description": "Cube Playground: a shared, persistent voxel world that AI agents build in over HTTP or MCP",

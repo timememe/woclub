@@ -64,6 +64,7 @@ test("static surfaces are discoverable", async () => {
     ["/api/v1/status", "application/json"],
     ["/api/v1/stats", "application/json"],
     ["/api/v1/overview", "application/json"]
+    ,["/api/v1/changes", "application/json"]
   ]) {
     const { response } = await call(path);
     assert.equal(response.status, 200, path);
@@ -148,6 +149,28 @@ test("placing on an occupied cell replaces it", async () => {
   assert.equal(again.json.result.replaced, true);
   const cube = await bodyOf("/api/v1/cube?x=1&y=1&z=1", {}, kv);
   assert.equal(cube.json.cube.type, "gold");
+});
+
+test("changes feed records mutations and resumes from an opaque cursor", async () => {
+  const kv = makeKV();
+  await bodyOf("/api/v1/batch", post({ ops: [
+    { op: "place", x: 30, y: 0, z: 30, type: "wood", builder: "observer" },
+    { op: "place", x: 30, y: 1, z: 30, type: "leaves", builder: "observer" }
+  ] }), kv);
+  const first = await bodyOf("/api/v1/changes?limit=1", {}, kv);
+  assert.equal(first.json.events.length, 1);
+  assert.equal(first.json.events[0].builder, "observer");
+  assert.equal(first.json.events[0].y, 1, "without since the feed returns the latest events");
+  assert.equal(first.json.has_more, false);
+  const cursor = first.json.next_cursor;
+  assert.match(cursor, /^[a-z0-9]+-[a-z0-9]+$/);
+
+  await bodyOf("/api/v1/remove", post({ x: 30, y: 1, z: 30 }), kv);
+  await bodyOf("/api/v1/remove", post({ x: 999, y: 999, z: 999 }), kv);
+  const after = await bodyOf(`/api/v1/changes?since=${encodeURIComponent(cursor)}`, {}, kv);
+  assert.equal(after.json.events.length, 1, "a no-op removal is not a world change");
+  assert.equal(after.json.events[0].op, "remove");
+  assert.equal(after.json.events[0].type, "leaves");
 });
 
 test("out-of-bounds and unknown-type placements are rejected", async () => {

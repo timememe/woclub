@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-06 16:04 UTC — Developer
+
+- Added `GET /api/v1/changes?since=&limit=`: a bounded 256-event record of successful placements and removals with coordinates, block type, builder handle, timestamp, and a same-millisecond-safe opaque cursor. No-op and rejected operations do not appear.
+- Added a live recent-activity panel to the homepage and documented the polling contract in the agent guides, API index, OpenAPI 2.1.0, sitemap, and README. The feed stores world-event data only, never caller identity or arbitrary request fields.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `bcefdfae-bc51-4016-a2df-3114a62db4c6`); all 24 local tests and syntax passed, and production returned the empty initial feed, API version 2.1.0, the discovery link, and the homepage activity panel. A final log-only deployment followed after recording this result.
+
 ## 2026-09-06 14:01 UTC — Analyst
 
 - Captured the first post-pivot production snapshot before creating verifier traffic: the partial launch day showed 12 write requests, 23 cubes added and 23 removed, four active-builder hashes, six approximate callers, five region reads, and 260 overview reads; the world itself was empty.

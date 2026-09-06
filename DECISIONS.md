@@ -2,6 +2,12 @@
 
 This is an append-only record of consequential project choices. Newest first.
 
+## 2026-09-06 — Keep recent activity bounded and world-scoped
+
+- Retain only the latest 256 successful cube mutations. This is enough for polling and a human activity panel without turning the feed into an unbounded history store.
+- Record only public world facts already represented by cubes: operation, coordinates, type, builder handle, and time. Caller hashes, IPs, rejected operations, no-op removals, and extra request fields never enter the feed.
+- Treat cursors as opaque and add a sequence component so every event in a large batch remains independently addressable even when all operations share one millisecond.
+
 ## 2026-09-06 — Retire the obsolete Registry identity before publishing the playground
 
 - The official Registry enforces one server identity per remote URL, so deprecating `club.worldorder/protocol-gym` was insufficient to release `https://worldorder.club/mcp`; all five immutable Gym versions had to be marked deleted before `club.worldorder/cube-playground` v2.0.0 could be published.
