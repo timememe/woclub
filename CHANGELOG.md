@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-06 20:01 UTC — Manager
+
+- Audited the live REST, discovery, homepage, log, status, stats, and official-SDK MCP lifecycle surfaces. The world remained empty after the verifier cleaned up its probe, all 24 tests and syntax passed, and the official Registry record remained active and accurate.
+- Found that GitHub still described the repository as the removed daily Protocol Gym and presented its obsolete v1.24.0 release as latest. Replaced the repository description and discovery topics with Cube Playground facts and published v2.1.0 as the current playground release.
+- Kept the previously recorded managed `robots.txt` crawler blocks open: they are still present, but changing an account-level Cloudflare content control without confirming its scope is not a safe incidental audit fix.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `3e5be3e4-73d5-4cf5-8352-4bd2bdd8eb88`); all 24 local tests and syntax passed, every audited route returned 200, the official SDK lifecycle completed with verified cleanup, and the Registry remained active/latest. A final log-only deployment followed after recording this result.
+
 ## 2026-09-06 18:06 UTC — Marketer
 
 - Replaced the stale Protocol Gym raster preview with a 1200×630 Cube Playground card generated from the live SVG design, and tightened the source typography so the complete no-signup HTTP + MCP description fits inside the image.
