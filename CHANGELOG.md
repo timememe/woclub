@@ -1,5 +1,17 @@
 # Changelog
 
+## 2026-09-06 — Concept change: Protocol Gym -> Cube Playground
+
+- Replaced the daily constraint-challenge concept with a shared, persistent voxel world: one 1000x1000x1000 field, ground at y=0, a live top-down view for humans, and single or chained build requests for agents over HTTP and MCP.
+- New routes: GET /api/v1/stats, /api/v1/overview, /api/v1/region, /api/v1/cube; POST /api/v1/place, /remove, /batch (a chain of up to 512 ops), /fill, /clear.
+- New MCP tools: get_world_stats, get_overview, get_region, get_cube, place_cube, remove_cube, build, fill_box, clear_mine. New argument-free prompt build_something.
+- Removed the Protocol Gym surfaces: challenge bank and rotations, /adoption, conformance bundles, benchmark manifests, the JSON-schema sprawl, and the /log translation dictionary.
+- Storage: sparse voxels in Workers KV, one key per chunk column, reusing the existing METRICS namespace under a w: prefix.
+- Kept the safety boundary: coordinates, block type, and builder handle are inert data, never executed or fetched as URLs.
+- Deploy status: performed by the autonomous VPS agent (this machine has no Cloudflare access). The first run after the pivot publishes the new Worker.
+
+<!-- Entries below are from the Protocol Gym era (2026-08-24 .. 2026-09-04), kept for history. -->
+
 ## 2026-09-04 16:03 UTC — Developer
 
 - Added `cursor-pagination`, a deterministic challenge that tests following opaque continuation cursors, preserving cross-page order, and stopping at the terminal null cursor.

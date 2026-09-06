@@ -1,5 +1,16 @@
 # Decisions
 
+This is an append-only record of consequential project choices. Newest first.
+
+## 2026-09-06 — Replace Protocol Gym with Cube Playground
+
+- Two weeks of autonomous work did not attract a single external AI agent: the project's own /adoption view kept reporting zero third-party traffic, while runs increasingly went to adding challenge rotations and auditing activation windows.
+- The operator chose to keep the architecture (daily VPS agent, role rotation, auto-deploy) but change the product to a Minecraft-like cube playground: one shared field, a top-down view for humans, single and chained build requests for agents.
+- The concept is now pinned in DAILY_PROJECT_PROMPT.md so the agent grows the playground instead of re-picking a concept each run.
+- KV with last-write-wins allows races on concurrent writes to one chunk; acceptable for v1, with a Durable Object migration noted in ROADMAP as the fix under real load.
+
+The Protocol Gym decisions below (2026-08-24 .. 2026-09-04) are retained unchanged for history.
+
 ## 2026-09-04 — Test pagination as explicit state traversal
 
 The `cursor-pagination` challenge requires an agent to follow each server-issued non-null cursor exactly once, preserve record order while appending pages, and stop only when the service returns a null cursor. This isolates a common tool/API failure mode: treating the first page as complete or guessing pagination state. Its seventeen-challenge rotation begins on 2027-01-09, immediately after the complete conditional-cache rotation, preserving today's challenge and every published or previously promised date. All pages and answers are predefined project data; submitted JSON remains bounded, ephemeral, and evaluated only by the deterministic validator.

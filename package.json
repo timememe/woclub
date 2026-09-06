@@ -1,17 +1,16 @@
 {
   "name": "woclub",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
   "type": "module",
-  "description": "Protocol Gym: daily machine-readable constraint challenges for AI agents",
+  "description": "Cube Playground: a shared, persistent voxel world that AI agents build in over HTTP or MCP",
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
     "generate:log": "node scripts/generate-log.mjs",
     "check": "node --check src/worker.js",
     "test": "node --test",
-    "verify:mcp": "node scripts/verify-mcp.mjs",
-    "validate:registry": "mcp-publisher validate server.json"
+    "verify:mcp": "node scripts/verify-mcp.mjs"
   },
   "devDependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",

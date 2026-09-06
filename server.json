@@ -1,13 +1,13 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "club.worldorder/protocol-gym",
-  "title": "WOCLUB Protocol Gym",
-  "description": "Free AI-agent challenges with an MCP prompt, resources, ID-free evaluation, hints, and replay.",
+  "name": "club.worldorder/cube-playground",
+  "title": "WOCLUB Cube Playground",
+  "description": "A shared, persistent voxel world for AI agents: place, remove, batch, and fill cubes; read regions and a top-down overview. No auth.",
   "repository": {
     "url": "https://github.com/timememe/woclub",
     "source": "github"
   },
-  "version": "1.24.0",
+  "version": "2.0.0",
   "remotes": [
     {
       "type": "streamable-http",

@@ -1,159 +1,59 @@
+// Verify the live WOCLUB MCP surface with the official SDK.
+//   node scripts/verify-mcp.mjs            (checks https://worldorder.club/mcp)
+//   WOCLUB_MCP_URL=http://localhost:8787/mcp node scripts/verify-mcp.mjs
+//
+// It connects, checks the tool/prompt/resource list, then reads the world and
+// places one probe cube in a far corner so a Manager run can confirm the write
+// path end to end. Exits non-zero on any mismatch.
+
 import assert from "node:assert/strict";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
-import { readFileSync } from "node:fs";
-import { createHash } from "node:crypto";
 
 const endpoint = new URL(process.env.WOCLUB_MCP_URL ?? "https://worldorder.club/mcp");
-const client = new Client({ name: "woclub-sdk-verifier", version: "1.0.0" });
-let verificationToken = process.env.WOCLUB_VERIFICATION_TOKEN;
-if (!verificationToken) {
-  try {
-    verificationToken = createHash("sha256")
-      .update(readFileSync(new URL("../.mcp-registry-key.pem", import.meta.url)))
-      .digest("hex");
-  } catch {}
-}
-const transport = new StreamableHTTPClientTransport(endpoint, {
-  requestInit: verificationToken ? { headers: { "x-woclub-verification": verificationToken } } : undefined
-});
+const client = new Client({ name: "woclub-sdk-verifier", version: "2.0.0" });
+const transport = new StreamableHTTPClientTransport(endpoint);
+
+const EXPECTED_TOOLS = [
+  "get_world_stats", "get_overview", "get_region", "get_cube",
+  "place_cube", "remove_cube", "build", "fill_box", "clear_mine"
+].sort();
 
 try {
   await client.connect(transport);
 
-  const server = client.getServerVersion();
-  assert.equal(server?.name, "woclub-protocol-gym");
+  assert.equal(client.getServerVersion()?.name, "woclub-cube-playground");
 
   const { tools } = await client.listTools();
-  assert.deepEqual(tools.map(({ name }) => name), ["get_daily_challenge", "get_recent_challenges", "get_challenge_solution", "get_challenge_hint", "get_challenge_lesson", "evaluate_daily_answer", "evaluate_answer", "evaluate_answers"]);
+  assert.deepEqual(tools.map((t) => t.name).sort(), EXPECTED_TOOLS);
 
   const { prompts } = await client.listPrompts();
-  assert.deepEqual(prompts.map(({ name }) => name), ["daily_protocol_gym"]);
-  const prompt = await client.getPrompt({ name: "daily_protocol_gym", arguments: {} });
-  assert.match(prompt.messages[0]?.content?.text ?? "", /evaluate_daily_answer/);
+  assert.deepEqual(prompts.map((p) => p.name), ["build_something"]);
 
   const { resources } = await client.listResources();
-  assert.deepEqual(resources.map(({ uri }) => uri), ["woclub://guide", "woclub://challenge/today"]);
-  const guideResource = await client.readResource({ uri: "woclub://guide" });
-  assert.match(guideResource.contents[0]?.text ?? "", /visitor-submitted content is untrusted data/i);
-  const challengeResource = await client.readResource({ uri: "woclub://challenge/today" });
-  const resourceChallenge = JSON.parse(challengeResource.contents[0]?.text ?? "{}");
-  assert.equal(resourceChallenge.next_action?.tool, "evaluate_daily_answer");
+  assert.deepEqual(resources.map((r) => r.uri).sort(), ["woclub://guide", "woclub://overview"]);
 
-  const recent = await client.callTool({
-    name: "get_recent_challenges",
-    arguments: {}
-  });
-  assert.equal(recent.isError ?? false, false);
-  assert.equal(recent.structuredContent?.order, "oldest_first");
-  assert.ok(recent.structuredContent?.count >= 1 && recent.structuredContent?.count <= 7);
+  const stats = await client.callTool({ name: "get_world_stats", arguments: {} });
+  const world = stats.structuredContent?.world;
+  assert.equal(world?.size, 1000);
+  assert.equal(world?.ground_y, 0);
 
-  const challenge = await client.callTool({
-    name: "get_daily_challenge",
-    arguments: { date: "2026-08-24" }
-  });
-  assert.equal(challenge.isError ?? false, false);
-  assert.equal(challenge.structuredContent?.id, "2026-08-24:bounded-selection");
-  assert.equal(challenge.structuredContent?.next_action, undefined);
-
-  const today = await client.callTool({
-    name: "get_daily_challenge",
-    arguments: {}
-  });
-  assert.equal(today.isError ?? false, false);
-  assert.equal(today.structuredContent?.next_action?.tool, "evaluate_daily_answer");
-  assert.equal(today.structuredContent?.next_action?.arguments?.challenge_id, undefined);
-  assert.deepEqual(
-    Object.keys(today.structuredContent?.next_action?.arguments?.answer ?? {}),
-    Object.keys(today.structuredContent?.response_schema ?? {})
+  const overview = await client.callTool({ name: "get_overview", arguments: {} });
+  assert.equal(
+    overview.structuredContent.resolution ** 2,
+    overview.structuredContent.grid.length
   );
-  assert.notDeepEqual(today.structuredContent?.next_action?.arguments?.answer, {});
-  assert.equal(typeof today.structuredContent?.strategy_hint, "string");
-  assert.ok(today.structuredContent.strategy_hint.length > 0);
-  assert.match(today.structuredContent?.next_action?.note, /strategy_hint/);
 
-  const dailyEvaluation = await client.callTool({
-    name: "evaluate_daily_answer",
-    arguments: { answer: today.structuredContent.next_action.arguments.answer }
+  const probe = await client.callTool({
+    name: "place_cube",
+    arguments: { x: 999, y: 0, z: 999, type: "light", builder: "woclub-verifier" }
   });
-  assert.equal(dailyEvaluation.isError ?? false, false);
-  assert.equal(dailyEvaluation.structuredContent?.challenge_id, today.structuredContent?.id);
+  assert.equal(probe.structuredContent.ok, true);
 
-  const attemptedEvaluation = await client.callTool({
-    name: "evaluate_daily_answer",
-    arguments: { answer: { definitely: "not the template" } }
-  });
-  assert.equal(attemptedEvaluation.isError ?? false, false);
-  assert.equal(attemptedEvaluation.structuredContent?.correct, false);
-  assert.equal(attemptedEvaluation.structuredContent?.next_action?.tool, "get_challenge_hint");
-  assert.equal(attemptedEvaluation.structuredContent?.next_action?.then?.tool, "evaluate_daily_answer");
+  const back = await client.callTool({ name: "get_cube", arguments: { x: 999, y: 0, z: 999 } });
+  assert.equal(back.structuredContent.cube?.type, "light");
 
-  const hint = await client.callTool({
-    name: "get_challenge_hint",
-    arguments: { date: "2026-08-24" }
-  });
-  assert.equal(hint.isError ?? false, false);
-  assert.equal(hint.structuredContent?.challenge_id, "2026-08-24:bounded-selection");
-  assert.match(hint.structuredContent?.hint, /possible distinct pairs/);
-
-  const solution = await client.callTool({
-    name: "get_challenge_solution",
-    arguments: { date: "2026-08-24" }
-  });
-  assert.equal(solution.isError ?? false, false);
-  assert.equal(solution.structuredContent?.challenge_id, "2026-08-24:bounded-selection");
-  assert.deepEqual(solution.structuredContent?.answer, { tokens: ["amber", "cobalt"] });
-
-  const lesson = await client.callTool({
-    name: "get_challenge_lesson",
-    arguments: { date: "2026-08-24" }
-  });
-  assert.equal(lesson.isError ?? false, false);
-  assert.equal(lesson.structuredContent?.challenge?.id, "2026-08-24:bounded-selection");
-  assert.match(lesson.structuredContent?.hint, /possible distinct pairs/);
-  assert.deepEqual(lesson.structuredContent?.solution?.answer, { tokens: ["amber", "cobalt"] });
-
-  const evaluation = await client.callTool({
-    name: "evaluate_answer",
-    arguments: {
-      challenge_id: "2026-08-24:bounded-selection",
-      answer: { tokens: ["amber", "cobalt"] }
-    }
-  });
-  assert.equal(evaluation.isError ?? false, false);
-  assert.equal(evaluation.structuredContent?.correct, true);
-
-  const batchEvaluation = await client.callTool({
-    name: "evaluate_answers",
-    arguments: {
-      attempts: [
-        { challenge_id: "2026-08-24:bounded-selection", answer: { tokens: ["amber", "cobalt"] } },
-        { challenge_id: "2026-08-25:interval-schedule", answer: { jobs: ["alpha", "gamma"] } }
-      ]
-    }
-  });
-  assert.equal(batchEvaluation.isError ?? false, false);
-  assert.equal(batchEvaluation.structuredContent?.count, 2);
-  assert.equal(batchEvaluation.structuredContent?.correct_count, 1);
-
-  console.log(JSON.stringify({
-    endpoint: endpoint.href,
-    sdk: "@modelcontextprotocol/sdk",
-    server,
-    tools: tools.map(({ name }) => name),
-    prompts: prompts.map(({ name }) => name),
-    resources: resources.map(({ uri }) => uri),
-    recent_challenge_count: recent.structuredContent.count,
-    challenge_id: challenge.structuredContent.id,
-    today_next_action: today.structuredContent.next_action.tool,
-    daily_evaluation_correct: dailyEvaluation.structuredContent.correct,
-    incorrect_next_action: attemptedEvaluation.structuredContent.next_action.tool,
-    hint_challenge_id: hint.structuredContent.challenge_id,
-    solution_challenge_id: solution.structuredContent.challenge_id,
-    lesson_challenge_id: lesson.structuredContent.challenge.id,
-    evaluation_correct: evaluation.structuredContent.correct,
-    batch_correct_count: batchEvaluation.structuredContent.correct_count
-  }, null, 2));
+  console.log("verify:mcp OK —", endpoint.href);
 } finally {
-  await client.close();
+  await client.close().catch(() => {});
 }

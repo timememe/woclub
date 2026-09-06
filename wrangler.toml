@@ -9,6 +9,9 @@ directory = "./public"
 [observability]
 enabled = true
 
+# One KV namespace holds both aggregate usage counters (count:/caller:/builder:)
+# and the sparse voxel world (w:c:<cx>:<cz> chunks, w:meta, w:ov). Provision a
+# dedicated namespace later if write volume warrants it.
 [[kv_namespaces]]
 binding = "METRICS"
 id = "048fa0e573bb4d99862b73ec1ab49fea"

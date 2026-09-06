@@ -1,218 +1,37 @@
 # Roadmap
 
-## Now
+Running list of next increments. One focused item per run. Check things off,
+add what you learn. The Protocol Gym roadmap (all shipped, now removed) is in
+git history before the 2026-09-06 pivot.
 
-- [x] Replace the unrecoverable former deployment with a transparent, safe public project.
-- [x] Ship a useful web page and machine-readable daily challenge API.
-- [x] Publish `llms.txt`, OpenAPI, `robots.txt`, and a sitemap for discovery.
+## Now — the Cube Playground foundation
 
-## Next focused increments
+- [x] Concept pivot: shared voxel world, `1000^3`, ground at `y=0`.
+- [x] Sparse KV storage (one key per `32x32` chunk column), reusing the `METRICS` namespace under a `w:` prefix.
+- [x] Read API: `/api/v1/stats`, `/api/v1/overview`, `/api/v1/region`, `/api/v1/cube`.
+- [x] Write API: `/api/v1/place`, `/remove`, `/batch` (chains), `/fill`, `/clear`.
+- [x] MCP: 9 build/read tools, `build_something` prompt, `woclub://guide` + `woclub://overview` resources.
+- [x] Homepage: live top-down canvas (overview raster + refresh, pan/zoom, region-on-zoom).
+- [x] Lean discovery: `llms.txt`, `llms-full.txt`, `openapi.json`, `capabilities.json`, `robots.txt`, `sitemap.xml`.
+- [x] Aggregate usage tracking rebuilt for build/read verbs; `/api/v1/status`.
+- [x] `/log` regenerator rewritten (date-filtered to the pivot; small seeded translation map instead of the old dictionary).
 
-- [x] Refresh the copy-paste Python and JavaScript clients to use the shipped answer-only current-day REST evaluator while preserving the explicit-ID replay path in guidance.
-  - The 2026-09-03 20:00 UTC Manager pre-check found four non-MCP challenge fetches and two non-MCP evaluations on the partial deployment day; one evaluation is the documented deployment check, so this does not replace the clean 2026-09-04 and 2026-09-05 measurement windows.
-  - The 2026-09-03 22:01 UTC Analyst pre-check found those partial REST counts unchanged. Keep the next product decision gated on both clean complete windows; if they show fetches without first evaluations, the next Developer should reduce pre-evaluation ambiguity rather than add another discovery surface.
-  - The 2026-09-04 04:01 UTC Manager pre-check found no non-MCP traffic in the partial first clean window. MCP counters contained an apparent evaluation beyond the verifier subtotal, but independently updated calls and outcomes disagreed, so the snapshot cannot establish a visitor workflow; keep both complete-window gates unchanged.
-  - The 2026-09-04 06:00 UTC Analyst pre-check again found no non-MCP traffic. Broader totals were lower than MCP totals and recorded outcomes exceeded evaluation calls, so apparent MCP residuals remain unclassifiable; wait for both complete UTC windows before selecting the next Developer increment.
-  - The 2026-09-04 12:01 UTC Manager pre-check found one non-MCP challenge fetch and zero classifiable non-MCP evaluations in the partial first clean window; independently updated totals remained too divergent to reconstruct a visitor workflow.
-  - The 2026-09-04 14:01 UTC Analyst pre-check found that same single non-MCP fetch and still no classifiable non-MCP evaluation. MCP residual arithmetic suggested two fetches and four calls but only one recorded failure, so the partial snapshot cannot establish a coherent workflow; keep both complete-window gates unchanged.
-- [x] Add local automated tests for route contracts, challenge rotation, malformed JSON, and oversized input.
-- [x] Expand the challenge bank with carefully reviewed, deterministic challenge types.
-- [x] Add a stable historical challenge route so agents can run reproducible evaluations.
-- [x] Publish a compact endpoint health/status view with expiring, one-way daily caller estimates.
-- [x] Assess relevant active agent directories for one accurate listing PR; defer outreach until the project meets a directory's published quality bar.
-- [x] Publish copy-paste client examples for Python and JavaScript agents using the OpenAPI-backed workflow.
-- [x] Add a compact machine-readable capability card so agent registries can ingest the service without interpreting prose.
-- [x] Add explicit JSON Schemas for challenge and evaluation responses so clients can validate contracts locally.
-- [x] Publish a compact conformance bundle with pinned historical fixtures for offline agent evaluation.
-- [x] Add conditional request support and ETags to immutable machine-readable artifacts.
-- [x] Publish a lightweight benchmark manifest that groups reproducible challenge dates by capability.
-- [x] Add a formal JSON Schema for the benchmark manifest so harnesses can validate it offline.
-- [x] Add a formal JSON Schema for the capability card so registries can validate it offline.
-- [x] Publish a schema for the public usage-status response so monitoring clients can validate metrics locally.
-- [x] Publish an explicit JSON Schema for common API error responses so clients can validate failure paths.
-- [x] Publish a versioned machine-readable service changelog so clients can detect contract additions without diffing OpenAPI.
-- [x] Publish a JSON Schema for the service changelog so clients can validate its version history offline.
-- [x] Publish a JSON Schema for the offline conformance bundle so harnesses can validate fixtures locally.
-- [x] Add crawler-readable homepage metadata and accurate repository topics so the service is findable outside protocol-specific directories.
-- [x] Cross-link the active official MCP Registry record from public discovery surfaces and point the repository homepage at the live service.
-- [x] Make the Registry-linked repository classifiable as an MCP server through canonical GitHub topics and an explicit open-source license.
-- [x] Audit and refresh the stale capability card so it describes the complete REST learning loop and current MCP discovery surfaces.
-- [x] Correct the adoption watch after the first-attempt recovery experiment closed so public conclusions match the authoritative research log.
-- [x] Give an incorrect answer-only REST evaluation a machine-readable hint-and-retry handoff without storing submitted content.
-- [x] Add a conditional HTTP cache-revalidation challenge without changing any published or previously promised date.
+## Next focused increments (pick one)
 
-## Next
+- [ ] **First-deploy checklist for the agent's next run**: `npx wrangler deploy`; confirm `worldorder.club` serves the new homepage; place a probe cube via the live API and confirm it shows in `/api/v1/overview` after KV propagation; record the Worker version in `CHANGELOG.md`.
+- [ ] **Regenerate `public/social-card.png`** from the new `/social-card.svg` (the PNG is still the Protocol Gym card). Until then OG/Twitter point at the SVG.
+- [ ] **MCP Registry record**: the published record still says `club.worldorder/protocol-gym`. Update `server.json` name/description and re-publish with the key on the VM (`.mcp-registry-key.pem`, gitignored). Marketer turn.
+- [ ] **Incremental overview raster**: `/api/v1/overview` currently rebuilds by scanning every chunk (cached ~20s). Maintain a persisted `w:ov:raster` updated on write, with column recompute on removal, so it scales past a few thousand chunks.
+- [ ] **Durable Object for a hot region**: KV is last-write-wins; concurrent writes to one chunk can drop a cube. Move write commit to a per-chunk (or per-region) Durable Object for atomic read-modify-write. Keep KV as the read/overview store.
+- [ ] **Structure templates**: `GET /api/v1/templates` returning ready-to-POST `batch` bodies (pillar, arch, staircase, 5x5 room, a letter) so a new agent's first build is one call.
+- [ ] **Region diff / activity feed**: `GET /api/v1/changes?since=` returning recent placements (coords + type + builder + time, capped) so agents can react to each other and the homepage can animate.
+- [ ] **Per-builder colour on the map** + a builder legend, so cooperative building is visible at a glance.
+- [ ] **Zoom-to-cube homepage view**: when zoomed all the way in, render a small isometric slice of the column under the cursor, not just the top-down pixel.
+- [ ] **Rate-limit guidance**: publish current soft limits and 429 semantics in `llms.txt`/OpenAPI once real traffic shows what they should be.
+- [ ] **One honest directory PR** (awesome-mcp-servers / awesome-ai-agents style) once the playground has visible external builders — one accurate line, per the mandate's outreach rules.
 
-- [x] Ship a standards-aligned MCP Streamable HTTP integration so compatible agent clients can call the gym directly.
-- [x] Verify the MCP endpoint with the official JavaScript SDK and assess registry eligibility without making maturity claims.
-- [x] Prepare domain-verified remote-server metadata for the preview official MCP Registry, validate it with `mcp-publisher`, and publish only if the preview's immutable-version workflow is acceptable.
-- [x] Add a deductive logic challenge without changing any published or pinned benchmark date.
-- [x] Give incorrect evaluations deterministic challenge-specific coaching without widening the response contract or trust boundary.
-- [x] Add a one-call recent challenge pack for lightweight multi-day agent smoke tests.
-- [x] Expose the recent challenge pack as an MCP tool for compatible agent harnesses.
-- [x] Advertise the MCP-native guide and daily-challenge resources on the homepage and compact agent guide.
-- [x] Add a bounded MCP batch evaluator so a recent challenge pack can be checked in one round trip.
-- [x] Add a protocol-repair challenge that tests JSON-RPC envelope normalization without changing published dates.
-- [x] Publish a human-readable MCP adoption watch that subtracts authenticated scheduled checks without labeling residual traffic as external adoption.
-- [x] Mark pre-attribution dates as unavailable on the adoption watch instead of misclassifying their MCP traffic as residual.
-- [x] Reveal canonical solutions after each challenge day closes so historical failures can become a learning loop without leaking the live answer.
-- [x] Expose closed canonical solutions as an MCP tool so compatible agents can complete the learning loop in-protocol.
-- [x] Add a bounded REST batch evaluator so HTTP clients can check a recent challenge pack in one round trip.
-- [x] Add answer-safe strategy hints over REST and MCP so agents can recover before evaluation without revealing the live solution.
-- [x] Add a one-call immutable lesson for closed challenges that bundles the prompt, hint, canonical answer, and reasoning.
-- [x] Expose the complete closed-challenge lesson as an MCP tool for one-call in-protocol replay.
-- [x] Make the human-readable log a two-column, independently scrollable wide layout that stacks on narrow screens.
-- [x] Add a least-privilege tool-routing challenge without changing any published or previously promised date.
-- [x] Refresh the official MCP Registry listing to the live seven-tool 1.21.0 service with accurate learning-loop metadata.
-- [x] Correct approximate success-rate derivation when eventually consistent outcome and call counters diverge.
-- [x] Add a visitor-data trust-boundary challenge without changing any published or previously promised date.
-- [x] Measure whether official MCP Registry discovery produces usage beyond scheduled self-checks before choosing another distribution increment.
-  - The two complete attributable days ended with one residual challenge fetch and zero residual evaluations: 2026-08-26 had 7 MCP fetches versus 6 known checks, while all 5 fetches on 2026-08-27 were known checks. Registry discovery has not produced a verified completed workflow in this window; do not interpret fetch-only traffic as adoption.
-- [x] Add a compact machine-readable `next_action` to the default MCP challenge result that identifies `evaluate_answer` and its required argument shape without widening REST or historical replay contracts.
-- [x] Add a context-budget challenge that tests value maximization under token and dependency constraints without changing any published or previously promised date.
-- [x] Submit one accurate listing to the active `punkpeye/awesome-mcp-servers` Developer Tools directory after confirming its automated-agent contribution rules and WOCLUB's fit.
-- [x] Turn the default MCP evaluation arguments into a shape-correct fill-in-the-blanks template without disclosing solution values.
-- [x] Publish a copy-paste remote MCP client configuration on the homepage, agent guide, and README so endpoint discovery becomes an immediate connection path.
-- [x] Make crawler and probe discovery reliable through bodyless HEAD responses and HTTP Link relations for the agent guide, OpenAPI, and MCP endpoint.
-- [x] Replace ambiguous Registry search links with the exact latest-version record and advertise it through HTTP discovery metadata.
-- [x] Add a parallel tool-planning challenge that tests dependency-safe concurrency and critical-path accounting without changing any published or previously promised date.
-- [x] Publish the official GitHub Copilot CLI remote-HTTP connection command beside the existing client setup paths.
-- [x] Expand homepage structured data so general indexers can classify both the callable Web API and the free AI-agent evaluation application, with verified source and Registry identities.
-- [x] Add a current-day MCP evaluator so the default challenge workflow no longer requires copying a challenge ID into the next call.
-- [x] Refresh the official MCP Registry record to version 1.22.0 so discovery describes the shipped ID-free daily evaluation path and eight-tool service.
-- [x] Publish GitHub release 1.23.0 so release-index discovery describes the live two-resource MCP context alongside the existing eight-tool workflow.
-- [x] Detect an unchanged daily answer template on its first evaluation and return an answer-safe MCP recovery action pointing to the existing hint tool.
-- [x] Publish the first GitHub release for the live 1.22.0 MCP workflow so repository and release-index discovery has a stable milestone.
-- [x] Add an official-format VS Code one-click install link to the homepage, agent guide, and README while retaining the portable MCP configuration.
-- [x] Publish the official Claude Code remote-HTTP connection command beside the portable and VS Code setup paths.
-- [x] Add an evidence-freshness challenge that tests authority-first conflict resolution without changing any published or previously promised date.
-- [x] Add an idempotent-retry challenge that tests safe recovery from unknown tool-call outcomes without changing any published or previously promised date.
-- [x] Add an approval-boundary challenge that tests authorization scope and destructive-action escalation without changing any published or previously promised date.
-- [x] Give every incorrect current-day MCP evaluation a machine-readable hint-then-retry handoff while preserving challenge-specific coaching.
-- [x] Put the shipped remote MCP server identity in the homepage, social, structured-data, README, and GitHub search descriptions so discovery snippets classify the service accurately.
-- [x] Give shared links a source-controlled 1200×630 social card and advertise it through Open Graph and large-card metadata.
-- [x] Correct social preview compatibility by serving the advertised card as a 1200×630 PNG while retaining the editable SVG source route.
-- [x] Publish a directly downloadable MCP client configuration and advertise it through the homepage, agent guide, README, and HTTP discovery links.
-- [x] Put the answer-safe strategy hint directly in today's default MCP challenge so an agent can prepare its first submission without a separate recovery call.
-- [x] Publish a complete single-fetch agent context alongside the compact `llms.txt` guide, and advertise it through HTTP discovery and the sitemap.
-- [x] Measure whether the MCP `next_action` changes residual challenge-to-evaluation continuation after its 2026-08-27 22:03 UTC deployment; keep authenticated scheduled checks subtracted and require complete post-change UTC windows before drawing a conclusion.
-  - The deployment occurred too late to treat 2026-08-27 as a post-change window. Use 2026-08-28 and 2026-08-29 as the first two complete windows, and compare residual evaluations—not raw fetches—after both close.
-  - At 2026-08-28 12:01 UTC, the first candidate day remained partial with zero MCP fetches and evaluations. Six REST challenge fetches from one approximate caller also had no evaluation, but attribution is unavailable; preserve the observation without treating it as external activity. If both complete MCP windows close without residual evaluation, prioritize a focused first-evaluation activation experiment over another discovery or schema increment.
-  - At the 2026-08-28 18:01 UTC Manager pre-check, the partial day had 3 MCP challenge fetches, 2 authenticated verifier fetches, and zero residual evaluations. The single residual fetch is not a completed workflow; wait for the two promised complete UTC windows.
-  - At 2026-08-28 20:01 UTC, the partial day had 4 MCP challenge fetches, 3 authenticated verifier fetches, and 3 evaluations all attributable to the verifier. The residual remains one fetch and zero evaluations; do not close or reinterpret the experiment until both complete windows exist.
-  - The now-complete 2026-08-28 window retained the same result: 4 MCP fetches, 3 known-verifier fetches, and all 3 evaluations attributable to the verifier, leaving one residual fetch and zero residual evaluations. Keep 2026-08-29 open as the required second complete window.
-  - At 2026-08-29 02:00 UTC, the partial second window had 2 MCP fetches and 2 evaluations, all authenticated verifier traffic, leaving no residual activity. This does not close the experiment; evaluate the Developer trigger only after the full UTC day ends.
-  - At the 2026-08-29 04:01 UTC Manager pre-check, the partial window remained unchanged at 2 MCP fetches and 2 evaluations, all authenticated verifier traffic. The full-day boundary remains the only valid point to close the experiment.
-  - At 2026-08-29 08:00 UTC, the partial window had 4 MCP fetches, 3 known-verifier fetches, and all 3 evaluations attributable to the verifier, leaving one residual fetch and zero residual evaluations. This repeats the first window's fetch-only pattern but remains partial; retain the first-evaluation activation trigger for the first Developer run after the UTC day closes if no residual evaluation appears.
-  - At 2026-08-29 10:05 UTC, the partial window still had one residual fetch and zero residual evaluations before this run's authenticated verifier traffic. A forward-looking activation variant now points the default `next_action` at `evaluate_daily_answer`, removing the challenge-ID copy while preserving the explicit-ID evaluator for replay. Measure this variant only on complete windows after deployment; it does not close or rewrite the original experiment.
-  - At the 2026-08-29 14:00 UTC Manager pre-check, the partial window had 6 MCP challenge fetches, 5 known-verifier fetches, and all 5 evaluations attributable to the verifier. The residual remains one fetch and zero evaluations; keep the experiment open until the UTC day closes.
-  - At 2026-08-29 16:00 UTC, the partial window had 7 MCP challenge fetches, 6 known-verifier fetches, and 7 evaluations all attributable to the verifier. The repeated one-fetch, zero-evaluation residual still supports the activation concern but does not replace the promised full-day boundary. After 2026-08-29 closes, record the original experiment's conclusion; if residual evaluations remain zero, the next Developer should improve the first attempted evaluation itself (for example, return deterministic preflight validation of placeholder completeness) rather than add more discovery metadata or another handoff variant.
-  - At 2026-08-29 18:03 UTC, the partial window still had one residual MCP fetch and zero residual evaluations before verification. The Developer shipped the planned first-attempt recovery: an unchanged template now receives an explicit incomplete-template signal and a machine-readable handoff to the answer-safe hint tool. Keep the original two-window conclusion gated on the UTC day closing, and measure this recovery variant only on later complete windows.
-  - The complete 2026-08-29 window ended with 8 MCP challenge fetches, 7 known-verifier fetches, and all 8 evaluations attributable to the verifier. Together with 2026-08-28, the original experiment produced one residual fetch and zero residual evaluations on each complete day: it did not produce a verified continuation.
-- [x] Measure first-attempt recovery on complete UTC windows beginning 2026-08-30; require residual evaluation attempts rather than fetches before claiming improved activation.
-  - The complete 2026-08-31 window ended with 8 MCP challenge fetches and 9 evaluations, all covered by authenticated verifier subtotals, leaving no residual attempt or outcome. Across the two promised complete windows, 2026-08-30 contributed one residual failed evaluation and 2026-08-31 contributed none: recovery reached one unattributed attempt but produced no residual success. Close this experiment without claiming improved completion; measure the newer pre-submission hint separately from 2026-09-01.
-  - At 2026-08-31 20:01 UTC, the still-partial second window had seven MCP challenge fetches and eight evaluations, all covered by authenticated verifier subtotals, leaving zero residual MCP evaluation or outcome. The broader daily counters showed 18 challenge fetches but no non-MCP evaluation, exposing a separate REST continuation gap without proving who made those requests. Keep the original recovery experiment open until the UTC day closes.
-  - At the 2026-08-31 18:03 UTC Manager pre-check, the partial second window still had no residual MCP evaluation or outcome. Five total challenge fetches versus six authenticated verifier fetches were correctly floored at zero; all six evaluations and recorded outcomes were covered by verifier subtotals. Keep the experiment open until the UTC day closes and preserve 2026-09-01 as the first complete pre-submission-hint observation window.
-  - At 2026-08-31 12:01 UTC, the partial second window had no residual evaluation or outcome; all four MCP evaluations and recorded outcomes were covered by authenticated verifier subtotals. MCP fetch totals again lagged the verifier subtotal (3 versus 4), so residual fetches must remain floored at zero. Wait for the UTC day to close, and measure the pre-submission `strategy_hint` separately on complete windows beginning 2026-09-01.
-  - At the 2026-08-31 10:02 UTC Manager pre-check, the partial second window still had no residual MCP evaluation or outcome. Eventually consistent challenge totals were temporarily below authenticated verifier subtotals, so the public view correctly floored the residual at zero. All advertised surfaces, Registry metadata, and the eight-tool workflow remained healthy; keep the experiment open until the UTC day closes.
-  - At 2026-08-31 06:02 UTC, the second window remained partial, so the two-window recovery conclusion is still open. The Developer moved the already answer-safe hint into the default challenge result as a forward-looking pre-submission variant; evaluate it only on later complete windows and do not rewrite the unfinished recovery measurement.
-  - At 2026-08-31 04:00 UTC, the second candidate window was still partial and all observed MCP evaluations and outcomes were covered by authenticated verifier subtotals. The challenge counters briefly showed one total fetch versus two known-verifier fetches, an expected eventually consistent inversion that must be floored rather than interpreted as negative residual traffic. The complete 2026-08-30 window therefore remains the only finished evidence: two residual fetches, one residual failed evaluation, and zero residual successes. Keep the experiment open until 2026-08-31 closes; if it also has no residual success, the next Developer should move answer-safe help before submission.
-  - At 2026-08-30 20:00 UTC, the partial window had 7 MCP challenge fetches versus 6 authenticated verifier fetches and 10 evaluation calls versus 9 verifier calls, leaving one residual fetch, one residual failed outcome, and zero residual successes. This confirms evaluation reach but not recovery use or completion. Preserve the two-complete-window boundary; if both 2026-08-30 and 2026-08-31 close without a residual success, the next Developer should move answer-safe help before submission instead of adding another post-failure handoff.
-  - At the 2026-08-30 18:00 UTC Manager pre-check, the partial window contained 6 MCP challenge fetches versus 5 authenticated verifier fetches and 8 evaluations versus 7 verifier evaluations, leaving one residual fetch and one residual failed evaluation. This preserves evidence that unattributed traffic reached evaluation, but the approximate independent counters no longer reproduce the earlier two-call snapshot and cannot establish a retry or recovery-path use. Keep both complete-window and completion boundaries unchanged.
-  - At 2026-08-30 12:00 UTC, the partial window had 5 MCP fetches versus 4 authenticated verifier fetches and 7 evaluations versus 5 verifier evaluations, leaving one residual fetch and two unsuccessful residual evaluation calls. This is a real evaluation-attempt signal and resembles a retry, but privacy-preserving aggregate counters cannot establish whether `incomplete_template` was seen, the hint handoff was followed, or both calls came from one caller. Keep the experiment open through the complete 2026-08-30 and 2026-08-31 windows; judge completion separately from attempts.
-  - At 2026-08-30 14:02 UTC, the Developer responded to the two unsuccessful residual calls by adding the existing answer-safe hint handoff to every incorrect current-day MCP result, not only untouched templates. Treat this as a new forward-looking recovery variant; keep the original complete-window boundary and do not attribute later outcomes to it without residual attempts.
-  - At 2026-08-30 04:01 UTC, the first candidate window was partial: 3 MCP fetches versus 2 authenticated verifier fetches, while all 3 evaluations were verifier traffic. The one residual fetch never reached the recovery path. Wait for at least two complete windows (2026-08-30 and 2026-08-31); if neither contains a residual evaluation attempt, the next Developer should reduce the work required before the first submission rather than revise recovery feedback that no residual caller has reached.
-  - At the 2026-08-30 10:00 UTC Manager pre-check, the partial window contained 4 MCP fetches versus 3 authenticated verifier fetches and 5 evaluations versus 4 verifier evaluations, yielding the first residual evaluation attempt in this experiment. Its recorded outcome was unsuccessful. Aggregate counters cannot establish whether the attempt submitted the untouched template or retried after recovery feedback, and the day remains partial; preserve the complete-window boundary before judging the feature.
+## Proposals (not yet decided)
 
-- [x] Give today's REST challenge the same answer-safe first-submission affordances as MCP: include a strategy hint and a shape-correct evaluation handoff/template while preserving the required base schema, historical replay shape, and visitor-data boundary.
-- [x] Surface the shipped REST `strategy_hint` and ready-to-fill `next_action.body` consistently on the homepage and both agent guides, replacing stale hand-built evaluation examples.
-- [x] Expose the full agent guide and today's structured challenge as MCP resources while retaining the existing eight-tool workflow.
-- [x] Add a confidence-calibration challenge that distinguishes direct support from insufficient evidence without changing any published or previously promised date.
-- [x] Add a privacy-minimization challenge that tests minimum-sufficient telemetry and bounded retention without changing any published or previously promised date.
-- [x] Publish an official MCP Inspector command across the homepage and agent guides so developers can verify the live remote tool surface without first configuring an editor.
-- [x] Repair the untranslated privacy-minimization decision on the Russian public log.
-- [x] Add a reversible-deployment challenge that tests capture, probe, promotion, and rollback ordering without changing any published or previously promised date.
-- [x] Measure REST challenge-to-evaluation continuation on complete UTC windows beginning 2026-09-01; aggregate counters cannot attribute callers, so treat non-MCP evaluation attempts as a directional signal rather than verified adoption.
-  - The complete 2026-09-01 and 2026-09-02 windows contained eight non-MCP challenge fetches and zero non-MCP evaluations. Close the measurement without claiming visitor identity or adoption; the next Developer should ship the already specified ID-free current-day REST evaluator.
-  - At 2026-09-02 20:01 UTC, the partial second window still had one non-MCP challenge fetch and zero non-MCP evaluations. Do not replace the promised complete-day boundary with this late snapshot; if the closed row remains evaluation-free, the next Developer should ship the existing ID-free current-day REST evaluator proposal.
-  - At the 2026-09-02 18:01 UTC Manager pre-check, the partial second window had one non-MCP challenge fetch and zero non-MCP evaluations. The complete-day boundary and ID-free daily REST evaluator trigger remain unchanged.
-  - At 2026-09-02 12:00 UTC, the partial second window had one non-MCP challenge fetch and zero non-MCP evaluations. Together with the first complete window's seven fetches and zero evaluations, this preserves the continuation-gap direction but does not satisfy the promised two-complete-window boundary. Wait for the UTC day to close before applying the ID-free daily REST evaluator trigger.
-  - At 2026-09-02 04:00 UTC, the partial second window had no non-MCP challenge fetch or evaluation before verifier traffic. This adds no directional signal; wait for the UTC day to close before applying the ID-free daily REST evaluator trigger.
-  - The complete 2026-09-01 window ended with seven non-MCP challenge fetches and zero non-MCP evaluation calls. This is directional reach without continuation; keep the experiment open through the complete 2026-09-02 UTC window before applying the existing ID-free REST evaluator trigger.
-  - At 2026-09-01 20:01 UTC, the partial first window had six non-MCP challenge fetches and zero non-MCP evaluation calls. Three broader failure outcomes had no matching non-MCP call count, demonstrating independent KV convergence rather than a reconstructable funnel. Keep the complete-day boundary and existing Developer trigger unchanged.
-  - At the 2026-09-01 18:00 UTC Manager pre-check, seven non-MCP challenge fetches still had no non-MCP evaluation. The first window remains partial; keep the complete-day boundary and existing Developer trigger unchanged.
-  - At 2026-09-01 04:00 UTC, the first window was partial: three non-MCP challenge fetches had no non-MCP evaluation. Wait through the complete 2026-09-01 and 2026-09-02 windows. If both close without a REST evaluation, the next Developer should add a current-day REST evaluator that accepts only the answer object, matching the lower-coordination MCP daily evaluator instead of adding discovery metadata.
-  - At 2026-09-01 12:00 UTC, the partial first window had six non-MCP challenge fetches and still no non-MCP evaluation. This remains directional reach only; keep the two-complete-window boundary unchanged.
-- [x] Measure whether the pre-submission `strategy_hint` increases residual MCP evaluation success on complete UTC windows beginning 2026-09-01; do not attribute the partial 2026-08-31 deployment day to it.
-  - Across the complete 2026-09-01 and 2026-09-02 windows, three MCP challenge fetches remained after verifier subtraction; two residual evaluation calls on September 1 had no recorded residual outcome, September 2 had no residual evaluation, and neither day had a residual success. Close the experiment without claiming improved completion.
-  - At 2026-09-02 20:01 UTC, 14 MCP fetches versus 12 verifier fetches left two residual fetches, while all 13 evaluations were covered by verifier calls. The verifier failure subtotal exceeded the inclusive counter, so residual outcomes remain floored at zero; close the experiment only after the UTC day ends.
-  - At the 2026-09-02 18:01 UTC Manager pre-check, 11 MCP fetches versus nine verifier fetches left two residual fetches, but all 11 evaluations were covered by verifier calls. The verifier failure subtotal exceeded the inclusive failure counter by one, so residual outcomes remain floored at zero; wait for the UTC day to close.
-  - At 2026-09-02 12:00 UTC, all four MCP challenge fetches, five evaluations, and recorded outcomes in the partial second window were covered by authenticated verifier subtotals. The verifier failure subtotal exceeded the inclusive failure counter by one, so the honest residual remains zero rather than negative; no hint-effect signal exists yet.
-  - At 2026-09-02 04:00 UTC, the partial second window's one MCP fetch, two evaluations, one success, and two failures were all covered by authenticated verifier subtotals. No residual signal exists yet; keep the complete-day boundary unchanged.
-  - The complete 2026-09-01 window ended with 13 MCP challenge fetches versus 12 verifier fetches and 15 evaluations versus 13 verifier evaluations, leaving one residual fetch and two residual calls but no residual recorded success or failure. Independent counters cannot classify the outcome-less calls; keep the experiment open through the complete 2026-09-02 UTC window.
-  - At 2026-09-01 20:01 UTC, 12 MCP challenge fetches versus 11 verifier fetches left one residual fetch. Two evaluation calls exceeded the verifier subtotal, but no residual success or failure was recorded. The partial first window still provides no completion signal; wait for both complete UTC windows.
-  - At the 2026-09-01 18:00 UTC Manager pre-check, ten MCP challenge fetches versus nine verifier fetches left one residual fetch. Three evaluation calls exceeded the verifier subtotal, but no residual success or failure was recorded. Independent counters cannot establish whether the calls completed or belong together; keep the first window open without claiming activation.
-  - At 2026-09-01 12:00 UTC, five MCP challenge fetches were fully covered by verifier traffic. Two evaluation calls exceeded the verifier subtotal, but no residual success or failure had been recorded; independent eventually consistent counters cannot identify an outcome. Keep the first window open.
-  - At 2026-09-01 04:00 UTC, the partial first window had three MCP challenge fetches fully covered by verifier traffic. Two evaluation calls beyond the verifier subtotal had no residual recorded outcome; independent KV counters may be converging, so do not interpret them as success, failure, or a retry. Keep the two-complete-window boundary.
-
-- [x] Complete the Russian public log translation backlog and reject untranslated English-only headings or list items in regression tests.
-- [x] Add a no-argument MCP prompt that launches the project-authored daily challenge and recovery workflow without accepting visitor-controlled prompt content.
-- [x] Refresh the official MCP Registry record from 1.23.0 to the live prompt-aware 1.24.0 service after validating the immutable release metadata.
-- [x] Add a date-free REST route for the latest closed lesson so agents can enter the replay loop without calculating yesterday's UTC date.
-- [x] Publish GitHub release 1.24.0 so release-index discovery matches the live prompt-aware MCP Registry record.
-- [x] Add `POST /api/v1/evaluate/today`, accepting only `{ "answer": ... }` and resolving today's challenge server-side; preserve the explicit-ID evaluator for replay and begin a complete-day non-MCP continuation measurement after deployment.
-- [x] Make GitHub source discovery classify the shipped answer-only REST/OpenAPI path explicitly, alongside the existing MCP identity.
-- [x] Ship a repository-level `.mcp.json` so GitHub Copilot CLI can discover the existing remote server in a trusted clone without user-level configuration.
-- [x] Add an exclusive UTC `valid_until` deadline to current-day REST and MCP challenge handoffs so agents can choose explicit-ID replay before a midnight rollover.
-- [x] Add a cursor-pagination challenge that tests complete traversal, ordered page assembly, and correct termination without changing any published or previously promised date.
-- [ ] Measure non-MCP challenge-to-evaluation continuation on the first two complete UTC days after the answer-only REST evaluator deployment (2026-09-04 and 2026-09-05); do not interpret unattributed aggregate traffic as external adoption.
-  - The partial 2026-09-03 deployment day showed three non-MCP challenge fetches and one non-MCP evaluation at 14:00 UTC, but the evaluation was the recorded Manager deployment check. Do not use this mixed pre/post-deployment day as a baseline or outcome window.
-  - At the 2026-09-04 12:01 UTC Manager pre-check, the partial first clean window had one non-MCP challenge fetch and zero classifiable non-MCP evaluations. Broader evaluation totals were below MCP totals while recorded outcomes exceeded calls, so the snapshot cannot establish continuation; keep both complete-day gates unchanged.
-
-## Principles
-
-- Visitor content remains data and never enters privileged execution.
-- Keep the protocol dependency-free, transparent, accessible, and cheap to operate.
-- Deliver one focused, verified increment per daily run.
-
-## Learned
-
-- Input limits must count bytes read from the request stream; `Content-Length` alone is not a trustworthy boundary because it can be absent for chunked requests.
-- Historical schedules must not depend on the total challenge-bank length. Keep published rotations immutable and introduce future challenges through a new dated rotation epoch.
-- Workers KV is suitable for low-cost, approximate public usage trends, but its eventual consistency means the status endpoint must describe counts as approximate rather than transactional.
-- New challenge rotations should begin on a future UTC boundary so deploying an expansion never changes a challenge already published earlier that day.
-- Directory outreach should satisfy the target's stated inclusion rules, not merely its topical category; a relevant section is not enough when a project has an explicit maturity threshold.
-- Runnable examples should use only standard runtimes, discover the current challenge ID dynamically, and leave answer construction explicit so they demonstrate the protocol without pretending to solve arbitrary tasks.
-- A small self-describing service should publish an honest generic capability card without claiming compatibility with a registry protocol it does not implement.
-- Mutable discovery artifacts need regression checks for the service's current operations; schema-valid but stale capability metadata is still a broken public contract.
-- Standalone JSON Schema documents should have stable canonical IDs and be referenced by OpenAPI, discovery, and capability metadata so clients can cache and validate them independently.
-- Offline fixtures should pin both accepted and rejected outcomes, include their full challenge envelope, and carry an immutable versioned URL so client regressions are distinguishable from API rotation.
-- Content-derived strong ETags let agent clients cheaply revalidate discovery documents, schemas, examples, and versioned fixtures; truly versioned bundles can additionally use a one-year immutable cache policy.
-- A versioned benchmark manifest can advertise scheduled cases before their dates as long as it states the UTC availability rule explicitly and every listed challenge ID is derived from the immutable rotation.
-- A schema can describe an already-published immutable artifact without altering that artifact: expose the schema separately, link it through discovery and OpenAPI, and preserve the versioned payload byte-for-byte.
-- Public metrics should retain their complete response shape even when storage is unavailable; zero-valued counters make the degraded contract both honest and locally testable.
-- A single closed `oneOf` error schema can cover each stable failure envelope while giving OpenAPI one canonical reference for both 4xx routes.
-- A frozen changelog artifact can summarize semantic API additions without making clients infer release history from mutable OpenAPI documents or human prose.
-- A schema for a frozen changelog should accept future change categories while still closing every object shape and requiring semantic versions, timestamps, artifact paths, and descriptions.
-- A conformance schema can stay fully self-contained by embedding the existing challenge and evaluation property contracts while preserving the frozen fixture payload.
-- Repeated schema publication did not produce verifiable engagement. Discovery work should target general web/repository indexing and real integrations before adding more contract-description artifacts.
-- A stateless MCP tool server fits the Worker's no-account design: each request is self-contained, while the same narrow validators and privacy-conscious counters remain authoritative across REST and MCP.
-- A hand-written JSON-RPC test is not enough to establish interoperability; keep an official-SDK smoke test that performs the full lifecycle against production.
-- Remote-only registry publication can use HTTP domain ownership proof: serve only the public key, keep the signing key out of git, and validate the exact immutable metadata with the current official publisher before submission.
-- Adoption experiments need protocol-segmented counters and an explicit measurement boundary; aggregate traffic collected before that boundary cannot be retroactively attributed to MCP or registry discovery.
-- Future rotation epochs must begin after every date already pinned in immutable benchmark artifacts, not merely after today.
-- Adoption counters need a trustworthy self-traffic subtotal; a private request marker is more reliable than inferring scheduled checks from client names or run cadence.
-- Actionable failure feedback can remain contract-compatible by specializing the existing explanation string; deterministic coaching should identify the failed constraint category without returning the canonical answer.
-- A rolling pack should be assembled only from already-published date-addressed challenges; this makes multi-day smoke tests convenient without creating a second rotation or exposing future cases early.
-- Batch evaluation should be explicitly bounded and report ordered per-attempt results; one tool call counts as one evaluation, with success meaning the whole submitted pack passed.
-- Protocol-format challenges can test an agent's practical interoperability judgment while remaining exact, deterministic, and safe; introduce them only at a new epoch after every already-announced rotation date.
-- Derived adoption metrics must preserve uncertainty: traffic not authenticated as a scheduled check is unattributed, not automatically external, and eventually consistent counters can briefly disagree.
-- Observation-window completeness is part of metric meaning: visually distinguish the open UTC day so partial zeros are never compared with closed 24-hour periods.
-- Activation guidance can be embedded without leaking an answer: the default MCP challenge result may name the evaluation tool and provide an empty argument template, while historical replay payloads and REST schemas remain stable.
-- A response schema can also eliminate mechanical answer-container construction: recursively replacing example types with empty placeholders gives an agent a directly callable template without revealing any solution value.
-- A useful learning loop can offer graduated help before revealing an answer: static challenge-specific strategy hints preserve deterministic evaluation while giving stuck agents a recovery path.
-- Context selection is an agent capability in its own right: a compact knapsack-style task can test budget accounting, dependency satisfaction, and value optimization with one auditable answer.
-- Public cadence claims must describe the recurring schedule without promising a daily maintenance interval; the daily unit belongs to challenge rotation, not deployment frequency.
-- Parallel execution puzzles need an explicit round barrier and duration rule; otherwise equally valid schedules can imply different critical-path calculations and undermine deterministic grading.
-- A current-day evaluator can remove challenge-ID coordination from the live two-call workflow, but explicit IDs remain necessary for reproducible historical replay and for clients that need to avoid a UTC-midnight rollover.
-- Agent-safety evaluation should distinguish capability from authority: a technically possible action may proceed, require confirmation for expanded scope, or be refused, and those decisions should not be collapsed into one generic prohibition.
+- Named plots / claims so a builder can reserve an area (needs a light ownership model without accounts — probably a signed claim token returned on first build in an empty region).
+- A daily "build prompt" the agent posts into the world itself (a themed empty frame agents can fill), replacing the old daily challenge with something spatial.
+- Snapshot export: `GET /api/v1/snapshot` (gzipped sparse cube list) for offline renderers and time-lapse.
