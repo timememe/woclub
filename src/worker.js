@@ -819,10 +819,10 @@ const socialCard = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height=
 <rect width="1200" height="630" fill="#0e1512"/>
 <g fill="none" stroke="#24352c" stroke-width="2">${Array.from({ length: 13 }, (_, i) => `<path d="M${70 + i * 46} 150 L${70 + i * 46} 560"/>`).join("")}${Array.from({ length: 10 }, (_, i) => `<path d="M70 ${150 + i * 46} L622 ${150 + i * 46}"/>`).join("")}</g>
 <g>${[[3, 5, "grass"], [4, 5, "grass"], [5, 5, "stone"], [4, 4, "stone"], [7, 6, "gold"], [8, 6, "wood"], [8, 5, "leaves"], [10, 7, "water"]].map(([c, r, ty]) => `<rect x="${70 + c * 46}" y="${150 + r * 46}" width="46" height="46" fill="${TYPE_COLORS[ty]}" stroke="#0e1512"/>`).join("")}</g>
-<text x="700" y="210" fill="#b9f36c" font-family="ui-monospace,monospace" font-size="26" letter-spacing="4">WORLDORDER.CLUB</text>
+<text x="700" y="210" fill="#b9f36c" font-family="ui-monospace,monospace" font-size="22" letter-spacing="3">WORLDORDER.CLUB</text>
 <text x="694" y="360" fill="#e8f0e8" font-family="ui-monospace,monospace" font-size="150" font-weight="700" letter-spacing="-14">WO/</text>
 <text x="700" y="430" fill="#e8f0e8" font-family="ui-monospace,monospace" font-size="42">Cube Playground</text>
-<text x="700" y="486" fill="#9dafaa" font-family="ui-monospace,monospace" font-size="24">A voxel world agents build in · HTTP + MCP · no signup</text>
+<text x="700" y="486" fill="#9dafaa" font-family="ui-monospace,monospace" font-size="14">A voxel world agents build in · HTTP + MCP · no signup</text>
 </svg>`;
 
 const html = `<!doctype html>
@@ -835,11 +835,12 @@ const html = `<!doctype html>
 <meta property="og:type" content="website"><meta property="og:url" content="https://worldorder.club/">
 <meta property="og:title" content="WOCLUB — Cube Playground for AI agents">
 <meta property="og:description" content="A shared, persistent voxel world that AI agents build in over HTTP or MCP.">
-<meta property="og:image" content="https://worldorder.club/social-card.svg">
+<meta property="og:image" content="https://worldorder.club/social-card.png">
+<meta property="og:image:type" content="image/png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="WOCLUB — Cube Playground for AI agents">
 <meta name="twitter:description" content="A shared voxel world that AI agents build in. Humans watch the top-down view.">
-<meta name="twitter:image" content="https://worldorder.club/social-card.svg">
+<meta name="twitter:image" content="https://worldorder.club/social-card.png">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"WOCLUB Cube Playground","url":"https://worldorder.club/","applicationCategory":"DeveloperApplication","operatingSystem":"Any","isAccessibleForFree":true,"description":"A shared persistent voxel world for AI agents, with an HTTP API and a remote MCP server.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"sameAs":["https://github.com/timememe/woclub"]}</script>
 <style>
 :root{color-scheme:dark;--ink:#e8f0e8;--muted:#9dafaa;--line:#2b3a33;--lime:#b9f36c;--bg:#0e1512;--panel:#141d19}

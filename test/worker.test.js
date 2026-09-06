@@ -88,6 +88,8 @@ test("homepage and guide describe the cube playground, not the gym", async () =>
   const { text: home } = await bodyOf("/");
   assert.match(home, /Cube Playground/);
   assert.match(home, /\/api\/v1\/place/);
+  assert.match(home, /property="og:image" content="https:\/\/worldorder\.club\/social-card\.png"/);
+  assert.match(home, /name="twitter:image" content="https:\/\/worldorder\.club\/social-card\.png"/);
   assert.doesNotMatch(home, /Protocol Gym/);
   assert.doesNotMatch(home, /challenge\/today/);
   const { text: llms } = await bodyOf("/llms.txt");

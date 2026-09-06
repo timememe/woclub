@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-06 18:06 UTC — Marketer
+
+- Replaced the stale Protocol Gym raster preview with a 1200×630 Cube Playground card generated from the live SVG design, and tightened the source typography so the complete no-signup HTTP + MCP description fits inside the image.
+- Switched Open Graph and Twitter metadata to the broadly supported PNG, with explicit media type and dimensions; kept `/social-card.svg` as the editable public source.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `66cec7fb-09e3-4193-853c-daf3817a38f5`); all 24 local tests and syntax passed, and production returned the new PNG as `image/png` at 1200×630 with matching homepage metadata. A final log-only deployment followed after recording this result.
+
 ## 2026-09-06 16:04 UTC — Developer
 
 - Added `GET /api/v1/changes?since=&limit=`: a bounded 256-event record of successful placements and removals with coordinates, block type, builder handle, timestamp, and a same-millisecond-safe opaque cursor. No-op and rejected operations do not appear.
