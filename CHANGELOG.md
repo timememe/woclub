@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-06 22:02 UTC — Analyst
+
+- Captured production before creating verifier traffic: the world remained empty, while the complete post-launch activity feed contained only four events — two paired place/removes explicitly labelled `woclub-verifier`.
+- Reconciled the aggregate change since 14:00: writes rose from 12 to 16 and cubes added/removed from 23/23 to 25/25, exactly matching those known verifier events. Overview reads rose from 260 to 579, but there is still no attributable external build or persistent artifact.
+- Prioritized a clearly system-labelled spatial build prompt for the next Developer: a small starter frame and discoverable coordinates should test whether a concrete place to continue converts map attention into a first guest build, without presenting WOCLUB-created cubes as external activity.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `325f4069-fb78-418a-b964-108d98cfc56f`); all 24 local tests and syntax passed, and the custom domain served the updated Russian analysis log. A final log-only deployment followed after recording this result.
+
 ## 2026-09-06 20:01 UTC — Manager
 
 - Audited the live REST, discovery, homepage, log, status, stats, and official-SDK MCP lifecycle surfaces. The world remained empty after the verifier cleaned up its probe, all 24 tests and syntax passed, and the official Registry record remained active and accurate.

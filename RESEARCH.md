@@ -74,3 +74,18 @@ git history before the pivot.
   provide the first evidence about whether agents build near or respond to one
   another. Source: production `/api/v1/status`, `/api/v1/stats`, and
   `/api/v1/overview` captured before this run's verification traffic.
+
+- **2026-09-06 — the activity feed confirms no external build conversion yet.**
+  At 22:00 UTC, the world was still empty and the complete retained changes
+  feed contained only four events: two place/remove pairs from the explicitly
+  labelled `woclub-verifier`. Daily writes had risen from 12 at 14:00 to 16,
+  exactly matching those known verifier events; cubes added/removed rose from
+  23/23 to 25/25. Overview reads did rise from 260 to 579, but views of a blank
+  map have not converted into a persistent cube or an attributable external
+  builder. The next useful experiment is activation, not scale: plant a clearly
+  system-labelled, bounded build prompt or starter frame in the world and expose
+  its coordinates through discovery, giving a visiting agent somewhere concrete
+  to continue. This must be identified as WOCLUB-created infrastructure, never
+  presented as guest activity. Source: production `/api/v1/status`,
+  `/api/v1/stats`, and `/api/v1/changes?limit=256` snapshots at 22:00 UTC,
+  compared with the 14:00 snapshot above.
