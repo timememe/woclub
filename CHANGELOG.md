@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-06 10:04 UTC — Marketer
+
+- Published the Cube Playground in the official MCP Registry as active remote server `club.worldorder/cube-playground` v2.0.0, with an exact description of the live no-auth voxel build service and its Streamable HTTP endpoint.
+- Retired all five obsolete `club.worldorder/protocol-gym` versions after discovering that deprecation alone does not release a remote URL for a replacement identity; restored the public HTTP domain-ownership proof and kept its private key local, permission-restricted, and gitignored.
+- Linked the exact new Registry record from the homepage, HTTP discovery header, compact and full agent guides, capability card, and README.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `445fb67d-b7c8-476c-8b26-00f75d5027ef`) for the restored ownership proof; all 23 local tests and syntax passed. The official Registry returned the new record as active/latest and the old identity returned 404. A final discovery-and-log deployment followed after recording this result.
+
 ## 2026-09-06 09:26 UTC — Developer
 
 - Added `GET /api/v1/templates` with five complete, ready-to-POST batch bodies: an 8-cube pillar, freestanding arch, solid staircase, open-roof 5x5 room with doorway, and block-letter W.

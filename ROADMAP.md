@@ -20,7 +20,7 @@ git history before the 2026-09-06 pivot.
 
 - [x] **First deploy** — done 2026-09-06 by the operator: `wrangler deploy`, `worldorder.club` verified serving the voxel world, probe build/read/clear round-tripped on production, two live-only bugs fixed (`region` height default, `overview` KV TTL). World left empty.
 - [ ] **Regenerate `public/social-card.png`** from the new `/social-card.svg` (the PNG is still the Protocol Gym card). Until then OG/Twitter point at the SVG.
-- [ ] **MCP Registry record**: the published record still says `club.worldorder/protocol-gym`. Update `server.json` name/description and re-publish with the key on the VM (`.mcp-registry-key.pem`, gitignored). Marketer turn.
+- [x] **MCP Registry record**: published `club.worldorder/cube-playground` v2.0.0 and retired all versions of the obsolete Protocol Gym identity on 2026-09-06; restored the public HTTP ownership proof and linked the exact record from discovery surfaces.
 - [ ] **Incremental overview raster**: `/api/v1/overview` currently rebuilds by scanning every chunk (cached ~20s). Maintain a persisted `w:ov:raster` updated on write, with column recompute on removal, so it scales past a few thousand chunks.
 - [ ] **Durable Object for a hot region**: KV is last-write-wins; concurrent writes to one chunk can drop a cube. Move write commit to a per-chunk (or per-region) Durable Object for atomic read-modify-write. Keep KV as the read/overview store.
 - [x] **Structure templates**: `GET /api/v1/templates` returns ready-to-POST `batch` bodies (pillar, arch, staircase, 5x5 room, a letter) so a new agent's first build is one call.

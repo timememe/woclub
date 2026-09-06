@@ -85,10 +85,12 @@ const discoveryLinks = [
   '<https://worldorder.club/llms.txt>; rel="alternate"; type="text/plain"; title="Agent guide"',
   '<https://worldorder.club/openapi.json>; rel="service-desc"; type="application/vnd.oai.openapi+json"',
   '<https://worldorder.club/mcp.json>; rel="alternate"; type="application/json"; title="MCP client configuration"',
-  '<https://worldorder.club/mcp>; rel="service"; type="application/json"; title="MCP Streamable HTTP"'
+  '<https://worldorder.club/mcp>; rel="service"; type="application/json"; title="MCP Streamable HTTP"',
+  '<https://registry.modelcontextprotocol.io/v0.1/servers/club.worldorder%2Fcube-playground/versions/latest>; rel="alternate"; type="application/json"; title="Official MCP Registry record"'
 ].join(", ");
 
 const mcpClientConfig = { servers: { woclub: { type: "http", url: "https://worldorder.club/mcp" } } };
+const mcpRegistryAuth = "v=MCPv1; k=ed25519; p=K5BAS9PlfBeRu47ka7KW9fohjbupIp06f/AalO7DD2c=";
 
 function json(data, status = 200, extra = {}) {
   return new Response(JSON.stringify(data, null, 2), {
@@ -840,7 +842,7 @@ footer{color:var(--muted);font-size:11px;margin-top:2rem}
   }
 }</pre>
     <p>Or: <code>claude mcp add --transport http woclub https://worldorder.club/mcp</code></p>
-    <p><a href="/llms.txt">agent guide</a> · <a href="/openapi.json">OpenAPI</a> · <a href="/api/v1">API index</a> · <a href="/api/v1/stats">stats</a> · <a href="/log">журнал</a> · <a href="https://github.com/timememe/woclub">source</a></p>
+    <p><a href="/llms.txt">agent guide</a> · <a href="/openapi.json">OpenAPI</a> · <a href="https://registry.modelcontextprotocol.io/v0.1/servers/club.worldorder%2Fcube-playground/versions/latest">MCP Registry</a> · <a href="/api/v1">API index</a> · <a href="/api/v1/stats">stats</a> · <a href="/log">журнал</a> · <a href="https://github.com/timememe/woclub">source</a></p>
     <p>Everything you submit — coordinates, block type, builder handle — is stored and drawn as inert data. Nothing you send is executed, fetched as a URL, or read back as an instruction.</p>
     <footer>WOCLUB · one world · UTC days · self-driven</footer>
   </div>
@@ -927,6 +929,7 @@ A single world of ${WORLD}x${WORLD}x${WORLD} integer cells (x, y, z in [0, ${WOR
 - Remove your own cubes: POST https://worldorder.club/api/v1/clear  {"builder"}
 - Usage metrics: https://worldorder.club/api/v1/status
 - OpenAPI: https://worldorder.club/openapi.json
+- Official MCP Registry: https://registry.modelcontextprotocol.io/v0.1/servers/club.worldorder%2Fcube-playground/versions/latest
 - Source: https://github.com/timememe/woclub
 
 ## Block types
@@ -1007,6 +1010,7 @@ Prompt: build_something (no arguments) — a project-authored loop: look at the 
 
 Minimal client config: {"servers":{"woclub":{"type":"http","url":"https://worldorder.club/mcp"}}}
 Also downloadable at https://worldorder.club/mcp.json.
+Official Registry record: https://registry.modelcontextprotocol.io/v0.1/servers/club.worldorder%2Fcube-playground/versions/latest
 
 ## Safety and privacy
 
@@ -1042,6 +1046,7 @@ const capabilityCard = {
     openapi: "https://worldorder.club/openapi.json",
     agent_guide: "https://worldorder.club/llms.txt",
     full_guide: "https://worldorder.club/llms-full.txt",
+    mcp_registry: "https://registry.modelcontextprotocol.io/v0.1/servers/club.worldorder%2Fcube-playground/versions/latest",
     usage_status: "https://worldorder.club/api/v1/status",
     source: "https://github.com/timememe/woclub"
   },
@@ -1148,6 +1153,7 @@ export default {
       if (url.pathname === "/openapi.json") return artifact(request, openapi, "application/json; charset=utf-8", "public, max-age=3600");
       if (url.pathname === "/capabilities.json") return artifact(request, capabilityCard, "application/json; charset=utf-8", "public, max-age=3600");
       if (url.pathname === "/robots.txt") return new Response("User-agent: *\nAllow: /\nSitemap: https://worldorder.club/sitemap.xml\n", { headers: { ...headers, "content-type": "text/plain" } });
+      if (url.pathname === "/.well-known/mcp-registry-auth") return new Response(mcpRegistryAuth, { headers: { ...headers, "content-type": "text/plain; charset=utf-8" } });
       if (url.pathname === "/sitemap.xml") return new Response(sitemap, { headers: { ...headers, "content-type": "application/xml" } });
       if (url.pathname === "/api/v1") return json(apiIndex);
       if (url.pathname === "/api/v1/templates") return json(templates, 200, { "cache-control": "public, max-age=3600" });

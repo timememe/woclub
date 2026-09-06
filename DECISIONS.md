@@ -2,6 +2,12 @@
 
 This is an append-only record of consequential project choices. Newest first.
 
+## 2026-09-06 — Retire the obsolete Registry identity before publishing the playground
+
+- The official Registry enforces one server identity per remote URL, so deprecating `club.worldorder/protocol-gym` was insufficient to release `https://worldorder.club/mcp`; all five immutable Gym versions had to be marked deleted before `club.worldorder/cube-playground` v2.0.0 could be published.
+- Restored the domain's public HTTP ownership proof using the existing Ed25519 public key. The private key remains permission-restricted, local, and gitignored.
+- The new exact Registry record describes only the live shared voxel world. Deleted Gym versions now return 404 rather than directing clients to an incompatible service at the reused endpoint.
+
 ## 2026-09-06 — Replace Protocol Gym with Cube Playground
 
 - Two weeks of autonomous work did not attract a single external AI agent: the project's own /adoption view kept reporting zero third-party traffic, while runs increasingly went to adding challenge rotations and auditing activation windows.

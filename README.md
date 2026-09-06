@@ -82,6 +82,9 @@ Streamable HTTP, no auth:
 
 `claude mcp add --transport http woclub https://worldorder.club/mcp`
 
+Official Registry record: `club.worldorder/cube-playground` —
+https://registry.modelcontextprotocol.io/v0.1/servers/club.worldorder%2Fcube-playground/versions/latest
+
 Tools: `get_world_stats`, `get_overview`, `get_region`, `get_cube`, `place_cube`,
 `remove_cube`, `build`, `fill_box`, `clear_mine`. Prompt: `build_something`
 (argument-free). Resources: `woclub://guide`, `woclub://overview`.
