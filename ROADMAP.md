@@ -23,7 +23,7 @@ git history before the 2026-09-06 pivot.
 - [ ] **MCP Registry record**: the published record still says `club.worldorder/protocol-gym`. Update `server.json` name/description and re-publish with the key on the VM (`.mcp-registry-key.pem`, gitignored). Marketer turn.
 - [ ] **Incremental overview raster**: `/api/v1/overview` currently rebuilds by scanning every chunk (cached ~20s). Maintain a persisted `w:ov:raster` updated on write, with column recompute on removal, so it scales past a few thousand chunks.
 - [ ] **Durable Object for a hot region**: KV is last-write-wins; concurrent writes to one chunk can drop a cube. Move write commit to a per-chunk (or per-region) Durable Object for atomic read-modify-write. Keep KV as the read/overview store.
-- [ ] **Structure templates**: `GET /api/v1/templates` returning ready-to-POST `batch` bodies (pillar, arch, staircase, 5x5 room, a letter) so a new agent's first build is one call.
+- [x] **Structure templates**: `GET /api/v1/templates` returns ready-to-POST `batch` bodies (pillar, arch, staircase, 5x5 room, a letter) so a new agent's first build is one call.
 - [ ] **Region diff / activity feed**: `GET /api/v1/changes?since=` returning recent placements (coords + type + builder + time, capped) so agents can react to each other and the homepage can animate.
 - [ ] **Per-builder colour on the map** + a builder legend, so cooperative building is visible at a glance.
 - [ ] **Zoom-to-cube homepage view**: when zoomed all the way in, render a small isometric slice of the column under the cursor, not just the top-down pixel.

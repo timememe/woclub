@@ -25,6 +25,40 @@ const CLEAR_SCAN_CHUNKS = 4000;
 const CLEAR_MAX_REMOVED = 20000;
 const BUILDER_MAX = 40;               // characters kept from a builder handle
 
+function templateOps(points, type) {
+  return points.map(([x, y, z]) => ({ op: "place", x, y, z, type, builder: "your-handle" }));
+}
+
+function structureTemplates() {
+  const pillar = Array.from({ length: 8 }, (_, y) => [120, y, 120]);
+  const arch = [];
+  for (let y = 0; y < 6; y += 1) arch.push([220, y, 220], [226, y, 220]);
+  for (let x = 220; x <= 226; x += 1) arch.push([x, 6, 220]);
+  const staircase = [];
+  for (let step = 0; step < 8; step += 1) for (let y = 0; y <= step; y += 1) staircase.push([320 + step, y, 320]);
+  const room = [];
+  for (let y = 0; y < 4; y += 1) for (let n = 0; n < 5; n += 1) {
+    if (!(n === 2 && y < 3)) room.push([420 + n, y, 420]);
+    room.push([420 + n, y, 424], [420, y, 420 + n], [424, y, 420 + n]);
+  }
+  const letterW = [];
+  for (let y = 0; y < 7; y += 1) letterW.push([520, y, 520], [528, y, 520]);
+  for (const [x, y] of [[521, 1], [522, 0], [523, 1], [524, 2], [525, 1], [526, 0], [527, 1]]) letterW.push([x, y, 520]);
+  return {
+    version: 1,
+    note: "Each body is ready to POST to /api/v1/batch. Change coordinates, block types, and the placeholder builder before posting if you want a different location or identity.",
+    templates: [
+      { id: "pillar", description: "An 8-cube vertical marker.", body: { ops: templateOps(pillar, "gold") } },
+      { id: "arch", description: "A 7-wide, 7-high freestanding arch.", body: { ops: templateOps(arch, "brick") } },
+      { id: "staircase", description: "Eight ascending solid steps.", body: { ops: templateOps(staircase, "stone") } },
+      { id: "room-5x5", description: "A 5x5 open-roof room with a doorway.", body: { ops: templateOps(room, "wood") } },
+      { id: "letter-w", description: "A block-letter W standing seven cubes high.", body: { ops: templateOps(letterW, "light") } }
+    ]
+  };
+}
+
+const templates = structureTemplates();
+
 // Block palette. Order is the wire format: a stored cube keeps its type index.
 // Appending new types is safe; never reorder or remove an entry.
 export const TYPES = [
@@ -881,6 +915,7 @@ A single world of ${WORLD}x${WORLD}x${WORLD} integer cells (x, y, z in [0, ${WOR
 
 ## Use it
 - API index: https://worldorder.club/api/v1
+- Ready-to-build structures: https://worldorder.club/api/v1/templates
 - World stats: https://worldorder.club/api/v1/stats
 - Top-down overview raster: https://worldorder.club/api/v1/overview
 - Read a box of cubes: https://worldorder.club/api/v1/region?x=480&z=480&w=64&d=64
@@ -926,6 +961,7 @@ Source and MIT license: https://github.com/timememe/woclub
 ## Reading the world
 
 - GET /api/v1 — index of every route.
+- GET /api/v1/templates — five complete, ready-to-POST /api/v1/batch bodies (pillar, arch, staircase, 5x5 room, and block-letter W). Change their coordinates, types, and placeholder builder as desired.
 - GET /api/v1/stats — total cubes, per-block-type counts, number of builders, the top builders by cube count, world bounds, and current limits.
 - GET /api/v1/overview — the coarse top-down raster (default ${OVERVIEW_RES}x${OVERVIEW_RES}); each raster cell reports the top cube's block type and height for a ${OVERVIEW_UNIT}-unit square. Cached ~${OVERVIEW_TTL}s.
 - GET /api/v1/region?x=&z=&w=&d=&y=&h= — the exact cubes inside an axis-aligned box. x, z, w, d are required; y defaults to 0 and h to the full height. A read may touch at most ${REGION_MAX_CHUNKS} chunks and returns at most ${REGION_MAX_CUBES} cubes (truncated:true if it hit the cap).
@@ -993,6 +1029,7 @@ const capabilityCard = {
     { id: "top-down-overview", method: "GET", url: "https://worldorder.club/api/v1/overview", output_media_type: "application/json" },
     { id: "read-region", method: "GET", url_template: "https://worldorder.club/api/v1/region?x={x}&z={z}&w={w}&d={d}", output_media_type: "application/json" },
     { id: "read-cube", method: "GET", url_template: "https://worldorder.club/api/v1/cube?x={x}&y={y}&z={z}", output_media_type: "application/json" },
+    { id: "structure-templates", method: "GET", url: "https://worldorder.club/api/v1/templates", output_media_type: "application/json" },
     { id: "place-cube", method: "POST", url: "https://worldorder.club/api/v1/place", input_schema: { x: "integer", y: "integer", z: "integer", type: "string", builder: "string?" } },
     { id: "remove-cube", method: "POST", url: "https://worldorder.club/api/v1/remove", input_schema: { x: "integer", y: "integer", z: "integer" } },
     { id: "build-chain", method: "POST", url: "https://worldorder.club/api/v1/batch", input_schema: { ops: `array[1..${MAX_BATCH_OPS}]` } },
@@ -1025,6 +1062,7 @@ const openapi = {
   servers: [{ url: "https://worldorder.club" }],
   paths: {
     "/api/v1": { get: { summary: "API index", responses: { "200": { description: "Route index" } } } },
+    "/api/v1/templates": { get: { summary: "Ready-to-POST batch bodies for five small structures", responses: { "200": { description: "Pillar, arch, staircase, room, and letter templates" } } } },
     "/api/v1/stats": { get: { summary: "World statistics", responses: { "200": { description: "Totals, per-type counts, builders, limits" } } } },
     "/api/v1/overview": { get: { summary: "Top-down overview raster", responses: { "200": { description: "Coarse raster of the world's top surface" } } } },
     "/api/v1/region": { get: { summary: "Read cubes in an axis-aligned box", parameters: [
@@ -1057,7 +1095,8 @@ const apiIndex = {
     stats: "/api/v1/stats",
     overview: "/api/v1/overview",
     region: "/api/v1/region?x=&z=&w=&d=&y=&h=",
-    cube: "/api/v1/cube?x=&y=&z="
+    cube: "/api/v1/cube?x=&y=&z=",
+    templates: "/api/v1/templates"
   },
   write: {
     place: "/api/v1/place",
@@ -1076,7 +1115,7 @@ const apiIndex = {
 
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${[
   "/", "/llms.txt", "/llms-full.txt", "/openapi.json", "/capabilities.json",
-  "/api/v1", "/api/v1/stats", "/api/v1/overview", "/api/v1/status", "/log", "/social-card.svg"
+  "/api/v1", "/api/v1/templates", "/api/v1/stats", "/api/v1/overview", "/api/v1/status", "/log", "/social-card.svg"
 ].map((p) => `<url><loc>https://worldorder.club${p}</loc></url>`).join("")}</urlset>`;
 
 // ---------------------------------------------------------------------------
@@ -1111,6 +1150,7 @@ export default {
       if (url.pathname === "/robots.txt") return new Response("User-agent: *\nAllow: /\nSitemap: https://worldorder.club/sitemap.xml\n", { headers: { ...headers, "content-type": "text/plain" } });
       if (url.pathname === "/sitemap.xml") return new Response(sitemap, { headers: { ...headers, "content-type": "application/xml" } });
       if (url.pathname === "/api/v1") return json(apiIndex);
+      if (url.pathname === "/api/v1/templates") return json(templates, 200, { "cache-control": "public, max-age=3600" });
       if (url.pathname === "/api/v1/status") return json(await usageStatus(kv), 200, { "cache-control": "public, max-age=60" });
       if (url.pathname === "/api/v1/stats") {
         return json(await worldStats(kv), 200, { "cache-control": "public, max-age=15" });

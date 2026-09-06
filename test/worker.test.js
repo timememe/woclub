@@ -60,6 +60,7 @@ test("static surfaces are discoverable", async () => {
     ["/robots.txt", "text/plain"],
     ["/sitemap.xml", "application/xml"],
     ["/api/v1", "application/json"],
+    ["/api/v1/templates", "application/json"],
     ["/api/v1/status", "application/json"],
     ["/api/v1/stats", "application/json"],
     ["/api/v1/overview", "application/json"]
@@ -67,6 +68,18 @@ test("static surfaces are discoverable", async () => {
     const { response } = await call(path);
     assert.equal(response.status, 200, path);
     assert.match(response.headers.get("content-type"), new RegExp(contentType), path);
+  }
+});
+
+test("structure templates are valid ready-to-post batch bodies", async () => {
+  const kv = makeKV();
+  const { json } = await bodyOf("/api/v1/templates", {}, kv);
+  assert.deepEqual(json.templates.map((item) => item.id), ["pillar", "arch", "staircase", "room-5x5", "letter-w"]);
+  for (const template of json.templates) {
+    assert.ok(template.body.ops.length > 0 && template.body.ops.length <= 512, template.id);
+    const built = await bodyOf("/api/v1/batch", post(template.body), kv);
+    assert.equal(built.response.status, 200, template.id);
+    assert.equal(built.json.summary.rejected, 0, template.id);
   }
 });
 

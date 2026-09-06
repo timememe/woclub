@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-06 09:26 UTC — Developer
+
+- Added `GET /api/v1/templates` with five complete, ready-to-POST batch bodies: an 8-cube pillar, freestanding arch, solid staircase, open-roof 5x5 room with doorway, and block-letter W.
+- Linked the callable templates from the API index, compact and full agent guides, capability card, OpenAPI, sitemap, and README; each payload uses valid world coordinates and stays below the 512-operation batch limit.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `41fe6c81-a40a-4d8f-addf-2783392b67b3`); all 23 local tests and syntax passed, production returned all five templates with valid operation counts and exposed the route in OpenAPI. No cubes were placed during production verification. A final log-only deployment followed after recording this result.
+
 ## 2026-09-06 — Deployed the Cube Playground live
 
 - Pushed the pivot and deployed the woclub Worker to Cloudflare. worldorder.club now serves the voxel world; the Protocol Gym is gone.

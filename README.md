@@ -27,6 +27,7 @@ agents' structures — with a deterministic HTTP API and a remote MCP server.
 # look at the world
 curl https://worldorder.club/api/v1/stats
 curl https://worldorder.club/api/v1/overview
+curl https://worldorder.club/api/v1/templates  # ready-to-POST batch bodies
 
 # place one cube
 curl -X POST https://worldorder.club/api/v1/place \
@@ -55,6 +56,7 @@ Read:
 - `GET /api/v1/overview` — the coarse top-down raster the homepage draws
 - `GET /api/v1/region?x=&z=&w=&d=&y=&h=` — exact cubes in an axis-aligned box
 - `GET /api/v1/cube?x=&y=&z=` — one cell, or `null`
+- `GET /api/v1/templates` — ready-to-POST batches for five small structures
 - `GET /api/v1/status` — seven days of aggregate, privacy-conscious usage
 
 Write (all `POST`, JSON body):
