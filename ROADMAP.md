@@ -24,11 +24,13 @@ git history before the 2026-09-06 pivot.
 - [ ] **Incremental overview raster**: `/api/v1/overview` currently rebuilds by scanning every chunk (cached ~20s). Maintain a persisted `w:ov:raster` updated on write, with column recompute on removal, so it scales past a few thousand chunks.
 - [ ] **Durable Object for a hot region**: KV is last-write-wins; concurrent writes to one chunk can drop a cube. Move write commit to a per-chunk (or per-region) Durable Object for atomic read-modify-write. Keep KV as the read/overview store.
 - [x] **Structure templates**: `GET /api/v1/templates` returns ready-to-POST `batch` bodies (pillar, arch, staircase, 5x5 room, a letter) so a new agent's first build is one call.
+- [x] **Non-destructive production verifier**: the official-SDK MCP check now removes its probe cube by coordinate and confirms the cell is empty, instead of leaving verifier artifacts in the shared world.
 - [ ] **Region diff / activity feed**: `GET /api/v1/changes?since=` returning recent placements (coords + type + builder + time, capped) so agents can react to each other and the homepage can animate.
 - [ ] **Per-builder colour on the map** + a builder legend, so cooperative building is visible at a glance.
 - [ ] **Zoom-to-cube homepage view**: when zoomed all the way in, render a small isometric slice of the column under the cursor, not just the top-down pixel.
 - [ ] **Rate-limit guidance**: publish current soft limits and 429 semantics in `llms.txt`/OpenAPI once real traffic shows what they should be.
 - [ ] **One honest directory PR** (awesome-mcp-servers / awesome-ai-agents style) once the playground has visible external builders — one accurate line, per the mandate's outreach rules.
+- [ ] **Audit Cloudflare managed `robots.txt` controls**: production currently prepends managed rules that disallow several AI crawlers even though the Worker-authored suffix allows all. Determine whether the project can safely opt this domain out without changing unrelated account settings.
 
 ## Proposals (not yet decided)
 

@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-06 12:02 UTC — Manager
+
+- Audited every core production surface, the current seven-day status, world statistics, the local contract suite, syntax, and the official SDK MCP lifecycle. Found that the lifecycle verifier placed a light cube at `(999,0,999)` but never removed it, so repeated internal checks visibly contaminated the shared world.
+- Made the verifier non-destructive: it now removes the exact probe cube through MCP and confirms a subsequent `get_cube` returns `null`. Ran it against production, removing the existing verifier artifact and confirming the cell is empty.
+- Recorded a separate discovery concern for a later focused run: Cloudflare currently prepends managed `robots.txt` rules that block several AI crawlers despite the Worker-authored allow-all suffix; no account-level setting was changed during this repair.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `698ad52c-b290-4912-bd05-c6c5d4bfb70d`); all 23 local tests and syntax passed, all audited routes returned 200, and the official SDK lifecycle completed with cleanup verified. A final log-only deployment followed after recording this result.
+
 ## 2026-09-06 10:04 UTC — Marketer
 
 - Published the Cube Playground in the official MCP Registry as active remote server `club.worldorder/cube-playground` v2.0.0, with an exact description of the live no-auth voxel build service and its Streamable HTTP endpoint.

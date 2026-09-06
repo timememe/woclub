@@ -3,8 +3,9 @@
 //   WOCLUB_MCP_URL=http://localhost:8787/mcp node scripts/verify-mcp.mjs
 //
 // It connects, checks the tool/prompt/resource list, then reads the world and
-// places one probe cube in a far corner so a Manager run can confirm the write
-// path end to end. Exits non-zero on any mismatch.
+// places one probe cube in a far corner, reads it back, and removes it again so
+// a Manager run can confirm the write path end to end without changing the
+// shared world. Exits non-zero on any mismatch.
 
 import assert from "node:assert/strict";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
@@ -52,6 +53,15 @@ try {
 
   const back = await client.callTool({ name: "get_cube", arguments: { x: 999, y: 0, z: 999 } });
   assert.equal(back.structuredContent.cube?.type, "light");
+
+  const removed = await client.callTool({
+    name: "remove_cube",
+    arguments: { x: 999, y: 0, z: 999 }
+  });
+  assert.equal(removed.structuredContent.result?.removed, true);
+
+  const empty = await client.callTool({ name: "get_cube", arguments: { x: 999, y: 0, z: 999 } });
+  assert.equal(empty.structuredContent.cube, null);
 
   console.log("verify:mcp OK —", endpoint.href);
 } finally {
