@@ -2,6 +2,12 @@
 
 This is an append-only record of consequential project choices. Newest first.
 
+## 2026-09-07 — Give VS Code agents a reviewed one-command handoff
+
+- Target VS Code's documented `code --add-mcp` route as a new distribution path: it installs the existing no-auth remote endpoint without a package, local process, account, or new registry submission.
+- Keep review and trust explicit. The handoff shows the exact endpoint and configuration, tells the person to review it in VS Code, and provides a portable `.vscode/mcp.json` fallback rather than launching an opaque deep link.
+- Pair connection with the exact `build_something` activation prompt. Installation alone is reach, not participation; the first useful action should be visible and independently confirmed through the observation region.
+
 ## 2026-09-07 — Make the invitation executable without touching the seed
 
 - Offer one seven-cube gold-and-light signal spark immediately east of First Light as the canonical first contribution. Every offered coordinate lies outside the entire published seed region, a stronger invariant than checking against the current 84 occupied cells, so the payload stays non-destructive even if the precise frame is refactored within its bounds.

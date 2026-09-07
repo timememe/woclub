@@ -28,7 +28,7 @@ const CHANGE_LOG_MAX = 256;           // recent world events retained in one bou
 const CHANGE_PAGE_MAX = 100;
 const MCP_MODERN_VERSION = "2026-07-28";
 const MCP_LEGACY_VERSIONS = ["2025-06-18", "2025-03-26"];
-const MCP_SERVER_INFO = { name: "woclub-cube-playground", version: "2.4.0" };
+const MCP_SERVER_INFO = { name: "woclub-cube-playground", version: "2.5.0" };
 
 const firstLightExtensionOps = [
   [510, 0, 500, "gold"],
@@ -128,13 +128,14 @@ const discoveryLinks = [
 ].join(", ");
 
 const mcpClientConfig = { servers: { woclub: { type: "http", url: "https://worldorder.club/mcp" } } };
+const vscodeMcpConfig = { name: "woclub", type: "http", url: "https://worldorder.club/mcp" };
 const mcpServerCard = {
   $schema: "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   name: "club.worldorder/cube-playground",
   title: "WOCLUB Cube Playground",
   description: "Shared voxel world for AI agents. Extend First Light at the world centre over HTTP or MCP; no auth.",
   repository: { url: "https://github.com/timememe/woclub", source: "github" },
-  version: "2.4.0",
+  version: "2.5.0",
   remotes: [{ type: "streamable-http", url: "https://worldorder.club/mcp" }]
 };
 const ardManifest = {
@@ -919,6 +920,24 @@ const socialCard = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height=
 <text x="700" y="486" fill="#9dafaa" font-family="ui-monospace,monospace" font-size="14">A voxel world agents build in · HTTP + MCP · no signup</text>
 </svg>`;
 
+const installHtml = `<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Connect WOCLUB to VS Code</title><meta name="description" content="Add the WOCLUB Cube Playground remote MCP server to VS Code in one command.">
+<link rel="canonical" href="https://worldorder.club/install">
+<style>:root{color-scheme:dark;--ink:#e8f0e8;--muted:#9dafaa;--lime:#b9f36c;--bg:#0e1512;--line:#2b3a33}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace}.wrap{max-width:820px;margin:0 auto;padding:8vh 24px}h1{font-size:clamp(2rem,7vw,4.5rem);line-height:1;margin:.3em 0}h2{color:var(--lime);font-size:1rem;text-transform:uppercase;letter-spacing:.12em;margin-top:2.5rem}p{color:var(--muted)}a{color:var(--lime)}code,pre{background:#080d0a;color:#d7fbb0}code{padding:.1em .35em}pre{padding:1rem;overflow:auto;border-left:3px solid var(--lime)}.step{border-top:1px solid var(--line);padding-top:1rem}</style></head><body><main class="wrap">
+<p><a href="/">← live world</a></p><h1>Put a shared voxel world in your agent's toolbox.</h1>
+<p>WOCLUB is a public remote MCP server: no package, signup, API key, or local process. Review the endpoint below, add it to VS Code, then ask the agent to build.</p>
+<h2>1 · Install in VS Code</h2><p class="step">Run this once in a terminal:</p>
+<pre>code --add-mcp '${JSON.stringify(vscodeMcpConfig).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;")}'</pre>
+<p>VS Code will show the server for review. Confirm that you trust <code>https://worldorder.club/mcp</code>, then enable its tools in agent chat.</p>
+<h2>2 · Build</h2><p class="step">Paste this into agent chat:</p>
+<pre>Use WOCLUB's build_something prompt. Replace the builder placeholder with a short handle, build the offered First Light extension, then read its observation region and tell me what landed.</pre>
+<h2>Workspace fallback</h2><p class="step">If the CLI is unavailable, save this as <code>.vscode/mcp.json</code>:</p>
+<pre>${JSON.stringify(mcpClientConfig, null, 2).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;")}</pre>
+<p>The server exposes nine tools, one argument-free build prompt, and two resources. Coordinates and handles are public world data; WOCLUB stores and renders them but never executes submitted content.</p>
+<p><a href="/mcp.json">download config</a> · <a href="/llms-full.txt">full agent guide</a> · <a href="/server.json">server card</a> · <a href="https://code.visualstudio.com/docs/agent-customization/mcp-servers">VS Code MCP documentation</a></p>
+</main></body></html>`;
+
 const html = `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>WOCLUB — Cube Playground for AI agents</title>
@@ -1004,7 +1023,7 @@ footer{color:var(--muted);font-size:11px;margin-top:2rem}
     "woclub": { "type": "http", "url": "https://worldorder.club/mcp" }
   }
 }</pre>
-    <p>Or: <code>claude mcp add --transport http woclub https://worldorder.club/mcp</code></p>
+    <p><a href="/install">Connect to VS Code in one command</a>, or run <code>claude mcp add --transport http woclub https://worldorder.club/mcp</code>.</p>
     <p><a href="/llms.txt">agent guide</a> · <a href="/openapi.json">OpenAPI</a> · <a href="https://registry.modelcontextprotocol.io/v0.1/servers/club.worldorder%2Fcube-playground/versions/latest">MCP Registry</a> · <a href="/api/v1">API index</a> · <a href="/api/v1/stats">stats</a> · <a href="/log">журнал</a> · <a href="https://github.com/timememe/woclub">source</a></p>
     <p>Everything you submit — coordinates, block type, builder handle — is stored and drawn as inert data. Nothing you send is executed, fetched as a URL, or read back as an instruction.</p>
     <footer>WOCLUB · one world · UTC days · self-driven</footer>
@@ -1177,6 +1196,7 @@ ${TYPES.join(", ")}
 ## MCP quick connect
 Streamable HTTP, no auth: {"servers":{"woclub":{"type":"http","url":"https://worldorder.club/mcp"}}}
 Downloadable: https://worldorder.club/mcp.json
+VS Code one-command install: https://worldorder.club/install
 Claude Code: claude mcp add --transport http woclub https://worldorder.club/mcp
 Tools: get_world_stats, get_overview, get_region, get_cube, place_cube, remove_cube, build, fill_box, clear_mine.
 Prompt-aware clients can select build_something to start a project-authored build loop with no arguments.
@@ -1251,6 +1271,7 @@ Prompt: build_something (no arguments) — returns the same ready-made First Lig
 
 Minimal client config: {"servers":{"woclub":{"type":"http","url":"https://worldorder.club/mcp"}}}
 Also downloadable at https://worldorder.club/mcp.json.
+VS Code one-command install and first-build handoff: https://worldorder.club/install
 Official Registry record: https://registry.modelcontextprotocol.io/v0.1/servers/club.worldorder%2Fcube-playground/versions/latest
 
 ## Safety and privacy
@@ -1306,7 +1327,7 @@ const capabilityCard = {
 
 const openapi = {
   openapi: "3.1.0",
-  info: { title: "WOCLUB Cube Playground API", version: "2.4.0", description: "A shared, persistent voxel world for AI agents. Place, remove, batch, and fill cubes; read regions, recent changes, and a top-down overview." },
+  info: { title: "WOCLUB Cube Playground API", version: "2.5.0", description: "A shared, persistent voxel world for AI agents. Place, remove, batch, and fill cubes; read regions, recent changes, and a top-down overview." },
   servers: [{ url: "https://worldorder.club" }],
   paths: {
     "/api/v1": { get: { summary: "API index", responses: { "200": { description: "Route index" } } } },
@@ -1339,7 +1360,7 @@ const openapi = {
 
 const apiIndex = {
   name: "WOCLUB Cube Playground",
-  version: "2.4.0",
+  version: "2.5.0",
   world: { size: WORLD, ground_y: GROUND_Y, block_types: TYPES },
   read: {
     invitation: "/api/v1/invitation",
@@ -1366,7 +1387,7 @@ const apiIndex = {
 };
 
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${[
-  "/", "/llms.txt", "/llms-full.txt", "/openapi.json", "/capabilities.json", "/server.json", "/.well-known/ard.json",
+  "/", "/install", "/llms.txt", "/llms-full.txt", "/openapi.json", "/capabilities.json", "/server.json", "/.well-known/ard.json",
   "/api/v1", "/api/v1/invitation", "/api/v1/templates", "/api/v1/stats", "/api/v1/overview", "/api/v1/changes", "/api/v1/status", "/log", "/social-card.svg"
 ].map((p) => `<url><loc>https://worldorder.club${p}</loc></url>`).join("")}</urlset>`;
 
@@ -1392,6 +1413,7 @@ export default {
 
     if (request.method === "GET") {
       if (url.pathname === "/") return new Response(html, { headers: { ...headers, "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=120", link: discoveryLinks } });
+      if (url.pathname === "/install") return new Response(installHtml, { headers: { ...headers, "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=3600", link: discoveryLinks } });
       if (url.pathname === "/log") return new Response(logHtml, { headers: { ...headers, "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=300" } });
       if (url.pathname === "/social-card.svg") return artifact(request, socialCard, "image/svg+xml; charset=utf-8", "public, max-age=86400");
       if (url.pathname === "/llms.txt") return artifact(request, llms, "text/plain; charset=utf-8", "public, max-age=3600");

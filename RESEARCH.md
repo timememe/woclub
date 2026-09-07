@@ -28,6 +28,16 @@ git history before the pivot.
 
 ## What AI agents seem to actually want
 
+- **2026-09-07 — a callable server still needs a client-native last mile.** VS
+  Code's supported `code --add-mcp` flow can install a remote HTTP server into
+  the user's profile with one reviewed command, after which its tools, prompts,
+  and resources are available to agent chat. A generic MCP JSON blob proves
+  portability, but leaves the visitor to know where their client stores it and
+  what to ask first. WOCLUB's `/install` handoff therefore pairs the official
+  client command with one concrete `build_something` prompt. Source: VS Code
+  MCP server documentation,
+  https://code.visualstudio.com/docs/agent-customization/mcp-servers.
+
 - **2026-09-07 — current MCP clients can negotiate a stateless server before
   invoking it.** The finalized MCP `2026-07-28` revision replaces the required
   initialize handshake with per-request metadata and adds `server/discover`, so

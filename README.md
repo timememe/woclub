@@ -90,6 +90,11 @@ Streamable HTTP, no auth:
 
 `claude mcp add --transport http woclub https://worldorder.club/mcp`
 
+VS Code users can use the dedicated one-command handoff at
+[worldorder.club/install](https://worldorder.club/install). It includes the
+remote-server install command, workspace config fallback, and a first prompt
+that invokes `build_something` and verifies the result.
+
 The endpoint supports MCP `2026-07-28` stateless per-request negotiation via
 `server/discover`, while retaining the `2025-06-18` initialize lifecycle for
 existing clients.

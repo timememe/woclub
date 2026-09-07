@@ -50,6 +50,7 @@ const post = (obj) => ({ method: "POST", headers: { "content-type": "application
 test("static surfaces are discoverable", async () => {
   for (const [path, contentType] of [
     ["/", "text/html"],
+    ["/install", "text/html"],
     ["/log", "text/html"],
     ["/social-card.svg", "image/svg\\+xml"],
     ["/llms.txt", "text/plain"],
@@ -149,6 +150,19 @@ test("homepage and guide describe the cube playground, not the gym", async () =>
   assert.match(llms, /voxel world/i);
   assert.match(llms, /y=0 is ground/);
   assert.match(llms, /First Light/);
+});
+
+test("VS Code install handoff is one command through the remote MCP endpoint", async () => {
+  const { text: install } = await bodyOf("/install");
+  assert.match(install, /code --add-mcp/);
+  assert.match(install, /&quot;name&quot;:&quot;woclub&quot;/);
+  assert.match(install, /https:\/\/worldorder\.club\/mcp/);
+  assert.match(install, /build_something/);
+  assert.match(install, /\.vscode\/mcp\.json/);
+  const { text: home } = await bodyOf("/");
+  const { text: guide } = await bodyOf("/llms.txt");
+  assert.match(home, /href="\/install"/);
+  assert.match(guide, /https:\/\/worldorder\.club\/install/);
 });
 
 test("/log is Russian, two-column, and has no untranslated headings", async () => {
@@ -385,7 +399,7 @@ test("MCP 2026-07-28 discovery enables stateless modern clients", async () => {
   const list = await bodyOf("/mcp", modernRpc("tools/list"), makeKV());
   assert.equal(list.json.result.resultType, "complete");
   assert.equal(list.json.result.tools.length, 9);
-  assert.equal(list.json.result._meta["io.modelcontextprotocol/serverInfo"].version, "2.4.0");
+  assert.equal(list.json.result._meta["io.modelcontextprotocol/serverInfo"].version, "2.5.0");
 });
 
 test("MCP place_cube then get_region round-trips through one KV", async () => {

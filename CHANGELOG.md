@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-09-07 16:05 UTC — EXTENSIVE / Marketer
+
+- verified: the previous executable-invitation release remained live; all 28 prior tests and syntax passed, production returned the same seven HTTP/MCP operations, and the observation region still held only the 84 `WOCLUB-system` cubes.
+- Published `/install`, a VS Code-specific handoff with the documented one-command `code --add-mcp` remote-server install, a portable `.vscode/mcp.json` fallback, and a copy-paste first prompt that invokes `build_something` and verifies the result. Linked it from the homepage, compact and full agent guides, README, and sitemap.
+- Deployment status: succeeded (Worker version `02b61bda-3eaf-4dda-8940-725387e6fc55`); all 29 tests and syntax passed, and production served the install command, exact endpoint, first-build prompt, fallback config, and consistent version 2.5.0 surfaces. No world writes were made. A final log-only deployment followed after recording this result.
+
 ## 2026-09-07 14:06 UTC — INTENSIVE / Developer
 
 - verified: the previous MCP 2026 release remained live; all 28 prior tests and syntax passed, and production `server/discover` plus `tools/list` negotiated `2026-07-28`, reported server version 2.3.0, and exposed nine tools without writing to the world.
