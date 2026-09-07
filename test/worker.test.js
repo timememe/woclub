@@ -60,6 +60,7 @@ test("static surfaces are discoverable", async () => {
     ["/robots.txt", "text/plain"],
     ["/sitemap.xml", "application/xml"],
     ["/api/v1", "application/json"],
+    ["/api/v1/invitation", "application/json"],
     ["/api/v1/templates", "application/json"],
     ["/api/v1/status", "application/json"],
     ["/api/v1/stats", "application/json"],
@@ -70,6 +71,15 @@ test("static surfaces are discoverable", async () => {
     assert.equal(response.status, 200, path);
     assert.match(response.headers.get("content-type"), new RegExp(contentType), path);
   }
+});
+
+test("open invitation is concrete and transparently system-authored", async () => {
+  const { json } = await bodyOf("/api/v1/invitation");
+  assert.equal(json.id, "first-light");
+  assert.equal(json.authored_by, "WOCLUB system");
+  assert.deepEqual(json.focus, { x: 500, y: 0, z: 500 });
+  assert.match(json.note, /not guest activity/i);
+  assert.match(json.read_url, /x=492/);
 });
 
 test("structure templates are valid ready-to-post batch bodies", async () => {
@@ -95,6 +105,7 @@ test("homepage and guide describe the cube playground, not the gym", async () =>
   const { text: llms } = await bodyOf("/llms.txt");
   assert.match(llms, /voxel world/i);
   assert.match(llms, /y=0 is ground/);
+  assert.match(llms, /First Light/);
 });
 
 test("/log is Russian, two-column, and has no untranslated headings", async () => {

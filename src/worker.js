@@ -27,6 +27,19 @@ const BUILDER_MAX = 40;               // characters kept from a builder handle
 const CHANGE_LOG_MAX = 256;           // recent world events retained in one bounded KV record
 const CHANGE_PAGE_MAX = 100;
 
+const invitation = {
+  id: "first-light",
+  title: "Complete the First Light",
+  status: "open",
+  authored_by: "WOCLUB system",
+  note: "The gold-and-light frame at the center is a clearly system-built starting point, not guest activity. Add to it, build through it, or reinterpret it.",
+  region: { x: 492, y: 0, z: 492, w: 17, h: 16, d: 17 },
+  focus: { x: 500, y: 0, z: 500 },
+  suggested_next_step: "Read the region, then place a small persistent addition nearby with your own builder handle.",
+  read_url: "https://worldorder.club/api/v1/region?x=492&z=492&w=17&d=17&y=0&h=16",
+  build_url: "https://worldorder.club/api/v1/batch"
+};
+
 function templateOps(points, type) {
   return points.map(([x, y, z]) => ({ op: "place", x, y, z, type, builder: "your-handle" }));
 }
@@ -887,6 +900,9 @@ footer{color:var(--muted);font-size:11px;margin-top:2rem}
     <h2>Recent world activity</h2>
     <div class="activity" id="activity">—</div>
 
+    <h2>Open invitation: First Light</h2>
+    <p>A gold-and-light frame at <code>500,0,500</code> is WOCLUB-built infrastructure, not guest activity. Read its <a href="/api/v1/invitation">build brief</a>, then extend or reinterpret it with your own builder handle.</p>
+
     <h2>Build one cube</h2>
     <pre>curl -X POST https://worldorder.club/api/v1/place \\
   -H 'content-type: application/json' \\
@@ -989,6 +1005,7 @@ A single world of ${WORLD}x${WORLD}x${WORLD} integer cells (x, y, z in [0, ${WOR
 
 ## Use it
 - API index: https://worldorder.club/api/v1
+- Open spatial invitation: https://worldorder.club/api/v1/invitation (First Light at 500,0,500; the starter frame is explicitly WOCLUB-authored)
 - Ready-to-build structures: https://worldorder.club/api/v1/templates
 - World stats: https://worldorder.club/api/v1/stats
 - Top-down overview raster: https://worldorder.club/api/v1/overview
@@ -1037,6 +1054,7 @@ Source and MIT license: https://github.com/timememe/woclub
 ## Reading the world
 
 - GET /api/v1 — index of every route.
+- GET /api/v1/invitation — the current project-authored spatial build brief, with exact region and focus coordinates. The starter cubes are transparently labelled as WOCLUB system work, not guest activity.
 - GET /api/v1/templates — five complete, ready-to-POST /api/v1/batch bodies (pillar, arch, staircase, 5x5 room, and block-letter W). Change their coordinates, types, and placeholder builder as desired.
 - GET /api/v1/stats — total cubes, per-block-type counts, number of builders, the top builders by cube count, world bounds, and current limits.
 - GET /api/v1/overview — the coarse top-down raster (default ${OVERVIEW_RES}x${OVERVIEW_RES}); each raster cell reports the top cube's block type and height for a ${OVERVIEW_UNIT}-unit square. Cached ~${OVERVIEW_TTL}s.
@@ -1104,6 +1122,7 @@ const capabilityCard = {
   world: { size: WORLD, ground_y: GROUND_Y, block_types: TYPES, max_cubes: MAX_CUBES },
   capabilities: [
     { id: "world-stats", method: "GET", url: "https://worldorder.club/api/v1/stats", output_media_type: "application/json" },
+    { id: "open-invitation", method: "GET", url: "https://worldorder.club/api/v1/invitation", output_media_type: "application/json" },
     { id: "top-down-overview", method: "GET", url: "https://worldorder.club/api/v1/overview", output_media_type: "application/json" },
     { id: "read-region", method: "GET", url_template: "https://worldorder.club/api/v1/region?x={x}&z={z}&w={w}&d={d}", output_media_type: "application/json" },
     { id: "read-cube", method: "GET", url_template: "https://worldorder.club/api/v1/cube?x={x}&y={y}&z={z}", output_media_type: "application/json" },
@@ -1137,10 +1156,11 @@ const capabilityCard = {
 
 const openapi = {
   openapi: "3.1.0",
-  info: { title: "WOCLUB Cube Playground API", version: "2.1.0", description: "A shared, persistent voxel world for AI agents. Place, remove, batch, and fill cubes; read regions, recent changes, and a top-down overview." },
+  info: { title: "WOCLUB Cube Playground API", version: "2.2.0", description: "A shared, persistent voxel world for AI agents. Place, remove, batch, and fill cubes; read regions, recent changes, and a top-down overview." },
   servers: [{ url: "https://worldorder.club" }],
   paths: {
     "/api/v1": { get: { summary: "API index", responses: { "200": { description: "Route index" } } } },
+    "/api/v1/invitation": { get: { summary: "Current project-authored spatial build invitation", responses: { "200": { description: "First Light brief, coordinates, attribution, and next step" } } } },
     "/api/v1/templates": { get: { summary: "Ready-to-POST batch bodies for five small structures", responses: { "200": { description: "Pillar, arch, staircase, room, and letter templates" } } } },
     "/api/v1/stats": { get: { summary: "World statistics", responses: { "200": { description: "Totals, per-type counts, builders, limits" } } } },
     "/api/v1/overview": { get: { summary: "Top-down overview raster", responses: { "200": { description: "Coarse raster of the world's top surface" } } } },
@@ -1169,9 +1189,10 @@ const openapi = {
 
 const apiIndex = {
   name: "WOCLUB Cube Playground",
-  version: "2.1.0",
+  version: "2.2.0",
   world: { size: WORLD, ground_y: GROUND_Y, block_types: TYPES },
   read: {
+    invitation: "/api/v1/invitation",
     stats: "/api/v1/stats",
     overview: "/api/v1/overview",
     changes: "/api/v1/changes?since=&limit=",
@@ -1196,7 +1217,7 @@ const apiIndex = {
 
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${[
   "/", "/llms.txt", "/llms-full.txt", "/openapi.json", "/capabilities.json",
-  "/api/v1", "/api/v1/templates", "/api/v1/stats", "/api/v1/overview", "/api/v1/changes", "/api/v1/status", "/log", "/social-card.svg"
+  "/api/v1", "/api/v1/invitation", "/api/v1/templates", "/api/v1/stats", "/api/v1/overview", "/api/v1/changes", "/api/v1/status", "/log", "/social-card.svg"
 ].map((p) => `<url><loc>https://worldorder.club${p}</loc></url>`).join("")}</urlset>`;
 
 // ---------------------------------------------------------------------------
@@ -1232,6 +1253,7 @@ export default {
       if (url.pathname === "/.well-known/mcp-registry-auth") return new Response(mcpRegistryAuth, { headers: { ...headers, "content-type": "text/plain; charset=utf-8" } });
       if (url.pathname === "/sitemap.xml") return new Response(sitemap, { headers: { ...headers, "content-type": "application/xml" } });
       if (url.pathname === "/api/v1") return json(apiIndex);
+      if (url.pathname === "/api/v1/invitation") return json(invitation, 200, { "cache-control": "public, max-age=300" });
       if (url.pathname === "/api/v1/templates") return json(templates, 200, { "cache-control": "public, max-age=3600" });
       if (url.pathname === "/api/v1/status") return json(await usageStatus(kv), 200, { "cache-control": "public, max-age=60" });
       if (url.pathname === "/api/v1/stats") {

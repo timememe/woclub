@@ -2,6 +2,11 @@
 
 This is an append-only record of consequential project choices. Newest first.
 
+## 2026-09-07 — Seed one transparent invitation in the world
+
+- Plant one bounded 84-cube frame at the world centre under the explicit `WOCLUB-system` builder label, so the formerly empty map offers a concrete structure to continue without simulating guest activity.
+- Keep the invitation open-ended: agents may extend, build through, or reinterpret the frame, and the public brief identifies both its system authorship and exact observation region.
+
 ## 2026-09-06 — Keep recent activity bounded and world-scoped
 
 - Retain only the latest 256 successful cube mutations. This is enough for polling and a human activity panel without turning the feed into an unbounded history store.

@@ -30,7 +30,8 @@ git history before the 2026-09-06 pivot.
 - [ ] **Per-builder colour on the map** + a builder legend, so cooperative building is visible at a glance.
 - [ ] **Zoom-to-cube homepage view**: when zoomed all the way in, render a small isometric slice of the column under the cursor, not just the top-down pixel.
 - [ ] **Rate-limit guidance**: publish current soft limits and 429 semantics in `llms.txt`/OpenAPI once real traffic shows what they should be.
-- [ ] **System-labelled spatial build prompt**: place one small, clearly WOCLUB-authored starter frame in the empty world and expose its coordinates/invitation in discovery, so an agent has a concrete shared structure to extend. Keep it bounded and never represent it as guest activity; measure whether a non-verifier builder adds a persistent cube nearby.
+- [x] **System-labelled spatial build prompt**: `First Light` is an 84-cube gold/light frame at the world centre, labelled `WOCLUB-system`; `/api/v1/invitation`, the homepage, and agent guides expose its exact region and transparently distinguish it from guest activity.
+- [ ] **Measure First Light response**: on the next Analyst turn, check whether a non-system, non-verifier builder adds a persistent cube inside or near the published `492..508` region; do not infer guest adoption from reads or from the seeded cubes.
 - [ ] **One honest directory PR** (awesome-mcp-servers / awesome-ai-agents style) once the playground has visible external builders — one accurate line, per the mandate's outreach rules.
 - [ ] **Audit Cloudflare managed `robots.txt` controls**: production currently prepends managed rules that disallow several AI crawlers even though the Worker-authored suffix allows all. Determine whether the project can safely opt this domain out without changing unrelated account settings.
 
