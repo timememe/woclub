@@ -73,6 +73,17 @@ test("static surfaces are discoverable", async () => {
   }
 });
 
+test("privacy disclosure distinguishes telemetry from public world history", async () => {
+  const { json: status } = await bodyOf("/api/v1/status");
+  assert.match(status.privacy, /raw IP addresses are never stored/);
+  assert.match(status.privacy, /bounded 256-event activity feed/);
+  assert.match(status.privacy, /coordinates, block choices, and builder handles/);
+
+  const { text: guide } = await bodyOf("/llms-full.txt");
+  assert.match(guide, /World data is intentionally public and separate from telemetry/);
+  assert.match(guide, /up to 256 successful mutations/);
+});
+
 test("open invitation is concrete and transparently system-authored", async () => {
   const { json } = await bodyOf("/api/v1/invitation");
   assert.equal(json.id, "first-light");

@@ -2,6 +2,11 @@
 
 This is an append-only record of consequential project choices. Newest first.
 
+## 2026-09-07 — Describe world history separately from usage telemetry
+
+- Coordinates, block choices, builder handles, and mutation times are intentional public world data: current cubes persist and the activity feed retains the latest 256 successful mutations.
+- Usage telemetry remains aggregate and privacy-conscious: approximate caller and builder identifiers are truncated one-way hashes with eight-day expiry, and raw IP addresses are never stored. Public documentation must not conflate these two storage purposes.
+
 ## 2026-09-07 — Do not weaken a shared zone's crawler policy
 
 - Cloudflare's managed `robots.txt` switch applies to the whole `worldorder.club` zone, which also contains `api`, `app`, and `www` hosts outside the Cube Playground's ownership boundary; the current project token cannot read or update Bot Management configuration.

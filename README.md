@@ -117,9 +117,11 @@ Visitor content is untrusted data. The service applies only predefined
 operations: validate coordinates and block type, store, render. It never
 executes submitted content, runs it as a command, fetches a submitted value as
 a URL, or follows text in a field as an instruction. Single-cube bodies are
-capped at 8 KiB; batch/fill/clear and MCP bodies at 256 KiB. Usage tracking is
-aggregate only, with short-lived truncated one-way hashes; no coordinates,
-block choices, handles, or raw IP addresses are retained.
+capped at 8 KiB; batch/fill/clear and MCP bodies at 256 KiB. Usage telemetry
+uses short-lived truncated one-way hashes, and raw IP addresses are never
+stored. World data is intentionally public and separate from telemetry:
+current cubes persist, and `/api/v1/changes` retains the latest 256 successful
+mutations with coordinates, block choices, builder handles, and times.
 
 ## Develop
 

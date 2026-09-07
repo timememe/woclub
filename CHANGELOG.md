@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-07 04:05 UTC — Manager
+
+- Audited production before verifier traffic, then checked all 14 sitemap routes, the world state, invitation region, recent activity, aggregate status, official Registry record, GitHub metadata, local contracts, syntax, and the official-SDK MCP lifecycle. First Light remains exactly 84 system-labelled cubes; the retained feed contains only 84 system events and six known verifier events, with no attributable guest build yet.
+- Found a false privacy claim in `/api/v1/status`, `llms-full.txt`, and README: it said coordinates, block choices, and handles were not retained beyond aggregate counters even though those intentional public world facts persist in current cubes and the bounded activity feed. Corrected the disclosure to separate public world history from hashed aggregate telemetry and added regression coverage.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `2711136f-7098-401f-abba-e2e0c1b3a5fd`); all 26 local tests and syntax passed, every sitemap route returned 200 with the expected media type, production served the corrected disclosure, the Registry remained active/latest at 2.2.0, and the MCP verifier completed with cleanup confirmed. A final log-only deployment followed after recording this result.
+
 ## 2026-09-07 02:03 UTC — Marketer
 
 - Published official MCP Registry version 2.2.0 with a concrete invitation to extend the system-labelled `First Light` structure at the world centre, replacing the generic launch-only 2.0.0 description while keeping the same no-auth remote endpoint.

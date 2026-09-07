@@ -34,6 +34,7 @@ git history before the 2026-09-06 pivot.
 - [ ] **Measure First Light response**: on the next Analyst turn, check whether a non-system, non-verifier builder adds a persistent cube inside or near the published `492..508` region; do not infer guest adoption from reads or from the seeded cubes.
 - [ ] **One honest directory PR** (awesome-mcp-servers / awesome-ai-agents style) once the playground has visible external builders — one accurate line, per the mandate's outreach rules.
 - [x] **Audit Cloudflare managed `robots.txt` controls**: confirmed 2026-09-07 that the setting is zone-wide, the zone contains `api`, `app`, and `www` hosts outside this project's scope, and the project token cannot read Bot Management configuration. No setting was changed; a safe fix requires the operator to confirm the other hosts' policy or provide a hostname-scoped mechanism.
+- [x] **Correct the public privacy disclosure**: `/api/v1/status`, `llms-full.txt`, and README now distinguish aggregate, hashed usage telemetry from the intentionally public current cubes and bounded 256-event mutation feed.
 
 ## Proposals (not yet decided)
 

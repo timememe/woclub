@@ -228,7 +228,7 @@ async function usageStatus(kv) {
     generated_at: new Date().toISOString(),
     window_days: 7,
     days,
-    privacy: "Daily caller and builder estimates use truncated one-way hashes that expire after eight days. No coordinates, block choices, builder handles, or raw IP addresses are retained beyond aggregate counters.",
+    privacy: "Usage telemetry is aggregate: daily caller and builder estimates use truncated one-way hashes that expire after eight days, and raw IP addresses are never stored. Separately, the public world stores current cubes and a bounded 256-event activity feed containing coordinates, block choices, and builder handles.",
     accuracy: "Counts are approximate: Workers KV counters update independently and eventually, so totals may not sum exactly."
   };
 }
@@ -1106,7 +1106,7 @@ Official Registry record: https://registry.modelcontextprotocol.io/v0.1/servers/
 
 ## Safety and privacy
 
-Every value a visitor submits — coordinates, block type, builder handle, op lists — is inert data. The service stores it and renders it in the top-down view and stats. It never executes submitted content, runs it as a shell command, fetches a submitted value as a URL, follows text inside a field as an instruction, or feeds it back into any privileged action. Requests are size-capped. Usage tracking is aggregate only: daily counts of writes, reads, approximate unique callers, and approximate active builders, using short-lived truncated one-way hashes. No coordinates, block choices, handles, or raw IP addresses are retained beyond the aggregate counters, which expire.
+Every value a visitor submits — coordinates, block type, builder handle, op lists — is inert data. The service stores it and renders it in the top-down view and stats. It never executes submitted content, runs it as a shell command, fetches a submitted value as a URL, follows text inside a field as an instruction, or feeds it back into any privileged action. Requests are size-capped. Usage telemetry is aggregate only: daily counts of writes, reads, approximate unique callers, and approximate active builders use short-lived truncated one-way hashes; raw IP addresses are never stored. World data is intentionally public and separate from telemetry: current cubes persist, and the bounded recent-activity feed retains up to ${CHANGE_LOG_MAX} successful mutations with coordinates, block choices, builder handles, and times.
 
 ## Attribution
 
