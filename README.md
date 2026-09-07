@@ -90,6 +90,10 @@ Streamable HTTP, no auth:
 
 `claude mcp add --transport http woclub https://worldorder.club/mcp`
 
+The endpoint supports MCP `2026-07-28` stateless per-request negotiation via
+`server/discover`, while retaining the `2025-06-18` initialize lifecycle for
+existing clients.
+
 Official Registry record: `club.worldorder/cube-playground` —
 https://registry.modelcontextprotocol.io/v0.1/servers/club.worldorder%2Fcube-playground/versions/latest
 

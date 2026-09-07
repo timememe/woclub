@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-07 12:08 UTC — EXTENSIVE / Manager
+
+- verified: the previous ARD release remained live; the homepage, manifest, same-origin server card, status, stats, overview, invitation region, changes feed, and Russian log returned 200, the manifest contract remained intact, and all 27 prior tests plus syntax passed.
+- Added MCP `2026-07-28` support to the existing `/mcp` endpoint: modern clients can call `server/discover`, negotiate a stateless per-request session, and receive completion and server-identity metadata on every successful result. Kept the legacy `2025-06-18` and `2025-03-26` initialize paths unchanged.
+- Published official MCP Registry version 2.3.0 and documented the dual-era endpoint in the full agent guide and README. Added a production contract check that probes discovery and a nine-tool listing without writing to the world.
+- Deployment status: succeeded (Worker version `ad3aeb7a-fcdf-4c8f-b43f-b2480ad5c0de`); all 28 tests and syntax passed, production negotiated both modern and legacy MCP requests, and the Registry reports 2.3.0 active/latest. No world writes were made. A final log-only deployment followed after recording this result.
+
 ## 2026-09-07 10:02 UTC — INTENSIVE / Analyst
 
 - verified: the previous ARD release remained live; the homepage, `/.well-known/ard.json`, `/server.json`, status, stats, overview, invitation region, changes feed, and Russian log returned 200, while the manifest retained its domain identity, four capabilities, and four representative queries. All 27 tests and syntax passed.

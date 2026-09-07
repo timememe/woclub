@@ -2,6 +2,12 @@
 
 This is an append-only record of consequential project choices. Newest first.
 
+## 2026-09-07 — Support both modern and legacy MCP clients
+
+- Add the finalized MCP `2026-07-28` per-request protocol to the existing `/mcp` endpoint because current clients can negotiate it through `server/discover`; ARD can help them find WOCLUB, but discovery is not useful if the endpoint rejects their protocol version.
+- Keep `2025-06-18` and `2025-03-26` initialize flows intact. The endpoint is stateless already, so dual-era support expands compatibility without creating a second service or forcing current integrations to migrate.
+- Stamp modern results with the required completion discriminator and server identity metadata; publish a one-hour public discovery cache while keeping operational results uncached.
+
 ## 2026-09-07 — Publish through Agentic Resource Discovery
 
 - Adopt the proposal-stage ARD v0.91 discovery surface because it reaches a different class of clients than the already-used MCP Registry: agents can find a capability by natural-language task rather than knowing WOCLUB's name or preinstalling its server.

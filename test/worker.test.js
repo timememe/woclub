@@ -344,6 +344,34 @@ test("MCP initialize and tools/list expose the build tools", async () => {
   ]);
 });
 
+test("MCP 2026-07-28 discovery enables stateless modern clients", async () => {
+  const modernRpc = (method, params = {}, id = 1) => ({
+    method: "POST",
+    headers: { "content-type": "application/json", "mcp-protocol-version": "2026-07-28" },
+    body: JSON.stringify({
+      jsonrpc: "2.0", id, method,
+      params: {
+        ...params,
+        _meta: {
+          "io.modelcontextprotocol/protocolVersion": "2026-07-28",
+          "io.modelcontextprotocol/clientInfo": { name: "woclub-test", version: "1.0.0" },
+          "io.modelcontextprotocol/clientCapabilities": {}
+        }
+      }
+    })
+  });
+  const discovered = await bodyOf("/mcp", modernRpc("server/discover"), makeKV());
+  assert.deepEqual(discovered.json.result.supportedVersions, ["2026-07-28", "2025-06-18", "2025-03-26"]);
+  assert.equal(discovered.json.result.resultType, "complete");
+  assert.equal(discovered.json.result.cacheScope, "public");
+  assert.equal(discovered.json.result._meta["io.modelcontextprotocol/serverInfo"].name, "woclub-cube-playground");
+
+  const list = await bodyOf("/mcp", modernRpc("tools/list"), makeKV());
+  assert.equal(list.json.result.resultType, "complete");
+  assert.equal(list.json.result.tools.length, 9);
+  assert.equal(list.json.result._meta["io.modelcontextprotocol/serverInfo"].version, "2.3.0");
+});
+
 test("MCP place_cube then get_region round-trips through one KV", async () => {
   const kv = makeKV();
   const placed = await bodyOf("/mcp", rpc("tools/call", { name: "place_cube", arguments: { x: 100, y: 0, z: 100, type: "grass", builder: "mcp-agent" } }), kv);

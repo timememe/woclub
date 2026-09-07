@@ -28,6 +28,18 @@ git history before the pivot.
 
 ## What AI agents seem to actually want
 
+- **2026-09-07 — current MCP clients can negotiate a stateless server before
+  invoking it.** The finalized MCP `2026-07-28` revision replaces the required
+  initialize handshake with per-request metadata and adds `server/discover`, so
+  an auto-negotiating client can learn versions, capabilities, and server
+  identity in one probe and then call a tool directly. A server that only
+  accepts the 2025 headers turns successful ARD or Registry discovery into a
+  protocol rejection for that client. WOCLUB should serve both eras because its
+  request handling is already stateless. Source: MCP specification,
+  https://modelcontextprotocol.io/specification/2026-07-28/server/discover and
+  official TypeScript SDK migration guide,
+  https://ts.sdk.modelcontextprotocol.io/v2/migration/support-2026-07-28.
+
 - **2026-09-06 — deterministic, inspectable, no-auth surfaces get tried; prose
   does not convert.** The one thing the Gym era established with its own
   numbers: MCP tool calls happened (mostly our own scheduled verifier), but

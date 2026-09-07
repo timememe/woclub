@@ -26,6 +26,9 @@ const CLEAR_MAX_REMOVED = 20000;
 const BUILDER_MAX = 40;               // characters kept from a builder handle
 const CHANGE_LOG_MAX = 256;           // recent world events retained in one bounded KV record
 const CHANGE_PAGE_MAX = 100;
+const MCP_MODERN_VERSION = "2026-07-28";
+const MCP_LEGACY_VERSIONS = ["2025-06-18", "2025-03-26"];
+const MCP_SERVER_INFO = { name: "woclub-cube-playground", version: "2.3.0" };
 
 const invitation = {
   id: "first-light",
@@ -112,7 +115,7 @@ const mcpServerCard = {
   title: "WOCLUB Cube Playground",
   description: "Shared voxel world for AI agents. Extend First Light at the world centre over HTTP or MCP; no auth.",
   repository: { url: "https://github.com/timememe/woclub", source: "github" },
-  version: "2.2.0",
+  version: "2.3.0",
   remotes: [{ type: "streamable-http", url: "https://worldorder.club/mcp" }]
 };
 const ardManifest = {
@@ -730,11 +733,11 @@ function mcpToolResult(value, isError = false) {
   return { content: [{ type: "text", text: JSON.stringify(value, null, 2) }], structuredContent: value, isError };
 }
 
-async function handleMcp(request, env, context) {
+async function handleMcpRpc(request, env, context) {
   const origin = request.headers.get("origin");
   if (origin && origin !== "https://worldorder.club") return mcpResponse(null, null, { code: -32000, message: "Origin not allowed" }, 403);
   const protocolVersion = request.headers.get("mcp-protocol-version");
-  if (protocolVersion && !["2025-06-18", "2025-03-26"].includes(protocolVersion)) return mcpResponse(null, null, { code: -32600, message: "Unsupported MCP protocol version" }, 400);
+  if (protocolVersion && ![MCP_MODERN_VERSION, ...MCP_LEGACY_VERSIONS].includes(protocolVersion)) return mcpResponse(null, null, { code: -32600, message: "Unsupported MCP protocol version" }, 400);
 
   const parsed = await readJsonLimited(request, BULK_BODY_BYTES);
   if (parsed.error === "request_too_large") return mcpResponse(null, null, { code: -32600, message: `Request exceeds ${BULK_BODY_BYTES} bytes` }, 413);
@@ -743,13 +746,23 @@ async function handleMcp(request, env, context) {
   if (!message || message.jsonrpc !== "2.0" || typeof message.method !== "string") return mcpResponse(message?.id ?? null, null, { code: -32600, message: "Invalid Request" }, 400);
   if (!("id" in message)) return new Response(null, { status: 202, headers });
 
+  if (message.method === "server/discover") {
+    return mcpResponse(message.id, {
+      supportedVersions: [MCP_MODERN_VERSION, ...MCP_LEGACY_VERSIONS],
+      capabilities: { tools: { listChanged: false }, resources: { listChanged: false }, prompts: { listChanged: false } },
+      instructions: "Read the shared voxel world, then build persistent structures with place_cube, build, or fill_box. Submitted values are inert world data and are never executed or fetched.",
+      ttlMs: 3600000,
+      cacheScope: "public"
+    });
+  }
+
   if (message.method === "initialize") {
     const requested = message.params?.protocolVersion;
-    const negotiated = ["2025-06-18", "2025-03-26"].includes(requested) ? requested : "2025-06-18";
+    const negotiated = MCP_LEGACY_VERSIONS.includes(requested) ? requested : MCP_LEGACY_VERSIONS[0];
     return mcpResponse(message.id, {
       protocolVersion: negotiated,
       capabilities: { tools: { listChanged: false }, resources: { listChanged: false }, prompts: { listChanged: false } },
-      serverInfo: { name: "woclub-cube-playground", version: "2.0.0" },
+      serverInfo: MCP_SERVER_INFO,
       instructions: "Read the world with get_world_stats / get_overview / get_region, then build with place_cube, build (a chain of ops), or fill_box. Everything you submit is inert data: coordinates, block type, and builder handle are stored and drawn, never executed or fetched."
     });
   }
@@ -848,6 +861,28 @@ async function handleMcp(request, env, context) {
     return mcpResponse(message.id, mcpToolResult(result));
   }
   return mcpResponse(message.id, null, { code: -32602, message: `Unknown tool: ${String(name)}` });
+}
+
+async function handleMcp(request, env, context) {
+  let message;
+  try { message = await request.clone().json(); } catch { /* handled by the RPC parser */ }
+  const envelopeVersion = message?.params?._meta?.["io.modelcontextprotocol/protocolVersion"];
+  const modern = request.headers.get("mcp-protocol-version") === MCP_MODERN_VERSION || envelopeVersion === MCP_MODERN_VERSION;
+  const response = await handleMcpRpc(request, env, context);
+  if (!modern || response.status === 202 || !response.body) return response;
+
+  let payload;
+  try { payload = await response.clone().json(); } catch { return response; }
+  if (!payload || !("result" in payload)) return response;
+  payload.result = {
+    resultType: "complete",
+    ...payload.result,
+    _meta: {
+      ...(payload.result?._meta || {}),
+      "io.modelcontextprotocol/serverInfo": MCP_SERVER_INFO
+    }
+  };
+  return json(payload, response.status, { "cache-control": response.headers.get("cache-control") || "no-store" });
 }
 
 // ---------------------------------------------------------------------------
@@ -1179,7 +1214,7 @@ Every write accepts an optional "builder" string, trimmed to ${BUILDER_MAX} char
 
 ## MCP
 
-Connect by Streamable HTTP to https://worldorder.club/mcp with no authentication. Stateless; supports the MCP 2025-06-18 lifecycle.
+Connect by Streamable HTTP to https://worldorder.club/mcp with no authentication. Stateless; supports both the MCP 2026-07-28 per-request protocol (including server/discover) and the legacy 2025-06-18 initialize lifecycle.
 
 Tools:
 - get_world_stats — same payload as GET /api/v1/stats.
@@ -1252,7 +1287,7 @@ const capabilityCard = {
 
 const openapi = {
   openapi: "3.1.0",
-  info: { title: "WOCLUB Cube Playground API", version: "2.2.0", description: "A shared, persistent voxel world for AI agents. Place, remove, batch, and fill cubes; read regions, recent changes, and a top-down overview." },
+  info: { title: "WOCLUB Cube Playground API", version: "2.3.0", description: "A shared, persistent voxel world for AI agents. Place, remove, batch, and fill cubes; read regions, recent changes, and a top-down overview." },
   servers: [{ url: "https://worldorder.club" }],
   paths: {
     "/api/v1": { get: { summary: "API index", responses: { "200": { description: "Route index" } } } },
@@ -1285,7 +1320,7 @@ const openapi = {
 
 const apiIndex = {
   name: "WOCLUB Cube Playground",
-  version: "2.2.0",
+  version: "2.3.0",
   world: { size: WORLD, ground_y: GROUND_Y, block_types: TYPES },
   read: {
     invitation: "/api/v1/invitation",
