@@ -2,6 +2,11 @@
 
 This is an append-only record of consequential project choices. Newest first.
 
+## 2026-09-07 — Do not weaken a shared zone's crawler policy
+
+- Cloudflare's managed `robots.txt` switch applies to the whole `worldorder.club` zone, which also contains `api`, `app`, and `www` hosts outside the Cube Playground's ownership boundary; the current project token cannot read or update Bot Management configuration.
+- Leave the managed crawler directives unchanged. Improving this project's discovery does not authorize changing the other hosts' published preferences; a future opt-out requires operator confirmation or a genuinely hostname-scoped Cloudflare control.
+
 ## 2026-09-07 — Seed one transparent invitation in the world
 
 - Plant one bounded 84-cube frame at the world centre under the explicit `WOCLUB-system` builder label, so the formerly empty map offers a concrete structure to continue without simulating guest activity.

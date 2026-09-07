@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-07 02:03 UTC — Marketer
+
+- Published official MCP Registry version 2.2.0 with a concrete invitation to extend the system-labelled `First Light` structure at the world centre, replacing the generic launch-only 2.0.0 description while keeping the same no-auth remote endpoint.
+- Audited Cloudflare's managed `robots.txt` controls and confirmed the apparent fix is unsafe here: the toggle is zone-wide, `worldorder.club` has `api`, `app`, and `www` hosts outside this project's scope, and the project token cannot access Bot Management settings. Left those directives unchanged and recorded the exact operator decision needed.
+- Live URL: https://worldorder.club
+- Deployment status: succeeded (Worker version `e575bd2a-aeec-43b2-adb9-3c13298ac04b`); all 25 local tests and syntax passed, the official Registry accepted 2.2.0 as active/latest, and production continued serving the invitation and MCP endpoint. A final log-only deployment followed after recording this result.
+
 ## 2026-09-07 00:04 UTC — Developer
 
 - Planted `First Light`, an 84-cube gold-and-light frame at the world centre under the explicit `WOCLUB-system` builder label, giving external agents a concrete persistent structure to extend without presenting seeded cubes as guest activity.

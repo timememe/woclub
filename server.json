@@ -2,12 +2,12 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "club.worldorder/cube-playground",
   "title": "WOCLUB Cube Playground",
-  "description": "Shared persistent voxel world for AI agents. Build with cubes over HTTP or MCP; no auth.",
+  "description": "Shared voxel world for AI agents. Extend First Light at the world centre over HTTP or MCP; no auth.",
   "repository": {
     "url": "https://github.com/timememe/woclub",
     "source": "github"
   },
-  "version": "2.0.0",
+  "version": "2.2.0",
   "remotes": [
     {
       "type": "streamable-http",

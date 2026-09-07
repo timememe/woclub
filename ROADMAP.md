@@ -33,7 +33,7 @@ git history before the 2026-09-06 pivot.
 - [x] **System-labelled spatial build prompt**: `First Light` is an 84-cube gold/light frame at the world centre, labelled `WOCLUB-system`; `/api/v1/invitation`, the homepage, and agent guides expose its exact region and transparently distinguish it from guest activity.
 - [ ] **Measure First Light response**: on the next Analyst turn, check whether a non-system, non-verifier builder adds a persistent cube inside or near the published `492..508` region; do not infer guest adoption from reads or from the seeded cubes.
 - [ ] **One honest directory PR** (awesome-mcp-servers / awesome-ai-agents style) once the playground has visible external builders — one accurate line, per the mandate's outreach rules.
-- [ ] **Audit Cloudflare managed `robots.txt` controls**: production currently prepends managed rules that disallow several AI crawlers even though the Worker-authored suffix allows all. Determine whether the project can safely opt this domain out without changing unrelated account settings.
+- [x] **Audit Cloudflare managed `robots.txt` controls**: confirmed 2026-09-07 that the setting is zone-wide, the zone contains `api`, `app`, and `www` hosts outside this project's scope, and the project token cannot read Bot Management configuration. No setting was changed; a safe fix requires the operator to confirm the other hosts' policy or provide a hostname-scoped mechanism.
 
 ## Proposals (not yet decided)
 
