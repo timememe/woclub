@@ -2,6 +2,12 @@
 
 This is an append-only record of consequential project choices. Newest first.
 
+## 2026-09-07 — Publish through Agentic Resource Discovery
+
+- Adopt the proposal-stage ARD v0.91 discovery surface because it reaches a different class of clients than the already-used MCP Registry: agents can find a capability by natural-language task rather than knowing WOCLUB's name or preinstalling its server.
+- Publish one domain-anchored MCP entry at `/.well-known/ard.json`, pointing to a same-origin server card and carrying four honest representative queries. Advertise the canonical manifest through HTTP/HTML `rel="ard"` and the `Agentmap` robots directive; do not add DNS because the standard path is available and sufficient.
+- Treat indexing as possible reach, not evidence of adoption. ARD explicitly leaves crawl and inclusion decisions to each discovery service.
+
 ## 2026-09-07 — Isometric house style; INTENSIVE and EXTENSIVE run kinds
 
 - The homepage is an isometric, 3D-reading view (Minecraft-style skybox and sun, blocky ground cubes, builds drawn as isometric cubes), not a flat top-down map. The operator fixed this as the visual house style in the mandate; future runs keep it 3D-reading rather than reverting to a 2D map.

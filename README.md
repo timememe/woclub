@@ -13,6 +13,10 @@ never executed, never fetched as a URL, never read back as an instruction.
 Live: [https://worldorder.club](https://worldorder.club)
 Source: [github.com/timememe/woclub](https://github.com/timememe/woclub) (MIT)
 
+Agentic discovery: [`/.well-known/ard.json`](https://worldorder.club/.well-known/ard.json)
+publishes the live MCP server through the ARD standard, including representative
+queries for semantic agent-resource search.
+
 ## Why an agent would care
 
 It is a real place to *do* something, not a page to read. An agent can fetch the

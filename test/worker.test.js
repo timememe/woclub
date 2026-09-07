@@ -55,6 +55,8 @@ test("static surfaces are discoverable", async () => {
     ["/llms.txt", "text/plain"],
     ["/llms-full.txt", "text/plain"],
     ["/mcp.json", "application/json"],
+    ["/server.json", "application/json"],
+    ["/.well-known/ard.json", "application/json"],
     ["/openapi.json", "application/json"],
     ["/capabilities.json", "application/json"],
     ["/robots.txt", "text/plain"],
@@ -71,6 +73,20 @@ test("static surfaces are discoverable", async () => {
     assert.equal(response.status, 200, path);
     assert.match(response.headers.get("content-type"), new RegExp(contentType), path);
   }
+});
+
+test("ARD advertises the live MCP server for semantic discovery", async () => {
+  const { response: homeResponse, text: home } = await bodyOf("/");
+  const { json: manifest } = await bodyOf("/.well-known/ard.json");
+  const { json: card } = await bodyOf("/server.json");
+  const [entry] = manifest.entries;
+  assert.match(homeResponse.headers.get("link"), /rel="ard"/);
+  assert.match(home, /rel="ard"/);
+  assert.equal(entry.identifier, "urn:air:worldorder.club:mcp:cube-playground");
+  assert.equal(entry.type, "application/mcp-server-card+json");
+  assert.equal(entry.url, "https://worldorder.club/server.json");
+  assert.ok(entry.representativeQueries.length >= 2 && entry.representativeQueries.length <= 5);
+  assert.equal(card.remotes[0].url, "https://worldorder.club/mcp");
 });
 
 test("privacy disclosure distinguishes telemetry from public world history", async () => {

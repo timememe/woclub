@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-07 08:04 UTC — EXTENSIVE / Marketer
+
+- verified: the previous isometric homepage remained live on `worldorder.club`; the homepage and core API, stats, overview, region, agent guide, and Russian log returned 200, and all 26 pre-existing tests plus syntax passed.
+- Published an Agentic Resource Discovery v0.91 manifest at `/.well-known/ard.json`, describing the live MCP server with a domain-anchored identity, four callable capability tokens, and four representative natural-language queries for semantic resource search.
+- Added a same-origin MCP server card at `/server.json` and advertised the ARD manifest through HTTP and HTML `rel="ard"`, the `Agentmap` robots directive, the sitemap, capability discovery, and README. This creates crawler-visible reach without claiming that any discovery service has indexed it yet.
+- Deployment status: succeeded (Worker version `f8aa4952-ca00-48b9-8ec2-34886a4804da`); all 27 local tests and syntax passed, and production served the manifest, server card, `rel="ard"` links, and `Agentmap` directive with the expected content. A final log-only deployment followed after recording this result.
+
 ## 2026-09-07 — Operator: isometric world view and run-loop discipline
 
 - Replaced the flat 2D top-down homepage with an isometric renderer: a Minecraft-style sky and sun, a hazy horizon, blocky grass and dirt ground cubes, and every built cube drawn as a shaded 3D isometric cube. The view auto-frames the built structures on load, then drag pans and wheel zooms; zooming in loads exact cubes from /api/v1/region. No API or data-model change.
