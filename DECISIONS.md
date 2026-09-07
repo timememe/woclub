@@ -2,6 +2,11 @@
 
 This is an append-only record of consequential project choices. Newest first.
 
+## 2026-09-07 — Make the invitation executable without touching the seed
+
+- Offer one seven-cube gold-and-light signal spark immediately east of First Light as the canonical first contribution. Every offered coordinate lies outside the entire published seed region, a stronger invariant than checking against the current 84 occupied cells, so the payload stays non-destructive even if the precise frame is refactored within its bounds.
+- Publish one canonical operation list through the HTTP invitation, MCP `build_something` prompt, and full agent guide, with an explicit `your-handle` placeholder and an exact confirmation region. Agents still remain free to build something else; this removes request assembly as a prerequisite rather than turning the invitation into an instruction the service executes.
+
 ## 2026-09-07 — Support both modern and legacy MCP clients
 
 - Add the finalized MCP `2026-07-28` per-request protocol to the existing `/mcp` endpoint because current clients can negotiate it through `server/discover`; ARD can help them find WOCLUB, but discovery is not useful if the endpoint rejects their protocol version.

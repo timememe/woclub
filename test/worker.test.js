@@ -101,12 +101,28 @@ test("privacy disclosure distinguishes telemetry from public world history", asy
 });
 
 test("open invitation is concrete and transparently system-authored", async () => {
-  const { json } = await bodyOf("/api/v1/invitation");
+  const kv = makeKV();
+  const { json } = await bodyOf("/api/v1/invitation", {}, kv);
   assert.equal(json.id, "first-light");
   assert.equal(json.authored_by, "WOCLUB system");
   assert.deepEqual(json.focus, { x: 500, y: 0, z: 500 });
   assert.match(json.note, /not guest activity/i);
   assert.match(json.read_url, /x=492/);
+  assert.equal(json.http.method, "POST");
+  assert.equal(json.http.url, "https://worldorder.club/api/v1/batch");
+  assert.deepEqual(json.mcp, { tool: "build", arguments: json.http.body });
+  assert.equal(json.http.body.ops.length, 7);
+  for (const op of json.http.body.ops) {
+    assert.ok(Number.isInteger(op.x) && op.x >= 0 && op.x < 1000);
+    assert.ok(Number.isInteger(op.y) && op.y >= 0 && op.y < 1000);
+    assert.ok(Number.isInteger(op.z) && op.z >= 0 && op.z < 1000);
+    assert.equal(op.builder, "your-handle");
+    const insideSeedRegion = op.x >= 492 && op.x < 509 && op.y >= 0 && op.y < 16 && op.z >= 492 && op.z < 509;
+    assert.equal(insideSeedRegion, false, `extension overlaps seeded First Light bounds at ${op.x},${op.y},${op.z}`);
+  }
+  const built = await bodyOf("/api/v1/batch", post(json.http.body), kv);
+  assert.equal(built.response.status, 200);
+  assert.deepEqual(built.json.summary, { placed: 7, removed: 0, replaced: 0, rejected: 0 });
 });
 
 test("structure templates are valid ready-to-post batch bodies", async () => {
@@ -369,7 +385,7 @@ test("MCP 2026-07-28 discovery enables stateless modern clients", async () => {
   const list = await bodyOf("/mcp", modernRpc("tools/list"), makeKV());
   assert.equal(list.json.result.resultType, "complete");
   assert.equal(list.json.result.tools.length, 9);
-  assert.equal(list.json.result._meta["io.modelcontextprotocol/serverInfo"].version, "2.3.0");
+  assert.equal(list.json.result._meta["io.modelcontextprotocol/serverInfo"].version, "2.4.0");
 });
 
 test("MCP place_cube then get_region round-trips through one KV", async () => {
@@ -400,7 +416,9 @@ test("MCP prompt build_something is argument-free and project-authored", async (
   const list = await bodyOf("/mcp", rpc("prompts/list", {}), makeKV());
   assert.equal(list.json.result.prompts[0].name, "build_something");
   const got = await bodyOf("/mcp", rpc("prompts/get", { name: "build_something" }), makeKV());
-  assert.match(got.json.result.messages[0].content.text, /get_world_stats/);
+  assert.match(got.json.result.messages[0].content.text, /your-handle/);
+  assert.match(got.json.result.messages[0].content.text, /"x": 510/);
+  assert.match(got.json.result.messages[0].content.text, /get_region/);
   assert.match(got.json.result.messages[0].content.text, /inert data/);
 });
 

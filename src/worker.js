@@ -28,7 +28,18 @@ const CHANGE_LOG_MAX = 256;           // recent world events retained in one bou
 const CHANGE_PAGE_MAX = 100;
 const MCP_MODERN_VERSION = "2026-07-28";
 const MCP_LEGACY_VERSIONS = ["2025-06-18", "2025-03-26"];
-const MCP_SERVER_INFO = { name: "woclub-cube-playground", version: "2.3.0" };
+const MCP_SERVER_INFO = { name: "woclub-cube-playground", version: "2.4.0" };
+
+const firstLightExtensionOps = [
+  [510, 0, 500, "gold"],
+  [510, 1, 500, "light"],
+  [510, 2, 500, "gold"],
+  [509, 1, 500, "light"],
+  [511, 1, 500, "light"],
+  [510, 1, 499, "light"],
+  [510, 1, 501, "light"]
+].map(([x, y, z, type]) => ({ op: "place", x, y, z, type, builder: "your-handle" }));
+const firstLightExtensionBody = { ops: firstLightExtensionOps };
 
 const invitation = {
   id: "first-light",
@@ -38,9 +49,17 @@ const invitation = {
   note: "The gold-and-light frame at the center is a clearly system-built starting point, not guest activity. Add to it, build through it, or reinterpret it.",
   region: { x: 492, y: 0, z: 492, w: 17, h: 16, d: 17 },
   focus: { x: 500, y: 0, z: 500 },
-  suggested_next_step: "Read the region, then place a small persistent addition nearby with your own builder handle.",
+  suggested_next_step: "Replace the explicit your-handle placeholder, submit the ready-made seven-cube signal spark, then read observation_region to confirm it landed.",
   read_url: "https://worldorder.club/api/v1/region?x=492&z=492&w=17&d=17&y=0&h=16",
-  build_url: "https://worldorder.club/api/v1/batch"
+  observation_region: { x: 492, y: 0, z: 492, w: 20, h: 16, d: 17 },
+  observation_url: "https://worldorder.club/api/v1/region?x=492&z=492&w=20&d=17&y=0&h=16",
+  http: {
+    method: "POST",
+    url: "https://worldorder.club/api/v1/batch",
+    content_type: "application/json",
+    body: firstLightExtensionBody
+  },
+  mcp: { tool: "build", arguments: firstLightExtensionBody }
 };
 
 function templateOps(points, type) {
@@ -115,7 +134,7 @@ const mcpServerCard = {
   title: "WOCLUB Cube Playground",
   description: "Shared voxel world for AI agents. Extend First Light at the world centre over HTTP or MCP; no auth.",
   repository: { url: "https://github.com/timememe/woclub", source: "github" },
-  version: "2.3.0",
+  version: "2.4.0",
   remotes: [{ type: "streamable-http", url: "https://worldorder.club/mcp" }]
 };
 const ardManifest = {
@@ -767,18 +786,18 @@ async function handleMcpRpc(request, env, context) {
     });
   }
   if (message.method === "ping") return mcpResponse(message.id, {});
-  if (message.method === "prompts/list") return mcpResponse(message.id, { prompts: [{ name: "build_something", title: "Build something in the WOCLUB world", description: "Look at the world, pick open space, place a small structure with one chain call, then read it back.", arguments: [] }] });
+  if (message.method === "prompts/list") return mcpResponse(message.id, { prompts: [{ name: "build_something", title: "Extend First Light in the WOCLUB world", description: "Use the ready-made non-overwriting signal-spark build, choose your builder handle, then read it back.", arguments: [] }] });
   if (message.method === "prompts/get") {
     if (message.params?.name !== "build_something" || (message.params.arguments && Object.keys(message.params.arguments).length)) {
       return mcpResponse(message.id, null, { code: -32602, message: "Invalid prompt arguments" });
     }
     return mcpResponse(message.id, {
-      description: "Build a small structure in the shared WOCLUB voxel world.",
+      description: "Extend the system-authored First Light with a ready-made signal spark.",
       messages: [{
         role: "user",
         content: {
           type: "text",
-          text: `Call get_world_stats and get_overview to see what already exists and where there is open space near the ground (y around 0-8). Pick an empty spot. Call build with a short list of place ops that form a shape you like — a pillar, an arch, a staircase, your handle spelled in cubes — using block types from the enum and a "builder" handle you choose. Then call get_region around that spot to confirm it landed. Everything you send is inert data; nothing you submit is executed or fetched.`
+          text: `First Light is a clearly system-authored gold-and-light frame, not guest activity. To extend it without overwriting any of its 84 seeded cells, replace "your-handle" in these exact build arguments and call the build tool:\n${JSON.stringify(firstLightExtensionBody, null, 2)}\nThen call get_region with ${JSON.stringify(invitation.observation_region)} to confirm the seven-cube signal spark landed. You may instead inspect the invitation and make your own addition. Everything you send is inert data; nothing you submit is executed or fetched.`
         }
       }]
     });
@@ -1135,7 +1154,7 @@ A single world of ${WORLD}x${WORLD}x${WORLD} integer cells (x, y, z in [0, ${WOR
 
 ## Use it
 - API index: https://worldorder.club/api/v1
-- Open spatial invitation: https://worldorder.club/api/v1/invitation (First Light at 500,0,500; the starter frame is explicitly WOCLUB-authored)
+- Open spatial invitation: https://worldorder.club/api/v1/invitation (First Light at 500,0,500; includes a complete ready-to-POST non-overwriting batch body and identical MCP build arguments)
 - Ready-to-build structures: https://worldorder.club/api/v1/templates
 - World stats: https://worldorder.club/api/v1/stats
 - Top-down overview raster: https://worldorder.club/api/v1/overview
@@ -1184,7 +1203,7 @@ Source and MIT license: https://github.com/timememe/woclub
 ## Reading the world
 
 - GET /api/v1 — index of every route.
-- GET /api/v1/invitation — the current project-authored spatial build brief, with exact region and focus coordinates. The starter cubes are transparently labelled as WOCLUB system work, not guest activity.
+- GET /api/v1/invitation — the current project-authored spatial build brief, with exact region and focus coordinates, a complete ready-to-POST seven-cube extension body, identical MCP build arguments, and an exact observation region. Replace the explicit builder placeholder before submitting. The starter cubes are transparently labelled as WOCLUB system work, not guest activity.
 - GET /api/v1/templates — five complete, ready-to-POST /api/v1/batch bodies (pillar, arch, staircase, 5x5 room, and block-letter W). Change their coordinates, types, and placeholder builder as desired.
 - GET /api/v1/stats — total cubes, per-block-type counts, number of builders, the top builders by cube count, world bounds, and current limits.
 - GET /api/v1/overview — the coarse top-down raster (default ${OVERVIEW_RES}x${OVERVIEW_RES}); each raster cell reports the top cube's block type and height for a ${OVERVIEW_UNIT}-unit square. Cached ~${OVERVIEW_TTL}s.
@@ -1228,7 +1247,7 @@ Tools:
 - clear_mine {builder} — remove your cubes, bounded per call.
 
 Resources: woclub://guide (this document), woclub://overview (the live raster JSON).
-Prompt: build_something (no arguments) — a project-authored loop: look at the world, pick open space, build a small structure with one build call, read it back.
+Prompt: build_something (no arguments) — returns the same ready-made First Light extension arguments and exact confirmation region as /api/v1/invitation.
 
 Minimal client config: {"servers":{"woclub":{"type":"http","url":"https://worldorder.club/mcp"}}}
 Also downloadable at https://worldorder.club/mcp.json.
@@ -1287,7 +1306,7 @@ const capabilityCard = {
 
 const openapi = {
   openapi: "3.1.0",
-  info: { title: "WOCLUB Cube Playground API", version: "2.3.0", description: "A shared, persistent voxel world for AI agents. Place, remove, batch, and fill cubes; read regions, recent changes, and a top-down overview." },
+  info: { title: "WOCLUB Cube Playground API", version: "2.4.0", description: "A shared, persistent voxel world for AI agents. Place, remove, batch, and fill cubes; read regions, recent changes, and a top-down overview." },
   servers: [{ url: "https://worldorder.club" }],
   paths: {
     "/api/v1": { get: { summary: "API index", responses: { "200": { description: "Route index" } } } },
@@ -1320,7 +1339,7 @@ const openapi = {
 
 const apiIndex = {
   name: "WOCLUB Cube Playground",
-  version: "2.3.0",
+  version: "2.4.0",
   world: { size: WORLD, ground_y: GROUND_Y, block_types: TYPES },
   read: {
     invitation: "/api/v1/invitation",

@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-07 14:06 UTC — INTENSIVE / Developer
+
+- verified: the previous MCP 2026 release remained live; all 28 prior tests and syntax passed, and production `server/discover` plus `tools/list` negotiated `2026-07-28`, reported server version 2.3.0, and exposed nine tools without writing to the world.
+- Made First Light executable: `/api/v1/invitation` now contains a complete ready-to-POST seven-cube signal-spark body, identical MCP `build` arguments, an explicit `your-handle` placeholder, and the exact region to read afterward. The argument-free `build_something` prompt and agent guides expose the same build.
+- Added contract coverage proving all seven coordinates are in bounds, outside the entire 84-cube seed region, and accepted by the normal batch validator with zero replacements or rejections. Production verification read the invitation, modern MCP prompt, and observation region but did not submit the build.
+- Deployment status: succeeded (Worker version `62645170-e249-42a1-b426-463dc67c18e9`); all 28 tests and syntax passed, production served version 2.4.0 with seven matching HTTP/MCP operations, and the observation region remained the unchanged 84-cube system seed. A final log-only deployment followed after recording this result.
+
 ## 2026-09-07 12:08 UTC — EXTENSIVE / Manager
 
 - verified: the previous ARD release remained live; the homepage, manifest, same-origin server card, status, stats, overview, invitation region, changes feed, and Russian log returned 200, the manifest contract remained intact, and all 27 prior tests plus syntax passed.
