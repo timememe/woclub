@@ -58,6 +58,8 @@ test("static surfaces are discoverable", async () => {
     ["/mcp.json", "application/json"],
     ["/server.json", "application/json"],
     ["/.well-known/ard.json", "application/json"],
+    ["/.well-known/ai-catalog.json", "application/ai-catalog\\+json"],
+    ["/mcp/server-card", "application/mcp-server-card\\+json"],
     ["/openapi.json", "application/json"],
     ["/capabilities.json", "application/json"],
     ["/robots.txt", "text/plain"],
@@ -74,6 +76,31 @@ test("static surfaces are discoverable", async () => {
     assert.equal(response.status, 200, path);
     assert.match(response.headers.get("content-type"), new RegExp(contentType), path);
   }
+});
+
+test("AI Catalog discovers a connection-ready experimental MCP Server Card", async () => {
+  const { response: homeResponse, text: home } = await bodyOf("/");
+  const { response: catalogResponse, json: catalog } = await bodyOf("/.well-known/ai-catalog.json");
+  const { response: cardResponse, json: card } = await bodyOf("/mcp/server-card");
+  assert.match(homeResponse.headers.get("link"), /application\/ai-catalog\+json/);
+  assert.match(home, /application\/ai-catalog\+json/);
+  assert.equal(catalog.specVersion, "1.0");
+  assert.deepEqual(catalog.entries, [{
+    identifier: "urn:air:worldorder.club:mcp:cube-playground",
+    type: "application/mcp-server-card+json",
+    url: "https://worldorder.club/mcp/server-card"
+  }]);
+  assert.match(catalogResponse.headers.get("content-type"), /^application\/ai-catalog\+json/);
+  assert.equal(card.$schema, "https://static.modelcontextprotocol.io/schemas/v1/server-card.schema.json");
+  assert.equal(card.name, "club.worldorder/cube-playground");
+  assert.equal(card.version, "2.7.0");
+  assert.equal(card.remotes[0].url, "https://worldorder.club/mcp");
+  assert.deepEqual(card.remotes[0].supportedProtocolVersions, ["2026-07-28", "2025-06-18", "2025-03-26"]);
+  assert.match(cardResponse.headers.get("content-type"), /^application\/mcp-server-card\+json/);
+  assert.equal(cardResponse.headers.get("access-control-allow-origin"), "*");
+  const etag = cardResponse.headers.get("etag");
+  const conditional = await call("/mcp/server-card", { headers: { "if-none-match": etag } });
+  assert.equal(conditional.response.status, 304);
 });
 
 test("ARD advertises the live MCP server for semantic discovery", async () => {
@@ -421,7 +448,7 @@ test("MCP 2026-07-28 discovery enables stateless modern clients", async () => {
   const list = await bodyOf("/mcp", modernRpc("tools/list"), makeKV());
   assert.equal(list.json.result.resultType, "complete");
   assert.equal(list.json.result.tools.length, 9);
-  assert.equal(list.json.result._meta["io.modelcontextprotocol/serverInfo"].version, "2.6.0");
+  assert.equal(list.json.result._meta["io.modelcontextprotocol/serverInfo"].version, "2.7.0");
 });
 
 test("MCP place_cube then get_region round-trips through one KV", async () => {

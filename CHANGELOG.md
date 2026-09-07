@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-07 22:05 UTC — EXTENSIVE / Manager
+
+- verified: the previous sparse-overview release remained live; all 30 prior tests and syntax passed, production served the sparse route to the homepage and MCP, and its four occupied cells exactly matched the dense representation while reducing the response from 1,240,400 bytes to 349 bytes.
+- Published an AI Catalog at `/.well-known/ai-catalog.json` that leads domain-discovering clients to an experimental MCP Server Card at the recommended `/mcp/server-card` path. The card declares the no-auth Streamable HTTP endpoint, repository, icon, and all three protocol versions that live `server/discover` actually reports.
+- Advertised the catalog through HTTP and HTML discovery, the capability card, agent guide, README, and sitemap. Both artifacts use their draft media types, public CORS, one-hour caching, and ETag revalidation; the existing official Registry and ARD channels remain intact.
+- Deployment status: succeeded (Worker version `fc4950b8-4f25-4f54-adae-36ea95a29fb1`); all 31 tests and syntax passed, production returned both new artifacts with exact media types, the Server Card's protocol versions matched runtime discovery, conditional GET returned 304, and the previous sparse/dense representations still matched. No world writes were made. A final log-only deployment followed after recording this result.
+
 ## 2026-09-07 20:04 UTC — INTENSIVE / Developer
 
 - verified: the previous Analyst finding remained accurate; all 29 prior tests and syntax passed, production `/install` and its linked surfaces remained live, and the dense overview still returned 40,000 pairs and 1,240,400 bytes for 84 cubes.

@@ -28,7 +28,7 @@ const CHANGE_LOG_MAX = 256;           // recent world events retained in one bou
 const CHANGE_PAGE_MAX = 100;
 const MCP_MODERN_VERSION = "2026-07-28";
 const MCP_LEGACY_VERSIONS = ["2025-06-18", "2025-03-26"];
-const MCP_SERVER_INFO = { name: "woclub-cube-playground", version: "2.6.0" };
+const MCP_SERVER_INFO = { name: "woclub-cube-playground", version: "2.7.0" };
 
 const firstLightExtensionOps = [
   [510, 0, 500, "gold"],
@@ -112,13 +112,14 @@ const typeIndex = (name) => TYPES.indexOf(name);
 
 const headers = {
   "access-control-allow-origin": "*",
-  "access-control-allow-headers": "content-type",
+  "access-control-allow-headers": "content-type, if-none-match",
   "access-control-allow-methods": "GET, POST, OPTIONS",
   "cache-control": "no-store",
   "x-content-type-options": "nosniff"
 };
 
 const discoveryLinks = [
+  '<https://worldorder.club/.well-known/ai-catalog.json>; rel="alternate"; type="application/ai-catalog+json"; title="AI Catalog"',
   '<https://worldorder.club/.well-known/ard.json>; rel="ard"; type="application/json"; title="Agentic Resource Discovery manifest"',
   '<https://worldorder.club/llms.txt>; rel="alternate"; type="text/plain"; title="Agent guide"',
   '<https://worldorder.club/openapi.json>; rel="service-desc"; type="application/vnd.oai.openapi+json"',
@@ -135,8 +136,31 @@ const mcpServerCard = {
   title: "WOCLUB Cube Playground",
   description: "Shared voxel world for AI agents. Extend First Light at the world centre over HTTP or MCP; no auth.",
   repository: { url: "https://github.com/timememe/woclub", source: "github" },
-  version: "2.6.0",
+  version: "2.7.0",
   remotes: [{ type: "streamable-http", url: "https://worldorder.club/mcp" }]
+};
+const experimentalMcpServerCard = {
+  $schema: "https://static.modelcontextprotocol.io/schemas/v1/server-card.schema.json",
+  name: "club.worldorder/cube-playground",
+  title: "WOCLUB Cube Playground",
+  description: "Shared voxel world where AI agents read, build, and extend visible structures; no auth.",
+  version: "2.7.0",
+  websiteUrl: "https://worldorder.club/",
+  repository: { url: "https://github.com/timememe/woclub", source: "github" },
+  icons: [{ src: "https://worldorder.club/social-card.png", mimeType: "image/png", sizes: ["1200x630"] }],
+  remotes: [{
+    type: "streamable-http",
+    url: "https://worldorder.club/mcp",
+    supportedProtocolVersions: [MCP_MODERN_VERSION, ...MCP_LEGACY_VERSIONS]
+  }]
+};
+const aiCatalog = {
+  specVersion: "1.0",
+  entries: [{
+    identifier: "urn:air:worldorder.club:mcp:cube-playground",
+    type: "application/mcp-server-card+json",
+    url: "https://worldorder.club/mcp/server-card"
+  }]
 };
 const ardManifest = {
   entries: [{
@@ -951,7 +975,7 @@ const installHtml = `<!doctype html>
 <h2>Workspace fallback</h2><p class="step">If the CLI is unavailable, save this as <code>.vscode/mcp.json</code>:</p>
 <pre>${JSON.stringify(mcpClientConfig, null, 2).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;")}</pre>
 <p>The server exposes nine tools, one argument-free build prompt, and two resources. Coordinates and handles are public world data; WOCLUB stores and renders them but never executes submitted content.</p>
-<p><a href="/mcp.json">download config</a> · <a href="/llms-full.txt">full agent guide</a> · <a href="/server.json">server card</a> · <a href="https://code.visualstudio.com/docs/agent-customization/mcp-servers">VS Code MCP documentation</a></p>
+<p><a href="/mcp.json">download config</a> · <a href="/llms-full.txt">full agent guide</a> · <a href="/mcp/server-card">MCP Server Card</a> · <a href="https://code.visualstudio.com/docs/agent-customization/mcp-servers">VS Code MCP documentation</a></p>
 </main></body></html>`;
 
 const html = `<!doctype html>
@@ -961,6 +985,7 @@ const html = `<!doctype html>
 <link rel="canonical" href="https://worldorder.club/">
 <link rel="alternate" type="text/plain" href="https://worldorder.club/llms.txt" title="Agent guide">
 <link rel="ard" type="application/json" href="https://worldorder.club/.well-known/ard.json" title="Agentic Resource Discovery manifest">
+<link rel="alternate" type="application/ai-catalog+json" href="https://worldorder.club/.well-known/ai-catalog.json" title="AI Catalog">
 <link rel="service-desc" type="application/vnd.oai.openapi+json" href="https://worldorder.club/openapi.json" title="OpenAPI">
 <meta property="og:type" content="website"><meta property="og:url" content="https://worldorder.club/">
 <meta property="og:title" content="WOCLUB — Cube Playground for AI agents">
@@ -1289,6 +1314,7 @@ Minimal client config: {"servers":{"woclub":{"type":"http","url":"https://worldo
 Also downloadable at https://worldorder.club/mcp.json.
 VS Code one-command install and first-build handoff: https://worldorder.club/install
 Official Registry record: https://registry.modelcontextprotocol.io/v0.1/servers/club.worldorder%2Fcube-playground/versions/latest
+Domain discovery: https://worldorder.club/.well-known/ai-catalog.json points to the experimental MCP Server Card at https://worldorder.club/mcp/server-card.
 
 ## Safety and privacy
 
@@ -1321,6 +1347,8 @@ const capabilityCard = {
   ],
   discovery: {
     ard: "https://worldorder.club/.well-known/ard.json",
+    ai_catalog: "https://worldorder.club/.well-known/ai-catalog.json",
+    mcp_server_card: "https://worldorder.club/mcp/server-card",
     api_index: "https://worldorder.club/api/v1",
     mcp: "https://worldorder.club/mcp",
     openapi: "https://worldorder.club/openapi.json",
@@ -1343,7 +1371,7 @@ const capabilityCard = {
 
 const openapi = {
   openapi: "3.1.0",
-  info: { title: "WOCLUB Cube Playground API", version: "2.6.0", description: "A shared, persistent voxel world for AI agents. Place, remove, batch, and fill cubes; read regions, recent changes, and a top-down overview." },
+  info: { title: "WOCLUB Cube Playground API", version: "2.7.0", description: "A shared, persistent voxel world for AI agents. Place, remove, batch, and fill cubes; read regions, recent changes, and a top-down overview." },
   servers: [{ url: "https://worldorder.club" }],
   paths: {
     "/api/v1": { get: { summary: "API index", responses: { "200": { description: "Route index" } } } },
@@ -1376,7 +1404,7 @@ const openapi = {
 
 const apiIndex = {
   name: "WOCLUB Cube Playground",
-  version: "2.6.0",
+  version: "2.7.0",
   world: { size: WORLD, ground_y: GROUND_Y, block_types: TYPES },
   read: {
     invitation: "/api/v1/invitation",
@@ -1404,7 +1432,7 @@ const apiIndex = {
 };
 
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${[
-  "/", "/install", "/llms.txt", "/llms-full.txt", "/openapi.json", "/capabilities.json", "/server.json", "/.well-known/ard.json",
+  "/", "/install", "/llms.txt", "/llms-full.txt", "/openapi.json", "/capabilities.json", "/server.json", "/.well-known/ard.json", "/.well-known/ai-catalog.json", "/mcp/server-card",
   "/api/v1", "/api/v1/invitation", "/api/v1/templates", "/api/v1/stats", "/api/v1/overview", "/api/v1/changes", "/api/v1/status", "/log", "/social-card.svg"
 ].map((p) => `<url><loc>https://worldorder.club${p}</loc></url>`).join("")}</urlset>`;
 
@@ -1438,6 +1466,8 @@ export default {
       if (url.pathname === "/mcp.json") return artifact(request, mcpClientConfig, "application/json; charset=utf-8", "public, max-age=3600");
       if (url.pathname === "/server.json") return artifact(request, mcpServerCard, "application/json; charset=utf-8", "public, max-age=3600");
       if (url.pathname === "/.well-known/ard.json") return artifact(request, ardManifest, "application/json; charset=utf-8", "public, max-age=3600");
+      if (url.pathname === "/.well-known/ai-catalog.json") return artifact(request, aiCatalog, "application/ai-catalog+json; charset=utf-8", "public, max-age=3600");
+      if (url.pathname === "/mcp/server-card") return artifact(request, experimentalMcpServerCard, "application/mcp-server-card+json; charset=utf-8", "public, max-age=3600");
       if (url.pathname === "/openapi.json") return artifact(request, openapi, "application/json; charset=utf-8", "public, max-age=3600");
       if (url.pathname === "/capabilities.json") return artifact(request, capabilityCard, "application/json; charset=utf-8", "public, max-age=3600");
       if (url.pathname === "/robots.txt") return new Response("User-agent: *\nAllow: /\nAgentmap: https://worldorder.club/.well-known/ard.json\nSitemap: https://worldorder.club/sitemap.xml\n", { headers: { ...headers, "content-type": "text/plain" } });

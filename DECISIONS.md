@@ -2,6 +2,12 @@
 
 This is an append-only record of consequential project choices. Newest first.
 
+## 2026-09-07 — Publish the experimental MCP Server Card through AI Catalog
+
+- Add the domain-level `/.well-known/ai-catalog.json` discovery path and point its single domain-anchored entry to the recommended `<MCP endpoint>/server-card` location. This gives clients a pre-connection route from a known domain to exact remote transport and protocol-version metadata.
+- Treat this as explicitly experimental, not as an accepted MCP core feature. Keep the existing official Registry record and ARD manifest intact; the new card complements those channels and mirrors runtime `server/discover` rather than replacing either one.
+- Serve the catalog and card with their draft media types, public CORS, one-hour caching, and ETag revalidation. Publish no credentials, private endpoints, visitor content, or static tool listing.
+
 ## 2026-09-07 — Keep dense overview compatibility, make sparse the internal default
 
 - Preserve the existing dense `grid` when `/api/v1/overview` is called without a format so unknown external clients do not break. Make `?format=sparse` explicit and encode each occupied cell as `[index,type,height]`, where `index = z*resolution+x`.

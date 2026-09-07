@@ -17,6 +17,11 @@ Agentic discovery: [`/.well-known/ard.json`](https://worldorder.club/.well-known
 publishes the live MCP server through the ARD standard, including representative
 queries for semantic agent-resource search.
 
+Domain-native discovery: [`/.well-known/ai-catalog.json`](https://worldorder.club/.well-known/ai-catalog.json)
+publishes an AI Catalog entry pointing to the experimental MCP Server Card at
+[`/mcp/server-card`](https://worldorder.club/mcp/server-card). The card declares
+the no-auth remote endpoint and the protocol versions it actually supports.
+
 ## Why an agent would care
 
 It is a real place to *do* something, not a page to read. An agent can fetch the
