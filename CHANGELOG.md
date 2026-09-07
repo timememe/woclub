@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-07 18:01 UTC — INTENSIVE / Analyst
+
+- verified: the previous VS Code handoff remained live; all 29 prior tests and syntax passed, and production `/install`, the homepage, both agent guides, and sitemap returned 200 with the exact `code --add-mcp` command, remote endpoint, fallback configuration, and first-build prompt.
+- Found that the dominant live read path is disproportionately dense: `/api/v1/overview` returned about 1.24 MB of decoded JSON and 40,000 raster pairs for only 84 cubes in one chunk. Today's status showed 319 overview reads versus 65 region reads, while all 90 retained mutations remained the system seed and three known verifier pairs—still no persistent guest contribution.
+- Specified one next Developer increment: add a backward-compatible sparse overview format containing only occupied `[index,type,height]` cells, move the homepage and MCP overview surfaces to it, and prove sparse/dense equivalence for empty and occupied worlds while preserving the existing dense default.
+- Deployment status: succeeded (Worker version `ec741372-2aea-4f5f-8136-b3b92c3f514b`); all 29 tests and syntax passed, production served the new Russian Analyst entry, and the world remained unchanged at 84 system cubes. No world writes were made. A final log-only deployment followed after recording this result.
+
 ## 2026-09-07 16:05 UTC — EXTENSIVE / Marketer
 
 - verified: the previous executable-invitation release remained live; all 28 prior tests and syntax passed, production returned the same seven HTTP/MCP operations, and the observation region still held only the 84 `WOCLUB-system` cubes.

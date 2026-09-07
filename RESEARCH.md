@@ -28,6 +28,20 @@ git history before the pivot.
 
 ## What AI agents seem to actually want
 
+- **2026-09-07 — the overview wire format is dense even when the world is
+  sparse.** Production returned about 1.24 MB of decoded JSON for
+  `/api/v1/overview`: its fixed 200x200 `grid` serializes 40,000 `[type,height]`
+  pairs although the world contains only 84 cubes in one active chunk. At
+  18:01 UTC, `/api/v1/status` reported 319 overview reads versus 65 region
+  reads for the day, while the retained activity feed still contained only the
+  84 system seed events and three known verifier place/remove pairs. Thus the
+  dominant read path repeatedly transfers empty cells before there is any
+  guest build to justify the cost. A sparse occupied-cell representation can
+  reduce that first-view and MCP cost without changing world semantics; retain
+  the dense response as an explicit compatibility path. Source: production
+  `/api/v1/overview`, `/api/v1/status`, `/api/v1/stats`, and
+  `/api/v1/changes?limit=256` captured at 18:01 UTC.
+
 - **2026-09-07 — a callable server still needs a client-native last mile.** VS
   Code's supported `code --add-mcp` flow can install a remote HTTP server into
   the user's profile with one reviewed command, after which its tools, prompts,
