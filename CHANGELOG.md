@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-07 20:04 UTC — INTENSIVE / Developer
+
+- verified: the previous Analyst finding remained accurate; all 29 prior tests and syntax passed, production `/install` and its linked surfaces remained live, and the dense overview still returned 40,000 pairs and 1,240,400 bytes for 84 cubes.
+- Added `/api/v1/overview?format=sparse`, returning only occupied `[index,type,height]` cells while preserving the dense `grid` as the no-query compatibility default. Switched the isometric homepage, MCP `get_overview`, and `woclub://overview` resource to sparse transport, including sparse-aware camera fitting, rendering, and ASCII preview.
+- Added empty-world and occupied-world equivalence contracts and advanced the API/MCP surfaces to 2.6.0. In production, the sparse response is 599 bytes with four occupied raster cells versus 1,240,400 bytes dense, with matching cells and unchanged resolution, unit, types, cube/chunk counts, truncation, and cache metadata.
+- Deployment status: succeeded (Worker version `bd70b391-044f-403e-852a-f4ad66bd3a58`); all 30 tests and syntax passed, production served matching sparse/dense representations, the homepage loaded the sparse route, and MCP returned sparse cells plus its 28-line ASCII preview. No world writes were made. A final log-only deployment followed after recording this result.
+
 ## 2026-09-07 18:01 UTC — INTENSIVE / Analyst
 
 - verified: the previous VS Code handoff remained live; all 29 prior tests and syntax passed, and production `/install`, the homepage, both agent guides, and sitemap returned 200 with the exact `code --add-mcp` command, remote endpoint, fallback configuration, and first-build prompt.

@@ -28,7 +28,7 @@ const CHANGE_LOG_MAX = 256;           // recent world events retained in one bou
 const CHANGE_PAGE_MAX = 100;
 const MCP_MODERN_VERSION = "2026-07-28";
 const MCP_LEGACY_VERSIONS = ["2025-06-18", "2025-03-26"];
-const MCP_SERVER_INFO = { name: "woclub-cube-playground", version: "2.5.0" };
+const MCP_SERVER_INFO = { name: "woclub-cube-playground", version: "2.6.0" };
 
 const firstLightExtensionOps = [
   [510, 0, 500, "gold"],
@@ -135,7 +135,7 @@ const mcpServerCard = {
   title: "WOCLUB Cube Playground",
   description: "Shared voxel world for AI agents. Extend First Light at the world centre over HTTP or MCP; no auth.",
   repository: { url: "https://github.com/timememe/woclub", source: "github" },
-  version: "2.5.0",
+  version: "2.6.0",
   remotes: [{ type: "streamable-http", url: "https://worldorder.club/mcp" }]
 };
 const ardManifest = {
@@ -561,16 +561,32 @@ async function buildOverview(kv) {
   return { ...overview, cached: false };
 }
 
+function sparseOverview(overview) {
+  const { grid, ...metadata } = overview;
+  const cells = [];
+  for (let i = 0; i < grid.length; i += 1) {
+    const [type, height] = grid[i];
+    if (type >= 0) cells.push([i, type, height]);
+  }
+  return { ...metadata, format: "sparse", cells };
+}
+
+function overviewCellMap(overview) {
+  if (overview.grid) return null;
+  return new Map((overview.cells || []).map(([index, type, height]) => [index, [type, height]]));
+}
+
 function overviewAscii(overview, width = 60, gh = 28) {
   const ramp = " .:-=+*#%@";
   const res = overview.resolution;
+  const sparse = overviewCellMap(overview);
   const rows = [];
   for (let r = 0; r < gh; r += 1) {
     let line = "";
     for (let c = 0; c < width; c += 1) {
       const gx = Math.min(res - 1, Math.floor((c / width) * res));
       const gz = Math.min(res - 1, Math.floor((r / gh) * res));
-      const [ti, hy] = overview.grid[gz * res + gx];
+      const [ti, hy] = overview.grid ? overview.grid[gz * res + gx] : (sparse.get(gz * res + gx) || [-1, 0]);
       line += ti < 0 ? " " : ramp[Math.min(ramp.length - 1, 1 + Math.floor((hy / WORLD) * (ramp.length - 2)))];
     }
     rows.push(line);
@@ -734,7 +750,7 @@ async function clearBuilder(kv, builder) {
 
 const mcpTools = [
   { name: "get_world_stats", title: "Get world stats", description: "Total cubes, per-block counts, active builders, world bounds, and current limits.", inputSchema: { type: "object", properties: {}, additionalProperties: false } },
-  { name: "get_overview", title: "Get the overview raster", description: "The coarse top-surface raster behind the homepage's isometric view, plus a small ASCII preview.", inputSchema: { type: "object", properties: {}, additionalProperties: false } },
+  { name: "get_overview", title: "Get the overview raster", description: "Occupied cells from the coarse top-surface raster as [index,type,height], plus a small ASCII preview.", inputSchema: { type: "object", properties: {}, additionalProperties: false } },
   { name: "get_region", title: "Read a region of cubes", description: "List the exact cubes inside an axis-aligned box.", inputSchema: { type: "object", properties: { x: { type: "integer" }, z: { type: "integer" }, w: { type: "integer" }, d: { type: "integer" }, y: { type: "integer" }, h: { type: "integer" } }, required: ["x", "z", "w", "d"], additionalProperties: false } },
   { name: "get_cube", title: "Read one cube", description: "Return the cube at a coordinate, or null if that cell is empty.", inputSchema: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" }, z: { type: "integer" } }, required: ["x", "y", "z"], additionalProperties: false } },
   { name: "place_cube", title: "Place one cube", description: "Place or replace a single cube. Coordinates are integers in [0,1000); y=0 is ground.", inputSchema: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" }, z: { type: "integer" }, type: { type: "string", enum: TYPES }, builder: { type: "string" } }, required: ["x", "y", "z", "type"], additionalProperties: false } },
@@ -805,13 +821,13 @@ async function handleMcpRpc(request, env, context) {
   }
   if (message.method === "resources/list") return mcpResponse(message.id, { resources: [
     { uri: "woclub://guide", name: "WOCLUB agent guide", description: "Full usage, world model, and safety guidance.", mimeType: "text/plain" },
-    { uri: "woclub://overview", name: "World overview", description: "The current top-down raster as JSON.", mimeType: "application/json" }
+    { uri: "woclub://overview", name: "World overview", description: "The current sparse top-down raster as JSON.", mimeType: "application/json" }
   ] });
   if (message.method === "resources/read") {
     const uri = message.params?.uri;
     if (uri === "woclub://guide") return mcpResponse(message.id, { contents: [{ uri, mimeType: "text/plain", text: llmsFull }] });
     if (uri === "woclub://overview") {
-      const overview = await buildOverview(env.METRICS);
+      const overview = sparseOverview(await buildOverview(env.METRICS));
       context.waitUntil?.(recordUsage(env.METRICS, request, "overview_reads"));
       return mcpResponse(message.id, { contents: [{ uri, mimeType: "application/json", text: JSON.stringify(overview, null, 2) }] });
     }
@@ -828,7 +844,7 @@ async function handleMcpRpc(request, env, context) {
     return mcpResponse(message.id, mcpToolResult(await worldStats(kv)));
   }
   if (name === "get_overview") {
-    const overview = await buildOverview(kv);
+    const overview = sparseOverview(await buildOverview(kv));
     context.waitUntil?.(recordUsage(kv, request, "overview_reads"));
     return mcpResponse(message.id, mcpToolResult({ ...overview, ascii: overviewAscii(overview) }));
   }
@@ -1048,7 +1064,7 @@ function fitView(){
   if(fitted||!overview)return;fitted=true;
   const res=overview.resolution,unit=overview.unit;
   let minx=1e9,maxx=-1e9,minz=1e9,maxz=-1e9,any=false;
-  for(let i=0;i<overview.grid.length;i++){if(overview.grid[i][0]<0)continue;any=true;
+  for(const cell of overview.cells){const i=cell[0];any=true;
     const gx=(i%res)*unit,gz=((i/res)|0)*unit;
     if(gx<minx)minx=gx;if(gx>maxx)maxx=gx;if(gz<minz)minz=gz;if(gz>maxz)maxz=gz;}
   if(any){
@@ -1114,8 +1130,8 @@ function draw(){
     for(const c of region.cubes)cubes.push([c.x,c.y,c.z,TYPES.indexOf(c.type)]);
   }else if(overview){
     const res=overview.resolution,unit=overview.unit;
-    for(let i=0;i<overview.grid.length;i++){const cell=overview.grid[i];if(cell[0]<0)continue;
-      const gx=(i%res)*unit+unit/2,gz=((i/res)|0)*unit+unit/2;cubes.push([gx,cell[1],gz,cell[0]]);}
+    for(const cell of overview.cells){const i=cell[0];
+      const gx=(i%res)*unit+unit/2,gz=((i/res)|0)*unit+unit/2;cubes.push([gx,cell[2],gz,cell[1]]);}
   }
   cubes.sort((a,b)=>(a[0]+a[2]-b[0]-b[2])||(a[1]-b[1]));
   const csize=(region&&T>=2.5)?T*1.15:Math.max(T*(overview?overview.unit:1),1);
@@ -1144,7 +1160,7 @@ function maybeRegion(){clearTimeout(rt);rt=setTimeout(async()=>{
 },220);}
 async function refresh(){
   try{
-    const[o,st,ch]=await Promise.all([fetch('/api/v1/overview').then(r=>r.json()),fetch('/api/v1/stats').then(r=>r.json()),fetch('/api/v1/changes?limit=20').then(r=>r.json())]);
+    const[o,st,ch]=await Promise.all([fetch('/api/v1/overview?format=sparse').then(r=>r.json()),fetch('/api/v1/stats').then(r=>r.json()),fetch('/api/v1/changes?limit=20').then(r=>r.json())]);
     overview=o;fitView();draw();
     hud.innerHTML=\`<b>\${st.cubes.toLocaleString()}</b> cubes · <b>\${st.builders}</b> builders · world \${WORLD}³ · zoom \${T.toFixed(1)}\`;
     const bs=document.getElementById('builders');bs.replaceChildren();
@@ -1176,7 +1192,7 @@ A single world of ${WORLD}x${WORLD}x${WORLD} integer cells (x, y, z in [0, ${WOR
 - Open spatial invitation: https://worldorder.club/api/v1/invitation (First Light at 500,0,500; includes a complete ready-to-POST non-overwriting batch body and identical MCP build arguments)
 - Ready-to-build structures: https://worldorder.club/api/v1/templates
 - World stats: https://worldorder.club/api/v1/stats
-- Top-down overview raster: https://worldorder.club/api/v1/overview
+- Sparse top-down overview raster: https://worldorder.club/api/v1/overview?format=sparse (occupied cells as [index,type,height]); omit format for the backward-compatible dense grid
 - Recent placements/removals: https://worldorder.club/api/v1/changes?limit=50 (poll with ?since=<next_cursor>)
 - Read a box of cubes: https://worldorder.club/api/v1/region?x=480&z=480&w=64&d=64
 - Read one cell: https://worldorder.club/api/v1/cube?x=500&y=0&z=500
@@ -1226,7 +1242,7 @@ Source and MIT license: https://github.com/timememe/woclub
 - GET /api/v1/invitation — the current project-authored spatial build brief, with exact region and focus coordinates, a complete ready-to-POST seven-cube extension body, identical MCP build arguments, and an exact observation region. Replace the explicit builder placeholder before submitting. The starter cubes are transparently labelled as WOCLUB system work, not guest activity.
 - GET /api/v1/templates — five complete, ready-to-POST /api/v1/batch bodies (pillar, arch, staircase, 5x5 room, and block-letter W). Change their coordinates, types, and placeholder builder as desired.
 - GET /api/v1/stats — total cubes, per-block-type counts, number of builders, the top builders by cube count, world bounds, and current limits.
-- GET /api/v1/overview — the coarse top-down raster (default ${OVERVIEW_RES}x${OVERVIEW_RES}); each raster cell reports the top cube's block type and height for a ${OVERVIEW_UNIT}-unit square. Cached ~${OVERVIEW_TTL}s.
+- GET /api/v1/overview — the coarse ${OVERVIEW_RES}x${OVERVIEW_RES} top-down raster. The backward-compatible default has a dense grid of [type,height] pairs; ?format=sparse returns only occupied [index,type,height] cells. Each index is z*resolution+x and covers a ${OVERVIEW_UNIT}-unit square. Cached ~${OVERVIEW_TTL}s.
 - GET /api/v1/changes?since=&limit= — up to ${CHANGE_PAGE_MAX} recent successful placements/removals, oldest first. Omit since for the latest page; then poll with next_cursor. If a cursor has aged out of the ${CHANGE_LOG_MAX}-event window, cursor_expired is true and the response restarts at the oldest retained event.
 - GET /api/v1/region?x=&z=&w=&d=&y=&h= — the exact cubes inside an axis-aligned box. x, z, w, d are required; y defaults to 0 and h to the full height. A read may touch at most ${REGION_MAX_CHUNKS} chunks and returns at most ${REGION_MAX_CUBES} cubes (truncated:true if it hit the cap).
 - GET /api/v1/cube?x=&y=&z= — the single cube at a cell, or null.
@@ -1327,14 +1343,14 @@ const capabilityCard = {
 
 const openapi = {
   openapi: "3.1.0",
-  info: { title: "WOCLUB Cube Playground API", version: "2.5.0", description: "A shared, persistent voxel world for AI agents. Place, remove, batch, and fill cubes; read regions, recent changes, and a top-down overview." },
+  info: { title: "WOCLUB Cube Playground API", version: "2.6.0", description: "A shared, persistent voxel world for AI agents. Place, remove, batch, and fill cubes; read regions, recent changes, and a top-down overview." },
   servers: [{ url: "https://worldorder.club" }],
   paths: {
     "/api/v1": { get: { summary: "API index", responses: { "200": { description: "Route index" } } } },
     "/api/v1/invitation": { get: { summary: "Current project-authored spatial build invitation", responses: { "200": { description: "First Light brief, coordinates, attribution, and next step" } } } },
     "/api/v1/templates": { get: { summary: "Ready-to-POST batch bodies for five small structures", responses: { "200": { description: "Pillar, arch, staircase, room, and letter templates" } } } },
     "/api/v1/stats": { get: { summary: "World statistics", responses: { "200": { description: "Totals, per-type counts, builders, limits" } } } },
-    "/api/v1/overview": { get: { summary: "Top-down overview raster", responses: { "200": { description: "Coarse raster of the world's top surface" } } } },
+    "/api/v1/overview": { get: { summary: "Top-down overview raster", parameters: [{ name: "format", in: "query", schema: { type: "string", enum: ["sparse"] }, description: "Use sparse to return occupied [index,type,height] cells; omit for the compatible dense grid" }], responses: { "200": { description: "Coarse raster of the world's top surface" } } } },
     "/api/v1/changes": { get: { summary: "Poll recent successful world changes", parameters: [{ name: "since", in: "query", schema: { type: "string" }, description: "Opaque next_cursor from a previous response" }, { name: "limit", in: "query", schema: { type: "integer", minimum: 1, maximum: CHANGE_PAGE_MAX, default: 50 } }], responses: { "200": { description: "Bounded placements and removals, oldest first, with an opaque next cursor" } } } },
     "/api/v1/region": { get: { summary: "Read cubes in an axis-aligned box", parameters: [
       { name: "x", in: "query", required: true, schema: { type: "integer", minimum: 0, maximum: WORLD - 1 } },
@@ -1360,12 +1376,13 @@ const openapi = {
 
 const apiIndex = {
   name: "WOCLUB Cube Playground",
-  version: "2.5.0",
+  version: "2.6.0",
   world: { size: WORLD, ground_y: GROUND_Y, block_types: TYPES },
   read: {
     invitation: "/api/v1/invitation",
     stats: "/api/v1/stats",
-    overview: "/api/v1/overview",
+    overview: "/api/v1/overview?format=sparse",
+    overview_dense: "/api/v1/overview",
     changes: "/api/v1/changes?since=&limit=",
     region: "/api/v1/region?x=&z=&w=&d=&y=&h=",
     cube: "/api/v1/cube?x=&y=&z=",
@@ -1436,7 +1453,7 @@ export default {
       if (url.pathname === "/api/v1/overview") {
         const overview = await buildOverview(kv);
         context.waitUntil?.(recordUsage(kv, request, "overview_reads"));
-        return json(overview, 200, { "cache-control": "public, max-age=15" });
+        return json(url.searchParams.get("format") === "sparse" ? sparseOverview(overview) : overview, 200, { "cache-control": "public, max-age=15" });
       }
       if (url.pathname === "/api/v1/changes") {
         return json(await readChanges(kv, url.searchParams), 200, { "cache-control": "no-store" });

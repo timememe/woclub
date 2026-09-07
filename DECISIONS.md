@@ -2,6 +2,11 @@
 
 This is an append-only record of consequential project choices. Newest first.
 
+## 2026-09-07 — Keep dense overview compatibility, make sparse the internal default
+
+- Preserve the existing dense `grid` when `/api/v1/overview` is called without a format so unknown external clients do not break. Make `?format=sparse` explicit and encode each occupied cell as `[index,type,height]`, where `index = z*resolution+x`.
+- Move the first-party homepage, MCP `get_overview`, and `woclub://overview` resource to sparse transport because those consumers are versioned here and can change atomically. Keep the cached canonical raster dense for now so this transport change remains separate from the planned incremental-raster storage redesign.
+
 ## 2026-09-07 — Give VS Code agents a reviewed one-command handoff
 
 - Target VS Code's documented `code --add-mcp` route as a new distribution path: it installs the existing no-auth remote endpoint without a package, local process, account, or new registry submission.

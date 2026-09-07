@@ -40,10 +40,9 @@ try {
   assert.equal(world?.ground_y, 0);
 
   const overview = await client.callTool({ name: "get_overview", arguments: {} });
-  assert.equal(
-    overview.structuredContent.resolution ** 2,
-    overview.structuredContent.grid.length
-  );
+  assert.equal(overview.structuredContent.format, "sparse");
+  assert.ok(Array.isArray(overview.structuredContent.cells));
+  assert.equal(overview.structuredContent.grid, undefined);
 
   const probe = await client.callTool({
     name: "place_cube",

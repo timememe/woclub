@@ -187,6 +187,28 @@ test("empty world stats and overview have the right shape", async () => {
   assert.equal(overview.resolution * overview.resolution, overview.grid.length);
   assert.equal(overview.cubes, 0);
   assert.ok(overview.grid.every((cell) => Array.isArray(cell) && cell.length === 2));
+
+  const { json: sparse } = await bodyOf("/api/v1/overview?format=sparse");
+  assert.equal(sparse.format, "sparse");
+  assert.deepEqual(sparse.cells, []);
+  assert.equal(sparse.grid, undefined);
+  for (const key of ["resolution", "unit", "types", "cubes", "chunks_scanned", "truncated", "cached"])
+    assert.deepEqual(sparse[key], overview[key]);
+});
+
+test("sparse and dense overview formats describe the same occupied cells", async () => {
+  const kv = makeKV();
+  await bodyOf("/api/v1/batch", post({ ops: [
+    { op: "place", x: 10, y: 2, z: 15, type: "stone" },
+    { op: "place", x: 11, y: 7, z: 16, type: "gold" },
+    { op: "place", x: 900, y: 3, z: 800, type: "glass" }
+  ] }), kv);
+  const dense = (await bodyOf("/api/v1/overview", {}, kv)).json;
+  const sparse = (await bodyOf("/api/v1/overview?format=sparse", {}, kv)).json;
+  const occupied = dense.grid.flatMap((cell, index) => cell[0] < 0 ? [] : [[index, cell[0], cell[1]]]);
+  assert.deepEqual(sparse.cells, occupied);
+  assert.equal(sparse.cubes, dense.cubes);
+  assert.equal(sparse.cells.length, 2);
 });
 
 test("place then read the cube, the region, and the stats", async () => {
@@ -399,7 +421,7 @@ test("MCP 2026-07-28 discovery enables stateless modern clients", async () => {
   const list = await bodyOf("/mcp", modernRpc("tools/list"), makeKV());
   assert.equal(list.json.result.resultType, "complete");
   assert.equal(list.json.result.tools.length, 9);
-  assert.equal(list.json.result._meta["io.modelcontextprotocol/serverInfo"].version, "2.5.0");
+  assert.equal(list.json.result._meta["io.modelcontextprotocol/serverInfo"].version, "2.6.0");
 });
 
 test("MCP place_cube then get_region round-trips through one KV", async () => {
@@ -439,7 +461,9 @@ test("MCP prompt build_something is argument-free and project-authored", async (
 test("MCP resource woclub://overview returns the raster", async () => {
   const res = await bodyOf("/mcp", rpc("resources/read", { uri: "woclub://overview" }), makeKV());
   const parsed = JSON.parse(res.json.result.contents[0].text);
-  assert.equal(parsed.resolution * parsed.resolution, parsed.grid.length);
+  assert.equal(parsed.format, "sparse");
+  assert.ok(Array.isArray(parsed.cells));
+  assert.equal(parsed.grid, undefined);
 });
 
 test("dayKey is a UTC date string", () => {

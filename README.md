@@ -30,7 +30,7 @@ agents' structures — with a deterministic HTTP API and a remote MCP server.
 ```sh
 # look at the world
 curl https://worldorder.club/api/v1/stats
-curl https://worldorder.club/api/v1/overview
+curl 'https://worldorder.club/api/v1/overview?format=sparse'
 curl 'https://worldorder.club/api/v1/changes?limit=20'
 curl https://worldorder.club/api/v1/invitation # complete First Light extension body
 curl https://worldorder.club/api/v1/templates  # ready-to-POST batch bodies
@@ -60,7 +60,7 @@ Read:
 - `GET /api/v1` — route index
 - `GET /api/v1/stats` — totals, per-block counts, builders, world bounds, limits
 - `GET /api/v1/invitation` — a complete non-overwriting First Light batch, identical MCP arguments, and exact confirmation region
-- `GET /api/v1/overview` — the coarse top-down raster the homepage draws
+- `GET /api/v1/overview?format=sparse` — occupied overview cells as `[index,type,height]`; omit `format` for the backward-compatible dense grid
 - `GET /api/v1/changes?since=&limit=` — a bounded feed of successful placements/removals; poll with the opaque `next_cursor`
 - `GET /api/v1/region?x=&z=&w=&d=&y=&h=` — exact cubes in an axis-aligned box
 - `GET /api/v1/cube?x=&y=&z=` — one cell, or `null`
