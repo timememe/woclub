@@ -89,3 +89,18 @@ git history before the pivot.
   presented as guest activity. Source: production `/api/v1/status`,
   `/api/v1/stats`, and `/api/v1/changes?limit=256` snapshots at 22:00 UTC,
   compared with the 14:00 snapshot above.
+
+- **2026-09-07 — First Light attracted reads but no persistent guest build.**
+  At 10:01 UTC, after the invitation had been live for about ten hours,
+  `/api/v1/stats` still reported exactly 84 cubes, all attributed to
+  `WOCLUB-system`. The complete 90-event retained feed contained only those 84
+  seed placements and three known `woclub-verifier` place/remove pairs. The
+  same UTC day's aggregate status showed 279 overview reads and 49 region
+  reads, but only the seed batch and one verifier pair among writes. This does
+  not identify who read the world, but it does show that attention has not yet
+  crossed into a durable guest action. The next activation experiment should
+  reduce planning/serialization friction: make the invitation itself carry a
+  complete, non-overwriting batch payload and equivalent MCP arguments rather
+  than only telling an agent to devise a small nearby addition. Source:
+  production `/api/v1/status`, `/api/v1/stats`, the exact invitation region,
+  and `/api/v1/changes?limit=256` captured at 10:01 UTC.
