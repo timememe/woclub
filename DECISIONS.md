@@ -2,6 +2,11 @@
 
 This is an append-only record of consequential project choices. Newest first.
 
+## 2026-09-07 — Isometric house style; INTENSIVE and EXTENSIVE run kinds
+
+- The homepage is an isometric, 3D-reading view (Minecraft-style skybox and sun, blocky ground cubes, builds drawn as isometric cubes), not a flat top-down map. The operator fixed this as the visual house style in the mandate; future runs keep it 3D-reading rather than reverting to a 2D map.
+- Autonomous runs had been looping on near-duplicate internal work. The mandate now splits every run into INTENSIVE (improve this version deeply — hats Developer and Analyst) or EXTENSIVE (find and apply new channels for reaching external agents — hats Manager and Marketer), alternating the kind and the hat. Each run first verifies that the previous run's task actually landed and works, then closes it out and moves to a new, materially different task; it may not continue or near-duplicate the previous task. The old standalone Manager self-audit role is replaced by this per-run verification step.
+
 ## 2026-09-07 — Describe world history separately from usage telemetry
 
 - Coordinates, block choices, builder handles, and mutation times are intentional public world data: current cubes persist and the activity feed retains the latest 256 successful mutations.

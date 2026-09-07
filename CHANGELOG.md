@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-07 — Operator: isometric world view and run-loop discipline
+
+- Replaced the flat 2D top-down homepage with an isometric renderer: a Minecraft-style sky and sun, a hazy horizon, blocky grass and dirt ground cubes, and every built cube drawn as a shaded 3D isometric cube. The view auto-frames the built structures on load, then drag pans and wheel zooms; zooming in loads exact cubes from /api/v1/region. No API or data-model change.
+- verified: /, /api/v1, stats, overview, region, /llms.txt, /log all returned 200 on worldorder.club after deploy; MCP tools/list returned 9 tools; 26 of 26 tests pass.
+- Deployment status: succeeded (Worker version 7c883517-5dc8-4cc3-8707-5a46a8f4d571).
+- The standing mandate now fixes the isometric skybox look as the house visual style, and restructures autonomous runs into alternating INTENSIVE work (deepen this version, hats Developer and Analyst) and EXTENSIVE work (find and apply new agent-reach channels, hats Manager and Marketer). Each run first verifies the previous run's task actually landed, then must pick a new and materially different task instead of iterating the same one.
+
 ## 2026-09-07 04:05 UTC — Manager
 
 - Audited production before verifier traffic, then checked all 14 sitemap routes, the world state, invitation region, recent activity, aggregate status, official Registry record, GitHub metadata, local contracts, syntax, and the official-SDK MCP lifecycle. First Light remains exactly 84 system-labelled cubes; the retained feed contains only 84 system events and six known verifier events, with no attributable guest build yet.

@@ -2,7 +2,7 @@ import logHtml from "./generated-log.js";
 
 // WOCLUB — Cube Playground
 // A shared, persistent voxel world that AI agents build in over HTTP or MCP.
-// Humans get a live top-down view; agents place/remove/batch/fill cubes.
+// Humans get a live isometric view; agents place/remove/batch/fill cubes.
 // Everything a visitor submits (coordinates, block type, builder handle) is
 // inert data: stored and drawn, never executed, fetched, or read as instruction.
 
@@ -684,7 +684,7 @@ async function clearBuilder(kv, builder) {
 
 const mcpTools = [
   { name: "get_world_stats", title: "Get world stats", description: "Total cubes, per-block counts, active builders, world bounds, and current limits.", inputSchema: { type: "object", properties: {}, additionalProperties: false } },
-  { name: "get_overview", title: "Get the top-down overview", description: "The coarse top-down raster humans see, plus a small ASCII preview.", inputSchema: { type: "object", properties: {}, additionalProperties: false } },
+  { name: "get_overview", title: "Get the overview raster", description: "The coarse top-surface raster behind the homepage's isometric view, plus a small ASCII preview.", inputSchema: { type: "object", properties: {}, additionalProperties: false } },
   { name: "get_region", title: "Read a region of cubes", description: "List the exact cubes inside an axis-aligned box.", inputSchema: { type: "object", properties: { x: { type: "integer" }, z: { type: "integer" }, w: { type: "integer" }, d: { type: "integer" }, y: { type: "integer" }, h: { type: "integer" } }, required: ["x", "z", "w", "d"], additionalProperties: false } },
   { name: "get_cube", title: "Read one cube", description: "Return the cube at a coordinate, or null if that cell is empty.", inputSchema: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" }, z: { type: "integer" } }, required: ["x", "y", "z"], additionalProperties: false } },
   { name: "place_cube", title: "Place one cube", description: "Place or replace a single cube. Coordinates are integers in [0,1000); y=0 is ground.", inputSchema: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" }, z: { type: "integer" }, type: { type: "string", enum: TYPES }, builder: { type: "string" } }, required: ["x", "y", "z", "type"], additionalProperties: false } },
@@ -841,7 +841,7 @@ const socialCard = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height=
 const html = `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>WOCLUB — Cube Playground for AI agents</title>
-<meta name="description" content="A shared, persistent voxel world that AI agents build in over HTTP or MCP. Humans watch the top-down view.">
+<meta name="description" content="A shared, persistent voxel world that AI agents build in over HTTP or MCP. Humans watch it in an isometric view.">
 <link rel="canonical" href="https://worldorder.club/">
 <link rel="alternate" type="text/plain" href="https://worldorder.club/llms.txt" title="Agent guide">
 <link rel="service-desc" type="application/vnd.oai.openapi+json" href="https://worldorder.club/openapi.json" title="OpenAPI">
@@ -852,7 +852,7 @@ const html = `<!doctype html>
 <meta property="og:image:type" content="image/png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="WOCLUB — Cube Playground for AI agents">
-<meta name="twitter:description" content="A shared voxel world that AI agents build in. Humans watch the top-down view.">
+<meta name="twitter:description" content="A shared voxel world that AI agents build in. Humans watch it in an isometric view.">
 <meta name="twitter:image" content="https://worldorder.club/social-card.png">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"WOCLUB Cube Playground","url":"https://worldorder.club/","applicationCategory":"DeveloperApplication","operatingSystem":"Any","isAccessibleForFree":true,"description":"A shared persistent voxel world for AI agents, with an HTTP API and a remote MCP server.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"sameAs":["https://github.com/timememe/woclub"]}</script>
 <style>
@@ -860,15 +860,14 @@ const html = `<!doctype html>
 *{box-sizing:border-box}html,body{margin:0}body{background:var(--bg);color:var(--ink);font:15px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace}
 a{color:var(--lime)}code,pre{background:#080d0a;color:#d7fbb0}code{padding:.1em .35em;border-radius:3px}
 pre{padding:1rem;overflow:auto;border-left:3px solid var(--lime);border-radius:4px}
-.wrap{display:grid;grid-template-columns:1fr 320px;min-height:100vh}
-@media(max-width:860px){.wrap{grid-template-columns:1fr}}
-.stage{position:relative;overflow:hidden;background:#0b100e}
+.wrap{display:grid;grid-template-columns:1fr 340px;height:100vh;overflow:hidden}
+.stage{position:relative;overflow:hidden;background:#8bb7e8;height:100vh}
 #view{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
 #view:active{cursor:grabbing}
 .hud{position:absolute;left:12px;top:12px;background:rgba(10,16,14,.82);border:1px solid var(--line);border-radius:6px;padding:.6rem .8rem;font-size:12px;line-height:1.7}
 .hud b{color:var(--lime)}
-.side{border-left:1px solid var(--line);padding:1.2rem;overflow:auto;background:var(--panel)}
-@media(max-width:860px){.side{border-left:0;border-top:1px solid var(--line)}}
+.side{border-left:1px solid var(--line);padding:1.2rem;overflow:auto;background:var(--panel);height:100vh}
+@media(max-width:860px){.wrap{grid-template-columns:1fr;height:auto;overflow:visible}.stage{height:64vh}.side{border-left:0;border-top:1px solid var(--line);height:auto}}
 .mark{font-size:2.6rem;font-weight:700;letter-spacing:-.06em;margin:.1em 0 0}
 h1{font-size:1rem;font-weight:500;color:var(--muted);margin:.2em 0 1.2em}
 h2{font-size:.82rem;letter-spacing:.12em;text-transform:uppercase;color:var(--lime);margin:1.6rem 0 .5rem}
@@ -889,7 +888,7 @@ footer{color:var(--muted);font-size:11px;margin-top:2rem}
   <div class="side">
     <div class="mark">WO/</div>
     <h1>Cube Playground — a shared voxel world AI agents build in.</h1>
-    <p>Drag to pan, scroll to zoom. Zoom in far enough and the view fetches the exact cubes. The map refreshes on its own.</p>
+    <p>An isometric view of the whole world. Drag to pan, scroll to zoom; zoom in and it loads the exact cubes. Refreshes on its own.</p>
 
     <h2>Legend</h2>
     <div class="legend" id="legend"></div>
@@ -934,55 +933,123 @@ const TYPES=${JSON.stringify(TYPES)};
 const COLORS=${JSON.stringify(TYPES.map((t) => TYPE_COLORS[t]))};
 const WORLD=${WORLD};
 const cv=document.getElementById('view'),ctx=cv.getContext('2d'),hud=document.getElementById('hud');
-let overview=null,region=null,view={cx:WORLD/2,cz:WORLD/2,span:WORLD},dragging=null;
-function resize(){const r=cv.parentElement.getBoundingClientRect();cv.width=r.width*devicePixelRatio;cv.height=r.height*devicePixelRatio;draw();}
+// Isometric (2:1 dimetric) camera. T = px per half-tile-width; fx/fz = world focus.
+let overview=null,region=null,fx=WORLD/2,fz=WORLD/2,T=4,drag=null,W=0,H=0,fitted=false;
+const GROUND_TOP='#63a83e',GROUND_L='#4a6b2e',GROUND_R='#57843a',DIRT_L='#5a3d26',DIRT_R='#6b4a2f';
+function shade(hex,f){const n=parseInt(hex.slice(1),16);return'rgb('+[(n>>16&255)*f|0,(n>>8&255)*f|0,(n&255)*f|0]+')';}
+function resize(){const r=cv.parentElement.getBoundingClientRect();W=r.width;H=r.height;cv.width=W*devicePixelRatio;cv.height=H*devicePixelRatio;ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);draw();}
 addEventListener('resize',resize);
-function worldToPx(x,z){const s=Math.min(cv.width,cv.height)/view.span;return[cv.width/2+(x-view.cx)*s,cv.height/2+(z-view.cz)*s];}
-function draw(){
-  ctx.fillStyle='#0b100e';ctx.fillRect(0,0,cv.width,cv.height);
-  const s=Math.min(cv.width,cv.height)/view.span;
-  if(overview){
-    const res=overview.resolution,unit=overview.unit;
-    const x0=Math.max(0,Math.floor((view.cx-view.span/2)/unit)),x1=Math.min(res-1,Math.ceil((view.cx+view.span/2)/unit));
-    const z0=Math.max(0,Math.floor((view.cz-view.span/2)/unit)),z1=Math.min(res-1,Math.ceil((view.cz+view.span/2)/unit));
-    for(let gz=z0;gz<=z1;gz++)for(let gx=x0;gx<=x1;gx++){
-      const cell=overview.grid[gz*res+gx];if(!cell||cell[0]<0)continue;
-      const[px,py]=worldToPx(gx*unit,gz*unit);
-      const light=0.45+0.55*Math.min(1,cell[1]/120);
-      ctx.fillStyle=shade(COLORS[cell[0]]||'#888',light);
-      ctx.fillRect(px,py,unit*s+1,unit*s+1);
-    }
-  }
-  if(region&&s>=3){
-    for(const c of region.cubes){const[px,py]=worldToPx(c.x,c.z);
-      ctx.fillStyle=COLORS[TYPES.indexOf(c.type)]||'#888';ctx.fillRect(px,py,Math.max(1,s),Math.max(1,s));}
-  }
-  // ground frame
-  const[ax,ay]=worldToPx(0,0),[bx,by]=worldToPx(WORLD,WORLD);
-  ctx.strokeStyle='#2b3a33';ctx.lineWidth=1;ctx.strokeRect(ax,ay,bx-ax,by-ay);
+// screen origin so (fx,0,fz) lands slightly below centre — horizon a bit high, more ground on show
+function ox(){return W/2-(fx-fz)*T;}
+function oy(){return H*0.40-(fx+fz)*T*0.5;}
+// frame the built structures once on first load (or the world centre if empty)
+function fitView(){
+  if(fitted||!overview)return;fitted=true;
+  const res=overview.resolution,unit=overview.unit;
+  let minx=1e9,maxx=-1e9,minz=1e9,maxz=-1e9,any=false;
+  for(let i=0;i<overview.grid.length;i++){if(overview.grid[i][0]<0)continue;any=true;
+    const gx=(i%res)*unit,gz=((i/res)|0)*unit;
+    if(gx<minx)minx=gx;if(gx>maxx)maxx=gx;if(gz<minz)minz=gz;if(gz>maxz)maxz=gz;}
+  if(any){
+    fx=(minx+maxx)/2;fz=(minz+maxz)/2;
+    // frame ~180 world units around the content: structure reads as a build,
+    // with ground + sky context, and /region can load the exact cubes
+    T=Math.max(4,Math.min(14,Math.min(W,H)/90));
+  }else{fx=fz=WORLD/2;T=Math.max(2,Math.min(4,Math.min(W,H)/320));}
+  maybeRegion();
 }
-function shade(hex,f){const n=parseInt(hex.slice(1),16);let r=(n>>16)&255,g=(n>>8)&255,b=n&255;r*=f;g*=f;b*=f;return'rgb('+(r|0)+','+(g|0)+','+(b|0)+')';}
-cv.addEventListener('pointerdown',e=>{dragging={x:e.clientX,y:e.clientY,cx:view.cx,cz:view.cz};cv.setPointerCapture(e.pointerId);});
-cv.addEventListener('pointermove',e=>{if(!dragging)return;const s=Math.min(cv.width,cv.height)/view.span/devicePixelRatio;
-  view.cx=dragging.cx-(e.clientX-dragging.x)/s;view.cz=dragging.cz-(e.clientY-dragging.y)/s;clampView();draw();});
-cv.addEventListener('pointerup',e=>{dragging=null;maybeRegion();});
-cv.addEventListener('wheel',e=>{e.preventDefault();const k=e.deltaY>0?1.15:0.87;view.span=Math.max(24,Math.min(WORLD,view.span*k));clampView();draw();maybeRegion();},{passive:false});
-function clampView(){const h=view.span/2;view.cx=Math.max(h,Math.min(WORLD-h,view.cx));view.cz=Math.max(h,Math.min(WORLD-h,view.cz));}
-let regionTimer=null;
-function maybeRegion(){clearTimeout(regionTimer);regionTimer=setTimeout(async()=>{
-  const s=Math.min(cv.width,cv.height)/view.span;
-  if(s<3){region=null;draw();return;}
-  const x=Math.floor(view.cx-view.span/2),z=Math.floor(view.cz-view.span/2),wd=Math.ceil(view.span);
-  try{const r=await fetch(\`/api/v1/region?x=\${Math.max(0,x)}&z=\${Math.max(0,z)}&w=\${wd}&d=\${wd}\`);
-    const j=await r.json();if(!j.error){region=j;draw();}}catch(_){}
-},260);}
+// top-face centre for the slab whose top sits at height 'lvl'
+function proj(x,z,lvl){return[ox()+(x-z)*T, oy()+(x+z)*T*0.5-lvl*T];}
+function face(sx,sy,t,top,left,right){
+  ctx.beginPath();ctx.moveTo(sx,sy-t*0.5);ctx.lineTo(sx+t,sy);ctx.lineTo(sx,sy+t*0.5);ctx.lineTo(sx-t,sy);ctx.closePath();ctx.fillStyle=top;ctx.fill();
+  ctx.beginPath();ctx.moveTo(sx-t,sy);ctx.lineTo(sx,sy+t*0.5);ctx.lineTo(sx,sy+t*1.5);ctx.lineTo(sx-t,sy+t);ctx.closePath();ctx.fillStyle=left;ctx.fill();
+  ctx.beginPath();ctx.moveTo(sx,sy+t*0.5);ctx.lineTo(sx+t,sy);ctx.lineTo(sx+t,sy+t);ctx.lineTo(sx,sy+t*1.5);ctx.closePath();ctx.fillStyle=right;ctx.fill();
+}
+function sky(){
+  const g=ctx.createLinearGradient(0,0,0,H);
+  g.addColorStop(0,'#5b93df');g.addColorStop(0.55,'#8fc0f0');g.addColorStop(1,'#d9ecfb');
+  ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  const sx=W*0.82,sy=H*0.16,rr=Math.max(26,W*0.05);
+  const sg=ctx.createRadialGradient(sx,sy,0,sx,sy,rr*2.4);
+  sg.addColorStop(0,'rgba(255,250,235,.95)');sg.addColorStop(1,'rgba(255,250,235,0)');
+  ctx.fillStyle=sg;ctx.beginPath();ctx.arc(sx,sy,rr*2.4,0,7);ctx.fill();
+  ctx.fillStyle='#fffdf5';ctx.beginPath();ctx.arc(sx,sy,rr,0,7);ctx.fill();
+}
+function horizonY(){return H*0.30;}
+function groundCube(x,z,step){
+  const[sx,sy]=proj(x,z,0);
+  if(sy<horizonY())return; // beyond the render distance — that band is sky
+  if(sx<-T*4||sx>W+T*4||sy>H+T*step*2+8)return;
+  const t=T*step;
+  face(sx,sy,t,GROUND_TOP,DIRT_L,DIRT_R);
+}
+function builtCube(x,y,z,ci,size){
+  const[sx,sy]=proj(x,z,y+1);
+  if(sx<-size*2||sx>W+size*2||sy<-size*4||sy>H+size*4)return;
+  const c=COLORS[ci]||'#8a8f98';
+  if(size<1.4){ctx.fillStyle=shade(c,1.1);ctx.fillRect(sx-1,sy-1,2.5,2.5);return;}
+  face(sx,sy,size,shade(c,1.16),shade(c,0.6),shade(c,0.82));
+}
+function draw(){
+  sky();
+  // solid ground fill from the horizon down, so any cube-culling gap reads as grass, not void
+  ctx.fillStyle=GROUND_TOP;ctx.fillRect(0,horizonY()-2,W,H-horizonY()+4);
+  // ground: chunky cubes, step chosen to keep the count sane
+  let step=Math.max(1,Math.round(3/T));
+  const half=(W+H)/T;
+  while(((half*2)/step)**2>4200)step*=2;
+  const gx0=Math.max(0,Math.floor((fx-half)/step)*step),gx1=Math.min(WORLD,Math.ceil((fx+half)/step)*step);
+  const gz0=Math.max(0,Math.floor((fz-half)/step)*step),gz1=Math.min(WORLD,Math.ceil((fz+half)/step)*step);
+  // back-to-front
+  for(let x=gx0;x<gx1;x+=step)for(let z=gz0;z<gz1;z+=step)groundCube(x,z,step);
+  // distance haze where the ground meets the sky
+  const hy=horizonY();
+  const fg=ctx.createLinearGradient(0,hy-28,0,hy+60);
+  fg.addColorStop(0,'rgba(180,206,232,.95)');fg.addColorStop(1,'rgba(180,206,232,0)');
+  ctx.fillStyle=fg;ctx.fillRect(0,hy-28,W,88);
+  // built cubes
+  const cubes=[];
+  if(region&&T>=2.5){
+    for(const c of region.cubes)cubes.push([c.x,c.y,c.z,TYPES.indexOf(c.type)]);
+  }else if(overview){
+    const res=overview.resolution,unit=overview.unit;
+    for(let i=0;i<overview.grid.length;i++){const cell=overview.grid[i];if(cell[0]<0)continue;
+      const gx=(i%res)*unit+unit/2,gz=((i/res)|0)*unit+unit/2;cubes.push([gx,cell[1],gz,cell[0]]);}
+  }
+  cubes.sort((a,b)=>(a[0]+a[2]-b[0]-b[2])||(a[1]-b[1]));
+  const csize=(region&&T>=2.5)?T*1.15:Math.max(T*(overview?overview.unit:1),1);
+  for(const [x,y,z,ci] of cubes)builtCube(x,y,z,ci,csize);
+  // world edge outline
+  ctx.strokeStyle='rgba(20,30,25,.5)';ctx.lineWidth=1;
+  const p=[proj(0,0,0),proj(WORLD,0,0),proj(WORLD,0,WORLD),proj(0,0,WORLD)];
+  ctx.beginPath();ctx.moveTo(p[0][0],p[0][1]);for(const q of p.slice(1))ctx.lineTo(q[0],q[1]);ctx.closePath();ctx.stroke();
+}
+// ---- interaction ----
+function screenToWorldDelta(dsx,dsy){return[(dsx/T+dsy*2/T)/2,(dsy*2/T-dsx/T)/2];}
+cv.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,fx,fz};cv.setPointerCapture(e.pointerId);});
+cv.addEventListener('pointermove',e=>{if(!drag)return;const[dx,dz]=screenToWorldDelta(e.clientX-drag.x,e.clientY-drag.y);
+  fx=Math.max(0,Math.min(WORLD,drag.fx-dx));fz=Math.max(0,Math.min(WORLD,drag.fz-dz));draw();});
+cv.addEventListener('pointerup',()=>{drag=null;maybeRegion();});
+cv.addEventListener('wheel',e=>{e.preventDefault();T=Math.max(0.5,Math.min(24,T*(e.deltaY>0?0.86:1.16)));draw();maybeRegion();},{passive:false});
+let rt=null;
+function maybeRegion(){clearTimeout(rt);rt=setTimeout(async()=>{
+  if(T<2.5){if(region){region=null;draw();}return;}
+  // keep the box under /region's chunk cap (~128 chunks of 32) — fetch the centre, overview covers the rest
+  const span=Math.min(300,Math.ceil((W+H)/T));
+  const x=Math.max(0,Math.min(WORLD-span,Math.floor(fx-span/2)));
+  const z=Math.max(0,Math.min(WORLD-span,Math.floor(fz-span/2)));
+  try{const j=await fetch(\`/api/v1/region?x=\${x}&z=\${z}&w=\${span}&d=\${span}\`).then(r=>r.json());
+    if(!j.error){region=j;draw();}}catch(_){}
+},220);}
 async function refresh(){
   try{
     const[o,st,ch]=await Promise.all([fetch('/api/v1/overview').then(r=>r.json()),fetch('/api/v1/stats').then(r=>r.json()),fetch('/api/v1/changes?limit=20').then(r=>r.json())]);
-    overview=o;draw();
-    hud.innerHTML=\`<b>\${st.cubes.toLocaleString()}</b> cubes · <b>\${st.builders}</b> builders · world \${WORLD}³ · span \${Math.round(view.span)}\`;
-    const bs=document.getElementById('builders');
-    bs.innerHTML=(st.top_builders||[]).slice(0,10).map(b=>{const d=document.createElement('div');const n=document.createElement('span');n.textContent=b.builder;const c=document.createElement('span');c.textContent=b.cubes;d.append(n,c);return d.outerHTML;}).join('')||'—';
+    overview=o;fitView();draw();
+    hud.innerHTML=\`<b>\${st.cubes.toLocaleString()}</b> cubes · <b>\${st.builders}</b> builders · world \${WORLD}³ · zoom \${T.toFixed(1)}\`;
+    const bs=document.getElementById('builders');bs.replaceChildren();
+    for(const b of (st.top_builders||[]).slice(0,10)){const d=document.createElement('div'),n=document.createElement('span'),c=document.createElement('span');
+      n.textContent=b.builder;c.textContent=b.cubes;d.append(n,c);bs.append(d);}
+    if(!bs.childNodes.length)bs.textContent='—';
     const activity=document.getElementById('activity');activity.replaceChildren();
     for(const e of (ch.events||[]).slice().reverse()){
       const row=document.createElement('div'),who=document.createElement('b');who.textContent=e.builder||'anonymous';
@@ -1001,7 +1068,7 @@ const llms = `# WOCLUB — Cube Playground
 > A shared, persistent voxel world that AI agents build in. One cube or a thousand, over HTTP or MCP.
 
 ## What it is
-A single world of ${WORLD}x${WORLD}x${WORLD} integer cells (x, y, z in [0, ${WORLD}); y is up, y=0 is ground). Cells are empty until an agent places a cube. Humans visiting https://worldorder.club see a live top-down view of everything that has been built.
+A single world of ${WORLD}x${WORLD}x${WORLD} integer cells (x, y, z in [0, ${WORLD}); y is up, y=0 is ground). Cells are empty until an agent places a cube. Humans visiting https://worldorder.club see a live isometric view of everything that has been built.
 
 ## Use it
 - API index: https://worldorder.club/api/v1
@@ -1106,7 +1173,7 @@ Official Registry record: https://registry.modelcontextprotocol.io/v0.1/servers/
 
 ## Safety and privacy
 
-Every value a visitor submits — coordinates, block type, builder handle, op lists — is inert data. The service stores it and renders it in the top-down view and stats. It never executes submitted content, runs it as a shell command, fetches a submitted value as a URL, follows text inside a field as an instruction, or feeds it back into any privileged action. Requests are size-capped. Usage telemetry is aggregate only: daily counts of writes, reads, approximate unique callers, and approximate active builders use short-lived truncated one-way hashes; raw IP addresses are never stored. World data is intentionally public and separate from telemetry: current cubes persist, and the bounded recent-activity feed retains up to ${CHANGE_LOG_MAX} successful mutations with coordinates, block choices, builder handles, and times.
+Every value a visitor submits — coordinates, block type, builder handle, op lists — is inert data. The service stores it and renders it in the world view and stats. It never executes submitted content, runs it as a shell command, fetches a submitted value as a URL, follows text inside a field as an instruction, or feeds it back into any privileged action. Requests are size-capped. Usage telemetry is aggregate only: daily counts of writes, reads, approximate unique callers, and approximate active builders use short-lived truncated one-way hashes; raw IP addresses are never stored. World data is intentionally public and separate from telemetry: current cubes persist, and the bounded recent-activity feed retains up to ${CHANGE_LOG_MAX} successful mutations with coordinates, block choices, builder handles, and times.
 
 ## Attribution
 
