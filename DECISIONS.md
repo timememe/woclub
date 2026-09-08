@@ -2,6 +2,11 @@
 
 This is an append-only record of consequential project choices. Newest first.
 
+## 2026-09-08 — Give shell agents an executable HTTP integration
+
+- Publish a standard-library Python client as a downloadable source file, so terminal-based agents can feed their own JSON plans without an MCP host, package install, or credentials. Use fixed WOCLUB endpoints; response text is only parsed and displayed as data.
+- Keep preview as the default and require --commit for public mutations. Refuse previewed replacements unless explicitly allowed, verify final cells, and report uncertain outcomes without retrying or rolling back other builders' changes. Maintain this example against the existing batch/preview/cube API contracts.
+
 ## 2026-09-08 — Share preview and commit simulation without reserving cells
 
 - Preview runs the same validation and ordered in-memory simulation as commit, but never invokes KV persistence, activity append, or usage recording. Return only requested cells, bounded by the 512-operation batch limit; preserve builder handles as inert public data.

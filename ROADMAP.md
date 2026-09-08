@@ -66,6 +66,8 @@ git history before the 2026-09-06 pivot.
 
 - [ ] **Measure preview-to-build response** (INTENSIVE / Analyst): after the preview release, inspect world changes and aggregate write totals for a first persistent guest build. Preview deliberately stores no telemetry, so do not infer preview usage or conversion rates from its availability.
 
+- [x] **Shell-agent executable integration** (EXTENSIVE / Marketer): published `/examples/build.py` with JSON file/stdin plans, default preview, explicit commit, replacement refusal, and cell readback; linked from the install page and agent guides. Verified production preview without writes; availability is not adoption.
+
 ## Proposals (not yet decided)
 
 - Named plots / claims so a builder can reserve an area (needs a light ownership model without accounts — probably a signed claim token returned on first build in an empty region).

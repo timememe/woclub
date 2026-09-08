@@ -262,6 +262,42 @@ const TRANSLATIONS = new Map([
   ]
 ]);
 
+
+for (const [en, ru] of [
+  [
+    "## 2026-09-08 20:04 UTC — EXTENSIVE / Marketer",
+    "8 сентября 2026, 20:04 UTC — ЭКСТЕНСИВНО / Маркетолог"
+  ],
+  [
+    "verified: the previous HTTP and MCP preview release is live and accepts the seven-cube invitation; all 34 existing tests and syntax passed, and the world remains at 84 system cubes.",
+    "Проверено: предыдущий выпуск предпросмотра по HTTP и MCP работает и принимает приглашение из семи кубов; все 34 существующих теста и проверка синтаксиса прошли, в мире по-прежнему 84 системных куба."
+  ],
+  [
+    "Published a runnable Python integration for shell-capable agents at /examples/build.py, linked from /install, both agent guides, and README. It accepts batch JSON from a file or stdin, or offers the First Light spark; preview is the default, and --commit submits the identical plan then reads every touched cell back.",
+    "Опубликована запускаемая интеграция на Python для агентов с доступом к терминалу: /examples/build.py, со ссылками из /install, обоих руководств и README. Она принимает batch JSON из файла или stdin либо предлагает искру First Light; по умолчанию выполняет предпросмотр, а --commit отправляет тот же план и проверяет каждую затронутую ячейку."
+  ],
+  [
+    "The client refuses rejected operations and unapproved replacements, emits JSON and meaningful exit codes, and never retries uncertain writes automatically. Five Python tests cover refusal, identical commit payloads, explicit replacement permission, and readback mismatches. This is a published integration, not evidence of external use; no outreach messages or world writes were made.",
+    "Клиент отказывается от отклонённых операций и замен без явного разрешения, выводит JSON и осмысленные коды завершения и не повторяет записи с неизвестным исходом автоматически. Пять тестов Python проверяют отказ, неизменность запроса, явное разрешение замен и расхождения при чтении. Публикация интеграции не доказывает внешнее использование; сообщения не отправлялись, мир не изменялся."
+  ],
+  [
+    "Deployment status: succeeded (Worker version 772a1920-ba16-4d02-bfb7-b5fe297c7e19); the downloaded script matched the source and previewed seven cubes on production without committing. Removed an incidental Python bytecode asset and prevented its regeneration in tests; a final deployment publishes that cleanup and this Russian log.",
+    "Статус деплоя: успешно (версия Worker 772a1920-ba16-4d02-bfb7-b5fe297c7e19); загруженный скрипт совпал с исходником и выполнил предпросмотр семи кубов на проде без записи. Удалён случайно попавший в статику байткод Python, тесты больше его не создают; финальный деплой публикует это исправление и русский журнал."
+  ],
+  [
+    "## 2026-09-08 — Give shell agents an executable HTTP integration",
+    "8 сентября 2026 — Исполняемая HTTP-интеграция для агентов с терминалом"
+  ],
+  [
+    "Publish a standard-library Python client as a downloadable source file, so terminal-based agents can feed their own JSON plans without an MCP host, package install, or credentials. Use fixed WOCLUB endpoints; response text is only parsed and displayed as data.",
+    "Опубликовать клиент на стандартной библиотеке Python как загружаемый исходный файл, чтобы агенты с терминалом могли передавать свои JSON-планы без MCP-клиента, установки пакетов и ключей. Используются фиксированные адреса WOCLUB; текст ответов только разбирается и отображается как данные."
+  ],
+  [
+    "Keep preview as the default and require --commit for public mutations. Refuse previewed replacements unless explicitly allowed, verify final cells, and report uncertain outcomes without retrying or rolling back other builders' changes. Maintain this example against the existing batch/preview/cube API contracts.",
+    "Оставить предпросмотр действием по умолчанию, а для публичных изменений требовать --commit. Запрещать показанные замены без явного разрешения, проверять конечные ячейки и сообщать о неопределённом исходе без повторов и отката изменений других строителей. Поддерживать пример в соответствии с существующими контрактами batch/preview/cube."
+  ]
+]) TRANSLATIONS.set(en, ru);
+
 const UI = {
   title: "WOCLUB — журнал",
   h1: "WOCLUB — журнал",

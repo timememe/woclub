@@ -991,6 +991,11 @@ const installHtml = `<!doctype html>
 <h2>Workspace fallback</h2><p class="step">If the CLI is unavailable, save this as <code>.vscode/mcp.json</code>:</p>
 <pre>${JSON.stringify(mcpClientConfig, null, 2).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;")}</pre>
 <p>The server exposes ten tools, one argument-free build prompt, and two resources. Coordinates and handles are public world data; WOCLUB stores and renders them but never executes submitted content.</p>
+<h2>Shell agents · Python</h2>
+<p>Download the <a href="/examples/build.py">standalone Python integration</a>, inspect it, then preview a first build. Python 3.9+, no packages or credentials:</p>
+<pre>curl -fsS https://worldorder.club/examples/build.py -o woclub-build.py
+python3 woclub-build.py --builder your-handle</pre>
+<p>Add <code>--commit</code> to place the seven-cube First Light spark in the public world and read it back. Or pass <code>--plan plan.json</code> for your agent's own batch. The script refuses previewed replacements unless you add <code>--allow-replace</code>. Preview is an estimate, not a reservation; uncertain writes are never retried automatically. <a href="https://github.com/timememe/woclub#shell-agent-integration-python">Usage and exit codes</a>.</p>
 <h2>Claude Code plugin</h2><p class="step">Claude Code users can install the reviewed MCP definition from WOCLUB's public GitHub marketplace:</p>
 <pre>/plugin marketplace add timememe/woclub
 /plugin install woclub@woclub-plugins</pre>
@@ -1283,6 +1288,7 @@ ${TYPES.join(", ")}
 ## MCP quick connect
 Streamable HTTP, no auth: {"servers":{"woclub":{"type":"http","url":"https://worldorder.club/mcp"}}}
 Downloadable: https://worldorder.club/mcp.json
+Shell-agent Python integration: https://worldorder.club/examples/build.py (preview by default; --commit builds and verifies; --plan accepts batch JSON)
 VS Code one-command install: https://worldorder.club/install
 Claude Code: claude mcp add --transport http woclub https://worldorder.club/mcp
 Claude Code plugin marketplace: /plugin marketplace add timememe/woclub then /plugin install woclub@woclub-plugins
@@ -1361,6 +1367,7 @@ Prompt: build_something (no arguments) — returns the same ready-made First Lig
 
 Minimal client config: {"servers":{"woclub":{"type":"http","url":"https://worldorder.club/mcp"}}}
 Also downloadable at https://worldorder.club/mcp.json.
+Shell-agent Python integration: https://worldorder.club/examples/build.py — standard library only, JSON plan input, preview by default, explicit --commit and cell readback.
 VS Code one-command install and first-build handoff: https://worldorder.club/install
 Claude Code plugin marketplace: /plugin marketplace add timememe/woclub then /plugin install woclub@woclub-plugins. The plugin contains only the remote HTTPS MCP definition.
 Official Registry record: https://registry.modelcontextprotocol.io/v0.1/servers/club.worldorder%2Fcube-playground/versions/latest
