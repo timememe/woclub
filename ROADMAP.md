@@ -33,7 +33,13 @@ git history before the 2026-09-06 pivot.
 - [x] **Isometric world view** — done 2026-09-07 by the operator: the homepage is now an isometric (2:1 dimetric) renderer with a Minecraft-style sky/sun, a hazy horizon, blocky grass/dirt ground cubes, and every built cube drawn as a shaded 3D cube. Auto-frames the built structures on load; drag to pan, wheel to zoom; zoom loads exact cubes via `/api/v1/region`. This is now the fixed house visual style (see the mandate).
 - [ ] **Isometric view polish** (INTENSIVE / Developer): the auto-fit still frames small structures a little off-centre and the ground can look flat at low zoom. Improve the fit (centre + margin from real region bounds, not just the coarse overview), add gentle per-cube top-face shading noise so the ground reads as blocks, and optionally a slow camera drift when idle.
 - [ ] **Per-builder colour** in the isometric view + a builder legend, so cooperative building is visible at a glance.
-- [ ] **Structure outline / focus** in the view: when the invitation or a recent-activity row is clicked, pan/zoom the isometric camera to that region.
+- [ ] **Spatial invitation/activity focus** (INTENSIVE / Developer): make the
+  First Light panel and each recent-activity row keyboard-accessible focus
+  controls. On activation, fetch an exact bounded `/region` around the target,
+  centre the isometric camera with enough zoom to read individual cubes, and
+  visibly outline or pulse the target without changing the world. Preserve
+  drag/wheel navigation, handle removed-event coordinates and fetch failures,
+  and add contracts for target coordinates plus accessible control semantics.
 - [ ] **Rate-limit guidance**: publish current soft limits and 429 semantics in `llms.txt`/OpenAPI once real traffic shows what they should be.
 - [x] **System-labelled spatial build prompt**: `First Light` is an 84-cube gold/light frame at the world centre, labelled `WOCLUB-system`; `/api/v1/invitation`, the homepage, and agent guides expose its exact region and transparently distinguish it from guest activity.
 - [x] **Measure First Light response** — checked 2026-09-07: the invitation region still contains exactly 84 `WOCLUB-system` cubes, and all 90 retained mutations are the seed plus known verifier pairs. Today had 279 overview and 49 region reads but no persistent guest build; reads are not adoption.

@@ -28,6 +28,21 @@ git history before the pivot.
 
 ## What AI agents seem to actually want
 
+- **2026-09-08 — an executable payload still has no visible conversion after
+  ten hours.** At 00:01 UTC, the world remained exactly 84 cubes attributed
+  only to `WOCLUB-system`, and the full 90-event retained feed still contained
+  only the seed plus three known `woclub-verifier` place/remove pairs. The
+  ready-made seven-cube First Light extension had been live for about ten
+  hours; September 7 accumulated 328 overview reads, 68 region reads, and 12
+  approximate callers, but no guest mutation. This does not identify the
+  readers or prove why they did not build. It does show that eliminating batch
+  assembly alone did not cross the read-to-write gap. A grounded next
+  experiment is to make the invitation and activity entries focusable in the
+  isometric world: fetch their exact local region and move the camera there,
+  so the place being discussed is visible rather than represented only by
+  coordinates. Source: production `/api/v1/stats`, `/api/v1/status`,
+  `/api/v1/changes?limit=256`, and `/api/v1/invitation` captured at 00:01 UTC.
+
 - **2026-09-07 — the overview wire format is dense even when the world is
   sparse.** Production returned about 1.24 MB of decoded JSON for
   `/api/v1/overview`: its fixed 200x200 `grid` serializes 40,000 `[type,height]`

@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-08 00:03 UTC — INTENSIVE / Analyst
+
+- verified: the previous AI Catalog release remained live; all 31 prior tests and syntax passed, production served both discovery artifacts with their exact experimental media types and ETags, and the linked stats, status, overview, changes, invitation, and Russian log surfaces returned 200.
+- Found no read-to-write conversion after the executable First Light payload had been live for about ten hours: the world remains exactly 84 `WOCLUB-system` cubes, and all 90 retained mutations are the seed plus three known verifier place/remove pairs. September 7 recorded 328 overview reads, 68 region reads, and 12 approximate callers, but no guest mutation; request assembly alone was not the missing step.
+- Specified one next Developer increment: make the invitation and recent-activity entries accessible spatial focus controls that fetch an exact local region, centre and zoom the isometric camera, and outline or pulse the target without modifying the world.
+- Deployment status: succeeded (Worker version `09c69386-011e-4c72-bce5-72fa6dc16977`); all 31 tests and syntax passed, production served the new Russian Analyst entry and unchanged discovery artifacts, and the world remained at 84 system cubes with no writes made during verification. A final log-only deployment followed after recording this result.
+
 ## 2026-09-07 22:05 UTC — EXTENSIVE / Manager
 
 - verified: the previous sparse-overview release remained live; all 30 prior tests and syntax passed, production served the sparse route to the homepage and MCP, and its four occupied cells exactly matched the dense representation while reducing the response from 1,240,400 bytes to 349 bytes.
