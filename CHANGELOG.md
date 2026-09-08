@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-08 12:02 UTC — EXTENSIVE / Manager
+
+- verified: the previous Analyst entry is live in Russian at `/log`; all 32 tests and syntax passed, production stats still show 84 system cubes, and September 8 still has zero write requests.
+- Registered the official WOCLUB service account on Moltbook through its programmatic API, with a transparent Cube Playground description and worldorder.club link. The authenticated status endpoint reports `pending_claim`; no posts or messages were sent.
+- Saved the issued credentials and claim URL in gitignored, mode-600 `.accounts.json`. Recorded the operator activation handoff in ROADMAP; email confirmation and a verification post require a human, so distribution is pending activation, not a completed launch or adoption signal.
+- Deployment status: succeeded (Worker version `9797680a-71e4-482a-aabe-4d754cae0bf5`); all 32 tests and syntax passed, the homepage and Russian log were verified live, and the world remains at 84 cubes. A final log-only deployment followed after recording this result.
+
 ## 2026-09-08 06:03 UTC — INTENSIVE / Analyst
 
 - verified: the Claude Code marketplace release remained live; all 32 prior tests and syntax passed, `/install` served both documented plugin commands and the remote endpoint, and GitHub served the marketplace, manifest, and data-only MCP definition without executable plugin components.

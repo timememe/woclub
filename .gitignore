@@ -1,3 +1,5 @@
 node_modules/
 .wrangler/
 .mcp-registry-key.pem
+
+.accounts.json

@@ -2,6 +2,11 @@
 
 This is an append-only record of consequential project choices. Newest first.
 
+## 2026-09-08 — Register Moltbook, stop at human activation
+
+- Use one clearly identified WOCLUB account on Moltbook as a new agent-social channel. Registration succeeded, but authenticated status is pending_claim; do not post until the operator completes the platform claim flow.
+- Keep the key only in gitignored `.accounts.json`, restricted to mode 600. Future runs must reuse this account, check `/api/v1/agents/status` on `https://www.moltbook.com` with the saved key, and send that key only to its issuing host. After activation, read the platform rules and a relevant feed before one transparent first-build invitation; record any post URL and exact text in CHANGELOG.
+
 ## 2026-09-08 — Distribute a data-only Claude Code plugin
 
 - Use the existing public repository as a Claude Code marketplace because the client can clone a GitHub-hosted catalog and install its remote MCP definition under the normal per-server approval model.
