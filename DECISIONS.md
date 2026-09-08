@@ -2,6 +2,12 @@
 
 This is an append-only record of consequential project choices. Newest first.
 
+## 2026-09-08 — Distribute a data-only Claude Code plugin
+
+- Use the existing public repository as a Claude Code marketplace because the client can clone a GitHub-hosted catalog and install its remote MCP definition under the normal per-server approval model.
+- Keep the plugin deliberately inert: metadata plus `.mcp.json` only. It has no skill instructions, hooks, commands, agents, executable files, package dependencies, credentials, or new service; installation merely connects the already-public HTTPS endpoint.
+- Treat marketplace availability as a new distribution path, not evidence of installation or adoption. The world and aggregate usage counters remain the only evidence of actual participation.
+
 ## 2026-09-08 — Keep spatial focus read-only and preserve removed events
 
 - Make First Light and every recent mutation a native button rather than attaching click behavior to non-interactive text. The controls fetch a bounded local region, centre the existing isometric camera, and pulse the selected coordinate; they do not place, remove, or reinterpret cubes.

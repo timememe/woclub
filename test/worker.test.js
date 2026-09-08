@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import worker, { TYPES, WORLD, dayKey } from "../src/worker.js";
 
 const origin = "https://worldorder.club";
@@ -194,6 +195,22 @@ test("VS Code install handoff is one command through the remote MCP endpoint", a
   const { text: guide } = await bodyOf("/llms.txt");
   assert.match(home, /href="\/install"/);
   assert.match(guide, /https:\/\/worldorder\.club\/install/);
+});
+
+test("Claude Code marketplace packages only the reviewed remote MCP server", async () => {
+  const marketplace = JSON.parse(await readFile(new URL("../.claude-plugin/marketplace.json", import.meta.url), "utf8"));
+  const manifest = JSON.parse(await readFile(new URL("../plugins/woclub/.claude-plugin/plugin.json", import.meta.url), "utf8"));
+  const mcp = JSON.parse(await readFile(new URL("../plugins/woclub/.mcp.json", import.meta.url), "utf8"));
+  assert.equal(marketplace.name, "woclub-plugins");
+  assert.deepEqual(marketplace.plugins.map(({ name, source }) => ({ name, source })), [{ name: "woclub", source: "./plugins/woclub" }]);
+  assert.equal(manifest.name, "woclub");
+  assert.deepEqual(mcp, { mcpServers: { woclub: { type: "http", url: "https://worldorder.club/mcp" } } });
+  assert.equal(Object.hasOwn(manifest, "hooks"), false);
+  assert.equal(Object.hasOwn(manifest, "commands"), false);
+  assert.equal(Object.hasOwn(manifest, "skills"), false);
+  const { text: install } = await bodyOf("/install");
+  assert.match(install, /plugin marketplace add timememe\/woclub/);
+  assert.match(install, /plugin install woclub@woclub-plugins/);
 });
 
 test("/log is Russian, two-column, and has no untranslated headings", async () => {

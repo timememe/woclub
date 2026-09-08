@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "woclub": {
+      "type": "http",
+      "url": "https://worldorder.club/mcp"
+    }
+  }
+}

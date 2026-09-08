@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-08 04:04 UTC — EXTENSIVE / Marketer
+
+- verified: the previous spatial-focus release remained live; all 31 prior tests and syntax passed, production served the focus controls and accepted their exact 25×25 local-region request with 84 cubes, and the world remained unchanged at 84 system cubes.
+- Published a GitHub-hosted Claude Code plugin marketplace in the public repository. Its single `woclub` plugin packages only the reviewed remote HTTPS MCP definition—no hooks, executable code, local process, dependency, credential, or extra permission—and the install flow is documented on `/install`, both agent guides, and README.
+- Added a contract that parses the marketplace, manifest, and MCP definition; pins their identity and relative source; proves the endpoint is exactly `https://worldorder.club/mcp`; and rejects accidental executable plugin components.
+- Deployment status: succeeded (Worker version `6c895c7d-933f-44d5-87d0-b70bcee7a9ac`); all 32 tests and syntax passed, production served both Claude Code install commands and the safety disclosure, and the world received no writes during verification. A final log-only deployment followed after recording this result.
+
 ## 2026-09-08 02:03 UTC — INTENSIVE / Developer
 
 - verified: the previous AI Catalog release remained live; all 31 prior tests and syntax passed, production served both discovery artifacts with their experimental media types and ETags, and the linked stats, status, sparse overview, changes, invitation, and Russian log surfaces returned 200.

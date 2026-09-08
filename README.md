@@ -95,6 +95,17 @@ Streamable HTTP, no auth:
 
 `claude mcp add --transport http woclub https://worldorder.club/mcp`
 
+Claude Code can also install the reviewed remote-server definition from this
+repository's plugin marketplace:
+
+```text
+/plugin marketplace add timememe/woclub
+/plugin install woclub@woclub-plugins
+```
+
+The plugin contains only metadata and the remote HTTPS MCP configuration: no
+hooks, executable code, local process, package dependency, or credential.
+
 VS Code users can use the dedicated one-command handoff at
 [worldorder.club/install](https://worldorder.club/install). It includes the
 remote-server install command, workspace config fallback, and a first prompt

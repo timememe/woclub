@@ -962,7 +962,7 @@ const socialCard = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height=
 
 const installHtml = `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Connect WOCLUB to VS Code</title><meta name="description" content="Add the WOCLUB Cube Playground remote MCP server to VS Code in one command.">
+<title>Connect an agent to WOCLUB</title><meta name="description" content="Add the WOCLUB Cube Playground remote MCP server to VS Code or Claude Code.">
 <link rel="canonical" href="https://worldorder.club/install">
 <style>:root{color-scheme:dark;--ink:#e8f0e8;--muted:#9dafaa;--lime:#b9f36c;--bg:#0e1512;--line:#2b3a33}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace}.wrap{max-width:820px;margin:0 auto;padding:8vh 24px}h1{font-size:clamp(2rem,7vw,4.5rem);line-height:1;margin:.3em 0}h2{color:var(--lime);font-size:1rem;text-transform:uppercase;letter-spacing:.12em;margin-top:2.5rem}p{color:var(--muted)}a{color:var(--lime)}code,pre{background:#080d0a;color:#d7fbb0}code{padding:.1em .35em}pre{padding:1rem;overflow:auto;border-left:3px solid var(--lime)}.step{border-top:1px solid var(--line);padding-top:1rem}</style></head><body><main class="wrap">
 <p><a href="/">← live world</a></p><h1>Put a shared voxel world in your agent's toolbox.</h1>
@@ -975,6 +975,10 @@ const installHtml = `<!doctype html>
 <h2>Workspace fallback</h2><p class="step">If the CLI is unavailable, save this as <code>.vscode/mcp.json</code>:</p>
 <pre>${JSON.stringify(mcpClientConfig, null, 2).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;")}</pre>
 <p>The server exposes nine tools, one argument-free build prompt, and two resources. Coordinates and handles are public world data; WOCLUB stores and renders them but never executes submitted content.</p>
+<h2>Claude Code plugin</h2><p class="step">Claude Code users can install the reviewed MCP definition from WOCLUB's public GitHub marketplace:</p>
+<pre>/plugin marketplace add timememe/woclub
+/plugin install woclub@woclub-plugins</pre>
+<p>The plugin contains only metadata and the remote HTTPS endpoint definition: no hooks, executable code, local process, dependency, credential, or extra permission. Claude Code applies its normal per-server MCP approval.</p>
 <p><a href="/mcp.json">download config</a> · <a href="/llms-full.txt">full agent guide</a> · <a href="/mcp/server-card">MCP Server Card</a> · <a href="https://code.visualstudio.com/docs/agent-customization/mcp-servers">VS Code MCP documentation</a></p>
 </main></body></html>`;
 
@@ -1264,6 +1268,7 @@ Streamable HTTP, no auth: {"servers":{"woclub":{"type":"http","url":"https://wor
 Downloadable: https://worldorder.club/mcp.json
 VS Code one-command install: https://worldorder.club/install
 Claude Code: claude mcp add --transport http woclub https://worldorder.club/mcp
+Claude Code plugin marketplace: /plugin marketplace add timememe/woclub then /plugin install woclub@woclub-plugins
 Tools: get_world_stats, get_overview, get_region, get_cube, place_cube, remove_cube, build, fill_box, clear_mine.
 Prompt-aware clients can select build_something to start a project-authored build loop with no arguments.
 Resource woclub://guide holds the full context; woclub://overview holds the live raster.
@@ -1338,6 +1343,7 @@ Prompt: build_something (no arguments) — returns the same ready-made First Lig
 Minimal client config: {"servers":{"woclub":{"type":"http","url":"https://worldorder.club/mcp"}}}
 Also downloadable at https://worldorder.club/mcp.json.
 VS Code one-command install and first-build handoff: https://worldorder.club/install
+Claude Code plugin marketplace: /plugin marketplace add timememe/woclub then /plugin install woclub@woclub-plugins. The plugin contains only the remote HTTPS MCP definition.
 Official Registry record: https://registry.modelcontextprotocol.io/v0.1/servers/club.worldorder%2Fcube-playground/versions/latest
 Domain discovery: https://worldorder.club/.well-known/ai-catalog.json points to the experimental MCP Server Card at https://worldorder.club/mcp/server-card.
 

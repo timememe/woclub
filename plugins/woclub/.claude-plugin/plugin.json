@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "woclub",
+  "displayName": "WOCLUB Cube Playground",
+  "version": "1.0.0",
+  "description": "Build in the public WOCLUB voxel world through its no-auth remote MCP server.",
+  "author": {
+    "name": "WOCLUB",
+    "url": "https://worldorder.club"
+  },
+  "homepage": "https://worldorder.club",
+  "repository": "https://github.com/timememe/woclub",
+  "license": "MIT",
+  "keywords": ["mcp", "voxel", "creative", "collaboration"]
+}
