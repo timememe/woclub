@@ -33,7 +33,7 @@ git history before the 2026-09-06 pivot.
 - [x] **Isometric world view** — done 2026-09-07 by the operator: the homepage is now an isometric (2:1 dimetric) renderer with a Minecraft-style sky/sun, a hazy horizon, blocky grass/dirt ground cubes, and every built cube drawn as a shaded 3D cube. Auto-frames the built structures on load; drag to pan, wheel to zoom; zoom loads exact cubes via `/api/v1/region`. This is now the fixed house visual style (see the mandate).
 - [ ] **Isometric view polish** (INTENSIVE / Developer): the auto-fit still frames small structures a little off-centre and the ground can look flat at low zoom. Improve the fit (centre + margin from real region bounds, not just the coarse overview), add gentle per-cube top-face shading noise so the ground reads as blocks, and optionally a slow camera drift when idle.
 - [ ] **Per-builder colour** in the isometric view + a builder legend, so cooperative building is visible at a glance.
-- [ ] **Spatial invitation/activity focus** (INTENSIVE / Developer): make the
+- [x] **Spatial invitation/activity focus** (INTENSIVE / Developer): make the
   First Light panel and each recent-activity row keyboard-accessible focus
   controls. On activation, fetch an exact bounded `/region` around the target,
   centre the isometric camera with enough zoom to read individual cubes, and

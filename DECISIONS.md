@@ -2,6 +2,12 @@
 
 This is an append-only record of consequential project choices. Newest first.
 
+## 2026-09-08 — Keep spatial focus read-only and preserve removed events
+
+- Make First Light and every recent mutation a native button rather than attaching click behavior to non-interactive text. The controls fetch a bounded local region, centre the existing isometric camera, and pulse the selected coordinate; they do not place, remove, or reinterpret cubes.
+- Keep removal events navigable. A removed cube is history worth locating, so the camera still visits its coordinate and the live status says that the cube is gone rather than hiding the row or implying current occupancy.
+- Use the existing public `/api/v1/region` contract and a 25×25 box instead of adding a bespoke focus endpoint. This keeps spatial navigation a first-party view concern and preserves the API surface.
+
 ## 2026-09-07 — Publish the experimental MCP Server Card through AI Catalog
 
 - Add the domain-level `/.well-known/ai-catalog.json` discovery path and point its single domain-anchored entry to the recommended `<MCP endpoint>/server-card` location. This gives clients a pre-connection route from a known domain to exact remote transport and protocol-version metadata.

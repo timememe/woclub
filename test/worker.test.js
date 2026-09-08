@@ -173,6 +173,10 @@ test("homepage and guide describe the cube playground, not the gym", async () =>
   assert.match(home, /name="twitter:image" content="https:\/\/worldorder\.club\/social-card\.png"/);
   assert.doesNotMatch(home, /Protocol Gym/);
   assert.doesNotMatch(home, /challenge\/today/);
+  assert.match(home, /id="focus-invitation"/);
+  assert.match(home, /aria-label','Focus '/);
+  assert.match(home, /focusWorld\(e\.x,e\.y,e\.z/);
+  assert.match(home, /The event cube is no longer present; its location is marked/);
   const { text: llms } = await bodyOf("/llms.txt");
   assert.match(llms, /voxel world/i);
   assert.match(llms, /y=0 is ground/);

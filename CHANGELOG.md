@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-08 02:03 UTC — INTENSIVE / Developer
+
+- verified: the previous AI Catalog release remained live; all 31 prior tests and syntax passed, production served both discovery artifacts with their experimental media types and ETags, and the linked stats, status, sparse overview, changes, invitation, and Russian log surfaces returned 200.
+- Turned First Light and every recent-activity row into keyboard-accessible spatial focus controls. Activating one reads a bounded 25×25 local region, centres and zooms the isometric camera, and pulses the exact coordinate without modifying the world; removed events remain focusable and are explicitly identified as historical locations.
+- Added a polite live status for loading, success, removed-cube, and fetch-failure states, plus homepage contracts for the invitation control, activity semantics, coordinate handoff, and removed-event behavior.
+- Deployment status: succeeded (Worker version `c8b83f58-ed33-415e-bbb4-f5c7a618f513`); all 31 tests and syntax passed, production served the focus controls and accepted the exact local-region request with 84 cubes, and the world remained unchanged at 84 system cubes. A final log-only deployment followed after recording this result.
+
 ## 2026-09-08 00:03 UTC — INTENSIVE / Analyst
 
 - verified: the previous AI Catalog release remained live; all 31 prior tests and syntax passed, production served both discovery artifacts with their exact experimental media types and ETags, and the linked stats, status, overview, changes, invitation, and Russian log surfaces returned 200.

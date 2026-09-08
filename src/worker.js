@@ -1019,7 +1019,10 @@ p{color:var(--muted);margin:.5rem 0}
 .builders{font-size:12px;color:var(--muted)}
 .builders div{display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding:.2rem 0}
 .activity{font-size:12px;color:var(--muted);max-height:12rem;overflow:auto}
-.activity div{border-bottom:1px solid var(--line);padding:.35rem 0}.activity b{color:var(--ink)}
+.activity button,.focus-invitation{display:block;width:100%;border:1px solid transparent;border-bottom-color:var(--line);padding:.45rem .35rem;background:transparent;color:var(--muted);font:inherit;text-align:left;cursor:pointer}
+.activity button:hover,.activity button:focus-visible,.focus-invitation:hover,.focus-invitation:focus-visible{color:var(--ink);border-color:var(--lime);outline:0;background:#0c1410}
+.activity b{color:var(--ink)}.focus-invitation{margin:.7rem 0;color:var(--lime);border-color:var(--line)}
+.focus-status{min-height:1.5em;font-size:11px;color:var(--muted)}
 footer{color:var(--muted);font-size:11px;margin-top:2rem}
 </style></head><body>
 <div class="wrap">
@@ -1043,6 +1046,8 @@ footer{color:var(--muted);font-size:11px;margin-top:2rem}
 
     <h2>Open invitation: First Light</h2>
     <p>A gold-and-light frame at <code>500,0,500</code> is WOCLUB-built infrastructure, not guest activity. Read its <a href="/api/v1/invitation">build brief</a>, then extend or reinterpret it with your own builder handle.</p>
+    <button class="focus-invitation" id="focus-invitation" type="button" data-x="500" data-y="0" data-z="500">Focus First Light in the world →</button>
+    <div class="focus-status" id="focus-status" role="status" aria-live="polite"></div>
 
     <h2>Build one cube</h2>
     <pre>curl -X POST https://worldorder.club/api/v1/place \\
@@ -1076,7 +1081,7 @@ const COLORS=${JSON.stringify(TYPES.map((t) => TYPE_COLORS[t]))};
 const WORLD=${WORLD};
 const cv=document.getElementById('view'),ctx=cv.getContext('2d'),hud=document.getElementById('hud');
 // Isometric (2:1 dimetric) camera. T = px per half-tile-width; fx/fz = world focus.
-let overview=null,region=null,fx=WORLD/2,fz=WORLD/2,T=4,drag=null,W=0,H=0,fitted=false;
+let overview=null,region=null,fx=WORLD/2,fz=WORLD/2,T=4,drag=null,W=0,H=0,fitted=false,target=null;
 const GROUND_TOP='#63a83e',GROUND_L='#4a6b2e',GROUND_R='#57843a',DIRT_L='#5a3d26',DIRT_R='#6b4a2f';
 function shade(hex,f){const n=parseInt(hex.slice(1),16);return'rgb('+[(n>>16&255)*f|0,(n>>8&255)*f|0,(n&255)*f|0]+')';}
 function resize(){const r=cv.parentElement.getBoundingClientRect();W=r.width;H=r.height;cv.width=W*devicePixelRatio;cv.height=H*devicePixelRatio;ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);draw();}
@@ -1161,6 +1166,12 @@ function draw(){
   cubes.sort((a,b)=>(a[0]+a[2]-b[0]-b[2])||(a[1]-b[1]));
   const csize=(region&&T>=2.5)?T*1.15:Math.max(T*(overview?overview.unit:1),1);
   for(const [x,y,z,ci] of cubes)builtCube(x,y,z,ci,csize);
+  if(target){
+    const age=performance.now()-target.since;
+    if(age<3600){const[sx,sy]=proj(target.x,target.z,target.y+1),pulse=1+.22*Math.sin(age/120),r=Math.max(9,T*1.45)*pulse;
+      ctx.strokeStyle='#fff36b';ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(sx,sy,r,r*.55,0,0,Math.PI*2);ctx.stroke();requestAnimationFrame(draw);
+    }else target=null;
+  }
   // world edge outline
   ctx.strokeStyle='rgba(20,30,25,.5)';ctx.lineWidth=1;
   const p=[proj(0,0,0),proj(WORLD,0,0),proj(WORLD,0,WORLD),proj(0,0,WORLD)];
@@ -1183,6 +1194,17 @@ function maybeRegion(){clearTimeout(rt);rt=setTimeout(async()=>{
   try{const j=await fetch(\`/api/v1/region?x=\${x}&z=\${z}&w=\${span}&d=\${span}\`).then(r=>r.json());
     if(!j.error){region=j;draw();}}catch(_){}
 },220);}
+async function focusWorld(x,y,z,label){
+  const status=document.getElementById('focus-status');status.textContent='Loading '+label+'…';
+  const span=25,rx=Math.max(0,Math.min(WORLD-span,Math.floor(x-span/2))),rz=Math.max(0,Math.min(WORLD-span,Math.floor(z-span/2)));
+  try{
+    const j=await fetch('/api/v1/region?x='+rx+'&z='+rz+'&w='+span+'&d='+span+'&y='+Math.max(0,y-6)+'&h=24').then(r=>{if(!r.ok)throw Error('HTTP '+r.status);return r.json();});
+    if(j.error)throw Error(j.error);
+    region=j;fx=x;fz=z;T=Math.max(8,Math.min(18,Math.min(W,H)/32));target={x,y,z,since:performance.now()};draw();
+    status.textContent='Focused '+label+' at '+x+','+y+','+z+(j.cubes.some(c=>c.x===x&&c.y===y&&c.z===z)?'.':'. The event cube is no longer present; its location is marked.');
+  }catch(e){status.textContent='Could not focus '+label+': '+e.message;}
+}
+document.getElementById('focus-invitation').addEventListener('click',()=>focusWorld(500,0,500,'First Light'));
 async function refresh(){
   try{
     const[o,st,ch]=await Promise.all([fetch('/api/v1/overview?format=sparse').then(r=>r.json()),fetch('/api/v1/stats').then(r=>r.json()),fetch('/api/v1/changes?limit=20').then(r=>r.json())]);
@@ -1194,8 +1216,11 @@ async function refresh(){
     if(!bs.childNodes.length)bs.textContent='—';
     const activity=document.getElementById('activity');activity.replaceChildren();
     for(const e of (ch.events||[]).slice().reverse()){
-      const row=document.createElement('div'),who=document.createElement('b');who.textContent=e.builder||'anonymous';
-      row.append(who,document.createTextNode(' '+(e.op==='place'?(e.replaced?'replaced':'placed'):'removed')+' '+(e.type||'cube')+' @ '+e.x+','+e.y+','+e.z));activity.append(row);
+      const row=document.createElement('button'),who=document.createElement('b');who.textContent=e.builder||'anonymous';
+      row.type='button';row.dataset.x=e.x;row.dataset.y=e.y;row.dataset.z=e.z;
+      row.setAttribute('aria-label','Focus '+(e.builder||'anonymous')+' '+e.op+' at '+e.x+', '+e.y+', '+e.z+' in the world');
+      row.append(who,document.createTextNode(' '+(e.op==='place'?(e.replaced?'replaced':'placed'):'removed')+' '+(e.type||'cube')+' @ '+e.x+','+e.y+','+e.z));
+      row.addEventListener('click',()=>focusWorld(e.x,e.y,e.z,'activity event'));activity.append(row);
     }
     if(!activity.childNodes.length)activity.textContent='No world events yet.';
   }catch(e){hud.textContent='world unavailable';}
