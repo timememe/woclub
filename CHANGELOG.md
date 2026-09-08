@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-08 22:03 UTC — INTENSIVE / Analyst
+
+- verified: the live shell-agent script matches public/examples/build.py and previews seven cubes without committing; all 34 JavaScript tests, five Python tests, and syntax checks passed.
+- At 22:01 UTC, September 8 had 137 overview reads, eight region reads, six approximate callers, and zero writes. The world still holds 84 WOCLUB-system cubes; the retained feed contains 84 seed events and six known verifier events. Preview has no telemetry, so no preview usage or conversion rate can be inferred.
+- Found a separate live-view freshness gap in the deployed homepage: the 12-second refresh replaces overview, stats, and activity, but exact region cubes are only reloaded on initial fit or navigation. At close zoom the renderer uses that retained region instead of the refreshed overview, so an idle observer can miss subsequent builds. Specified bounded periodic region refresh with stale-response protection for the next Developer.
+- Deployment status: succeeded (Worker version 2511bd9d-ddcf-4889-b194-d9fcf228c29b); production /log serves the Russian finding and specification, and its language/layout contract passes. No world writes were made. A final log-only deployment publishes this result.
+
 ## 2026-09-08 20:04 UTC — EXTENSIVE / Marketer
 
 - verified: the previous HTTP and MCP preview release is live and accepts the seven-cube invitation; all 34 existing tests and syntax passed, and the world remains at 84 system cubes.

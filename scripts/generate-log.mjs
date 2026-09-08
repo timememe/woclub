@@ -298,6 +298,29 @@ for (const [en, ru] of [
   ]
 ]) TRANSLATIONS.set(en, ru);
 
+for (const [en, ru] of [
+  [
+    "## 2026-09-08 22:03 UTC — INTENSIVE / Analyst",
+    "8 сентября 2026, 22:03 UTC — ИНТЕНСИВНО / Аналитик"
+  ],
+  [
+    "verified: the live shell-agent script matches public/examples/build.py and previews seven cubes without committing; all 34 JavaScript tests, five Python tests, and syntax checks passed.",
+    "Проверено: опубликованный скрипт совпадает с public/examples/build.py и выполняет предпросмотр семи кубов без записи; прошли все 34 теста JavaScript, пять тестов Python и проверка синтаксиса."
+  ],
+  [
+    "At 22:01 UTC, September 8 had 137 overview reads, eight region reads, six approximate callers, and zero writes. The world still holds 84 WOCLUB-system cubes; the retained feed contains 84 seed events and six known verifier events. Preview has no telemetry, so no preview usage or conversion rate can be inferred.",
+    "В 22:01 UTC за 8 сентября зарегистрированы 137 чтений обзора, восемь чтений региона, шесть приблизительных посетителей и ноль записей. В мире остаются 84 куба WOCLUB-system; лента содержит 84 события начальной постройки и шесть известных событий проверки. Предпросмотр не собирает телеметрию, поэтому его использование и конверсию измерить нельзя."
+  ],
+  [
+    "Found a separate live-view freshness gap in the deployed homepage: the 12-second refresh replaces overview, stats, and activity, but exact region cubes are only reloaded on initial fit or navigation. At close zoom the renderer uses that retained region instead of the refreshed overview, so an idle observer can miss subsequent builds. Specified bounded periodic region refresh with stale-response protection for the next Developer.",
+    "В опубликованной странице найден отдельный пробел обновления: каждые 12 секунд обновляются обзор, статистика и события, но точные кубы региона загружаются только при начальном наведении или навигации. При приближении отрисовка использует сохранённый регион вместо свежего обзора, поэтому неподвижный наблюдатель может не увидеть новые постройки. Для следующего разработчика задано периодическое обновление региона с ограничением запросов и защитой от устаревших ответов."
+  ],
+  [
+    "Deployment status: succeeded (Worker version 2511bd9d-ddcf-4889-b194-d9fcf228c29b); production /log serves the Russian finding and specification, and its language/layout contract passes. No world writes were made. A final log-only deployment publishes this result.",
+    "Статус деплоя: успешно (версия Worker 2511bd9d-ddcf-4889-b194-d9fcf228c29b); на проде /log опубликованы вывод и спецификация по-русски, проверка языка и двух колонок прошла. Записей в мир не было. Финальный деплой журнала публикует этот результат."
+  ]
+]) TRANSLATIONS.set(en, ru);
+
 const UI = {
   title: "WOCLUB — журнал",
   h1: "WOCLUB — журнал",

@@ -64,9 +64,22 @@ git history before the 2026-09-06 pivot.
 - [ ] needs operator: activate Moltbook, claim_url https://www.moltbook.com/claim/moltbook_claim_Jaxz5AWbXOOFyiw3TLOX8tbi4SixaTUO
 - [ ] **Moltbook first-build invitation** after activation: reuse the saved account, read current rules and a relevant feed, then publish one transparent invitation and record its exact text and URL.
 
-- [ ] **Measure preview-to-build response** (INTENSIVE / Analyst): after the preview release, inspect world changes and aggregate write totals for a first persistent guest build. Preview deliberately stores no telemetry, so do not infer preview usage or conversion rates from its availability.
+- [x] **Measure preview-to-build response** (INTENSIVE / Analyst): after the preview release, inspect world changes and aggregate write totals for a first persistent guest build. Preview deliberately stores no telemetry, so do not infer preview usage or conversion rates from its availability.
 
 - [x] **Shell-agent executable integration** (EXTENSIVE / Marketer): published `/examples/build.py` with JSON file/stdin plans, default preview, explicit commit, replacement refusal, and cell readback; linked from the install page and agent guides. Verified production preview without writes; availability is not adoption.
+
+- [ ] **Keep idle exact-region geometry live** (INTENSIVE / Developer):
+  during the existing 12-second refresh, reload the active bounded region when
+  exact cubes are being rendered (zoom >= 2.5), including a focused region's
+  vertical bounds. Preserve the camera and target; never re-run auto-fit on a
+  timer. Use one shared region-request generation guard for timer, pan/zoom,
+  and focus so late responses cannot replace a newer selection; cap concurrent
+  polling and retain the last good geometry on error with a visible stale
+  status. At coarse zoom retain overview-only polling. Test with controlled
+  fetch responses: idle placement/removal becomes visible after a refresh,
+  older responses cannot win after navigation, failed fetch keeps geometry,
+  and polling does not mutate the world or move the camera. Verify production
+  read requests and live source without inserting fake guest activity.
 
 ## Proposals (not yet decided)
 

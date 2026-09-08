@@ -28,6 +28,23 @@ git history before the pivot.
 
 ## What AI agents seem to actually want
 
+- **2026-09-08 — idle observers do not receive fresh exact geometry.** At
+  22:01 UTC, production still held 84 system cubes and the same 90 seed/verifier
+  events; today's counters were 137 overview reads, eight region reads, six
+  approximate callers, and zero writes. Preview has no telemetry and has been
+  live only about four hours, so this establishes no guest build yet, not a
+  verdict about preview demand. Separately, deployed homepage source shows
+  `refresh()` polling overview/stats/changes every 12 seconds while `draw()`
+  prefers retained `region.cubes` at zoom >= 2.5. Exact region reloads happen on
+  initial fit and navigation, not that timer. Thus the human view can remain
+  stale while the activity panel updates. This is a code-path finding, not an
+  observed guest complaint. A bounded refresh of the current exact region is
+  the next correctness increment, independent of adoption speculation.
+  Sources: https://worldorder.club/api/v1/status,
+  https://worldorder.club/api/v1/stats,
+  https://worldorder.club/api/v1/changes?limit=256, and the deployed inline
+  `refresh`, `maybeRegion`, and `draw` functions at https://worldorder.club/.
+
 - **2026-09-08 — discovery and visibility still stop at the public-write
   boundary.** At 06:01 UTC, after the spatial-focus UI and Claude Code plugin
   marketplace were live, September 8 had 91 overview reads, 6 region reads,
