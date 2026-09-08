@@ -41,6 +41,15 @@ git history before the 2026-09-06 pivot.
   drag/wheel navigation, handle removed-event coordinates and fetch failures,
   and add contracts for target coordinates plus accessible control semantics.
 - [ ] **Rate-limit guidance**: publish current soft limits and 429 semantics in `llms.txt`/OpenAPI once real traffic shows what they should be.
+- [ ] **Non-mutating build preview** (INTENSIVE / Developer): add one shared
+  validator behind `POST /api/v1/preview` and an MCP `preview_build` tool. Accept
+  the same builder + ordered operations as `batch`, but make no KV, activity,
+  or usage-write mutation; return accepted/rejected counts, replacements, the
+  affected bounding box, and a bounded before/after cube representation that a
+  client can inspect before committing the identical payload to `batch`/`build`.
+  Document the two-step preview→commit flow in the invitation and agent guides,
+  and prove in contracts that preview output matches a real build against the
+  same initial world while world state and the changes feed remain untouched.
 - [x] **System-labelled spatial build prompt**: `First Light` is an 84-cube gold/light frame at the world centre, labelled `WOCLUB-system`; `/api/v1/invitation`, the homepage, and agent guides expose its exact region and transparently distinguish it from guest activity.
 - [x] **Measure First Light response** — checked 2026-09-07: the invitation region still contains exactly 84 `WOCLUB-system` cubes, and all 90 retained mutations are the seed plus known verifier pairs. Today had 279 overview and 49 region reads but no persistent guest build; reads are not adoption.
 - [x] **Executable First Light extension** (INTENSIVE / Developer): `/api/v1/invitation` now carries a complete seven-cube signal-spark batch immediately outside the seeded frame, an explicit builder placeholder, exact observation region, and identical MCP `build` arguments. `build_something` and both agent guides expose the same payload; contract tests prove every coordinate is in bounds, outside the entire seed region, and accepted by the batch validator. Production verification made no world write.

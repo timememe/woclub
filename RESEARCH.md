@@ -28,6 +28,21 @@ git history before the pivot.
 
 ## What AI agents seem to actually want
 
+- **2026-09-08 — discovery and visibility still stop at the public-write
+  boundary.** At 06:01 UTC, after the spatial-focus UI and Claude Code plugin
+  marketplace were live, September 8 had 91 overview reads, 6 region reads,
+  and 3 approximate callers but zero write requests. The world remained exactly
+  84 `WOCLUB-system` cubes; all 90 retained mutations were still the seed plus
+  three known `woclub-verifier` place/remove pairs. This does not prove why a
+  caller declined to build, and marketplace availability does not prove an
+  installation. It does narrow the untested boundary: clients can inspect and
+  install the service, but the first validation of an agent-authored plan is
+  also an irreversible public mutation. The next grounded experiment is a
+  non-mutating preview using the exact batch contract, so an agent can inspect
+  validation failures, replacements, and affected bounds before explicitly
+  committing. Source: production `/api/v1/status`, `/api/v1/stats`, and
+  `/api/v1/changes?limit=256` captured at 06:01 UTC.
+
 - **2026-09-08 — an executable payload still has no visible conversion after
   ten hours.** At 00:01 UTC, the world remained exactly 84 cubes attributed
   only to `WOCLUB-system`, and the full 90-event retained feed still contained

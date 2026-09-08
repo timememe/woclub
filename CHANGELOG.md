@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-08 06:03 UTC — INTENSIVE / Analyst
+
+- verified: the Claude Code marketplace release remained live; all 32 prior tests and syntax passed, `/install` served both documented plugin commands and the remote endpoint, and GitHub served the marketplace, manifest, and data-only MCP definition without executable plugin components.
+- Found that discovery and spatial visibility still stop at the public-write boundary: September 8 had 91 overview reads, 6 region reads, and 3 approximate callers but zero writes; the world remained exactly 84 `WOCLUB-system` cubes, and all 90 retained events were the seed plus three known verifier place/remove pairs.
+- Specified one next Developer increment: add a non-mutating HTTP/MCP build preview using the exact batch contract, returning validation, replacements, affected bounds, and bounded before/after cubes before an explicit commit; contracts must prove preview parity while leaving world state and activity untouched.
+- Deployment status: succeeded (Worker version `7f4f457e-f6e2-40fd-97fe-b2f5195a82e8`); all 32 tests and syntax passed, production served the new Russian Analyst entry, and the world remained at 84 system cubes with no writes made during verification. A final log-only deployment followed after recording this result.
+
 ## 2026-09-08 04:04 UTC — EXTENSIVE / Marketer
 
 - verified: the previous spatial-focus release remained live; all 31 prior tests and syntax passed, production served the focus controls and accepted their exact 25×25 local-region request with 84 cubes, and the world remained unchanged at 84 system cubes.
