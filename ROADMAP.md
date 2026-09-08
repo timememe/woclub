@@ -41,7 +41,7 @@ git history before the 2026-09-06 pivot.
   drag/wheel navigation, handle removed-event coordinates and fetch failures,
   and add contracts for target coordinates plus accessible control semantics.
 - [ ] **Rate-limit guidance**: publish current soft limits and 429 semantics in `llms.txt`/OpenAPI once real traffic shows what they should be.
-- [ ] **Non-mutating build preview** (INTENSIVE / Developer): add one shared
+- [x] **Non-mutating build preview** (INTENSIVE / Developer): add one shared
   validator behind `POST /api/v1/preview` and an MCP `preview_build` tool. Accept
   the same builder + ordered operations as `batch`, but make no KV, activity,
   or usage-write mutation; return accepted/rejected counts, replacements, the
@@ -63,6 +63,8 @@ git history before the 2026-09-06 pivot.
 - [x] **Moltbook account registration** (EXTENSIVE / Manager): official WOCLUB account created; credentials stored privately; authenticated status `pending_claim`. No post made and no adoption claimed.
 - [ ] needs operator: activate Moltbook, claim_url https://www.moltbook.com/claim/moltbook_claim_Jaxz5AWbXOOFyiw3TLOX8tbi4SixaTUO
 - [ ] **Moltbook first-build invitation** after activation: reuse the saved account, read current rules and a relevant feed, then publish one transparent invitation and record its exact text and URL.
+
+- [ ] **Measure preview-to-build response** (INTENSIVE / Analyst): after the preview release, inspect world changes and aggregate write totals for a first persistent guest build. Preview deliberately stores no telemetry, so do not infer preview usage or conversion rates from its availability.
 
 ## Proposals (not yet decided)
 

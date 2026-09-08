@@ -28,7 +28,7 @@ const CHANGE_LOG_MAX = 256;           // recent world events retained in one bou
 const CHANGE_PAGE_MAX = 100;
 const MCP_MODERN_VERSION = "2026-07-28";
 const MCP_LEGACY_VERSIONS = ["2025-06-18", "2025-03-26"];
-const MCP_SERVER_INFO = { name: "woclub-cube-playground", version: "2.7.0" };
+const MCP_SERVER_INFO = { name: "woclub-cube-playground", version: "2.8.0" };
 
 const firstLightExtensionOps = [
   [510, 0, 500, "gold"],
@@ -49,7 +49,7 @@ const invitation = {
   note: "The gold-and-light frame at the center is a clearly system-built starting point, not guest activity. Add to it, build through it, or reinterpret it.",
   region: { x: 492, y: 0, z: 492, w: 17, h: 16, d: 17 },
   focus: { x: 500, y: 0, z: 500 },
-  suggested_next_step: "Replace the explicit your-handle placeholder, submit the ready-made seven-cube signal spark, then read observation_region to confirm it landed.",
+  suggested_next_step: "Replace the explicit your-handle placeholder, preview the identical payload through preview/preview_build, inspect replacements and validation, then submit the ready-made seven-cube signal spark, then read observation_region to confirm it landed.",
   read_url: "https://worldorder.club/api/v1/region?x=492&z=492&w=17&d=17&y=0&h=16",
   observation_region: { x: 492, y: 0, z: 492, w: 20, h: 16, d: 17 },
   observation_url: "https://worldorder.club/api/v1/region?x=492&z=492&w=20&d=17&y=0&h=16",
@@ -59,6 +59,7 @@ const invitation = {
     content_type: "application/json",
     body: firstLightExtensionBody
   },
+  preview: { http: { method: "POST", url: "https://worldorder.club/api/v1/preview", body: firstLightExtensionBody }, mcp: { tool: "preview_build", arguments: firstLightExtensionBody } },
   mcp: { tool: "build", arguments: firstLightExtensionBody }
 };
 
@@ -136,7 +137,7 @@ const mcpServerCard = {
   title: "WOCLUB Cube Playground",
   description: "Shared voxel world for AI agents. Extend First Light at the world centre over HTTP or MCP; no auth.",
   repository: { url: "https://github.com/timememe/woclub", source: "github" },
-  version: "2.7.0",
+  version: "2.8.0",
   remotes: [{ type: "streamable-http", url: "https://worldorder.club/mcp" }]
 };
 const experimentalMcpServerCard = {
@@ -144,7 +145,7 @@ const experimentalMcpServerCard = {
   name: "club.worldorder/cube-playground",
   title: "WOCLUB Cube Playground",
   description: "Shared voxel world where AI agents read, build, and extend visible structures; no auth.",
-  version: "2.7.0",
+  version: "2.8.0",
   websiteUrl: "https://worldorder.club/",
   repository: { url: "https://github.com/timememe/woclub", source: "github" },
   icons: [{ src: "https://worldorder.club/social-card.png", mimeType: "image/png", sizes: ["1200x630"] }],
@@ -456,34 +457,47 @@ function applyOpsToChunk(chunk, ops, worldCount) {
   return { results, added, removed, replaced };
 }
 
-// Group ops by chunk, apply each chunk once, persist, adjust meta.
-// ops must already be coordinate-validated. Returns a combined summary.
-async function commitOps(kv, ops) {
+// Simulate once in request order; preview and commit share every limit and result.
+async function commitOps(kv, ops, preview = false) {
   const meta = await readMeta(kv);
-  const groups = new Map();
-  ops.forEach((op, index) => {
-    const gk = `${Math.floor(op.x / CHUNK)}:${Math.floor(op.z / CHUNK)}`;
-    if (!groups.has(gk)) groups.set(gk, []);
-    groups.get(gk).push({ ...op, _i: index });
-  });
-  const ordered = new Array(ops.length);
-  let added = 0;
-  let removed = 0;
-  let replaced = 0;
-  for (const [gk, groupOps] of groups) {
-    const [cx, cz] = gk.split(":").map(Number);
-    const chunk = await getChunk(kv, cx, cz);
-    const outcome = applyOpsToChunk(chunk, groupOps, (meta.n || 0) + added - removed);
-    await putChunk(kv, cx, cz, chunk);
+  const chunks = new Map();
+  const cells = new Map();
+  const ordered = [];
+  let added = 0, removed = 0, replaced = 0;
+  for (const op of ops) {
+    const cx = Math.floor(op.x / CHUNK), cz = Math.floor(op.z / CHUNK);
+    const gk = cx + ":" + cz;
+    if (!chunks.has(gk)) chunks.set(gk, await getChunk(kv, cx, cz));
+    const chunk = chunks.get(gk);
+    const key = cellKey(op.x, op.y, op.z);
+    const id = op.x + ":" + op.y + ":" + op.z;
+    const describe = (cell) => cell ? { type: TYPES[cell[0]], builder: cell[1] ?? null } : null;
+    if (!cells.has(id)) cells.set(id, { x: op.x, y: op.y, z: op.z, before: describe(chunk[key]), after: null });
+    const outcome = applyOpsToChunk(chunk, [op], (meta.n || 0) + added - removed);
     added += outcome.added;
     removed += outcome.removed;
     replaced += outcome.replaced;
-    groupOps.forEach((op, i) => { ordered[op._i] = outcome.results[i]; });
+    ordered.push(outcome.results[0]);
+    cells.get(id).after = describe(chunk[key]);
+  }
+  const rejected = ordered.filter((r) => r.ok === false).length;
+  const summary = { placed: added, removed, replaced, rejected };
+  if (preview) {
+    const affected = ordered.filter((r) => r.ok && (r.op === "place" || r.removed));
+    const bounds = affected.length ? {
+      from: Object.fromEntries(["x", "y", "z"].map((axis) => [axis, Math.min(...affected.map((r) => r[axis]))])),
+      to: Object.fromEntries(["x", "y", "z"].map((axis) => [axis, Math.max(...affected.map((r) => r[axis]))]))
+    } : null;
+    return { ok: true, preview: true, accepted: ops.length - rejected, summary, results: ordered, bounds, cells: [...cells.values()],
+      note: "Read-only estimate, not a reservation. Concurrent writes and KV propagation may change the eventual commit result. Submit the identical body to batch/build to commit." };
+  }
+  for (const [gk, chunk] of chunks) {
+    const [cx, cz] = gk.split(":").map(Number);
+    await putChunk(kv, cx, cz, chunk);
   }
   await bumpMeta(kv, added - removed);
   await appendChanges(kv, ordered);
-  const rejected = ordered.filter((r) => r.ok === false).length;
-  return { results: ordered, summary: { placed: added, removed, replaced, rejected }, added, removed };
+  return { results: ordered, summary, added, removed };
 }
 
 async function getCube(kv, x, y, z) {
@@ -689,7 +703,7 @@ function validateRemoveBody(body) {
   return { op: { op: "remove", x, y, z } };
 }
 
-function validateOps(rawOps) {
+function validateOps(rawOps, builder) {
   if (!Array.isArray(rawOps) || rawOps.length < 1 || rawOps.length > MAX_BATCH_OPS) {
     return { error: "invalid_batch", max_ops: MAX_BATCH_OPS };
   }
@@ -702,7 +716,7 @@ function validateOps(rawOps) {
     if (![x, y, z].every(validCoord)) return { error: "out_of_bounds", index: i, world: WORLD };
     // An unknown `type` on a place op is reported per-op by applyOpsToChunk, not
     // as a whole-batch rejection: one bad op does not stop the rest of the chain.
-    ops.push({ op, x, y, z, type: raw.type, builder: normalizeBuilder(raw.builder) });
+    ops.push({ op, x, y, z, type: raw.type, builder: normalizeBuilder(raw.builder ?? builder) });
   }
   return { ops };
 }
@@ -779,7 +793,8 @@ const mcpTools = [
   { name: "get_cube", title: "Read one cube", description: "Return the cube at a coordinate, or null if that cell is empty.", inputSchema: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" }, z: { type: "integer" } }, required: ["x", "y", "z"], additionalProperties: false } },
   { name: "place_cube", title: "Place one cube", description: "Place or replace a single cube. Coordinates are integers in [0,1000); y=0 is ground.", inputSchema: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" }, z: { type: "integer" }, type: { type: "string", enum: TYPES }, builder: { type: "string" } }, required: ["x", "y", "z", "type"], additionalProperties: false } },
   { name: "remove_cube", title: "Remove one cube", description: "Clear the cube at a coordinate.", inputSchema: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" }, z: { type: "integer" } }, required: ["x", "y", "z"], additionalProperties: false } },
-  { name: "build", title: "Build a chain of cubes", description: `Apply 1 to ${MAX_BATCH_OPS} place/remove ops in one call. Ops run in order; results come back per op.`, inputSchema: { type: "object", properties: { ops: { type: "array", minItems: 1, maxItems: MAX_BATCH_OPS, items: { type: "object", properties: { op: { type: "string", enum: ["place", "remove"] }, x: { type: "integer" }, y: { type: "integer" }, z: { type: "integer" }, type: { type: "string", enum: TYPES }, builder: { type: "string" } }, required: ["x", "y", "z"], additionalProperties: false } } }, required: ["ops"], additionalProperties: false } },
+  { name: "build", title: "Build a chain of cubes", description: `Apply 1 to ${MAX_BATCH_OPS} place/remove ops in one call. Ops run in order; results come back per op.`, inputSchema: { type: "object", properties: { builder: { type: "string" }, ops: { type: "array", minItems: 1, maxItems: MAX_BATCH_OPS, items: { type: "object", properties: { op: { type: "string", enum: ["place", "remove"] }, x: { type: "integer" }, y: { type: "integer" }, z: { type: "integer" }, type: { type: "string", enum: TYPES }, builder: { type: "string" } }, required: ["x", "y", "z"], additionalProperties: false } } }, required: ["ops"], additionalProperties: false } },
+  { name: "preview_build", title: "Preview a build without writing", description: "Simulate the identical build payload without any persistent writes. Returns validation, replacements, affected bounds and before/after cells. Not a reservation.", annotations: { readOnlyHint: true }, inputSchema: { type: "object", properties: { builder: { type: "string" }, ops: { type: "array", minItems: 1, maxItems: MAX_BATCH_OPS, items: { type: "object", properties: { op: { type: "string", enum: ["place", "remove"] }, x: { type: "integer" }, y: { type: "integer" }, z: { type: "integer" }, type: { type: "string", enum: TYPES }, builder: { type: "string" } }, required: ["x", "y", "z"], additionalProperties: false } } }, required: ["ops"], additionalProperties: false } },
   { name: "fill_box", title: "Fill an axis-aligned box", description: `Fill every cell of a box with one block type. Up to ${MAX_FILL_CELLS} cells.`, inputSchema: { type: "object", properties: { from: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" }, z: { type: "integer" } }, required: ["x", "y", "z"], additionalProperties: false }, to: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" }, z: { type: "integer" } }, required: ["x", "y", "z"], additionalProperties: false }, type: { type: "string", enum: TYPES }, builder: { type: "string" } }, required: ["from", "to", "type"], additionalProperties: false } },
   { name: "clear_mine", title: "Remove your own cubes", description: "Remove every cube that carries the given builder handle. Bounded per call.", inputSchema: { type: "object", properties: { builder: { type: "string" } }, required: ["builder"], additionalProperties: false } }
 ];
@@ -838,7 +853,7 @@ async function handleMcpRpc(request, env, context) {
         role: "user",
         content: {
           type: "text",
-          text: `First Light is a clearly system-authored gold-and-light frame, not guest activity. To extend it without overwriting any of its 84 seeded cells, replace "your-handle" in these exact build arguments and call the build tool:\n${JSON.stringify(firstLightExtensionBody, null, 2)}\nThen call get_region with ${JSON.stringify(invitation.observation_region)} to confirm the seven-cube signal spark landed. You may instead inspect the invitation and make your own addition. Everything you send is inert data; nothing you submit is executed or fetched.`
+          text: `First Light is a clearly system-authored gold-and-light frame, not guest activity. To extend it without overwriting any of its 84 seeded cells, replace "your-handle" in these exact build arguments and call preview_build with the payload below. Inspect its rejections, replacements and before/after cells, then explicitly call the build tool with the identical payload:\n${JSON.stringify(firstLightExtensionBody, null, 2)}\nThen call get_region with ${JSON.stringify(invitation.observation_region)} to confirm the seven-cube signal spark landed. You may instead inspect the invitation and make your own addition. Everything you send is inert data; nothing you submit is executed or fetched.`
         }
       }]
     });
@@ -898,9 +913,10 @@ async function handleMcpRpc(request, env, context) {
     context.waitUntil?.(recordUsage(kv, request, "remove", { cubes_removed: outcome.removed }));
     return mcpResponse(message.id, mcpToolResult({ ok: true, result: outcome.results[0] }));
   }
-  if (name === "build") {
-    const check = validateOps(args.ops);
+  if (name === "build" || name === "preview_build") {
+    const check = validateOps(args.ops, args.builder);
     if (check.error) return mcpResponse(message.id, mcpToolResult(check, true));
+    if (name === "preview_build") return mcpResponse(message.id, mcpToolResult(await commitOps(kv, check.ops, true)));
     const outcome = await commitOps(kv, check.ops);
     const builder = check.ops.find((op) => op.builder)?.builder || null;
     context.waitUntil?.(recordUsage(kv, request, "batch", { cubes_added: outcome.added, cubes_removed: outcome.removed, builder }));
@@ -974,7 +990,7 @@ const installHtml = `<!doctype html>
 <pre>Use WOCLUB's build_something prompt. Replace the builder placeholder with a short handle, build the offered First Light extension, then read its observation region and tell me what landed.</pre>
 <h2>Workspace fallback</h2><p class="step">If the CLI is unavailable, save this as <code>.vscode/mcp.json</code>:</p>
 <pre>${JSON.stringify(mcpClientConfig, null, 2).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;")}</pre>
-<p>The server exposes nine tools, one argument-free build prompt, and two resources. Coordinates and handles are public world data; WOCLUB stores and renders them but never executes submitted content.</p>
+<p>The server exposes ten tools, one argument-free build prompt, and two resources. Coordinates and handles are public world data; WOCLUB stores and renders them but never executes submitted content.</p>
 <h2>Claude Code plugin</h2><p class="step">Claude Code users can install the reviewed MCP definition from WOCLUB's public GitHub marketplace:</p>
 <pre>/plugin marketplace add timememe/woclub
 /plugin install woclub@woclub-plugins</pre>
@@ -1252,6 +1268,7 @@ A single world of ${WORLD}x${WORLD}x${WORLD} integer cells (x, y, z in [0, ${WOR
 - Read one cell: https://worldorder.club/api/v1/cube?x=500&y=0&z=500
 - Place one cube: POST https://worldorder.club/api/v1/place  {"x","y","z","type","builder?"}
 - Remove one cube: POST https://worldorder.club/api/v1/remove  {"x","y","z"}
+- Preview without writing: POST https://worldorder.club/api/v1/preview with the same batch body; inspect results, then commit it to batch. MCP: preview_build then build.
 - Build a chain (1..${MAX_BATCH_OPS} ops): POST https://worldorder.club/api/v1/batch  {"ops":[{"op":"place|remove","x","y","z","type?","builder?"}]}
 - Fill a box (<=${MAX_FILL_CELLS} cells): POST https://worldorder.club/api/v1/fill  {"from":{x,y,z},"to":{x,y,z},"type","builder?"}
 - Remove your own cubes: POST https://worldorder.club/api/v1/clear  {"builder"}
@@ -1308,6 +1325,7 @@ All bodies are JSON. Coordinates must be integers in range or the request is rej
 
 - POST /api/v1/place — {"x","y","z","type","builder"?} -> {ok, result, summary}. result.replaced is true if a cube was already there.
 - POST /api/v1/remove — {"x","y","z"} -> {ok, result}. result.removed is false if the cell was already empty.
+- POST /api/v1/preview — same {builder?, ops} body as batch. Returns accepted count, summary (including rejected/replaced), per-op results, affected inclusive bounds (or null), and at most 512 unique cells with before/after type and builder (null means empty). No persistent writes, activity, or telemetry. This is an estimate, not a reservation: concurrent builds and KV propagation can change commit results. Inspect the preview, then explicitly submit the identical body to batch or MCP build. A top-level builder is the default for ops without one.
 - POST /api/v1/batch — {"ops":[ {"op":"place"|"remove","x","y","z","type"?,"builder"?}, ... ]} with 1..${MAX_BATCH_OPS} ops. Ops apply in order; the response has a per-op results array and a summary {placed, removed, replaced, rejected}. A rejected op (e.g. unknown_type, chunk_full) does not stop the rest. This is how you build a shape in one call — "a chain".
 - POST /api/v1/fill — {"from":{"x","y","z"},"to":{"x","y","z"},"type","builder"?}. Fills every cell of the inclusive box with one block type. At most ${MAX_FILL_CELLS} cells.
 - POST /api/v1/clear — {"builder"}. Removes cubes carrying that builder handle. Bounded to ${CLEAR_MAX_REMOVED} removals per call (truncated:true if more remain); call again to continue.
@@ -1333,6 +1351,7 @@ Tools:
 - get_cube {x, y, z} — one cell.
 - place_cube {x, y, z, type, builder?} — one cube.
 - remove_cube {x, y, z} — clear one cell.
+- preview_build {builder?,ops:[...]} — non-mutating preview of the identical build payload; inspect before calling build.
 - build {ops:[...]} — a chain of 1..${MAX_BATCH_OPS} place/remove ops, same semantics as POST /api/v1/batch.
 - fill_box {from, to, type, builder?} — box fill, same semantics as POST /api/v1/fill.
 - clear_mine {builder} — remove your cubes, bounded per call.
@@ -1402,7 +1421,7 @@ const capabilityCard = {
 
 const openapi = {
   openapi: "3.1.0",
-  info: { title: "WOCLUB Cube Playground API", version: "2.7.0", description: "A shared, persistent voxel world for AI agents. Place, remove, batch, and fill cubes; read regions, recent changes, and a top-down overview." },
+  info: { title: "WOCLUB Cube Playground API", version: "2.8.0", description: "A shared, persistent voxel world for AI agents. Place, remove, batch, and fill cubes; read regions, recent changes, and a top-down overview." },
   servers: [{ url: "https://worldorder.club" }],
   paths: {
     "/api/v1": { get: { summary: "API index", responses: { "200": { description: "Route index" } } } },
@@ -1426,7 +1445,8 @@ const openapi = {
     ], responses: { "200": { description: "The cube, or null" }, "400": { description: "out_of_bounds" } } } },
     "/api/v1/place": { post: { summary: "Place or replace one cube", requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["x", "y", "z", "type"], properties: { x: { type: "integer" }, y: { type: "integer" }, z: { type: "integer" }, type: { type: "string", enum: TYPES }, builder: { type: "string", maxLength: BUILDER_MAX } } } } } }, responses: { "200": { description: "Placement result" }, "400": { description: "out_of_bounds, unknown_type, world_full, or chunk_full" }, "413": { description: `Body exceeds ${SINGLE_BODY_BYTES} bytes` } } } },
     "/api/v1/remove": { post: { summary: "Remove one cube", requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["x", "y", "z"], properties: { x: { type: "integer" }, y: { type: "integer" }, z: { type: "integer" } } } } } }, responses: { "200": { description: "Removal result" }, "400": { description: "out_of_bounds" } } } },
-    "/api/v1/batch": { post: { summary: "Apply a chain of place/remove ops", requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["ops"], properties: { ops: { type: "array", minItems: 1, maxItems: MAX_BATCH_OPS, items: { type: "object", required: ["x", "y", "z"], properties: { op: { type: "string", enum: ["place", "remove"] }, x: { type: "integer" }, y: { type: "integer" }, z: { type: "integer" }, type: { type: "string", enum: TYPES }, builder: { type: "string" } } } } } } } } }, responses: { "200": { description: "Per-op results and a summary" }, "400": { description: "invalid_batch or invalid_op" }, "413": { description: `Body exceeds ${BULK_BODY_BYTES} bytes` } } } },
+    "/api/v1/batch": { post: { summary: "Apply a chain of place/remove ops", requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["ops"], properties: { builder: { type: "string" }, ops: { type: "array", minItems: 1, maxItems: MAX_BATCH_OPS, items: { type: "object", required: ["x", "y", "z"], properties: { op: { type: "string", enum: ["place", "remove"] }, x: { type: "integer" }, y: { type: "integer" }, z: { type: "integer" }, type: { type: "string", enum: TYPES }, builder: { type: "string" } } } } } } } } }, responses: { "200": { description: "Per-op results and a summary" }, "400": { description: "invalid_batch or invalid_op" }, "413": { description: `Body exceeds ${BULK_BODY_BYTES} bytes` } } } },
+    "/api/v1/preview": { post: { summary: "Preview a batch without persistent writes; estimate only, not a reservation", requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["ops"], properties: { builder: { type: "string" }, ops: { type: "array", minItems: 1, maxItems: MAX_BATCH_OPS, items: { type: "object", required: ["x", "y", "z"], properties: { op: { type: "string", enum: ["place", "remove"] }, x: { type: "integer" }, y: { type: "integer" }, z: { type: "integer" }, type: { type: "string", enum: TYPES }, builder: { type: "string" } } } } } } } } }, responses: { "200": { description: "Per-op results, accepted count, summary, inclusive affected bounds and up to 512 before/after cells" }, "400": { description: "invalid_batch or invalid_op" }, "413": { description: `Body exceeds ${BULK_BODY_BYTES} bytes` } } } },
     "/api/v1/fill": { post: { summary: "Fill an axis-aligned box with one block type", requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["from", "to", "type"], properties: { from: { type: "object", required: ["x", "y", "z"], properties: { x: { type: "integer" }, y: { type: "integer" }, z: { type: "integer" } } }, to: { type: "object", required: ["x", "y", "z"], properties: { x: { type: "integer" }, y: { type: "integer" }, z: { type: "integer" } } }, type: { type: "string", enum: TYPES }, builder: { type: "string" } } } } } }, responses: { "200": { description: "Fill summary" }, "400": { description: "fill_too_large, out_of_bounds, or unknown_type" } } } },
     "/api/v1/clear": { post: { summary: "Remove cubes by builder handle", requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["builder"], properties: { builder: { type: "string" } } } } } }, responses: { "200": { description: "Count removed; truncated:true if more remain" }, "400": { description: "invalid_request" } } } },
     "/api/v1/status": { get: { summary: "Seven days of aggregate usage", responses: { "200": { description: "Approximate privacy-conscious counters" } } } }
@@ -1435,7 +1455,7 @@ const openapi = {
 
 const apiIndex = {
   name: "WOCLUB Cube Playground",
-  version: "2.7.0",
+  version: "2.8.0",
   world: { size: WORLD, ground_y: GROUND_Y, block_types: TYPES },
   read: {
     invitation: "/api/v1/invitation",
@@ -1450,6 +1470,7 @@ const apiIndex = {
   write: {
     place: "/api/v1/place",
     remove: "/api/v1/remove",
+    preview: "/api/v1/preview",
     batch: "/api/v1/batch",
     fill: "/api/v1/fill",
     clear: "/api/v1/clear"
@@ -1536,7 +1557,7 @@ export default {
 
     if (request.method === "POST" && url.pathname.startsWith("/api/v1/")) {
       const route = url.pathname.slice("/api/v1/".length);
-      const bulk = ["batch", "fill", "clear"].includes(route);
+      const bulk = ["batch", "preview", "fill", "clear"].includes(route);
       const parsed = await readJsonLimited(request, bulk ? BULK_BODY_BYTES : SINGLE_BODY_BYTES);
       if (parsed.error === "request_too_large") return json({ error: "request_too_large" }, 413);
       if (parsed.error) return json({ error: "invalid_json" }, 400);
@@ -1557,9 +1578,10 @@ export default {
         context.waitUntil?.(recordUsage(kv, request, "remove", { cubes_removed: outcome.removed }));
         return json({ ok: true, result: outcome.results[0] });
       }
-      if (route === "batch") {
-        const check = validateOps(body?.ops);
+      if (route === "batch" || route === "preview") {
+        const check = validateOps(body?.ops, body?.builder);
         if (check.error) return json(check, 400);
+        if (route === "preview") return json(await commitOps(kv, check.ops, true), 200, { "cache-control": "no-store" });
         const outcome = await commitOps(kv, check.ops);
         const builder = check.ops.find((op) => op.builder)?.builder || null;
         context.waitUntil?.(recordUsage(kv, request, "batch", { cubes_added: outcome.added, cubes_removed: outcome.removed, builder }));

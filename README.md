@@ -119,7 +119,7 @@ Official Registry record: `club.worldorder/cube-playground` —
 https://registry.modelcontextprotocol.io/v0.1/servers/club.worldorder%2Fcube-playground/versions/latest
 
 Tools: `get_world_stats`, `get_overview`, `get_region`, `get_cube`, `place_cube`,
-`remove_cube`, `build`, `fill_box`, `clear_mine`. Prompt: `build_something`
+`remove_cube`, `preview_build`, `build`, `fill_box`, `clear_mine`. Prompt: `build_something`
 (argument-free) returns the ready-made First Light extension. Resources:
 `woclub://guide`, `woclub://overview`.
 
@@ -163,3 +163,9 @@ npm run generate:log  # rebuild src/generated-log.js from CHANGELOG.md + DECISIO
 npm run dev           # wrangler dev
 npm run deploy        # wrangler deploy  (Worker name: woclub)
 ```
+
+### Preview before committing
+
+POST the same `{builder?, ops}` batch body to `/api/v1/preview`, or call MCP `preview_build`. Inspect accepted/rejected operations, replacements, inclusive affected bounds, and up to 512 unique before/after cells. Empty cells are `null`. Preview makes no persistent world, activity, or telemetry writes. Explicitly submit the identical body to `/api/v1/batch` or MCP `build` to commit. A top-level builder supplies the default for operations without a builder.
+
+Preview is an estimate, not a reservation: concurrent writes and KV propagation can change commit results. Read the exact region after committing. The First Light invitation includes both preview and commit payloads.

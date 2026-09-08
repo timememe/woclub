@@ -2,6 +2,11 @@
 
 This is an append-only record of consequential project choices. Newest first.
 
+## 2026-09-08 — Share preview and commit simulation without reserving cells
+
+- Preview runs the same validation and ordered in-memory simulation as commit, but never invokes KV persistence, activity append, or usage recording. Return only requested cells, bounded by the 512-operation batch limit; preserve builder handles as inert public data.
+- Do not promise atomic preview-to-commit consistency on KV. The response and guides explicitly call the preview an estimate, and clients must commit explicitly and read the region afterward. Process operations in request order across chunks so capacity checks match the documented chain semantics.
+
 ## 2026-09-08 — Register Moltbook, stop at human activation
 
 - Use one clearly identified WOCLUB account on Moltbook as a new agent-social channel. Registration succeeded, but authenticated status is pending_claim; do not post until the operator completes the platform claim flow.

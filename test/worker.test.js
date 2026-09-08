@@ -94,7 +94,7 @@ test("AI Catalog discovers a connection-ready experimental MCP Server Card", asy
   assert.match(catalogResponse.headers.get("content-type"), /^application\/ai-catalog\+json/);
   assert.equal(card.$schema, "https://static.modelcontextprotocol.io/schemas/v1/server-card.schema.json");
   assert.equal(card.name, "club.worldorder/cube-playground");
-  assert.equal(card.version, "2.7.0");
+  assert.equal(card.version, "2.8.0");
   assert.equal(card.remotes[0].url, "https://worldorder.club/mcp");
   assert.deepEqual(card.remotes[0].supportedProtocolVersions, ["2026-07-28", "2025-06-18", "2025-03-26"]);
   assert.match(cardResponse.headers.get("content-type"), /^application\/mcp-server-card\+json/);
@@ -440,7 +440,7 @@ test("MCP initialize and tools/list expose the build tools", async () => {
   const names = list.json.result.tools.map((t) => t.name).sort();
   assert.deepEqual(names, [
     "build", "clear_mine", "fill_box", "get_cube", "get_overview",
-    "get_region", "get_world_stats", "place_cube", "remove_cube"
+    "get_region", "get_world_stats", "place_cube", "preview_build", "remove_cube"
   ]);
 });
 
@@ -468,8 +468,8 @@ test("MCP 2026-07-28 discovery enables stateless modern clients", async () => {
 
   const list = await bodyOf("/mcp", modernRpc("tools/list"), makeKV());
   assert.equal(list.json.result.resultType, "complete");
-  assert.equal(list.json.result.tools.length, 9);
-  assert.equal(list.json.result._meta["io.modelcontextprotocol/serverInfo"].version, "2.7.0");
+  assert.equal(list.json.result.tools.length, 10);
+  assert.equal(list.json.result._meta["io.modelcontextprotocol/serverInfo"].version, "2.8.0");
 });
 
 test("MCP place_cube then get_region round-trips through one KV", async () => {
@@ -516,4 +516,58 @@ test("MCP resource woclub://overview returns the raster", async () => {
 
 test("dayKey is a UTC date string", () => {
   assert.match(dayKey(new Date("2026-09-06T23:00:00Z")), /^2026-09-06$/);
+});
+
+test("preview matches ordered commit and never mutates KV, feed or telemetry", async () => {
+  const kv = makeKV();
+  await bodyOf('/api/v1/place', post({ x: 1, y: 0, z: 1, type: 'stone', builder: 'existing' }), kv);
+  const payload = { builder: 'preview-tester', ops: [
+    { x: 1, y: 0, z: 1, type: 'gold' },
+    { x: 40, y: 2, z: 1, type: 'glass' },
+    { op: 'remove', x: 1, y: 0, z: 1 },
+    { x: 1, y: 0, z: 1, type: 'wood', builder: 'override' },
+    { x: 2, y: 0, z: 1, type: 'invalid' },
+    { op: 'remove', x: 999, y: 0, z: 999 }
+  ] };
+  const snapshot = JSON.stringify([...kv.store]);
+  const preview = await bodyOf('/api/v1/preview', post(payload), kv);
+  assert.equal(preview.response.status, 200);
+  assert.equal(preview.response.headers.get('cache-control'), 'no-store');
+  assert.equal(JSON.stringify([...kv.store]), snapshot);
+  assert.equal(preview.json.accepted, 5);
+  assert.deepEqual(preview.json.bounds, { from: {x:1,y:0,z:1}, to: {x:40,y:2,z:1} });
+  assert.deepEqual(preview.json.cells[0], {x:1,y:0,z:1,before:{type:'stone',builder:'existing'},after:{type:'wood',builder:'override'}});
+  const mcp = await bodyOf('/mcp', rpc('tools/call', { name:'preview_build', arguments:payload }), kv);
+  assert.deepEqual(mcp.json.result.structuredContent, preview.json);
+  assert.equal(JSON.stringify([...kv.store]), snapshot);
+  for (const invalid of [{ops:[]}, {ops:[{x:-1,y:0,z:0}]}]) {
+    const p = await bodyOf('/api/v1/preview', post(invalid), kv);
+    const b = await bodyOf('/api/v1/batch', post(invalid), kv);
+    assert.equal(p.response.status, 400);
+    assert.deepEqual(p.json,b.json);
+  }
+  assert.equal(JSON.stringify([...kv.store]), snapshot);
+  const commit = await bodyOf('/api/v1/batch', post(payload), kv);
+  assert.deepEqual(commit.json.summary, preview.json.summary);
+  assert.deepEqual(commit.json.results, preview.json.results);
+  for (const cell of preview.json.cells) {
+    const actual = (await bodyOf(`/api/v1/cube?x=${cell.x}&y=${cell.y}&z=${cell.z}`, {}, kv)).json.cube;
+    assert.deepEqual(actual ? {type:actual.type,builder:actual.builder} : null, cell.after);
+  }
+});
+
+test("preview shares capacity limits and preserves cross-chunk operation order", async () => {
+  const kv = makeKV();
+  await bodyOf('/api/v1/place', post({x:40,y:0,z:0,type:'stone'}),kv);
+  await kv.put('w:meta', JSON.stringify({n:750000}));
+  const payload={ops:[{x:1,y:0,z:0,type:'wood'},{op:'remove',x:40,y:0,z:0},{x:2,y:0,z:0,type:'gold'}]};
+  const snapshot=JSON.stringify([...kv.store]);
+  const p=await bodyOf('/api/v1/preview',post(payload),kv);
+  assert.equal(JSON.stringify([...kv.store]),snapshot);
+  assert.equal(p.json.results[0].error,'world_full');
+  assert.equal(p.json.results[2].ok,true);
+  const b=await bodyOf('/api/v1/batch',post(payload),kv);
+  assert.deepEqual(p.json.results,b.json.results);
+  const none=await bodyOf('/api/v1/preview',post({ops:[{x:0,y:0,z:0,type:'invalid'}]}),kv);
+  assert.equal(none.json.bounds,null);
 });
