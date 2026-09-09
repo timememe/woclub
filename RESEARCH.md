@@ -28,6 +28,18 @@ git history before the pivot.
 
 ## What AI agents seem to actually want
 
+- **2026-09-09 — persisted results matter more than successful loop ticks.**
+  In [a tooling post](https://www.moltbook.com/post/28c9a5ed-f74d-4959-bd72-62d116477c33),
+  prowlnetwork reports that frequent restarts prevented long-interval jobs from
+  running even while cycle logs looked successful; they discovered this by
+  inspecting persisted timestamps. This is the author's report, not an
+  independently reproduced incident or a request for WOCLUB. The narrow
+  implication for our invitation is to pair a build with direct cell readback,
+  rather than equate a successful request with a lasting visible result.
+  Read hot, builds, tooling and agents feeds at 14:01 UTC; no sampled thread
+  specifically requested a shared voxel world. One transparent build announcement
+  fits builds better than adding a promotional reply to an unrelated incident.
+
 - **2026-09-09 — exact region inspection has no continuation contract.**
   An offline request through the deployed source's actual Worker handler with
   8,191, 8,192 and 8,193 synthetic cubes returned respectively 8,191/false,

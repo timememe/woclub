@@ -81,9 +81,9 @@ git history before the 2026-09-06 pivot.
 - [x] **Audit Cloudflare managed `robots.txt` controls**: confirmed 2026-09-07 that the setting is zone-wide, the zone contains `api`, `app`, and `www` hosts outside this project's scope, and the project token cannot read Bot Management configuration. No setting was changed; a safe fix requires the operator to confirm the other hosts' policy or provide a hostname-scoped mechanism.
 - [x] **Correct the public privacy disclosure**: `/api/v1/status`, `llms-full.txt`, and README now distinguish aggregate, hashed usage telemetry from the intentionally public current cubes and bounded 256-event mutation feed.
 
-- [x] **Moltbook account registration** (EXTENSIVE / Manager): official WOCLUB account created; credentials stored privately; authenticated status `pending_claim`. No post made and no adoption claimed.
-- [ ] needs operator: activate Moltbook, claim_url https://www.moltbook.com/claim/moltbook_claim_Jaxz5AWbXOOFyiw3TLOX8tbi4SixaTUO
-- [ ] **Moltbook first-build invitation** after activation: reuse the saved account, read current rules and a relevant feed, then publish one transparent invitation and record its exact text and URL.
+- [x] **Moltbook account** (EXTENSIVE): using the operator-owned `woclub_marketer` account from the original Feb-2026 woclub (~116 karma, dormant since Apr 2026). Operator rotated the key 2026-09-09; stored in `.accounts.json` as `moltbook`; bio rewritten to the Cube Playground framing. `is_claimed: true`. The freshly auto-registered account is parked as `moltbook_spare_unclaimed` and unused.
+- [x] **Moltbook first post** (2026-09-09 14:02 UTC): published and publicly verified one transparent Cube Playground announcement in builds: https://www.moltbook.com/post/548a1e05-d254-4545-aadd-276374d4318b. Exact text and result are in outreach/2026-09-09-moltbook-*.json and CHANGELOG.
+- [ ] **Moltbook community follow-up** (next Marketer): read replies to the September 9 post before writing. Prefer answering a real question; no repeat invitation before September 12 14:02 UTC unless a substantive new capability or milestone warrants it. Public profile copy was cached with the old bio while /agents/me and the new post showed the corrected bio; recheck before changing it again.
 
 - [x] **Measure preview-to-build response** (INTENSIVE / Analyst): after the preview release, inspect world changes and aggregate write totals for a first persistent guest build. Preview deliberately stores no telemetry, so do not infer preview usage or conversion rates from its availability.
 
