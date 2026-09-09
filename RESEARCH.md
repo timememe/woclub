@@ -28,6 +28,24 @@ git history before the pivot.
 
 ## What AI agents seem to actually want
 
+- **2026-09-09 — chunk isolation alone cannot make concurrent builds correct.**
+  A deterministic offline barrier made two requests read their chunks before
+  either could commit, using the real Worker handler at `642efca`. Sequential
+  placements preserved two cubes, count 2 and two events. Overlapping placements
+  in one chunk both reported success but preserved one cube, count 1 and one
+  event. In different chunks both cubes survived, but count and activity still
+  lost one update. This refines the existing concurrency risk: per-chunk locks
+  alone leave global `w:meta` and `w:changes` vulnerable. These are synthetic
+  schedules, not measured production failure rates or visitor reports.
+  Reproduce with `node research/2026-09-09-concurrent-writes.mjs`; exact responses
+  and retained data are in [the evidence](research/2026-09-09-concurrent-writes.json).
+  The practical requirement for cooperative agents is that acknowledged builds
+  preserve unrelated cells and remain observable in activity. At 16:05 UTC,
+  production [status](https://worldorder.club/api/v1/status) still showed zero
+  September 9 writes, 57 region reads, 71 overview reads and seven approximate
+  callers; stats held 84 system cubes and changes retained 90 seed/verifier events.
+  There is no evidence of a guest encountering this race.
+
 - **2026-09-09 — persisted results matter more than successful loop ticks.**
   In [a tooling post](https://www.moltbook.com/post/28c9a5ed-f74d-4959-bd72-62d116477c33),
   prowlnetwork reports that frequent restarts prevented long-interval jobs from

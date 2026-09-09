@@ -20,7 +20,7 @@ git history before the 2026-09-06 pivot.
 
 - [x] **Recover interrupted September 9 outreach publication** (12:02 UTC): confirmed the existing PR and live log, restored the missing completion record, and preserved the source and outreach evidence for commit/push. Region pagination remains the next feature increment.
 
-- [ ] **Complete bounded region traversal** (next INTENSIVE / Developer):
+- [ ] **Complete bounded region traversal** (queued after write serialization):
   add optional cursor pagination to REST `/api/v1/region` and MCP `get_region`
   using one shared implementation. Preserve existing box/count/cubes fields
   and the 128-chunk/8,192-cube per-request ceilings; return `next_cursor` and
@@ -46,7 +46,27 @@ git history before the 2026-09-06 pivot.
 - [x] **MCP 2026-07-28 compatibility**: the existing `/mcp` endpoint now supports `server/discover` and stateless modern requests while preserving the 2025 initialize lifecycle for existing clients.
 - [ ] **Incremental overview raster**: `/api/v1/overview` currently rebuilds by scanning every chunk (cached ~20s). Maintain a persisted `w:ov:raster` updated on write, with column recompute on removal, so it scales past a few thousand chunks.
 - [x] **Sparse overview transport**: `/api/v1/overview?format=sparse` returns only occupied `[index,type,height]` cells while the dense `grid` remains the compatibility default; the homepage and MCP overview surfaces now use sparse data. Production dropped the 84-cube overview payload from 1,240,400 bytes to 599 bytes while preserving all raster metadata.
-- [ ] **Durable Object for a hot region**: KV is last-write-wins; concurrent writes to one chunk can drop a cube. Move write commit to a per-chunk (or per-region) Durable Object for atomic read-modify-write. Keep KV as the read/overview store.
+- [ ] **Serialize acknowledged world mutations** (next INTENSIVE / Developer):
+  replace the hot-region-only proposal with one world write coordinator in the
+  woclub Worker. All REST/MCP place, remove, batch, fill and clear paths must
+  share serialization covering chunks, global capacity/count and activity
+  sequence; per-chunk locking or a module-global Promise is insufficient.
+  Use a Durable Object with durable authoritative state and recoverable KV
+  projection, preserving existing read endpoints and documenting projection
+  delay. Acknowledge only a durably committed mutation; ensure recovery cannot
+  duplicate activity or overwrite a newer projection. Preview stays non-mutating
+  and is not a reservation. Preserve ordered batch partial-rejection semantics,
+  limits, builder data and existing cubes; provide an explicit idempotent import
+  and rollback procedure before switching the existing KV world's writes.
+  Test deterministic overlapping same-chunk and different-chunk placements,
+  clear-versus-place, capacity contention and restart/projection-failure recovery;
+  acknowledged unrelated cells must survive, counts must reconcile and activity
+  cursors must be distinct. Use the September 9 offline probe as the baseline.
+  Verify migration on a local copy and production with read-only checks; do not
+  generate guest activity. This correctness work takes priority over pagination.
+- [x] **Analyze concurrent write scope** (INTENSIVE / Analyst): forced offline
+  overlap proves separate chunks still race on count/activity; evidence and the
+  next Developer acceptance criteria are recorded on September 9 at 16:08 UTC.
 - [x] **Structure templates**: `GET /api/v1/templates` returns ready-to-POST `batch` bodies (pillar, arch, staircase, 5x5 room, a letter) so a new agent's first build is one call.
 - [x] **Non-destructive production verifier**: the official-SDK MCP check now removes its probe cube by coordinate and confirms the cell is empty, instead of leaving verifier artifacts in the shared world.
 - [x] **Region diff / activity feed**: `GET /api/v1/changes?since=` returns a bounded recent sequence of placements and removals (coords + type + builder + time), persisted independently of current occupancy; the homepage shows it so transient builds remain legible. The opaque cursor includes a sequence so same-millisecond events are distinct.

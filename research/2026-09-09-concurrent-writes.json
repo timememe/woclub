@@ -1,0 +1,322 @@
+{
+  "source_commit": "642efca",
+  "kind": "synthetic forced overlap; no production writes",
+  "cases": [
+    {
+      "second_x": 1,
+      "concurrent": false,
+      "responses": [
+        {
+          "status": 200,
+          "body": {
+            "ok": true,
+            "result": {
+              "op": "place",
+              "x": 0,
+              "y": 0,
+              "z": 0,
+              "ok": true,
+              "type": "stone",
+              "builder": "WOCLUB-offline-probe",
+              "replaced": false
+            },
+            "summary": {
+              "placed": 1,
+              "removed": 0,
+              "replaced": 0,
+              "rejected": 0
+            }
+          }
+        },
+        {
+          "status": 200,
+          "body": {
+            "ok": true,
+            "result": {
+              "op": "place",
+              "x": 1,
+              "y": 0,
+              "z": 0,
+              "ok": true,
+              "type": "stone",
+              "builder": "WOCLUB-offline-probe",
+              "replaced": false
+            },
+            "summary": {
+              "placed": 1,
+              "removed": 0,
+              "replaced": 0,
+              "rejected": 0
+            }
+          }
+        }
+      ],
+      "cells": [
+        {
+          "status": 200,
+          "body": {
+            "x": 0,
+            "y": 0,
+            "z": 0,
+            "cube": {
+              "x": 0,
+              "y": 0,
+              "z": 0,
+              "type": "stone",
+              "builder": "WOCLUB-offline-probe",
+              "placed_at": "2026-09-09T16:06:01.454Z"
+            }
+          }
+        },
+        {
+          "status": 200,
+          "body": {
+            "x": 1,
+            "y": 0,
+            "z": 0,
+            "cube": {
+              "x": 1,
+              "y": 0,
+              "z": 0,
+              "type": "stone",
+              "builder": "WOCLUB-offline-probe",
+              "placed_at": "2026-09-09T16:06:01.462Z"
+            }
+          }
+        }
+      ],
+      "persisted_cube_count": 2,
+      "meta": {
+        "n": 2
+      },
+      "changes": {
+        "sequence": 2,
+        "events": [
+          {
+            "cursor": "mtuaiwoe-1",
+            "op": "place",
+            "x": 0,
+            "y": 0,
+            "z": 0,
+            "type": "stone",
+            "builder": "WOCLUB-offline-probe",
+            "at": "2026-09-09T16:06:01.454Z",
+            "replaced": false
+          },
+          {
+            "cursor": "mtuaiwom-2",
+            "op": "place",
+            "x": 1,
+            "y": 0,
+            "z": 0,
+            "type": "stone",
+            "builder": "WOCLUB-offline-probe",
+            "at": "2026-09-09T16:06:01.462Z",
+            "replaced": false
+          }
+        ]
+      }
+    },
+    {
+      "second_x": 1,
+      "concurrent": true,
+      "responses": [
+        {
+          "status": 200,
+          "body": {
+            "ok": true,
+            "result": {
+              "op": "place",
+              "x": 0,
+              "y": 0,
+              "z": 0,
+              "ok": true,
+              "type": "stone",
+              "builder": "WOCLUB-offline-probe",
+              "replaced": false
+            },
+            "summary": {
+              "placed": 1,
+              "removed": 0,
+              "replaced": 0,
+              "rejected": 0
+            }
+          }
+        },
+        {
+          "status": 200,
+          "body": {
+            "ok": true,
+            "result": {
+              "op": "place",
+              "x": 1,
+              "y": 0,
+              "z": 0,
+              "ok": true,
+              "type": "stone",
+              "builder": "WOCLUB-offline-probe",
+              "replaced": false
+            },
+            "summary": {
+              "placed": 1,
+              "removed": 0,
+              "replaced": 0,
+              "rejected": 0
+            }
+          }
+        }
+      ],
+      "cells": [
+        {
+          "status": 200,
+          "body": {
+            "x": 0,
+            "y": 0,
+            "z": 0,
+            "cube": null
+          }
+        },
+        {
+          "status": 200,
+          "body": {
+            "x": 1,
+            "y": 0,
+            "z": 0,
+            "cube": {
+              "x": 1,
+              "y": 0,
+              "z": 0,
+              "type": "stone",
+              "builder": "WOCLUB-offline-probe",
+              "placed_at": "2026-09-09T16:06:01.468Z"
+            }
+          }
+        }
+      ],
+      "persisted_cube_count": 1,
+      "meta": {
+        "n": 1
+      },
+      "changes": {
+        "sequence": 1,
+        "events": [
+          {
+            "cursor": "mtuaiwos-1",
+            "op": "place",
+            "x": 1,
+            "y": 0,
+            "z": 0,
+            "type": "stone",
+            "builder": "WOCLUB-offline-probe",
+            "at": "2026-09-09T16:06:01.468Z",
+            "replaced": false
+          }
+        ]
+      }
+    },
+    {
+      "second_x": 32,
+      "concurrent": true,
+      "responses": [
+        {
+          "status": 200,
+          "body": {
+            "ok": true,
+            "result": {
+              "op": "place",
+              "x": 0,
+              "y": 0,
+              "z": 0,
+              "ok": true,
+              "type": "stone",
+              "builder": "WOCLUB-offline-probe",
+              "replaced": false
+            },
+            "summary": {
+              "placed": 1,
+              "removed": 0,
+              "replaced": 0,
+              "rejected": 0
+            }
+          }
+        },
+        {
+          "status": 200,
+          "body": {
+            "ok": true,
+            "result": {
+              "op": "place",
+              "x": 32,
+              "y": 0,
+              "z": 0,
+              "ok": true,
+              "type": "stone",
+              "builder": "WOCLUB-offline-probe",
+              "replaced": false
+            },
+            "summary": {
+              "placed": 1,
+              "removed": 0,
+              "replaced": 0,
+              "rejected": 0
+            }
+          }
+        }
+      ],
+      "cells": [
+        {
+          "status": 200,
+          "body": {
+            "x": 0,
+            "y": 0,
+            "z": 0,
+            "cube": {
+              "x": 0,
+              "y": 0,
+              "z": 0,
+              "type": "stone",
+              "builder": "WOCLUB-offline-probe",
+              "placed_at": "2026-09-09T16:06:01.473Z"
+            }
+          }
+        },
+        {
+          "status": 200,
+          "body": {
+            "x": 32,
+            "y": 0,
+            "z": 0,
+            "cube": {
+              "x": 32,
+              "y": 0,
+              "z": 0,
+              "type": "stone",
+              "builder": "WOCLUB-offline-probe",
+              "placed_at": "2026-09-09T16:06:01.473Z"
+            }
+          }
+        }
+      ],
+      "persisted_cube_count": 2,
+      "meta": {
+        "n": 1
+      },
+      "changes": {
+        "sequence": 1,
+        "events": [
+          {
+            "cursor": "mtuaiwox-1",
+            "op": "place",
+            "x": 32,
+            "y": 0,
+            "z": 0,
+            "type": "stone",
+            "builder": "WOCLUB-offline-probe",
+            "at": "2026-09-09T16:06:01.473Z",
+            "replaced": false
+          }
+        ]
+      }
+    }
+  ]
+}
