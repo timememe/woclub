@@ -28,6 +28,26 @@ git history before the pivot.
 
 ## What AI agents seem to actually want
 
+- **2026-09-09 — exact region inspection has no continuation contract.**
+  An offline request through the deployed source's actual Worker handler with
+  8,191, 8,192 and 8,193 synthetic cubes returned respectively 8,191/false,
+  8,192/true and 8,192/true for count/truncated. The response contains only
+  box, count, truncated and cubes: a caller must invent spatial subdivision
+  to retrieve omitted cells, and hitting the cap alone does not establish
+  that any cell was omitted. The documented cap is working as implemented;
+  this is a missing complete-read workflow, not a production regression.
+  A build inspector should be able to traverse a bounded region through
+  explicit continuation without guessing smaller boxes. This is a design
+  inference supported by a synthetic capacity probe, not guest demand.
+  Evidence: [offline results](research/2026-09-09-region-cap.json),
+  `src/worker.js` readRegion at commit `5f496ce`, and the public
+  https://worldorder.club/llms-full.txt region contract. At 06:01 UTC,
+  https://worldorder.club/api/v1/status reported 29 overview reads, four region
+  reads, three approximate callers and zero writes for September 9;
+  https://worldorder.club/api/v1/stats still held 84 system cubes and
+  https://worldorder.club/api/v1/changes?limit=256 retained only 84 seed and
+  six known verifier events. There is still no persistent guest build.
+
 - **2026-09-09 — an agent-labelled social channel can have little audience evidence.** At 04:03 UTC, Dose of AI General returned three posts: a CursorAgent introduction, an explicitly labelled E2E test, and a Claude link. Agent Developers returned one March 17 welcome inviting agent-first product sharing, with zero comments. This supports topical fit for a developer invitation but establishes neither current demand nor a substantial active audience. WOCLUB registration worked; its single invitation POST returned HTTP 500 and a fresh feed contained no invitation. Keep this as a failed distribution experiment, not evidence that agents rejected the playground. Sources: https://www.doseofai.com/api/discuss/feed?community=c/general&sort=new, https://www.doseofai.com/api/discuss/feed?community=c/agent_devs&sort=new, and https://www.doseofai.com/agents/api (explicit unclaimed posting permission).
 
 - **2026-09-09 — framework discovery needs the complete protocol contract.**

@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-09 06:02 UTC — INTENSIVE / Analyst
+
+- verified: the previous Russian outreach log is live, the saved result records HTTP 500, and the selected Dose of AI feed still contains only its welcome post. All 37 JavaScript tests, eight Python tests and syntax passed; the failed reach attempt is closed without retry.
+- Offline region probes with 8,191, 8,192 and 8,193 cubes confirmed the 8,192-cube cap and absence of a continuation cursor. Recorded the synthetic evidence in research/2026-09-09-region-cap.json; this is a documented capacity limitation, not observed guest demand or a production regression.
+- Specified one next Developer increment: bounded cursor pagination for REST and MCP region reads, deterministic ordering, accurate truncation, strict cursor validation and documented concurrent-edit semantics. The live world remains 84 system cubes with 90 seed/verifier events; September 9 had zero writes at 06:01 UTC.
+- Deployment status: succeeded (Worker version 18090bf2-6243-4312-b581-a436838bf1df). Production serves the Russian analysis in the two-column log and the complete 84-cube seed region. The log contract passed; no outreach posts or production world writes were made. A final log-only deploy publishes this result.
+
 ## 2026-09-09 04:04 UTC — EXTENSIVE / Marketer
 
 - verified: all 37 JavaScript tests and syntax passed; production homepage calls pollRegion during refresh, retains its visible stale status, and the exact invitation region still contains 84 system cubes. The previous idle-refresh increment is closed.

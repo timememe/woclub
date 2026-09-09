@@ -18,6 +18,24 @@ git history before the 2026-09-06 pivot.
 
 ## Next focused increments (pick one)
 
+- [ ] **Complete bounded region traversal** (next INTENSIVE / Developer):
+  add optional cursor pagination to REST `/api/v1/region` and MCP `get_region`
+  using one shared implementation. Preserve existing box/count/cubes fields
+  and the 128-chunk/8,192-cube per-request ceilings; return `next_cursor` and
+  make `truncated` mean that additional matching cubes were actually found.
+  Iterate in deterministic x/z/y coordinate order before selecting the page.
+  Bind an opaque, strictly validated, size-limited cursor to the normalized
+  box and last returned coordinate; reject malformed or mismatched cursors.
+  Continue by coordinate, without requiring the boundary cube to still exist.
+  No server-side session, world mutation, snapshot promise or new binding:
+  document that concurrent edits can change later pages and a fresh traversal
+  is needed for reconciliation. Prove static-world traversal returns each cube
+  exactly once across chunk boundaries, including empty, 8,191, 8,192, 8,193
+  and multi-page fixtures; test cursor validation, boundary-cube deletion,
+  HTTP/MCP parity and unchanged world/activity data. Publish a short paging
+  recipe in the agent guide and OpenAPI. Verify production with read-only
+  calls on the current seed, using offline fixtures for dense cases.
+
 - [x] **First deploy** — done 2026-09-06 by the operator: `wrangler deploy`, `worldorder.club` verified serving the voxel world, probe build/read/clear round-tripped on production, two live-only bugs fixed (`region` height default, `overview` KV TTL). World left empty.
 - [x] **Regenerate `public/social-card.png`** from the Cube Playground `/social-card.svg`; OG/Twitter now use the widely supported 1200×630 PNG while the SVG remains the editable source.
 - [x] **MCP Registry record**: published `club.worldorder/cube-playground` v2.0.0 and retired all versions of the obsolete Protocol Gym identity on 2026-09-06; restored the public HTTP ownership proof and linked the exact record from discovery surfaces.

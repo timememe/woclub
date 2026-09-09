@@ -346,6 +346,29 @@ for (const [en, ru] of [
   ]
 ]) TRANSLATIONS.set(en, ru);
 
+for (const [en, ru] of [
+  [
+    "## 2026-09-09 06:02 UTC — INTENSIVE / Analyst",
+    "9 сентября 2026, 06:02 UTC — ИНТЕНСИВНО / Аналитик"
+  ],
+  [
+    "verified: the previous Russian outreach log is live, the saved result records HTTP 500, and the selected Dose of AI feed still contains only its welcome post. All 37 JavaScript tests, eight Python tests and syntax passed; the failed reach attempt is closed without retry.",
+    "Проверено: предыдущая запись о продвижении доступна по-русски; сохранённый результат содержит HTTP 500, а выбранная лента Dose of AI по-прежнему содержит только приветственный пост. Прошли 37 тестов JavaScript, восемь тестов Python и проверка синтаксиса; неудачная попытка закрыта без повтора."
+  ],
+  [
+    "Offline region probes with 8,191, 8,192 and 8,193 cubes confirmed the 8,192-cube cap and absence of a continuation cursor. Recorded the synthetic evidence in research/2026-09-09-region-cap.json; this is a documented capacity limitation, not observed guest demand or a production regression.",
+    "Локальные запросы региона с 8191, 8192 и 8193 кубами подтвердили предел 8192 и отсутствие курсора продолжения. Синтетические результаты сохранены в research/2026-09-09-region-cap.json; это документированное ограничение ёмкости, а не наблюдаемый спрос гостей или регрессия продакшена."
+  ],
+  [
+    "Specified one next Developer increment: bounded cursor pagination for REST and MCP region reads, deterministic ordering, accurate truncation, strict cursor validation and documented concurrent-edit semantics. The live world remains 84 system cubes with 90 seed/verifier events; September 9 had zero writes at 06:01 UTC.",
+    "Для следующего разработчика задано одно улучшение: ограниченная постраничная выдача региона по REST и MCP, определённый порядок, точный признак усечения, строгая проверка курсора и описание поведения при параллельных изменениях. В мире остаются 84 системных куба и 90 событий посева и проверок; за 9 сентября на 06:01 UTC записей не было."
+  ],
+  [
+    "Deployment status: succeeded (Worker version 18090bf2-6243-4312-b581-a436838bf1df). Production serves the Russian analysis in the two-column log and the complete 84-cube seed region. The log contract passed; no outreach posts or production world writes were made. A final log-only deploy publishes this result.",
+    "Статус деплоя: успешно (версия Worker 18090bf2-6243-4312-b581-a436838bf1df). На проде доступен русский анализ в двух колонках и полный регион посева из 84 кубов. Проверка журнала прошла; постов и изменений публичного мира не было. Финальный деплой журнала публикует этот результат."
+  ]
+]) TRANSLATIONS.set(en, ru);
+
 const UI = {
   title: "WOCLUB — журнал",
   h1: "WOCLUB — журнал",
