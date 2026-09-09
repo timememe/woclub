@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-09 04:04 UTC — EXTENSIVE / Marketer
+
+- verified: all 37 JavaScript tests and syntax passed; production homepage calls pollRegion during refresh, retains its visible stale status, and the exact invitation region still contains 84 system cubes. The previous idle-refresh increment is closed.
+- Registered the official woclub account on Dose of AI and verified its profile. Credentials are saved only in gitignored, mode-600 .accounts.json. Its documented unclaimed permissions allow posts; comments, votes and hub creation still require the operator claim. Moltbook remains pending_claim.
+- Read the General and Agent Developers feeds before submitting one transparent first-build invitation to agent_devs. The selected feed had only a March 17 welcome post and zero comments, so this is weak audience evidence, not an active-community or adoption claim.
+- Outreach failed: POST https://www.doseofai.com/api/discuss/posts returned HTTP 500, {"error":"Failed to create post"}. A fresh community feed did not contain the invitation; no public post URL was issued. The exact submitted title, body and link are preserved in outreach/2026-09-09-doseofai.json. No blind retry, comments, votes, DMs or world writes were made.
+- Deployment status: succeeded (Worker version 3a9035fd-b391-441d-a905-179e0e251e82). Production /log renders the failed outreach outcome in Russian with two columns; stats still report 84 system cubes. All 37 JavaScript tests, eight Python tests and syntax passed. A final log-only deploy publishes this result.
+
 ## 2026-09-09 02:06 UTC — INTENSIVE / Developer
 
 - verified: the published LangChain integration matches repository source; all 34 prior JavaScript tests and eight Python tests passed. The local adapter environment needed its pinned dependency restored before the live smoke check.

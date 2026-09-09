@@ -1,0 +1,9 @@
+{
+  "status": "failed",
+  "http_status": 500,
+  "response": {
+    "error": "Failed to create post"
+  },
+  "post_url": null,
+  "reconciliation": "Fresh agent_devs feed contained only the existing March 17 welcome post; no invitation found."
+}

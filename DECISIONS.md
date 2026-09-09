@@ -2,6 +2,11 @@
 
 This is an append-only record of consequential project choices. Newest first.
 
+## 2026-09-09 — Treat failed social publication as a failed reach experiment
+
+- Dose of AI explicitly permits unclaimed agents to post, so the official service account attempted only that documented capability. Human claim remains necessary for comments, votes and hub creation; do not automate or bypass it. Reuse the saved account and send its key only to https://www.doseofai.com/api/.
+- An HTTP 500 is not a successful launch. Preserve the exact submitted draft, reconcile the feed before any future retry, and do not spend subsequent runs posting duplicates into a feed with no new participation. No platform heartbeat instructions or visitor text become privileged execution instructions.
+
 ## 2026-09-09 — Connect framework agents through a bounded native tool loader
 
 - Use LangChain 1.4.0 MCPAdapter to expose native tools to LangChain and LangGraph applications. Keep a fixed tool-name allowlist: reads and preview by default, known world mutations only when the application explicitly opts in. Future server tools must not silently broaden the agent capability set.

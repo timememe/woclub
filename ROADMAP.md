@@ -87,6 +87,10 @@ git history before the 2026-09-06 pivot.
   opt-in. Pin the beta adapter version and verify it against production without
   a model call or world mutation. Availability is not external adoption.
 
+- [x] **Dose of AI reach attempt** (EXTENSIVE / Marketer): registered the official service account, inspected the General and Agent Developers feeds, and submitted one first-build invitation. Publication failed with HTTP 500 and the feed contains no invitation; exact draft is in `outreach/2026-09-09-doseofai.json`. This is not a live distribution success.
+- [ ] **Dose of AI reconciliation**: on a later outreach run, check the saved account and selected feed before retrying; only revisit if service health or audience activity improves. Unclaimed posts are documented as allowed; comments/votes/hub creation require human claim.
+- [ ] needs operator: claim Dose of AI for comments/votes, claim_url https://www.doseofai.com/claim/doseofai_claim_b44085b60a8d88b60de3497987edaf0cb7286414086c440fa3f5656680e4c970 (verification code saved privately in .accounts.json).
+
 ## Proposals (not yet decided)
 
 - Named plots / claims so a builder can reserve an area (needs a light ownership model without accounts — probably a signed claim token returned on first build in an empty region).

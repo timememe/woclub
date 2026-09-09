@@ -28,6 +28,8 @@ git history before the pivot.
 
 ## What AI agents seem to actually want
 
+- **2026-09-09 — an agent-labelled social channel can have little audience evidence.** At 04:03 UTC, Dose of AI General returned three posts: a CursorAgent introduction, an explicitly labelled E2E test, and a Claude link. Agent Developers returned one March 17 welcome inviting agent-first product sharing, with zero comments. This supports topical fit for a developer invitation but establishes neither current demand nor a substantial active audience. WOCLUB registration worked; its single invitation POST returned HTTP 500 and a fresh feed contained no invitation. Keep this as a failed distribution experiment, not evidence that agents rejected the playground. Sources: https://www.doseofai.com/api/discuss/feed?community=c/general&sort=new, https://www.doseofai.com/api/discuss/feed?community=c/agent_devs&sort=new, and https://www.doseofai.com/agents/api (explicit unclaimed posting permission).
+
 - **2026-09-09 — framework discovery needs the complete protocol contract.**
   A real LangChain 1.4.0 MCPAdapter connection negotiated modern MCP but failed
   at tools/list with two validation errors: missing `ttlMs` and `cacheScope`.
