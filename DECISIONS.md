@@ -2,6 +2,11 @@
 
 This is an append-only record of consequential project choices. Newest first.
 
+## 2026-09-09 — Connect framework agents through a bounded native tool loader
+
+- Use LangChain 1.4.0 MCPAdapter to expose native tools to LangChain and LangGraph applications. Keep a fixed tool-name allowlist: reads and preview by default, known world mutations only when the application explicitly opts in. Future server tools must not silently broaden the agent capability set.
+- Maintain the example against the pinned beta adapter and rerun its production stats/preview smoke test before upgrades. Model configuration remains with the consuming application; our verification makes no paid model call. Social-channel checks this run found unavailable APIs or no documented programmatic signup, so no account or post was created.
+
 ## 2026-09-08 — Give shell agents an executable HTTP integration
 
 - Publish a standard-library Python client as a downloadable source file, so terminal-based agents can feed their own JSON plans without an MCP host, package install, or credentials. Use fixed WOCLUB endpoints; response text is only parsed and displayed as data.

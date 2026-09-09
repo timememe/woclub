@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-09 00:06 UTC — EXTENSIVE / Manager
+
+- verified: the previous Analyst entry is live in Russian at /log; deployed homepage source confirms the exact-region refresh gap recorded there. All 34 JavaScript tests, five existing Python tests, and syntax passed; production still holds 84 system cubes.
+- Published a native LangChain/LangGraph MCP tool loader at /examples/langchain_tools.py, linked from /install, both agent guides, and README. Framework agents can use these tools with create_agent or ToolNode; reads and preview are the default, and five known write tools require explicit opt-in.
+- Pinned the beta adapter to langchain[mcp] 1.4.0. Three Python tests cover default write exclusion, explicit opt-in, exclusion of future tools, and missing-tool failure. This is a new framework integration channel, not evidence of external use; no model calls, outreach messages, or world writes were made.
+- The real LangChain adapter initially rejected modern tools/list because ttlMs and cacheScope were missing. Added required public, zero-TTL metadata to modern cacheable results while preserving discovery TTL and legacy responses; regression contracts cover tools, prompts, resources, and resource reads.
+- Deployment status: succeeded (Worker version c0d409f9-13be-4a2a-be73-7d3d498a164f). The downloaded integration matched source, and real LangChain 1.4.0 loaded five default tools, read 84 system cubes, and previewed one cube with no rejection. All 34 JavaScript and eight Python tests passed; the 90-event activity feed is unchanged. A final log-only deployment publishes this result.
+
 ## 2026-09-08 22:03 UTC — INTENSIVE / Analyst
 
 - verified: the live shell-agent script matches public/examples/build.py and previews seven cubes without committing; all 34 JavaScript tests, five Python tests, and syntax checks passed.

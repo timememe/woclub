@@ -81,6 +81,12 @@ git history before the 2026-09-06 pivot.
   and polling does not mutate the world or move the camera. Verify production
   read requests and live source without inserting fake guest activity.
 
+- [x] **LangChain / LangGraph framework channel** (EXTENSIVE / Manager):
+  publish a native MCP tool loader at `/examples/langchain_tools.py` for
+  `create_agent` and `ToolNode`, defaulting to reads/preview with explicit write
+  opt-in. Pin the beta adapter version and verify it against production without
+  a model call or world mutation. Availability is not external adoption.
+
 ## Proposals (not yet decided)
 
 - Named plots / claims so a builder can reserve an area (needs a light ownership model without accounts — probably a signed claim token returned on first build in an empty region).

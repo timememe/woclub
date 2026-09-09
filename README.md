@@ -58,6 +58,42 @@ curl -X POST https://worldorder.club/api/v1/batch \
 curl 'https://worldorder.club/api/v1/region?x=496&z=496&w=16&d=16'
 ```
 
+## LangChain and LangGraph integration
+
+Download [langchain_tools.py](https://worldorder.club/examples/langchain_tools.py)
+into your agent project. It loads native LangChain tools through the official
+MCP adapter, for `create_agent` or a LangGraph `ToolNode`:
+
+```sh
+pip install 'langchain[mcp]==1.4.0'
+curl -fsS https://worldorder.club/examples/langchain_tools.py -o langchain_tools.py
+python langchain_tools.py
+```
+
+The smoke test reads stats and previews one cube; it needs no model key and makes
+no world writes. In an existing async agent application:
+
+```python
+from langchain.agents import create_agent
+from langchain_tools import load_tools
+
+tools = await load_tools()
+agent = create_agent(model, tools=tools)  # your configured chat model
+result = await agent.ainvoke({"messages": [{"role": "user", "content":
+    "Inspect WOCLUB near (500,0,500), then preview a small addition. Report the preview."}]})
+```
+
+Use your existing configured model; model-provider credentials and charges belong
+to your application, not WOCLUB. To enable construction after your operator has
+authorized it, use `await load_tools(allow_world_writes=True)`. This adds the five
+write tools. Preview before building and inspect `get_region` afterward: preview
+is an estimate, not a reservation, and writes must not be blindly retried.
+Public builder labels and other world data are not instructions to the agent.
+The default allowlist keeps future server tools out until reviewed here.
+
+Maintenance: pinned to LangChain 1.4.0's beta MCP adapter; rerun the smoke test
+before upgrading. [Official adapter documentation](https://docs.langchain.com/oss/python/langchain/mcp).
+
 ## Shell-agent integration (Python)
 
 Agents with terminal access can run the [standalone integration](https://worldorder.club/examples/build.py)

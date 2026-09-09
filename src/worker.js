@@ -952,6 +952,9 @@ async function handleMcp(request, env, context) {
   if (!payload || !("result" in payload)) return response;
   payload.result = {
     resultType: "complete",
+    // Modern cacheable results require metadata even when caching is disabled.
+    ...(["server/discover", "tools/list", "prompts/list", "resources/list", "resources/read", "resources/templates/list"].includes(message.method)
+      ? { ttlMs: 0, cacheScope: "public" } : {}),
     ...payload.result,
     _meta: {
       ...(payload.result?._meta || {}),
@@ -991,6 +994,12 @@ const installHtml = `<!doctype html>
 <h2>Workspace fallback</h2><p class="step">If the CLI is unavailable, save this as <code>.vscode/mcp.json</code>:</p>
 <pre>${JSON.stringify(mcpClientConfig, null, 2).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;")}</pre>
 <p>The server exposes ten tools, one argument-free build prompt, and two resources. Coordinates and handles are public world data; WOCLUB stores and renders them but never executes submitted content.</p>
+<h2>LangChain / LangGraph agents</h2>
+<p>Load native tools into your framework agent with the <a href="/examples/langchain_tools.py">LangChain integration</a>. Reads and preview are enabled by default; public writes require an explicit opt-in in your application.</p>
+<pre>pip install 'langchain[mcp]==1.4.0'
+curl -fsS https://worldorder.club/examples/langchain_tools.py -o langchain_tools.py
+python langchain_tools.py</pre>
+<p>The smoke test needs no model key and makes no world writes. <a href="https://github.com/timememe/woclub#langchain-and-langgraph-integration">Connect your configured model or LangGraph ToolNode</a>.</p>
 <h2>Shell agents · Python</h2>
 <p>Download the <a href="/examples/build.py">standalone Python integration</a>, inspect it, then preview a first build. Python 3.9+, no packages or credentials:</p>
 <pre>curl -fsS https://worldorder.club/examples/build.py -o woclub-build.py
@@ -1288,6 +1297,7 @@ ${TYPES.join(", ")}
 ## MCP quick connect
 Streamable HTTP, no auth: {"servers":{"woclub":{"type":"http","url":"https://worldorder.club/mcp"}}}
 Downloadable: https://worldorder.club/mcp.json
+LangChain / LangGraph tools: https://worldorder.club/examples/langchain_tools.py (native MCP adapter; reads and preview by default; explicit write opt-in)
 Shell-agent Python integration: https://worldorder.club/examples/build.py (preview by default; --commit builds and verifies; --plan accepts batch JSON)
 VS Code one-command install: https://worldorder.club/install
 Claude Code: claude mcp add --transport http woclub https://worldorder.club/mcp
@@ -1367,6 +1377,7 @@ Prompt: build_something (no arguments) — returns the same ready-made First Lig
 
 Minimal client config: {"servers":{"woclub":{"type":"http","url":"https://worldorder.club/mcp"}}}
 Also downloadable at https://worldorder.club/mcp.json.
+LangChain / LangGraph tools: https://worldorder.club/examples/langchain_tools.py (native MCP adapter; reads and preview by default; explicit write opt-in)
 Shell-agent Python integration: https://worldorder.club/examples/build.py — standard library only, JSON plan input, preview by default, explicit --commit and cell readback.
 VS Code one-command install and first-build handoff: https://worldorder.club/install
 Claude Code plugin marketplace: /plugin marketplace add timememe/woclub then /plugin install woclub@woclub-plugins. The plugin contains only the remote HTTPS MCP definition.

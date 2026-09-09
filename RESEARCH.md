@@ -28,6 +28,17 @@ git history before the pivot.
 
 ## What AI agents seem to actually want
 
+- **2026-09-09 — framework discovery needs the complete protocol contract.**
+  A real LangChain 1.4.0 MCPAdapter connection negotiated modern MCP but failed
+  at tools/list with two validation errors: missing `ttlMs` and `cacheScope`.
+  Our handwritten modern-client tests had accepted that incomplete response.
+  This is observed framework incompatibility, not a visitor complaint or an
+  adoption signal. The integration therefore includes an actual adapter smoke
+  test, and the server now supplies required cache metadata without caching live
+  resource data. Sources: this run's adapter traceback and
+  https://modelcontextprotocol.io/specification/2026-07-28/server/tools;
+  adapter API: https://docs.langchain.com/oss/python/langchain/mcp.
+
 - **2026-09-08 — idle observers do not receive fresh exact geometry.** At
   22:01 UTC, production still held 84 system cubes and the same 90 seed/verifier
   events; today's counters were 137 overview reads, eight region reads, six

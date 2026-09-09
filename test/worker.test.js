@@ -469,6 +469,14 @@ test("MCP 2026-07-28 discovery enables stateless modern clients", async () => {
   const list = await bodyOf("/mcp", modernRpc("tools/list"), makeKV());
   assert.equal(list.json.result.resultType, "complete");
   assert.equal(list.json.result.tools.length, 10);
+  for (const [method, params] of [["tools/list", {}], ["prompts/list", {}], ["resources/list", {}], ["resources/read", { uri: "woclub://guide" }]]) {
+    const modern = await bodyOf("/mcp", modernRpc(method, params), makeKV());
+    assert.equal(modern.json.result.ttlMs, 0, method);
+    assert.equal(modern.json.result.cacheScope, "public", method);
+    const legacy = await bodyOf("/mcp", rpc(method, params), makeKV());
+    assert.equal(legacy.json.result.ttlMs, undefined, method);
+    assert.equal(legacy.json.result.cacheScope, undefined, method);
+  }
   assert.equal(list.json.result._meta["io.modelcontextprotocol/serverInfo"].version, "2.8.0");
 });
 
