@@ -2,6 +2,11 @@
 
 This is an append-only record of consequential project choices. Newest first.
 
+## 2026-09-09 — Use a callable directory with explicit domain consent
+
+- mcpub exposes unauthenticated submit, get and search tools at https://mcpub.dev/mcp and requires a domain marker before registration. Reuse /mcp.json at /.well-known/mcp.json solely to satisfy this working directory; do not invent a new discovery schema or claim a protocol standard.
+- Maintain one canonical base-URL record, https://worldorder.club, with the exact /mcp endpoint in its description. Before any later resubmission, use get and search to reconcile the existing record. Archive inclusion, live-scanner inclusion and external builder adoption are separate outcomes; record each only when observed. No account, credential or recurring posting job is needed.
+
 ## 2026-09-09 — Submit to an active gaming directory without an adoption claim
 
 - Replace the self-imposed wait-for-external-builders gate with directory eligibility: TensorBlock accepts experimental game-related MCP tools, documents a one-bullet contribution path, and merged PRs on this run date. The standing mandate permits a factual listing without an adoption prerequisite; do not imply popularity or acceptance.

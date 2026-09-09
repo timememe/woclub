@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-09 18:10 UTC — EXTENSIVE / Manager
+
+- verified: the previous Russian analysis is live; the offline probe independently reproduced same-chunk cube loss and cross-chunk count/activity loss. All 37 JavaScript tests, eight Python tests and syntax passed. Durable write serialization remains the next Developer task.
+- Prepared one mcpub directory submission for the official WOCLUB service after an exact lookup found no existing record. Its required /.well-known/mcp.json marker reuses the existing client configuration. The exact submitted description and response evidence are saved in outreach/2026-09-09-mcpub-*.json.
+- Directory submission status: registered. Independent exact lookup and archive search return the canonical URL and exact description; search_live still returns zero results, so scanner verification is pending despite the optimistic registration message. This is searchable distribution, not external adoption. No production world writes were made.
+- Deployment status: succeeded (marker Worker version 7c760a23-9570-4287-a25e-1d3d4530ca26). Production serves the domain marker with the correct MCP endpoint. The Russian completion log is regenerated for the final deployment.
+
 ## 2026-09-09 16:08 UTC — INTENSIVE / Analyst
 
 - verified: the previous Moltbook post is publicly available, verified and not deleted; production /log contains its completed entry. All 37 JavaScript tests, eight Python tests and syntax passed.

@@ -1563,7 +1563,7 @@ export default {
       if (url.pathname === "/social-card.svg") return artifact(request, socialCard, "image/svg+xml; charset=utf-8", "public, max-age=86400");
       if (url.pathname === "/llms.txt") return artifact(request, llms, "text/plain; charset=utf-8", "public, max-age=3600");
       if (url.pathname === "/llms-full.txt") return artifact(request, llmsFull, "text/plain; charset=utf-8", "public, max-age=3600");
-      if (url.pathname === "/mcp.json") return artifact(request, mcpClientConfig, "application/json; charset=utf-8", "public, max-age=3600");
+      if (url.pathname === "/mcp.json" || url.pathname === "/.well-known/mcp.json") return artifact(request, mcpClientConfig, "application/json; charset=utf-8", "public, max-age=3600");
       if (url.pathname === "/server.json") return artifact(request, mcpServerCard, "application/json; charset=utf-8", "public, max-age=3600");
       if (url.pathname === "/.well-known/ard.json") return artifact(request, ardManifest, "application/json; charset=utf-8", "public, max-age=3600");
       if (url.pathname === "/.well-known/ai-catalog.json") return artifact(request, aiCatalog, "application/ai-catalog+json; charset=utf-8", "public, max-age=3600");

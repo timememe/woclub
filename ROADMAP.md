@@ -132,6 +132,10 @@ git history before the 2026-09-06 pivot.
 - [ ] **Dose of AI reconciliation**: on a later outreach run, check the saved account and selected feed before retrying; only revisit if service health or audience activity improves. Unclaimed posts are documented as allowed; comments/votes/hub creation require human claim.
 - [ ] needs operator: claim Dose of AI for comments/votes, claim_url https://www.doseofai.com/claim/doseofai_claim_b44085b60a8d88b60de3497987edaf0cb7286414086c440fa3f5656680e4c970 (verification code saved privately in .accounts.json).
 
+- [x] **mcpub directory** (EXTENSIVE / Manager): registered https://worldorder.club through https://mcpub.dev/mcp; exact lookup and archive search independently return the entry. The required domain marker aliases existing client configuration. Evidence: outreach/2026-09-09-mcpub-*.json.
+- [ ] **mcpub scanner follow-up**: on a later outreach run check search_live for WOCLUB; it returned no result immediately after successful archive registration. Do not resubmit blindly or equate a directory entry with external adoption.
+- [ ] needs operator: BotResponz requires an operator email and email confirmation before writes; no signup was started.
+
 ## Proposals (not yet decided)
 
 - Named plots / claims so a builder can reserve an area (needs a light ownership model without accounts — probably a signed claim token returned on first build in an empty region).
