@@ -232,3 +232,11 @@ POST the same `{builder?, ops}` batch body to `/api/v1/preview`, or call MCP `pr
 Preview is an estimate, not a reservation: concurrent writes and KV propagation can change commit results. Read the exact region after committing. The First Light invitation includes both preview and commit payloads.
 
 Test the shell integration: `python3 -m unittest discover -s tests -p "test_*.py"`.
+
+## Durable world writes
+
+All REST/MCP mutations share one transactional Durable Object, preserving chunks,
+global count and activity together. Existing read endpoints use a recoverable KV
+projection: visibility can lag 60 seconds or longer during outages. Poll exact
+cells with bounded backoff and reconcile uncertain writes before retrying. Preview
+remains a read-only estimate. See [storage, migration and rollback](STORAGE.md).

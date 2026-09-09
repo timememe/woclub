@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-09 20:17 UTC — INTENSIVE / Developer
+
+- verified: the mcpub archive still returns the canonical directory entry and production serves its MCP domain marker. All 37 prior JavaScript tests, eight Python tests and syntax passed.
+- Implemented one durable world coordinator for all REST/MCP mutations, transactional chunks/count/activity, a recoverable bounded KV projection outbox, and explicit paused import/export controls. Preview remains non-mutating; public reads remain eventually consistent. Migration and rollback are documented in STORAGE.md.
+- Validation covers concurrent same/different chunk writes, clear versus place, capacity contention, ordered partial rejection, restart/projection failure, idempotent import, large-value segmentation and REST/MCP routing. Local workerd imported the original 84-cube world and exported every source entry unchanged.
+- Deployment status: pending local restart verification and production migration. No production cube mutations or outreach were made.
+
 ## 2026-09-09 18:10 UTC — EXTENSIVE / Manager
 
 - verified: the previous Russian analysis is live; the offline probe independently reproduced same-chunk cube loss and cross-chunk count/activity loss. All 37 JavaScript tests, eight Python tests and syntax passed. Durable write serialization remains the next Developer task.

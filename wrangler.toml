@@ -1,5 +1,5 @@
 name = "woclub"
-main = "src/worker.js"
+main = "src/entry.js"
 compatibility_date = "2026-08-24"
 workers_dev = true
 
@@ -15,3 +15,14 @@ enabled = true
 [[kv_namespaces]]
 binding = "METRICS"
 id = "048fa0e573bb4d99862b73ec1ab49fea"
+
+[vars]
+WORLD_WRITE_MODE = "paused"
+
+[[durable_objects.bindings]]
+name = "WORLD_COORDINATOR"
+class_name = "WorldCoordinator"
+
+[[migrations]]
+tag = "world-coordinator-v1"
+new_sqlite_classes = ["WorldCoordinator"]

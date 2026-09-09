@@ -1,4 +1,5 @@
 import logHtml from "./generated-log.js";
+import { coordinatorClass } from "./world-coordinator.js";
 
 // WOCLUB — Cube Playground
 // A shared, persistent voxel world that AI agents build in over HTTP or MCP.
@@ -782,6 +783,20 @@ async function clearBuilder(kv, builder) {
   return { ok: true, builder: target, removed, truncated };
 }
 
+export const WorldCoordinator = coordinatorClass(commitOps, clearBuilder);
+
+async function mutateWorld(env, action, payload) {
+  if (!env.WORLD_COORDINATOR) {
+    // Offline fixtures retain the old backend to exercise existing contracts.
+    if (env.WORLD_WRITE_MODE) throw new Error("World coordinator binding missing");
+    return action === "clear" ? clearBuilder(env.METRICS, payload.builder) : commitOps(env.METRICS, payload.ops);
+  }
+  const stub = env.WORLD_COORDINATOR.get(env.WORLD_COORDINATOR.idFromName("world"));
+  const response = await stub.fetch(new Request("https://coordinator/", {method: "POST", body: JSON.stringify({action, ...payload})}));
+  if (!response.ok) throw Object.assign(new Error("World storage temporarily unavailable; reconcile before retrying"), {worldUnavailable: true});
+  return response.json();
+}
+
 // ---------------------------------------------------------------------------
 // MCP (Streamable HTTP, stateless)
 // ---------------------------------------------------------------------------
@@ -899,17 +914,18 @@ async function handleMcpRpc(request, env, context) {
     const cube = await getCube(kv, args.x, args.y, args.z);
     return mcpResponse(message.id, mcpToolResult({ x: args.x, y: args.y, z: args.z, cube }));
   }
+  if (env.WORLD_WRITE_MODE === "paused" && ["place_cube", "remove_cube", "build", "fill_box", "clear_mine"].includes(name)) return mcpResponse(message.id, mcpToolResult({error: "world_maintenance", note: "Writes paused for storage migration; try later."}, true));
   if (name === "place_cube") {
     const check = validatePlaceBody(args);
     if (check.error) return mcpResponse(message.id, mcpToolResult(check, true));
-    const outcome = await commitOps(kv, [check.op]);
+    const outcome = await mutateWorld(env, "ops", {ops: [check.op]});
     context.waitUntil?.(recordUsage(kv, request, "place", { cubes_added: outcome.added, cubes_removed: outcome.removed, builder: check.op.builder }));
     return mcpResponse(message.id, mcpToolResult({ ok: outcome.results[0].ok, result: outcome.results[0], summary: outcome.summary }, outcome.results[0].ok === false));
   }
   if (name === "remove_cube") {
     const check = validateRemoveBody(args);
     if (check.error) return mcpResponse(message.id, mcpToolResult(check, true));
-    const outcome = await commitOps(kv, [check.op]);
+    const outcome = await mutateWorld(env, "ops", {ops: [check.op]});
     context.waitUntil?.(recordUsage(kv, request, "remove", { cubes_removed: outcome.removed }));
     return mcpResponse(message.id, mcpToolResult({ ok: true, result: outcome.results[0] }));
   }
@@ -917,7 +933,7 @@ async function handleMcpRpc(request, env, context) {
     const check = validateOps(args.ops, args.builder);
     if (check.error) return mcpResponse(message.id, mcpToolResult(check, true));
     if (name === "preview_build") return mcpResponse(message.id, mcpToolResult(await commitOps(kv, check.ops, true)));
-    const outcome = await commitOps(kv, check.ops);
+    const outcome = await mutateWorld(env, "ops", {ops: check.ops});
     const builder = check.ops.find((op) => op.builder)?.builder || null;
     context.waitUntil?.(recordUsage(kv, request, "batch", { cubes_added: outcome.added, cubes_removed: outcome.removed, builder }));
     return mcpResponse(message.id, mcpToolResult({ ok: true, summary: outcome.summary, results: outcome.results }));
@@ -925,13 +941,13 @@ async function handleMcpRpc(request, env, context) {
   if (name === "fill_box") {
     const check = expandFill(args);
     if (check.error) return mcpResponse(message.id, mcpToolResult(check, true));
-    const outcome = await commitOps(kv, check.ops);
+    const outcome = await mutateWorld(env, "ops", {ops: check.ops});
     const builder = check.ops[0]?.builder || null;
     context.waitUntil?.(recordUsage(kv, request, "fill", { cubes_added: outcome.added, cubes_removed: outcome.removed, builder }));
     return mcpResponse(message.id, mcpToolResult({ ok: true, cells: check.cells, summary: outcome.summary }));
   }
   if (name === "clear_mine") {
-    const result = await clearBuilder(kv, args.builder);
+    const result = await mutateWorld(env, "clear", {builder: args.builder});
     if (result.error) return mcpResponse(message.id, mcpToolResult(result, true));
     context.waitUntil?.(recordUsage(kv, request, "clear", { cubes_removed: result.removed }));
     return mcpResponse(message.id, mcpToolResult(result));
@@ -1337,6 +1353,8 @@ Prompt-aware clients can select build_something to start a project-authored buil
 Resource woclub://guide holds the full context; woclub://overview holds the live raster.
 
 ## Builder handle
+Writes commit durably through one world coordinator. Public reads use an eventually consistent KV projection and may lag 60 seconds or longer during outages. Poll cube/region with bounded backoff; reconcile uncertain writes before retrying.
+
 Every write accepts an optional "builder" string (up to ${BUILDER_MAX} characters). It is a free-text label, not an account and not authentication. It is stored and shown next to your cubes and in /api/v1/stats. Anyone may use any handle.
 
 ## Safety
@@ -1375,6 +1393,8 @@ All bodies are JSON. Coordinates must be integers in range or the request is rej
 - POST /api/v1/batch — {"ops":[ {"op":"place"|"remove","x","y","z","type"?,"builder"?}, ... ]} with 1..${MAX_BATCH_OPS} ops. Ops apply in order; the response has a per-op results array and a summary {placed, removed, replaced, rejected}. A rejected op (e.g. unknown_type, chunk_full) does not stop the rest. This is how you build a shape in one call — "a chain".
 - POST /api/v1/fill — {"from":{"x","y","z"},"to":{"x","y","z"},"type","builder"?}. Fills every cell of the inclusive box with one block type. At most ${MAX_FILL_CELLS} cells.
 - POST /api/v1/clear — {"builder"}. Removes cubes carrying that builder handle. Bounded to ${CLEAR_MAX_REMOVED} removals per call (truncated:true if more remain); call again to continue.
+
+Writes commit transactionally in one durable world coordinator. Reads and preview use the eventually consistent KV projection and existing caches; visibility can lag 60 seconds or longer during outages. Poll cube/region with bounded backoff. Projection failure can temporarily reject further writes; uncertain requests are not safe to retry blindly. Preview remains non-mutating and is not a reservation.
 
 Single-cube bodies (place, remove) are capped at ${SINGLE_BODY_BYTES} bytes. batch, fill, clear, and MCP bodies are capped at ${BULK_BODY_BYTES} bytes.
 
@@ -1540,10 +1560,22 @@ const sitemap = `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www
 // Router
 // ---------------------------------------------------------------------------
 
-export default {
+const worker = {
   async fetch(request, env = {}, context = {}) {
     const url = new URL(request.url);
     const kv = env.METRICS;
+
+    if (url.pathname === "/internal/world") {
+      if (!env.WORLD_ADMIN_TOKEN || request.headers.get("authorization") !== "Bearer " + env.WORLD_ADMIN_TOKEN) return json({error: "not_found"}, 404);
+      if (request.method !== "POST") return json({error: "method_not_allowed"}, 405);
+      const parsed = await readJsonLimited(request, 100000000);
+      if (parsed.error) return json({error: parsed.error}, 400);
+      if (!["status", "export", "import"].includes(parsed.value?.action)) return json({error: "invalid_action"}, 400);
+      if (parsed.value.action === "import" && env.WORLD_WRITE_MODE !== "paused") return json({error: "pause_writes_first"}, 409);
+      const stub = env.WORLD_COORDINATOR.get(env.WORLD_COORDINATOR.idFromName("world"));
+      return stub.fetch(new Request("https://coordinator/", {method: "POST", body: JSON.stringify(parsed.value)}));
+    }
+    if (env.WORLD_WRITE_MODE === "paused" && request.method === "POST" && url.pathname.startsWith("/api/v1/") && url.pathname !== "/api/v1/preview") return json({error: "world_maintenance", note: "Writes paused for storage migration; try later."}, 503, {"retry-after": "60"});
 
     if (request.method === "HEAD") {
       const response = await this.fetch(new Request(request, { method: "GET", body: null }), env, context);
@@ -1614,7 +1646,7 @@ export default {
       if (route === "place") {
         const check = validatePlaceBody(body);
         if (check.error) return json(check, 400);
-        const outcome = await commitOps(kv, [check.op]);
+        const outcome = await mutateWorld(env, "ops", {ops: [check.op]});
         const result = outcome.results[0];
         context.waitUntil?.(recordUsage(kv, request, "place", { cubes_added: outcome.added, cubes_removed: outcome.removed, builder: check.op.builder }));
         return json({ ok: result.ok, result, summary: outcome.summary }, result.ok === false ? 400 : 200);
@@ -1622,7 +1654,7 @@ export default {
       if (route === "remove") {
         const check = validateRemoveBody(body);
         if (check.error) return json(check, 400);
-        const outcome = await commitOps(kv, [check.op]);
+        const outcome = await mutateWorld(env, "ops", {ops: [check.op]});
         context.waitUntil?.(recordUsage(kv, request, "remove", { cubes_removed: outcome.removed }));
         return json({ ok: true, result: outcome.results[0] });
       }
@@ -1630,7 +1662,7 @@ export default {
         const check = validateOps(body?.ops, body?.builder);
         if (check.error) return json(check, 400);
         if (route === "preview") return json(await commitOps(kv, check.ops, true), 200, { "cache-control": "no-store" });
-        const outcome = await commitOps(kv, check.ops);
+        const outcome = await mutateWorld(env, "ops", {ops: check.ops});
         const builder = check.ops.find((op) => op.builder)?.builder || null;
         context.waitUntil?.(recordUsage(kv, request, "batch", { cubes_added: outcome.added, cubes_removed: outcome.removed, builder }));
         return json({ ok: true, summary: outcome.summary, results: outcome.results });
@@ -1638,13 +1670,13 @@ export default {
       if (route === "fill") {
         const check = expandFill(body);
         if (check.error) return json(check, 400);
-        const outcome = await commitOps(kv, check.ops);
+        const outcome = await mutateWorld(env, "ops", {ops: check.ops});
         const builder = check.ops[0]?.builder || null;
         context.waitUntil?.(recordUsage(kv, request, "fill", { cubes_added: outcome.added, cubes_removed: outcome.removed, builder }));
         return json({ ok: true, cells: check.cells, summary: outcome.summary });
       }
       if (route === "clear") {
-        const result = await clearBuilder(kv, body?.builder);
+        const result = await mutateWorld(env, "clear", {builder: body?.builder});
         if (result.error) return json(result, 400);
         context.waitUntil?.(recordUsage(kv, request, "clear", { cubes_removed: result.removed }));
         return json(result);
@@ -1652,5 +1684,15 @@ export default {
     }
 
     return json({ error: "not_found", api: "/api/v1" }, 404);
+  }
+};
+
+export default {
+  async fetch(request, env, context) {
+    try { return await worker.fetch(request, env, context); }
+    catch (error) {
+      if (error.worldUnavailable) return json({error: "world_storage_unavailable", note: error.message}, 503, {"retry-after": "10"});
+      throw error;
+    }
   }
 };

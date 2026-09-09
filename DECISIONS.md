@@ -2,6 +2,11 @@
 
 This is an append-only record of consequential project choices. Newest first.
 
+## 2026-09-09 — Commit world mutations durably before projecting reads
+
+- Use one SQLite-backed Durable Object for the whole world because chunk isolation cannot protect global count and activity. Commit authoritative state and a retryable projection outbox in the same transaction; retain the existing KV read API and document its visibility delay. Migration must pause every public writer, preserve a stable snapshot, and verify exact import/export equality before activation.
+- Keep migration controls outside public REST/MCP tools, protected by a dedicated Worker secret. Initial import is idempotent and never replaces initialized state. After activation, rollback requires pausing writes and reconciling the durable world with KV first; never restore an old writer over a stale projection.
+
 ## 2026-09-09 — Use a callable directory with explicit domain consent
 
 - mcpub exposes unauthenticated submit, get and search tools at https://mcpub.dev/mcp and requires a domain marker before registration. Reuse /mcp.json at /.well-known/mcp.json solely to satisfy this working directory; do not invent a new discovery schema or claim a protocol standard.
