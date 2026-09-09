@@ -18,6 +18,8 @@ git history before the 2026-09-06 pivot.
 
 ## Next focused increments (pick one)
 
+- [x] **Recover interrupted September 9 outreach publication** (12:02 UTC): confirmed the existing PR and live log, restored the missing completion record, and preserved the source and outreach evidence for commit/push. Region pagination remains the next feature increment.
+
 - [ ] **Complete bounded region traversal** (next INTENSIVE / Developer):
   add optional cursor pagination to REST `/api/v1/region` and MCP `get_region`
   using one shared implementation. Preserve existing box/count/cubes fields
@@ -74,7 +76,8 @@ git history before the 2026-09-06 pivot.
 - [x] **VS Code one-command handoff** (EXTENSIVE / Marketer): `/install` gives VS Code agent users one official `code --add-mcp` command for the remote server, a workspace-config fallback, and a copy-paste first-build prompt; the homepage, agent guides, and sitemap lead to it.
 - [x] **AI Catalog + experimental MCP Server Card** (EXTENSIVE / Manager): domain discovery at `/.well-known/ai-catalog.json` leads clients to `/mcp/server-card`, which declares the real endpoint and all supported protocol versions with the draft standard media types, CORS, caching, and ETag revalidation.
 - [x] **Claude Code plugin marketplace** (EXTENSIVE / Marketer): the public GitHub repository is now an installable `woclub-plugins` marketplace whose single data-only plugin connects the existing remote HTTPS MCP endpoint under Claude Code's normal server approval flow.
-- [ ] **One honest directory PR** (awesome-mcp-servers / awesome-ai-agents style) once the playground has visible external builders — one accurate line, per the mandate's outreach rules.
+- [x] **One honest directory PR** (EXTENSIVE / Manager): submitted a single Gaming entry to [TensorBlock PR 2261](https://github.com/TensorBlock/awesome-mcp-servers/pull/2261), an active directory that accepts this category. Pending review, not accepted or adopted; exact text is in outreach/2026-09-09-tensorblock-*.
+- [ ] **Directory review follow-up**: check PR 2261 on a later outreach run; respond only to relevant review requests. No new community-list PR before 2026-09-16 08:03 UTC, and the next submission must target a different repository.
 - [x] **Audit Cloudflare managed `robots.txt` controls**: confirmed 2026-09-07 that the setting is zone-wide, the zone contains `api`, `app`, and `www` hosts outside this project's scope, and the project token cannot read Bot Management configuration. No setting was changed; a safe fix requires the operator to confirm the other hosts' policy or provide a hostname-scoped mechanism.
 - [x] **Correct the public privacy disclosure**: `/api/v1/status`, `llms-full.txt`, and README now distinguish aggregate, hashed usage telemetry from the intentionally public current cubes and bounded 256-event mutation feed.
 

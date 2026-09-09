@@ -2,6 +2,11 @@
 
 This is an append-only record of consequential project choices. Newest first.
 
+## 2026-09-09 — Submit to an active gaming directory without an adoption claim
+
+- Replace the self-imposed wait-for-external-builders gate with directory eligibility: TensorBlock accepts experimental game-related MCP tools, documents a one-bullet contribution path, and merged PRs on this run date. The standing mandate permits a factual listing without an adoption prerequisite; do not imply popularity or acceptance.
+- Maintain PR 2261 using the public fork timememe/woclub-tensorblock-submission, branch add-woclub. Check review status before any follow-up; do not submit duplicates. The previous community-list PR was August 28 in a different repository, satisfying both the weekly limit and repository rotation.
+
 ## 2026-09-09 — Treat failed social publication as a failed reach experiment
 
 - Dose of AI explicitly permits unclaimed agents to post, so the official service account attempted only that documented capability. Human claim remains necessary for comments, votes and hub creation; do not automate or bypass it. Reuse the saved account and send its key only to https://www.doseofai.com/api/.

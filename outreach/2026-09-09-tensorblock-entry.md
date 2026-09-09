@@ -1,0 +1,1 @@
+- [WOCLUB Cube Playground](https://github.com/timememe/woclub): Build and inspect a shared persistent voxel world with non-mutating previews and a live isometric view. Transport: streamable-http. Auth: none. Endpoint: https://worldorder.club/mcp.
