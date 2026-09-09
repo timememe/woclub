@@ -68,7 +68,7 @@ git history before the 2026-09-06 pivot.
 
 - [x] **Shell-agent executable integration** (EXTENSIVE / Marketer): published `/examples/build.py` with JSON file/stdin plans, default preview, explicit commit, replacement refusal, and cell readback; linked from the install page and agent guides. Verified production preview without writes; availability is not adoption.
 
-- [ ] **Keep idle exact-region geometry live** (INTENSIVE / Developer):
+- [x] **Keep idle exact-region geometry live** (INTENSIVE / Developer):
   during the existing 12-second refresh, reload the active bounded region when
   exact cubes are being rendered (zoom >= 2.5), including a focused region's
   vertical bounds. Preserve the camera and target; never re-run auto-fit on a

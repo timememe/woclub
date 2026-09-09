@@ -1062,7 +1062,7 @@ footer{color:var(--muted);font-size:11px;margin-top:2rem}
 <div class="wrap">
   <div class="stage">
     <canvas id="view"></canvas>
-    <div class="hud" id="hud">loading world…</div>
+    <div class="hud"><div id="hud">loading world…</div><div id="region-status" role="status" aria-live="polite"></div></div>
   </div>
   <div class="side">
     <div class="mark">WO/</div>
@@ -1213,33 +1213,63 @@ function draw(){
 }
 // ---- interaction ----
 function screenToWorldDelta(dsx,dsy){return[(dsx/T+dsy*2/T)/2,(dsy*2/T-dsx/T)/2];}
-cv.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,fx,fz};cv.setPointerCapture(e.pointerId);});
+cv.addEventListener('pointerdown',e=>{invalidateRegion();drag={x:e.clientX,y:e.clientY,fx,fz};cv.setPointerCapture(e.pointerId);});
 cv.addEventListener('pointermove',e=>{if(!drag)return;const[dx,dz]=screenToWorldDelta(e.clientX-drag.x,e.clientY-drag.y);
   fx=Math.max(0,Math.min(WORLD,drag.fx-dx));fz=Math.max(0,Math.min(WORLD,drag.fz-dz));draw();});
 cv.addEventListener('pointerup',()=>{drag=null;maybeRegion();});
 cv.addEventListener('wheel',e=>{e.preventDefault();T=Math.max(0.5,Math.min(24,T*(e.deltaY>0?0.86:1.16)));draw();maybeRegion();},{passive:false});
-let rt=null;
-function maybeRegion(){clearTimeout(rt);rt=setTimeout(async()=>{
-  if(T<2.5){if(region){region=null;draw();}return;}
-  // keep the box under /region's chunk cap (~128 chunks of 32) — fetch the centre, overview covers the rest
-  const span=Math.min(300,Math.ceil((W+H)/T));
-  const x=Math.max(0,Math.min(WORLD-span,Math.floor(fx-span/2)));
-  const z=Math.max(0,Math.min(WORLD-span,Math.floor(fz-span/2)));
-  try{const j=await fetch(\`/api/v1/region?x=\${x}&z=\${z}&w=\${span}&d=\${span}\`).then(r=>r.json());
-    if(!j.error){region=j;draw();}}catch(_){}
-},220);}
+let rt=null,regionGeneration=0,regionController=null,activeRegionUrl=null;
+function invalidateRegion(){
+  clearTimeout(rt);regionGeneration++;activeRegionUrl=null;
+  if(regionController)regionController.abort();regionController=null;
+}
+async function loadRegion(url,onSuccess){
+  const generation=++regionGeneration;
+  if(regionController)regionController.abort();
+  const controller=new AbortController();regionController=controller;
+  const status=document.getElementById('region-status');
+  try{
+    const response=await fetch(url,{signal:controller.signal});
+    if(!response.ok)throw Error('HTTP '+response.status);
+    const j=await response.json();if(j.error||!Array.isArray(j.cubes))throw Error('Invalid region');
+    if(generation!==regionGeneration)return;
+    region=j;activeRegionUrl=url;status.textContent='Exact view updated';
+    if(onSuccess)onSuccess(j);draw();
+  }catch(e){
+    if(generation!==regionGeneration)return;
+    status.textContent='Exact view stale — could not refresh; retrying automatically.';
+  }finally{if(generation===regionGeneration)regionController=null;}
+}
+function maybeRegion(){
+  invalidateRegion();
+  if(T<2.5){region=null;document.getElementById('region-status').textContent='';draw();return;}
+  rt=setTimeout(()=>{
+    const span=Math.min(300,Math.ceil((W+H)/T));
+    const x=Math.max(0,Math.min(WORLD-span,Math.floor(fx-span/2)));
+    const z=Math.max(0,Math.min(WORLD-span,Math.floor(fz-span/2)));
+    activeRegionUrl='/api/v1/region?x='+x+'&z='+z+'&w='+span+'&d='+span;
+    loadRegion(activeRegionUrl);
+  },220);
+}
+function pollRegion(){
+  if(T>=2.5&&!drag&&activeRegionUrl&&!regionController)loadRegion(activeRegionUrl);
+}
 async function focusWorld(x,y,z,label){
+  invalidateRegion();
   const status=document.getElementById('focus-status');status.textContent='Loading '+label+'…';
   const span=25,rx=Math.max(0,Math.min(WORLD-span,Math.floor(x-span/2))),rz=Math.max(0,Math.min(WORLD-span,Math.floor(z-span/2)));
-  try{
-    const j=await fetch('/api/v1/region?x='+rx+'&z='+rz+'&w='+span+'&d='+span+'&y='+Math.max(0,y-6)+'&h=24').then(r=>{if(!r.ok)throw Error('HTTP '+r.status);return r.json();});
-    if(j.error)throw Error(j.error);
-    region=j;fx=x;fz=z;T=Math.max(8,Math.min(18,Math.min(W,H)/32));target={x,y,z,since:performance.now()};draw();
+  const url='/api/v1/region?x='+rx+'&z='+rz+'&w='+span+'&d='+span+'&y='+Math.max(0,y-6)+'&h=24';
+  await loadRegion(url,j=>{
+    fx=x;fz=z;T=Math.max(8,Math.min(18,Math.min(W,H)/32));target={x,y,z,since:performance.now()};
     status.textContent='Focused '+label+' at '+x+','+y+','+z+(j.cubes.some(c=>c.x===x&&c.y===y&&c.z===z)?'.':'. The event cube is no longer present; its location is marked.');
-  }catch(e){status.textContent='Could not focus '+label+': '+e.message;}
+  });
+  if(status.textContent==='Loading '+label+'…')status.textContent='Could not focus '+label+'. Try again.';
 }
 document.getElementById('focus-invitation').addEventListener('click',()=>focusWorld(500,0,500,'First Light'));
+let refreshing=false;
 async function refresh(){
+  pollRegion();
+  if(refreshing)return;refreshing=true;
   try{
     const[o,st,ch]=await Promise.all([fetch('/api/v1/overview?format=sparse').then(r=>r.json()),fetch('/api/v1/stats').then(r=>r.json()),fetch('/api/v1/changes?limit=20').then(r=>r.json())]);
     overview=o;fitView();draw();
@@ -1257,7 +1287,7 @@ async function refresh(){
       row.addEventListener('click',()=>focusWorld(e.x,e.y,e.z,'activity event'));activity.append(row);
     }
     if(!activity.childNodes.length)activity.textContent='No world events yet.';
-  }catch(e){hud.textContent='world unavailable';}
+  }catch(e){hud.textContent='world unavailable';}finally{refreshing=false;}
 }
 document.getElementById('legend').innerHTML=TYPES.map((t,i)=>\`<span><i style="background:\${COLORS[i]}"></i>\${t}</span>\`).join('');
 resize();refresh();setInterval(refresh,12000);

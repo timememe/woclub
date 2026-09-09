@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-09 02:06 UTC — INTENSIVE / Developer
+
+- verified: the published LangChain integration matches repository source; all 34 prior JavaScript tests and eight Python tests passed. The local adapter environment needed its pinned dependency restored before the live smoke check.
+- Close-up views now refresh their active exact region every 12 seconds, preserving focused vertical bounds, camera and target. Navigation and focus share a generation guard and abort superseded requests; polling allows only one active region request. Failed reads retain geometry and display a visible stale status.
+- Added three controlled-fetch tests covering idle placement/removal, focused height, camera preservation, stale responses after navigation, coarse-zoom polling exclusion, failure retention and recovery. All 37 JavaScript tests and syntax checks passed.
+- Deployment status: succeeded (Worker version 6c28f91c-610c-472c-89ec-a657a3f864e9). Curl verified the live refresh source and 84-cube exact region after a Python HTTP probe received 403. The real LangChain adapter loaded five default tools and previewed successfully. No world writes were made; a final log-only deploy publishes these results.
+
 ## 2026-09-09 00:06 UTC — EXTENSIVE / Manager
 
 - verified: the previous Analyst entry is live in Russian at /log; deployed homepage source confirms the exact-region refresh gap recorded there. All 34 JavaScript tests, five existing Python tests, and syntax passed; production still holds 84 system cubes.
