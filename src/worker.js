@@ -514,6 +514,36 @@ function clampInt(value, lo, hi, fallback) {
   return Math.max(lo, Math.min(hi, Math.trunc(n)));
 }
 
+const compareRegionCubes = (a, b) => a.x - b.x || a.z - b.z || a.y - b.y;
+const regionCursor = (bounds, cube) => btoa(JSON.stringify([1, ...bounds, cube.x, cube.y, cube.z]))
+  .replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+
+// Keep only the smallest page + one lookahead cube while scanning bounded KV
+// chunks. A max-heap bounds memory independently of the region's population.
+function retainRegionCube(heap, cube, capacity) {
+  if (heap.length < capacity) {
+    let i = heap.length;
+    heap.push(cube);
+    while (i > 0) {
+      const parent = (i - 1) >> 1;
+      if (compareRegionCubes(heap[parent], cube) >= 0) break;
+      heap[i] = heap[parent];
+      i = parent;
+    }
+    heap[i] = cube;
+  } else if (compareRegionCubes(cube, heap[0]) < 0) {
+    let i = 0;
+    while (i * 2 + 1 < heap.length) {
+      let child = i * 2 + 1;
+      if (child + 1 < heap.length && compareRegionCubes(heap[child + 1], heap[child]) > 0) child++;
+      if (compareRegionCubes(cube, heap[child]) >= 0) break;
+      heap[i] = heap[child];
+      i = child;
+    }
+    heap[i] = cube;
+  }
+}
+
 async function readRegion(kv, params) {
   const x = clampInt(params.get("x"), 0, WORLD - 1, 0);
   const z = clampInt(params.get("z"), 0, WORLD - 1, 0);
@@ -524,6 +554,27 @@ async function readRegion(kv, params) {
   const x2 = Math.min(WORLD - 1, x + w - 1);
   const z2 = Math.min(WORLD - 1, z + d - 1);
   const y2 = Math.min(WORLD - 1, y + h - 1);
+  const bounds = [x, y, z, x2, y2, z2];
+  const rawLimit = params.get("limit");
+  const limit = rawLimit === null ? REGION_MAX_CUBES : Number(rawLimit);
+  if (rawLimit !== null && (!/^[1-9][0-9]{0,3}$/.test(rawLimit) || limit > REGION_MAX_CUBES)) {
+    return { error: "invalid_limit", max_cubes: REGION_MAX_CUBES };
+  }
+  let after = null;
+  if (params.has("cursor")) {
+    const token = params.get("cursor");
+    try {
+      if (!/^[A-Za-z0-9_-]{1,256}$/.test(token)) throw new Error();
+      const data = JSON.parse(atob(token.replace(/-/g, "+").replace(/_/g, "/")));
+      if (!Array.isArray(data) || data.length !== 10 || data[0] !== 1 ||
+          !data.slice(1).every(validCoord) || !bounds.every((n, i) => n === data[i + 1])) throw new Error();
+      after = { x: data[7], y: data[8], z: data[9] };
+      if (after.x < x || after.x > x2 || after.y < y || after.y > y2 || after.z < z || after.z > z2 ||
+          regionCursor(bounds, after) !== token) throw new Error();
+    } catch {
+      return { error: "invalid_cursor", note: "Use next_cursor with the same normalized region box." };
+    }
+  }
   const cx1 = Math.floor(x / CHUNK);
   const cx2 = Math.floor(x2 / CHUNK);
   const cz1 = Math.floor(z / CHUNK);
@@ -533,20 +584,24 @@ async function readRegion(kv, params) {
     return { error: "region_too_large", max_chunks: REGION_MAX_CHUNKS, requested_chunks: chunkCount, chunk_size: CHUNK };
   }
   const cubes = [];
-  let truncated = false;
-  for (let cx = cx1; cx <= cx2 && !truncated; cx += 1) {
-    for (let cz = cz1; cz <= cz2 && !truncated; cz += 1) {
+  for (let cx = cx1; cx <= cx2; cx += 1) {
+    for (let cz = cz1; cz <= cz2; cz += 1) {
       const chunk = await getChunk(kv, cx, cz);
       for (const [key, cell] of Object.entries(chunk)) {
         const [cxp, cyp, czp] = key.split(",").map(Number);
         if (cxp < x || cxp > x2 || czp < z || czp > z2 || cyp < y || cyp > y2) continue;
-        cubes.push(cubeOut(cxp, cyp, czp, cell));
-        if (cubes.length >= REGION_MAX_CUBES) { truncated = true; break; }
+        const cube = { x: cxp, y: cyp, z: czp, cell };
+        if (after && compareRegionCubes(cube, after) <= 0) continue;
+        retainRegionCube(cubes, cube, limit + 1);
       }
     }
   }
-  cubes.sort((a, b) => a.x - b.x || a.z - b.z || a.y - b.y);
-  return { box: { x, y, z, w, h, d }, count: cubes.length, truncated, cubes };
+  cubes.sort(compareRegionCubes);
+  const truncated = cubes.length > limit;
+  if (truncated) cubes.pop();
+  const next_cursor = truncated ? regionCursor(bounds, cubes[cubes.length - 1]) : null;
+  return { box: { x, y, z, w, h, d }, count: cubes.length, truncated, next_cursor,
+    cubes: cubes.map(({ x, y, z, cell }) => cubeOut(x, y, z, cell)) };
 }
 
 async function buildOverview(kv) {
@@ -804,7 +859,7 @@ async function mutateWorld(env, action, payload) {
 const mcpTools = [
   { name: "get_world_stats", title: "Get world stats", description: "Total cubes, per-block counts, active builders, world bounds, and current limits.", inputSchema: { type: "object", properties: {}, additionalProperties: false } },
   { name: "get_overview", title: "Get the overview raster", description: "Occupied cells from the coarse top-surface raster as [index,type,height], plus a small ASCII preview.", inputSchema: { type: "object", properties: {}, additionalProperties: false } },
-  { name: "get_region", title: "Read a region of cubes", description: "List the exact cubes inside an axis-aligned box.", inputSchema: { type: "object", properties: { x: { type: "integer" }, z: { type: "integer" }, w: { type: "integer" }, d: { type: "integer" }, y: { type: "integer" }, h: { type: "integer" } }, required: ["x", "z", "w", "d"], additionalProperties: false } },
+  { name: "get_region", title: "Read a region of cubes", description: "Page through exact cubes in x/z/y order. Pass next_cursor as cursor with the same box until null; concurrent edits require a fresh traversal for reconciliation.", inputSchema: { type: "object", properties: { x: { type: "integer" }, z: { type: "integer" }, w: { type: "integer" }, d: { type: "integer" }, y: { type: "integer" }, h: { type: "integer" }, limit: { type: "integer", minimum: 1, maximum: REGION_MAX_CUBES }, cursor: { type: "string", minLength: 1, maxLength: 256 } }, required: ["x", "z", "w", "d"], additionalProperties: false } },
   { name: "get_cube", title: "Read one cube", description: "Return the cube at a coordinate, or null if that cell is empty.", inputSchema: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" }, z: { type: "integer" } }, required: ["x", "y", "z"], additionalProperties: false } },
   { name: "place_cube", title: "Place one cube", description: "Place or replace a single cube. Coordinates are integers in [0,1000); y=0 is ground.", inputSchema: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" }, z: { type: "integer" }, type: { type: "string", enum: TYPES }, builder: { type: "string" } }, required: ["x", "y", "z", "type"], additionalProperties: false } },
   { name: "remove_cube", title: "Remove one cube", description: "Clear the cube at a coordinate.", inputSchema: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" }, z: { type: "integer" } }, required: ["x", "y", "z"], additionalProperties: false } },
@@ -903,8 +958,10 @@ async function handleMcpRpc(request, env, context) {
     return mcpResponse(message.id, mcpToolResult({ ...overview, ascii: overviewAscii(overview) }));
   }
   if (name === "get_region") {
+    if (args.cursor !== undefined && typeof args.cursor !== "string") return mcpResponse(message.id, mcpToolResult({ error: "invalid_cursor" }, true));
+    if (args.limit !== undefined && !Number.isInteger(args.limit)) return mcpResponse(message.id, mcpToolResult({ error: "invalid_limit", max_cubes: REGION_MAX_CUBES }, true));
     const search = new URLSearchParams();
-    for (const key of ["x", "z", "w", "d", "y", "h"]) if (args[key] !== undefined) search.set(key, String(args[key]));
+    for (const key of ["x", "z", "w", "d", "y", "h", "limit", "cursor"]) if (args[key] !== undefined) search.set(key, String(args[key]));
     const region = await readRegion(kv, search);
     context.waitUntil?.(recordUsage(kv, request, "region_reads"));
     return mcpResponse(message.id, mcpToolResult(region, Boolean(region.error)));
@@ -1380,8 +1437,14 @@ Source and MIT license: https://github.com/timememe/woclub
 - GET /api/v1/stats — total cubes, per-block-type counts, number of builders, the top builders by cube count, world bounds, and current limits.
 - GET /api/v1/overview — the coarse ${OVERVIEW_RES}x${OVERVIEW_RES} top-down raster. The backward-compatible default has a dense grid of [type,height] pairs; ?format=sparse returns only occupied [index,type,height] cells. Each index is z*resolution+x and covers a ${OVERVIEW_UNIT}-unit square. Cached ~${OVERVIEW_TTL}s.
 - GET /api/v1/changes?since=&limit= — up to ${CHANGE_PAGE_MAX} recent successful placements/removals, oldest first. Omit since for the latest page; then poll with next_cursor. If a cursor has aged out of the ${CHANGE_LOG_MAX}-event window, cursor_expired is true and the response restarts at the oldest retained event.
-- GET /api/v1/region?x=&z=&w=&d=&y=&h= — the exact cubes inside an axis-aligned box. x, z, w, d are required; y defaults to 0 and h to the full height. A read may touch at most ${REGION_MAX_CHUNKS} chunks and returns at most ${REGION_MAX_CUBES} cubes (truncated:true if it hit the cap).
+- GET /api/v1/region?x=&z=&w=&d=&y=&h= — the exact cubes inside an axis-aligned box. x, z, w, d are required; y defaults to 0 and h to the full height. A read may touch at most ${REGION_MAX_CHUNKS} chunks and returns at most ${REGION_MAX_CUBES} cubes (default limit; optional limit=1..${REGION_MAX_CUBES}). Cubes are ordered by x, then z, then y. truncated is true only when another matching cube exists; next_cursor is otherwise null.
 - GET /api/v1/cube?x=&y=&z= — the single cube at a cell, or null.
+
+## Complete region traversal
+
+Start with GET /api/v1/region?x=492&z=492&w=20&d=17&limit=32. Append response.cubes, then repeat the same box query with cursor set to response.next_cursor (URL-encode the value). Stop when next_cursor is null, including an empty final page. MCP get_region accepts the same limit and cursor arguments. A cursor is opaque, at most 256 characters, and tied to the normalized inclusive bounds and last returned coordinate; do not construct or edit it. Malformed or mismatched cursors return invalid_cursor (HTTP 400 / MCP tool error). Invalid limits return invalid_limit.
+
+Each page scans at most ${REGION_MAX_CHUNKS} chunks and retains at most limit+1 candidates; pagination does not allow larger boxes. The boundary cube may be deleted between requests without breaking continuation. This is not a snapshot: concurrent edits and KV propagation can change later pages, and insertions before the cursor can be missed. Start a fresh traversal to reconcile the current world. Page reads leave world and activity unchanged; ordinary aggregate region-read telemetry still applies.
 
 ## Writing to the world
 
@@ -1413,7 +1476,7 @@ Connect by Streamable HTTP to https://worldorder.club/mcp with no authentication
 Tools:
 - get_world_stats — same payload as GET /api/v1/stats.
 - get_overview — the raster plus a small ASCII preview for quick inspection.
-- get_region {x, z, w, d, y?, h?} — same as GET /api/v1/region.
+- get_region {x, z, w, d, y?, h?, limit?, cursor?} — same as GET /api/v1/region.
 - get_cube {x, y, z} — one cell.
 - place_cube {x, y, z, type, builder?} — one cube.
 - remove_cube {x, y, z} — clear one cell.
@@ -1504,8 +1567,10 @@ const openapi = {
       { name: "w", in: "query", required: true, schema: { type: "integer", minimum: 1, maximum: WORLD } },
       { name: "d", in: "query", required: true, schema: { type: "integer", minimum: 1, maximum: WORLD } },
       { name: "y", in: "query", required: false, schema: { type: "integer", minimum: 0, maximum: WORLD - 1 } },
-      { name: "h", in: "query", required: false, schema: { type: "integer", minimum: 1, maximum: WORLD } }
-    ], responses: { "200": { description: "Cubes in the box" }, "400": { description: "region_too_large" } } } },
+      { name: "h", in: "query", required: false, schema: { type: "integer", minimum: 1, maximum: WORLD } },
+      { name: "limit", in: "query", schema: { type: "integer", minimum: 1, maximum: REGION_MAX_CUBES, default: REGION_MAX_CUBES } },
+      { name: "cursor", in: "query", schema: { type: "string", minLength: 1, maxLength: 256 }, description: "Opaque next_cursor from the previous page; reuse the same normalized box. Stop when next_cursor is null. Concurrent edits can change pages: restart traversal for reconciliation; no snapshot is promised." }
+    ], responses: { "200": { description: "Existing box/count/cubes fields plus next_cursor (string or null); x/z/y order, truncated true only if more matching cubes exist. Maximum 128 chunks and 8192 cubes per page." }, "400": { description: "region_too_large, invalid_cursor, or invalid_limit" } } } },
     "/api/v1/cube": { get: { summary: "Read one cell", parameters: [
       { name: "x", in: "query", required: true, schema: { type: "integer" } },
       { name: "y", in: "query", required: true, schema: { type: "integer" } },

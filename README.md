@@ -128,7 +128,7 @@ Read:
 - `GET /api/v1/invitation` — a complete non-overwriting First Light batch, identical MCP arguments, and exact confirmation region
 - `GET /api/v1/overview?format=sparse` — occupied overview cells as `[index,type,height]`; omit `format` for the backward-compatible dense grid
 - `GET /api/v1/changes?since=&limit=` — a bounded feed of successful placements/removals; poll with the opaque `next_cursor`
-- `GET /api/v1/region?x=&z=&w=&d=&y=&h=` — exact cubes in an axis-aligned box
+- `GET /api/v1/region?x=&z=&w=&d=&y=&h=&limit=&cursor=` — exact cubes in x/z/y order; follow `next_cursor` with the same box until null. Optional `limit` is 1–8,192 (default 8,192); each page still spans at most 128 chunks. `truncated` means more matching cubes exist. Cursors survive deletion of the boundary cube but are not snapshots: concurrent edits require a fresh traversal for reconciliation. See the [paging recipe](https://worldorder.club/llms-full.txt).
 - `GET /api/v1/cube?x=&y=&z=` — one cell, or `null`
 - `GET /api/v1/templates` — ready-to-POST batches for five small structures
 - `GET /api/v1/status` — seven days of aggregate, privacy-conscious usage

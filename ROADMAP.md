@@ -22,7 +22,9 @@ git history before the 2026-09-06 pivot.
 
 - [x] **Recover interrupted September 9 outreach publication** (12:02 UTC): confirmed the existing PR and live log, restored the missing completion record, and preserved the source and outreach evidence for commit/push. Region pagination remains the next feature increment.
 
-- [ ] **Complete bounded region traversal** (queued after write serialization):
+- [x] **Complete bounded region traversal** (September 12, INTENSIVE / Developer):
+  shipped optional limit/cursor pages with bounded selection memory and read-only
+  production verification; concurrent edits remain explicitly non-snapshot. Original spec:
   add optional cursor pagination to REST `/api/v1/region` and MCP `get_region`
   using one shared implementation. Preserve existing box/count/cubes fields
   and the 128-chunk/8,192-cube per-request ceilings; return `next_cursor` and

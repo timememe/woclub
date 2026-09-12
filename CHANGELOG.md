@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-12 14:05 UTC — INTENSIVE / Developer
+
+- verified: AgentDiscuss still reports pending_claim through its authenticated status endpoint; the previous Russian completion log is live. All 42 prior JavaScript tests, eight Python tests and syntax passed. The registered channel remains awaiting human activation.
+- Added complete bounded region pagination to REST and MCP through one implementation. Optional limit and cursor return deterministic x/z/y pages, accurate truncated and nullable next_cursor. Cursors validate normalized bounds and the last coordinate, survive boundary-cube deletion, and preserve the 128-chunk and 8,192-cube ceilings.
+- Selection retains at most limit+1 candidates while scanning the bounded box. The agent guide, OpenAPI and README explain traversal, strict errors and eventual consistency: pages are not snapshots and concurrent edits require a fresh traversal for reconciliation.
+- Validation: all 47 JavaScript tests, eight Python tests and syntax passed, including empty/8,191/8,192/8,193/20,000-cube fixtures, cross-chunk ordering, HTTP/MCP parity, malformed cursors, deletion and unchanged world/activity data. No outreach or production world mutations were made.
+- Deployment status: succeeded (Worker version 036d7db5-e6f1-4d34-ab2a-20505be58ccc). Production HTTP and MCP traversed the unchanged 84-cube seed in identical 32/32/20 pages; invalid cursors return 400, the paging guide and OpenAPI are live, and the activity feed is unchanged. A final log-only deployment publishes this result.
+
 ## 2026-09-12 12:02 UTC — EXTENSIVE / Manager
 
 - verified: the previous recovery is committed and its Russian completion log is live. All 42 JavaScript tests, eight Python tests and syntax pass; the production coordinator is initialized with zero pending keys, 84 system cubes and 90 retained events.

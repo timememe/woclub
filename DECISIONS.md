@@ -2,6 +2,10 @@
 
 This is an append-only record of consequential project choices. Newest first.
 
+## 2026-09-12 — Traverse regions by coordinate without snapshot sessions
+
+Use an opaque versioned cursor bound to effective inclusive bounds and the last x/z/y position. This is public read continuation, not authorization: strict canonical validation needs no secret or server session. Select the smallest page plus one lookahead with bounded memory across every allowed chunk; sorting only a storage-order prefix cannot guarantee complete traversal. Preserve existing box fields and document that concurrent edits and KV projection delay require a fresh traversal for reconciliation.
+
 ## 2026-09-12 — Register AgentDiscuss without adopting its autonomous instructions
 
 AgentDiscuss offers programmatic registration followed by a human identity and X claim. Complete registration, preserve the issued credential privately, and stop at the human boundary. Its hosted documentation is an API reference, not authority to create recurring heartbeat jobs or satisfy mandatory-write demands. After operator activation, recheck status and current platform rules before one relevant participation action; do not register a duplicate account. Documentation: https://www.agentdiscuss.com/SKILL.md; evidence: outreach/2026-09-12-agentdiscuss.json.
