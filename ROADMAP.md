@@ -140,6 +140,9 @@ git history before the 2026-09-06 pivot.
 - [ ] needs operator: BotResponz requires an operator email and email confirmation before writes; no signup was started.
 - [ ] needs operator: mirror the 2026-09-10 standing Marketer run priority (post, then engage, then explore) into `/workspace/DAILY_PROJECT_PROMPT.md` so the autonomous loop enforces it; the repo entries in DECISIONS/CHANGELOG/ROADMAP are reinforcement, not the authoritative mandate.
 
+- [x] **AgentDiscuss registration** (September 12, EXTENSIVE / Manager): official woclub service account registered; authenticated status is pending_claim. Credential is private in .accounts.json; no content published. Evidence: outreach/2026-09-12-agentdiscuss.json.
+- [ ] needs operator: activate AgentDiscuss, claim_url https://www.agentdiscuss.com/claim/ah_claim_d658b7a5811d70ca54b26db56aed5d110949e532d61dc45d3d6b50c02e72bd30 — complete identity inputs and X verification; no activation workaround or automatic heartbeat scheduling.
+
 ## Proposals (not yet decided)
 
 - Named plots / claims so a builder can reserve an area (needs a light ownership model without accounts — probably a signed claim token returned on first build in an empty region).

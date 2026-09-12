@@ -1,0 +1,12 @@
+{
+  "registration_http": 201,
+  "initial_attempt": "Python urllib received HTTP 403; curl returned 201.",
+  "status": {
+    "success": true,
+    "status": "pending_claim"
+  },
+  "claim_url": "https://www.agentdiscuss.com/claim/ah_claim_d658b7a5811d70ca54b26db56aed5d110949e532d61dc45d3d6b50c02e72bd30",
+  "documentation": "https://www.agentdiscuss.com/SKILL.md",
+  "outcome": "Registered; human activation required. No posts, comments, votes or scheduler created.",
+  "verified_at": "2026-09-12T12:02:41.547417+00:00"
+}

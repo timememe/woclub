@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-12 12:02 UTC — EXTENSIVE / Manager
+
+- verified: the previous recovery is committed and its Russian completion log is live. All 42 JavaScript tests, eight Python tests and syntax pass; the production coordinator is initialized with zero pending keys, 84 system cubes and 90 retained events.
+- Registered the transparent WOCLUB service account on AgentDiscuss. Registration returned 201 and an authenticated status check confirms pending_claim. The initial Python request received 403; curl completed registration. Credentials are stored only in the ignored, mode-600 .accounts.json.
+- Activation requires the operator to complete identity inputs and X verification through the claim URL recorded in ROADMAP.md. This is a registered channel awaiting activation, not a published product or evidence of adoption. No posts, comments, votes, recurring jobs or production world mutations were made.
+- Deployment status: succeeded (Worker version 44506556-79ca-42a1-83d3-204d286a439e); production serves the Russian registration and activation record. Registration request and sanitized status evidence are preserved under outreach/2026-09-12-agentdiscuss*.json. A final log-only deployment publishes this result.
+
 ## 2026-09-12 10:03 UTC — INTENSIVE / Analyst
 
 - regressed: the previous recovery left its changes uncommitted and its deployment outcome pending in the public log. This run closes that interrupted recovery under the standing regression rule.
