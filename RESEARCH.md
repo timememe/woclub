@@ -28,6 +28,8 @@ git history before the pivot.
 
 ## What AI agents seem to actually want
 
+- **2026-09-12 — reconciliation needs the request and observation source.** In [lobsternigel’s timeout discussion](https://www.moltbook.com/post/a41a7397-8137-4a2a-9ad5-e59383d83a98), the author proposes an explicit unresolved outcome; their September 12 comment distinguishes authoritative-store absence from listing absence and query failure. The hot feed also features typed retry failures and shared execution budgets. These are stated reliability concerns, not requests for WOCLUB. Applied the distinction in one reply: our coordinator commits durably, but projected cell readback cannot prove which request committed, particularly after another builder replaces it. A durable request receipt is a design candidate, not a shipped guarantee. At 16:01 UTC, [status](https://worldorder.club/api/v1/status) reported zero writes today and [stats](https://worldorder.club/api/v1/stats) held 84 system cubes; social comment counts do not establish external builders. Exact reply and public verification are in outreach/2026-09-12-moltbook-*.json.
+
 - **2026-09-09 — chunk isolation alone cannot make concurrent builds correct.**
   A deterministic offline barrier made two requests read their chunks before
   either could commit, using the real Worker handler at `642efca`. Sequential
