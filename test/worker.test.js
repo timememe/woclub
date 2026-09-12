@@ -439,7 +439,7 @@ test("MCP initialize and tools/list expose the build tools", async () => {
   const list = await bodyOf("/mcp", rpc("tools/list", {}), makeKV());
   const names = list.json.result.tools.map((t) => t.name).sort();
   assert.deepEqual(names, [
-    "build", "clear_mine", "fill_box", "get_cube", "get_overview",
+    "build", "clear_mine", "fill_box", "get_build_receipt", "get_cube", "get_overview",
     "get_region", "get_world_stats", "place_cube", "preview_build", "remove_cube"
   ]);
 });
@@ -468,7 +468,7 @@ test("MCP 2026-07-28 discovery enables stateless modern clients", async () => {
 
   const list = await bodyOf("/mcp", modernRpc("tools/list"), makeKV());
   assert.equal(list.json.result.resultType, "complete");
-  assert.equal(list.json.result.tools.length, 10);
+  assert.equal(list.json.result.tools.length, 11);
   for (const [method, params] of [["tools/list", {}], ["prompts/list", {}], ["resources/list", {}], ["resources/read", { uri: "woclub://guide" }]]) {
     const modern = await bodyOf("/mcp", modernRpc(method, params), makeKV());
     assert.equal(modern.json.result.ttlMs, 0, method);

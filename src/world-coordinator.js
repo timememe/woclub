@@ -1,3 +1,5 @@
+import {RECEIPT_TTL_MS, RECEIPT_CAPACITY, validRequestId, operationFingerprint, batchResponse} from './receipts.js';
+
 // Durable authoritative world storage. Visitor values remain inert JSON strings.
 // Split logical values to stay below Durable Object KV's 128 KiB value ceiling.
 export function storageAdapter(storage, dirty = new Set()) {
@@ -45,6 +47,39 @@ export function coordinatorClass(commitOps, clearBuilder) {
       this.tail = next.catch(() => {});
       return next;
     }
+    async scheduleAlarm(projectionDelay = 1000) {
+      const storage = this.ctx.storage;
+      const first = await storage.list({prefix: 'r:expiry:', limit: 1});
+      const expiry = first.size ? Number([...first.keys()][0].split(':')[2]) : Infinity;
+      const pending = (await storage.get('pending') || []).length;
+      const next = Math.min(expiry, pending ? Date.now() + projectionDelay : Infinity);
+      if (Number.isFinite(next)) await storage.setAlarm(Math.max(Date.now() + 1000, next));
+      else await storage.deleteAlarm();
+    }
+    async purgeReceipts() {
+      // Bounded cleanup, indexed by expiry. It shares the projection alarm;
+      // a backlog schedules another pass instead of scanning every receipt.
+      await this.ctx.storage.transaction(async txn => {
+        const rows = await txn.list({prefix: 'r:expiry:', limit: 100});
+        let removed = 0;
+        const kv = storageAdapter(txn);
+        for (const [key, id] of rows) {
+          if (Number(key.split(':')[2]) > Date.now()) break;
+          await kv.delete('r:outcome:' + id);
+          await txn.delete('r:meta:' + id);
+          await txn.delete(key);
+          removed++;
+        }
+        if (removed) await txn.put('r:count', Math.max(0, (await txn.get('r:count') || 0) - removed));
+      });
+    }
+    async retainedReceipt(id) {
+      const meta = await this.ctx.storage.get('r:meta:' + id);
+      if (!meta || meta.expires_at_ms <= Date.now()) return null;
+      const raw = await storageAdapter(this.ctx.storage).get('r:outcome:' + id);
+      if (raw === null) throw new Error('Receipt outcome unavailable');
+      return {meta, outcome: JSON.parse(raw)};
+    }
     async project() {
       const pending = await this.ctx.storage.get('pending') || [];
       const kv = storageAdapter(this.ctx.storage);
@@ -55,17 +90,17 @@ export function coordinatorClass(commitOps, clearBuilder) {
       }
       if (pending.length > 100) {
         await this.ctx.storage.put('pending', pending.slice(100));
-        await this.ctx.storage.setAlarm(Date.now() + 1000);
+        await this.scheduleAlarm();
         return false;
       }
       await this.ctx.storage.delete('pending');
-      await this.ctx.storage.deleteAlarm();
+      await this.scheduleAlarm();
       return true;
     }
     async alarm() {
       return this.exclusive(async () => {
-        try { await this.project(); }
-        catch (error) { await this.ctx.storage.setAlarm(Date.now() + 10000); throw error; }
+        try { await this.purgeReceipts(); await this.project(); }
+        catch (error) { await this.scheduleAlarm(10000); throw error; }
       });
     }
     async fetch(request) {
@@ -96,6 +131,35 @@ export function coordinatorClass(commitOps, clearBuilder) {
           return Response.json(result);
         }
         if (!await this.ctx.storage.get('initialized')) return Response.json({error: 'world_not_initialized'}, {status: 503});
+        const id = command.request_id;
+        if ((id !== undefined || command.action === 'receipt') && !validRequestId(id)) return Response.json({error: 'invalid_request_id'}, {status: 400});
+        if (command.action === 'receipt') {
+          const retained = await this.retainedReceipt(id);
+          return Response.json(retained
+            ? {status: 'committed', ...retained.outcome.receipt, outcome: batchResponse(retained.outcome)}
+            : {status: 'unknown', request_id: id, note: 'Absent or expired; this does not prove the request never committed.'});
+        }
+        const fingerprint = id === undefined ? null : await operationFingerprint(command.ops);
+        if (id !== undefined) {
+          const retained = await this.retainedReceipt(id);
+          if (retained) {
+            if (retained.meta.fingerprint !== fingerprint) return Response.json({error: 'request_id_conflict'}, {status: 409});
+            return Response.json({...retained.outcome, replayed: true});
+          }
+          await this.purgeReceipts();
+          // If this particular ID expired behind a cleanup backlog, remove its
+          // old index too before reusing it. Never remove a retained receipt.
+          await this.ctx.storage.transaction(async txn => {
+            const expired = await txn.get('r:meta:' + id);
+            if (expired && expired.expires_at_ms <= Date.now()) {
+              await storageAdapter(txn).delete('r:outcome:' + id);
+              await txn.delete('r:meta:' + id);
+              await txn.delete(`r:expiry:${expired.expires_at_ms}:${id}`);
+              await txn.put('r:count', Math.max(0, (await txn.get('r:count') || 0) - 1));
+            }
+          });
+          if ((await this.ctx.storage.get('r:count') || 0) >= RECEIPT_CAPACITY) return Response.json({error: 'receipt_capacity'}, {status: 503});
+        }
         // Flush an older projection before committing a newer mutation. Failure
         // here cannot acknowledge a new write; the old durable commit survives.
         if ((await this.ctx.storage.get('pending') || []).length) {
@@ -108,6 +172,16 @@ export function coordinatorClass(commitOps, clearBuilder) {
           const dirty = new Set();
           const kv = storageAdapter(txn, dirty);
           const result = command.action === 'clear' ? await clearBuilder(kv, command.builder) : await commitOps(kv, command.ops);
+          if (id !== undefined) {
+            const now = Date.now(), expires = now + RECEIPT_TTL_MS;
+            result.receipt = {request_id: id, committed_at: new Date(now).toISOString(), expires_at: new Date(expires).toISOString()};
+            result.replayed = false;
+            await storageAdapter(txn).put('r:outcome:' + id, JSON.stringify(result));
+            await txn.put('r:meta:' + id, {fingerprint, expires_at_ms: expires});
+            await txn.put(`r:expiry:${expires}:${id}`, id);
+            await txn.put('r:count', (await txn.get('r:count') || 0) + 1);
+            await txn.setAlarm(now + 1000);
+          }
           if (dirty.size) {
             await txn.put('pending', [...dirty]);
             await txn.setAlarm(Date.now() + 1000);

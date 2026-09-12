@@ -12,15 +12,42 @@ mutations are ordered within the coordinator; older pending projection must
 finish before a newer mutation commits. On projection failure the durable
 outbox survives eviction/restart, alarms retry, and further writes return an
 error until projection recovers. Retrying projection copies existing activity;
-it never reapplies operations or creates another event. Request retries are
-**not idempotent**: reconcile an uncertain write before submitting again.
+it never reapplies operations or creates another event. Unkeyed request retries remain **not idempotent**. Batch/build can now carry a
+request_id for the bounded durable receipt behavior below; reconcile an uncertain
+write before submitting again.
 
-Public reads still use KV and its eventual consistency, plus existing endpoint
+World reads still use KV and its eventual consistency, plus existing endpoint
 and overview caches. A successful write can take 60 seconds or longer to become
 visible everywhere, especially during an outage. Poll cube/region with bounded
 backoff; do not interpret one stale read as a failed write. Preview still reads
 KV, stores nothing, and is not a reservation. Aggregate telemetry is unchanged
 and remains approximate. The world API has no new public admin tools.
+
+## Durable batch receipts
+
+Batch/build with a canonical UUIDv4 `request_id` commits a SHA-256 fingerprint,
+structured outcome and 24-hour expiry in the same transaction as world state.
+The shared coordinator checks retained IDs before the projection gate. Identical
+normalized operations return the original outcome without writes; conflicts fail
+with 409. Receipt lookup reads authoritative storage, even when KV projection is
+unavailable. It never interprets a storage failure as an unknown ID.
+
+Receipt metadata uses `r:meta:<id>`, an expiry-sorted `r:expiry:<ms>:<id>` index,
+and `r:count`. Outcomes use segmented logical `r:outcome:<id>` values; they never
+enter the public KV projection. At most 10,000 unexpired receipts are retained.
+New keyed writes at capacity fail before any world mutation. Cleanup removes at
+most 100 expired entries per pass (plus an explicitly reused expired ID); it runs
+on keyed admission and the existing alarm. Alarm scheduling preserves pending
+world projection and the earliest receipt expiry. Unknown means absent or expired,
+not proof of non-commit. ID reuse after expiry may execute again.
+
+No migration/import is necessary: existing world state is unchanged and an absent
+receipt count means zero. The world-only admin export/import deliberately excludes
+receipts; it is not a receipt backup. Preserve this Durable Object namespace and
+receipt-aware runtime during recovery. Do not restore a pre-receipt writer while
+retained receipts are promised: it can execute duplicate requests. If rollback is
+needed, pause new writes, retain receipt lookup and stored records, and repair the
+current runtime instead of discarding the replay guarantee.
 
 ## First migration (operator CLI only)
 

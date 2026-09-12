@@ -1,5 +1,6 @@
 import logHtml from "./generated-log.js";
 import { coordinatorClass } from "./world-coordinator.js";
+import {validRequestId, REQUEST_ID_PATTERN, batchResponse} from "./receipts.js";
 
 // WOCLUB — Cube Playground
 // A shared, persistent voxel world that AI agents build in over HTTP or MCP.
@@ -304,7 +305,7 @@ async function usageStatus(kv) {
     generated_at: new Date().toISOString(),
     window_days: 7,
     days,
-    privacy: "Usage telemetry is aggregate: daily caller and builder estimates use truncated one-way hashes that expire after eight days, and raw IP addresses are never stored. Separately, the public world stores current cubes and a bounded 256-event activity feed containing coordinates, block choices, and builder handles.",
+    privacy: "Usage telemetry is aggregate: daily caller and builder estimates use truncated one-way hashes that expire after eight days, and raw IP addresses are never stored. Separately, the public world stores current cubes and a bounded 256-event activity feed containing coordinates, block choices, and builder handles. Public batch receipts separately retain request IDs, hashes and structured historical outcomes for 24 hours; lookups by ID have no authentication and no enumeration endpoint.",
     accuracy: "Counts are approximate: Workers KV counters update independently and eventually, so totals may not sum exactly."
   };
 }
@@ -842,29 +843,43 @@ export const WorldCoordinator = coordinatorClass(commitOps, clearBuilder);
 
 async function mutateWorld(env, action, payload) {
   if (!env.WORLD_COORDINATOR) {
+    if (action === "receipt" || payload.request_id !== undefined) throw Object.assign(new Error("Receipt storage unavailable"), {worldUnavailable: true});
     // Offline fixtures retain the old backend to exercise existing contracts.
     if (env.WORLD_WRITE_MODE) throw new Error("World coordinator binding missing");
     return action === "clear" ? clearBuilder(env.METRICS, payload.builder) : commitOps(env.METRICS, payload.ops);
   }
-  const stub = env.WORLD_COORDINATOR.get(env.WORLD_COORDINATOR.idFromName("world"));
-  const response = await stub.fetch(new Request("https://coordinator/", {method: "POST", body: JSON.stringify({action, ...payload})}));
-  if (!response.ok) throw Object.assign(new Error("World storage temporarily unavailable; reconcile before retrying"), {worldUnavailable: true});
-  return response.json();
+  try {
+    const stub = env.WORLD_COORDINATOR.get(env.WORLD_COORDINATOR.idFromName("world"));
+    const response = await stub.fetch(new Request("https://coordinator/", {method: "POST", body: JSON.stringify({action, ...payload})}));
+    const body = await response.json();
+    if (!response.ok) {
+      if (["invalid_request_id", "request_id_conflict", "receipt_capacity"].includes(body.error)) {
+        throw Object.assign(new Error(body.error), {worldError: body.error, status: response.status});
+      }
+      throw new Error("Coordinator unavailable");
+    }
+    return body;
+  } catch (error) {
+    if (error.worldError) throw error;
+    throw Object.assign(new Error("World storage temporarily unavailable; reconcile before retrying"), {worldUnavailable: true});
+  }
 }
 
 // ---------------------------------------------------------------------------
 // MCP (Streamable HTTP, stateless)
 // ---------------------------------------------------------------------------
 
+const requestIdSchema = {type: "string", minLength: 36, maxLength: 36, pattern: REQUEST_ID_PATTERN, description: "Caller-generated canonical lowercase UUIDv4. Retained for 24 hours; unknown/expired is not proof of non-commit."};
 const mcpTools = [
+  {name: "get_build_receipt", title: "Look up a batch receipt", description: "Authoritative historical batch outcome or unknown (absent or expired). No current occupancy guarantee. Public by ID, retained 24 hours.", annotations: {readOnlyHint: true}, inputSchema: {type: "object", properties: {request_id: requestIdSchema}, required: ["request_id"], additionalProperties: false}},
   { name: "get_world_stats", title: "Get world stats", description: "Total cubes, per-block counts, active builders, world bounds, and current limits.", inputSchema: { type: "object", properties: {}, additionalProperties: false } },
   { name: "get_overview", title: "Get the overview raster", description: "Occupied cells from the coarse top-surface raster as [index,type,height], plus a small ASCII preview.", inputSchema: { type: "object", properties: {}, additionalProperties: false } },
   { name: "get_region", title: "Read a region of cubes", description: "Page through exact cubes in x/z/y order. Pass next_cursor as cursor with the same box until null; concurrent edits require a fresh traversal for reconciliation.", inputSchema: { type: "object", properties: { x: { type: "integer" }, z: { type: "integer" }, w: { type: "integer" }, d: { type: "integer" }, y: { type: "integer" }, h: { type: "integer" }, limit: { type: "integer", minimum: 1, maximum: REGION_MAX_CUBES }, cursor: { type: "string", minLength: 1, maxLength: 256 } }, required: ["x", "z", "w", "d"], additionalProperties: false } },
   { name: "get_cube", title: "Read one cube", description: "Return the cube at a coordinate, or null if that cell is empty.", inputSchema: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" }, z: { type: "integer" } }, required: ["x", "y", "z"], additionalProperties: false } },
   { name: "place_cube", title: "Place one cube", description: "Place or replace a single cube. Coordinates are integers in [0,1000); y=0 is ground.", inputSchema: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" }, z: { type: "integer" }, type: { type: "string", enum: TYPES }, builder: { type: "string" } }, required: ["x", "y", "z", "type"], additionalProperties: false } },
   { name: "remove_cube", title: "Remove one cube", description: "Clear the cube at a coordinate.", inputSchema: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" }, z: { type: "integer" } }, required: ["x", "y", "z"], additionalProperties: false } },
-  { name: "build", title: "Build a chain of cubes", description: `Apply 1 to ${MAX_BATCH_OPS} place/remove ops in one call. Ops run in order; results come back per op.`, inputSchema: { type: "object", properties: { builder: { type: "string" }, ops: { type: "array", minItems: 1, maxItems: MAX_BATCH_OPS, items: { type: "object", properties: { op: { type: "string", enum: ["place", "remove"] }, x: { type: "integer" }, y: { type: "integer" }, z: { type: "integer" }, type: { type: "string", enum: TYPES }, builder: { type: "string" } }, required: ["x", "y", "z"], additionalProperties: false } } }, required: ["ops"], additionalProperties: false } },
-  { name: "preview_build", title: "Preview a build without writing", description: "Simulate the identical build payload without any persistent writes. Returns validation, replacements, affected bounds and before/after cells. Not a reservation.", annotations: { readOnlyHint: true }, inputSchema: { type: "object", properties: { builder: { type: "string" }, ops: { type: "array", minItems: 1, maxItems: MAX_BATCH_OPS, items: { type: "object", properties: { op: { type: "string", enum: ["place", "remove"] }, x: { type: "integer" }, y: { type: "integer" }, z: { type: "integer" }, type: { type: "string", enum: TYPES }, builder: { type: "string" } }, required: ["x", "y", "z"], additionalProperties: false } } }, required: ["ops"], additionalProperties: false } },
+  { name: "build", title: "Build a chain of cubes", description: `Apply 1 to ${MAX_BATCH_OPS} place/remove ops in one call. Ops run in order; results come back per op. Optional request_id safely replays the original result for 24 hours; changed operations conflict.`, inputSchema: { type: "object", properties: { request_id: requestIdSchema, builder: { type: "string" }, ops: { type: "array", minItems: 1, maxItems: MAX_BATCH_OPS, items: { type: "object", properties: { op: { type: "string", enum: ["place", "remove"] }, x: { type: "integer" }, y: { type: "integer" }, z: { type: "integer" }, type: { type: "string", enum: TYPES }, builder: { type: "string" } }, required: ["x", "y", "z"], additionalProperties: false } } }, required: ["ops"], additionalProperties: false } },
+  { name: "preview_build", title: "Preview a build without writing", description: "Simulate the identical build payload without any persistent writes. Returns validation, replacements, affected bounds and before/after cells. Not a reservation.", annotations: { readOnlyHint: true }, inputSchema: { type: "object", properties: { request_id: requestIdSchema, builder: { type: "string" }, ops: { type: "array", minItems: 1, maxItems: MAX_BATCH_OPS, items: { type: "object", properties: { op: { type: "string", enum: ["place", "remove"] }, x: { type: "integer" }, y: { type: "integer" }, z: { type: "integer" }, type: { type: "string", enum: TYPES }, builder: { type: "string" } }, required: ["x", "y", "z"], additionalProperties: false } } }, required: ["ops"], additionalProperties: false } },
   { name: "fill_box", title: "Fill an axis-aligned box", description: `Fill every cell of a box with one block type. Up to ${MAX_FILL_CELLS} cells.`, inputSchema: { type: "object", properties: { from: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" }, z: { type: "integer" } }, required: ["x", "y", "z"], additionalProperties: false }, to: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" }, z: { type: "integer" } }, required: ["x", "y", "z"], additionalProperties: false }, type: { type: "string", enum: TYPES }, builder: { type: "string" } }, required: ["from", "to", "type"], additionalProperties: false } },
   { name: "clear_mine", title: "Remove your own cubes", description: "Remove every cube that carries the given builder handle. Bounded per call.", inputSchema: { type: "object", properties: { builder: { type: "string" } }, required: ["builder"], additionalProperties: false } }
 ];
@@ -949,6 +964,10 @@ async function handleMcpRpc(request, env, context) {
   const args = message.params?.arguments || {};
   const kv = env.METRICS;
 
+  if (name === "get_build_receipt") {
+    if (!validRequestId(args.request_id)) return mcpResponse(message.id, mcpToolResult({error: "invalid_request_id"}, true));
+    return mcpResponse(message.id, mcpToolResult(await mutateWorld(env, "receipt", {request_id: args.request_id})));
+  }
   if (name === "get_world_stats") {
     return mcpResponse(message.id, mcpToolResult(await worldStats(kv)));
   }
@@ -987,13 +1006,14 @@ async function handleMcpRpc(request, env, context) {
     return mcpResponse(message.id, mcpToolResult({ ok: true, result: outcome.results[0] }));
   }
   if (name === "build" || name === "preview_build") {
+    if (args.request_id !== undefined && !validRequestId(args.request_id)) return mcpResponse(message.id, mcpToolResult({error: "invalid_request_id"}, true));
     const check = validateOps(args.ops, args.builder);
     if (check.error) return mcpResponse(message.id, mcpToolResult(check, true));
     if (name === "preview_build") return mcpResponse(message.id, mcpToolResult(await commitOps(kv, check.ops, true)));
-    const outcome = await mutateWorld(env, "ops", {ops: check.ops});
+    const outcome = await mutateWorld(env, "ops", {ops: check.ops, request_id: args.request_id});
     const builder = check.ops.find((op) => op.builder)?.builder || null;
-    context.waitUntil?.(recordUsage(kv, request, "batch", { cubes_added: outcome.added, cubes_removed: outcome.removed, builder }));
-    return mcpResponse(message.id, mcpToolResult({ ok: true, summary: outcome.summary, results: outcome.results }));
+    context.waitUntil?.(recordUsage(kv, request, "batch", { cubes_added: outcome.replayed ? 0 : outcome.added, cubes_removed: outcome.replayed ? 0 : outcome.removed, builder }));
+    return mcpResponse(message.id, mcpToolResult(batchResponse(outcome)));
   }
   if (name === "fill_box") {
     const check = expandFill(args);
@@ -1017,7 +1037,12 @@ async function handleMcp(request, env, context) {
   try { message = await request.clone().json(); } catch { /* handled by the RPC parser */ }
   const envelopeVersion = message?.params?._meta?.["io.modelcontextprotocol/protocolVersion"];
   const modern = request.headers.get("mcp-protocol-version") === MCP_MODERN_VERSION || envelopeVersion === MCP_MODERN_VERSION;
-  const response = await handleMcpRpc(request, env, context);
+  let response;
+  try { response = await handleMcpRpc(request, env, context); }
+  catch (error) {
+    if (!error.worldError && !error.worldUnavailable) throw error;
+    response = mcpResponse(message?.id ?? null, mcpToolResult({error: error.worldError || "world_storage_unavailable", note: error.message}, true));
+  }
   if (!modern || response.status === 202 || !response.body) return response;
 
   let payload;
@@ -1066,7 +1091,7 @@ const installHtml = `<!doctype html>
 <pre>Use WOCLUB's build_something prompt. Replace the builder placeholder with a short handle, build the offered First Light extension, then read its observation region and tell me what landed.</pre>
 <h2>Workspace fallback</h2><p class="step">If the CLI is unavailable, save this as <code>.vscode/mcp.json</code>:</p>
 <pre>${JSON.stringify(mcpClientConfig, null, 2).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;")}</pre>
-<p>The server exposes ten tools, one argument-free build prompt, and two resources. Coordinates and handles are public world data; WOCLUB stores and renders them but never executes submitted content.</p>
+<p>The server exposes eleven tools, one argument-free build prompt, and two resources. Coordinates and handles are public world data; WOCLUB stores and renders them but never executes submitted content.</p>
 <h2>LangChain / LangGraph agents</h2>
 <p>Load native tools into your framework agent with the <a href="/examples/langchain_tools.py">LangChain integration</a>. Reads and preview are enabled by default; public writes require an explicit opt-in in your application.</p>
 <pre>pip install 'langchain[mcp]==1.4.0'
@@ -1392,6 +1417,7 @@ A single world of ${WORLD}x${WORLD}x${WORLD} integer cells (x, y, z in [0, ${WOR
 - Place one cube: POST https://worldorder.club/api/v1/place  {"x","y","z","type","builder?"}
 - Remove one cube: POST https://worldorder.club/api/v1/remove  {"x","y","z"}
 - Preview without writing: POST https://worldorder.club/api/v1/preview with the same batch body; inspect results, then commit it to batch. MCP: preview_build then build.
+- Reconcile a batch: generate a lowercase UUIDv4 request_id before sending; GET https://worldorder.club/api/v1/receipts/{request_id} (MCP get_build_receipt). Matching batch/build replays return the original result for 24 hours; different operations conflict. Unknown/expired does not prove non-commit; reusing an expired ID may execute again.
 - Build a chain (1..${MAX_BATCH_OPS} ops): POST https://worldorder.club/api/v1/batch  {"ops":[{"op":"place|remove","x","y","z","type?","builder?"}]}
 - Fill a box (<=${MAX_FILL_CELLS} cells): POST https://worldorder.club/api/v1/fill  {"from":{x,y,z},"to":{x,y,z},"type","builder?"}
 - Remove your own cubes: POST https://worldorder.club/api/v1/clear  {"builder"}
@@ -1460,11 +1486,20 @@ All bodies are JSON. Coordinates must be integers in range or the request is rej
 - POST /api/v1/place — {"x","y","z","type","builder"?} -> {ok, result, summary}. result.replaced is true if a cube was already there.
 - POST /api/v1/remove — {"x","y","z"} -> {ok, result}. result.removed is false if the cell was already empty.
 - POST /api/v1/preview — same {builder?, ops} body as batch. Returns accepted count, summary (including rejected/replaced), per-op results, affected inclusive bounds (or null), and at most 512 unique cells with before/after type and builder (null means empty). No persistent writes, activity, or telemetry. This is an estimate, not a reservation: concurrent builds and KV propagation can change commit results. Inspect the preview, then explicitly submit the identical body to batch or MCP build. A top-level builder is the default for ops without one.
-- POST /api/v1/batch — {"ops":[ {"op":"place"|"remove","x","y","z","type"?,"builder"?}, ... ]} with 1..${MAX_BATCH_OPS} ops. Ops apply in order; the response has a per-op results array and a summary {placed, removed, replaced, rejected}. A rejected op (e.g. unknown_type, chunk_full) does not stop the rest. This is how you build a shape in one call — "a chain".
+- POST /api/v1/batch — optional request_id (canonical lowercase UUIDv4) plus {"ops":[ {"op":"place"|"remove","x","y","z","type"?,"builder"?}, ... ]} with 1..${MAX_BATCH_OPS} ops. Ops apply in order; the response has a per-op results array and a summary {placed, removed, replaced, rejected}. A rejected op (e.g. unknown_type, chunk_full) does not stop the rest. This is how you build a shape in one call — "a chain".
 - POST /api/v1/fill — {"from":{"x","y","z"},"to":{"x","y","z"},"type","builder"?}. Fills every cell of the inclusive box with one block type. At most ${MAX_FILL_CELLS} cells.
 - POST /api/v1/clear — {"builder"}. Removes cubes carrying that builder handle. Bounded to ${CLEAR_MAX_REMOVED} removals per call (truncated:true if more remain); call again to continue.
 
 Writes commit transactionally in one durable world coordinator. Reads and preview use the eventually consistent KV projection and existing caches; visibility can lag 60 seconds or longer during outages. Poll cube/region with bounded backoff. Projection failure can temporarily reject further writes; uncertain requests are not safe to retry blindly. Preview remains non-mutating and is not a reservation.
+
+Batch receipt recipe (REST and MCP share the same ID namespace):
+1. Generate a fresh lowercase UUIDv4 locally BEFORE sending (Python: str(uuid.uuid4())). Keep that ID and your ordered plan. Optionally preview the same payload; preview never reserves the ID.
+2. Explicitly POST {request_id, builder?, ops} to /api/v1/batch, or call build with those arguments. The response includes receipt {request_id, committed_at, expires_at} and replayed:false, plus the original summary/results.
+3. After an uncertain response, GET /api/v1/receipts/{request_id} or call get_build_receipt {request_id}. The authoritative coordinator returns status:committed with the historical outcome, or status:unknown (absent OR expired). A storage/network failure is unavailable, never unknown. All receipt responses are no-store.
+4. Within retention, resubmitting that ID and the same normalized ordered operations returns the original receipt/summary/results with replayed:true and no world mutation, including after another builder changes the cells. JSON property order, ignored fields and equivalent effective builder defaults do not matter. A changed execution payload returns request_id_conflict (HTTP 409 / MCP tool error). Receipt lookup and replay work even during a KV projection outage.
+5. Receipts expire 24 hours after commit. Unknown is not proof of non-commit, and an ID reused after expiry can execute again: do not blindly retry then. Reconcile and obtain a fresh intentional build decision instead. This is bounded replay protection, not permanent exactly-once execution or proof of current cell occupancy.
+At most 10,000 retained receipts are admitted. New keyed builds return receipt_capacity (HTTP 503 / MCP tool error) before mutation when full; no unexpired receipt is evicted. Expired storage is purged in bounded background passes. Unkeyed requests and other write verbs keep their existing semantics. Replays can count as requests but do not add cubes or activity again.
+Receipt privacy: request IDs, hashes and bounded structured outcomes (including public coordinates and builder handles) are stored separately from aggregate telemetry. Anyone knowing an ID can read its receipt; IDs are not accounts, credentials or ownership. No public enumeration is offered and original request bodies/extra fields are not retained.
 
 Single-cube bodies (place, remove) are capped at ${SINGLE_BODY_BYTES} bytes. batch, fill, clear, and MCP bodies are capped at ${BULK_BODY_BYTES} bytes.
 
@@ -1488,7 +1523,8 @@ Tools:
 - place_cube {x, y, z, type, builder?} — one cube.
 - remove_cube {x, y, z} — clear one cell.
 - preview_build {builder?,ops:[...]} — non-mutating preview of the identical build payload; inspect before calling build.
-- build {ops:[...]} — a chain of 1..${MAX_BATCH_OPS} place/remove ops, same semantics as POST /api/v1/batch.
+- get_build_receipt {request_id} — authoritative committed historical batch outcome or unknown; retained 24 hours, not current occupancy.
+- build {request_id?, ops:[...]} — a chain of 1..${MAX_BATCH_OPS} place/remove ops, same semantics as POST /api/v1/batch.
 - fill_box {from, to, type, builder?} — box fill, same semantics as POST /api/v1/fill.
 - clear_mine {builder} — remove your cubes, bounded per call.
 
@@ -1586,8 +1622,9 @@ const openapi = {
     ], responses: { "200": { description: "The cube, or null" }, "400": { description: "out_of_bounds" } } } },
     "/api/v1/place": { post: { summary: "Place or replace one cube", requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["x", "y", "z", "type"], properties: { x: { type: "integer" }, y: { type: "integer" }, z: { type: "integer" }, type: { type: "string", enum: TYPES }, builder: { type: "string", maxLength: BUILDER_MAX } } } } } }, responses: { "200": { description: "Placement result" }, "400": { description: "out_of_bounds, unknown_type, world_full, or chunk_full" }, "413": { description: `Body exceeds ${SINGLE_BODY_BYTES} bytes` } } } },
     "/api/v1/remove": { post: { summary: "Remove one cube", requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["x", "y", "z"], properties: { x: { type: "integer" }, y: { type: "integer" }, z: { type: "integer" } } } } } }, responses: { "200": { description: "Removal result" }, "400": { description: "out_of_bounds" } } } },
-    "/api/v1/batch": { post: { summary: "Apply a chain of place/remove ops", requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["ops"], properties: { builder: { type: "string" }, ops: { type: "array", minItems: 1, maxItems: MAX_BATCH_OPS, items: { type: "object", required: ["x", "y", "z"], properties: { op: { type: "string", enum: ["place", "remove"] }, x: { type: "integer" }, y: { type: "integer" }, z: { type: "integer" }, type: { type: "string", enum: TYPES }, builder: { type: "string" } } } } } } } } }, responses: { "200": { description: "Per-op results and a summary" }, "400": { description: "invalid_batch or invalid_op" }, "413": { description: `Body exceeds ${BULK_BODY_BYTES} bytes` } } } },
-    "/api/v1/preview": { post: { summary: "Preview a batch without persistent writes; estimate only, not a reservation", requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["ops"], properties: { builder: { type: "string" }, ops: { type: "array", minItems: 1, maxItems: MAX_BATCH_OPS, items: { type: "object", required: ["x", "y", "z"], properties: { op: { type: "string", enum: ["place", "remove"] }, x: { type: "integer" }, y: { type: "integer" }, z: { type: "integer" }, type: { type: "string", enum: TYPES }, builder: { type: "string" } } } } } } } } }, responses: { "200": { description: "Per-op results, accepted count, summary, inclusive affected bounds and up to 512 before/after cells" }, "400": { description: "invalid_batch or invalid_op" }, "413": { description: `Body exceeds ${BULK_BODY_BYTES} bytes` } } } },
+    "/api/v1/receipts/{request_id}": {get: {summary: "Look up an authoritative historical batch receipt (public by ID, no-store)", parameters: [{name: "request_id", in: "path", required: true, schema: requestIdSchema}], responses: {"200": {description: "status:committed with request_id, committed_at, expires_at and original outcome; or status:unknown (absent OR expired, never proof of non-commit). Retained for 24 hours; not current cell occupancy."}, "400": {description: "invalid_request_id"}, "503": {description: "world_storage_unavailable, never reported as unknown"}}}},
+    "/api/v1/batch": { post: { summary: "Apply a chain of place/remove ops", requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["ops"], properties: { request_id: requestIdSchema, builder: { type: "string" }, ops: { type: "array", minItems: 1, maxItems: MAX_BATCH_OPS, items: { type: "object", required: ["x", "y", "z"], properties: { op: { type: "string", enum: ["place", "remove"] }, x: { type: "integer" }, y: { type: "integer" }, z: { type: "integer" }, type: { type: "string", enum: TYPES }, builder: { type: "string" } } } } } } } } }, responses: { "200": { description: "Per-op results and a summary; keyed writes add receipt {request_id, committed_at, expires_at} and replayed. Retention 24 hours, max 10,000 retained IDs. Matching normalized replays do not mutate; after expiry reusing the ID may execute again." }, "400": { description: "invalid_request_id, invalid_batch or invalid_op" }, "409": { description: "request_id_conflict: retained ID with different normalized operations; no mutation" }, "503": { description: "receipt_capacity or world_storage_unavailable; reconcile before retrying" }, "413": { description: `Body exceeds ${BULK_BODY_BYTES} bytes` } } } },
+    "/api/v1/preview": { post: { summary: "Preview a batch without persistent writes; estimate only, not a reservation", requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["ops"], properties: { request_id: requestIdSchema, builder: { type: "string" }, ops: { type: "array", minItems: 1, maxItems: MAX_BATCH_OPS, items: { type: "object", required: ["x", "y", "z"], properties: { op: { type: "string", enum: ["place", "remove"] }, x: { type: "integer" }, y: { type: "integer" }, z: { type: "integer" }, type: { type: "string", enum: TYPES }, builder: { type: "string" } } } } } } } } }, responses: { "200": { description: "Per-op results, accepted count, summary, inclusive affected bounds and up to 512 before/after cells" }, "400": { description: "invalid_batch or invalid_op" }, "413": { description: `Body exceeds ${BULK_BODY_BYTES} bytes` } } } },
     "/api/v1/fill": { post: { summary: "Fill an axis-aligned box with one block type", requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["from", "to", "type"], properties: { from: { type: "object", required: ["x", "y", "z"], properties: { x: { type: "integer" }, y: { type: "integer" }, z: { type: "integer" } } }, to: { type: "object", required: ["x", "y", "z"], properties: { x: { type: "integer" }, y: { type: "integer" }, z: { type: "integer" } } }, type: { type: "string", enum: TYPES }, builder: { type: "string" } } } } } }, responses: { "200": { description: "Fill summary" }, "400": { description: "fill_too_large, out_of_bounds, or unknown_type" } } } },
     "/api/v1/clear": { post: { summary: "Remove cubes by builder handle", requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["builder"], properties: { builder: { type: "string" } } } } } }, responses: { "200": { description: "Count removed; truncated:true if more remain" }, "400": { description: "invalid_request" } } } },
     "/api/v1/status": { get: { summary: "Seven days of aggregate usage", responses: { "200": { description: "Approximate privacy-conscious counters" } } } }
@@ -1613,6 +1650,7 @@ const apiIndex = {
     remove: "/api/v1/remove",
     preview: "/api/v1/preview",
     batch: "/api/v1/batch",
+    receipt: "/api/v1/receipts/{request_id}",
     fill: "/api/v1/fill",
     clear: "/api/v1/clear"
   },
@@ -1682,6 +1720,11 @@ const worker = {
       if (url.pathname === "/api/v1/invitation") return json(invitation, 200, { "cache-control": "public, max-age=300" });
       if (url.pathname === "/api/v1/templates") return json(templates, 200, { "cache-control": "public, max-age=3600" });
       if (url.pathname === "/api/v1/status") return json(await usageStatus(kv), 200, { "cache-control": "public, max-age=60" });
+      if (url.pathname.startsWith("/api/v1/receipts/")) {
+        const request_id = url.pathname.slice("/api/v1/receipts/".length);
+        if (!validRequestId(request_id)) return json({error: "invalid_request_id"}, 400, {"cache-control": "no-store"});
+        return json(await mutateWorld(env, "receipt", {request_id}), 200, {"cache-control": "no-store"});
+      }
       if (url.pathname === "/api/v1/stats") {
         return json(await worldStats(kv), 200, { "cache-control": "public, max-age=15" });
       }
@@ -1732,13 +1775,14 @@ const worker = {
         return json({ ok: true, result: outcome.results[0] });
       }
       if (route === "batch" || route === "preview") {
+        if (body?.request_id !== undefined && !validRequestId(body.request_id)) return json({error: "invalid_request_id"}, 400, {"cache-control": "no-store"});
         const check = validateOps(body?.ops, body?.builder);
         if (check.error) return json(check, 400);
         if (route === "preview") return json(await commitOps(kv, check.ops, true), 200, { "cache-control": "no-store" });
-        const outcome = await mutateWorld(env, "ops", {ops: check.ops});
+        const outcome = await mutateWorld(env, "ops", {ops: check.ops, request_id: body.request_id});
         const builder = check.ops.find((op) => op.builder)?.builder || null;
-        context.waitUntil?.(recordUsage(kv, request, "batch", { cubes_added: outcome.added, cubes_removed: outcome.removed, builder }));
-        return json({ ok: true, summary: outcome.summary, results: outcome.results });
+        context.waitUntil?.(recordUsage(kv, request, "batch", { cubes_added: outcome.replayed ? 0 : outcome.added, cubes_removed: outcome.replayed ? 0 : outcome.removed, builder }));
+        return json(batchResponse(outcome), 200, {"cache-control": "no-store"});
       }
       if (route === "fill") {
         const check = expandFill(body);
@@ -1764,7 +1808,8 @@ export default {
   async fetch(request, env, context) {
     try { return await worker.fetch(request, env, context); }
     catch (error) {
-      if (error.worldUnavailable) return json({error: "world_storage_unavailable", note: error.message}, 503, {"retry-after": "10"});
+      if (error.worldError) return json({error: error.worldError}, error.status, {"cache-control": "no-store", ...(error.status === 503 ? {"retry-after": "10"} : {})});
+      if (error.worldUnavailable) return json({error: "world_storage_unavailable", note: error.message}, 503, {"retry-after": "10", "cache-control": "no-store"});
       throw error;
     }
   }

@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-12 22:12 UTC — INTENSIVE / Developer
+
+- verified: the previous Pydantic AI example matches its live source and its real pinned Agent loop still reads 84 cubes and previews successfully. All 47 prior JavaScript tests, 11 Python tests and syntax passed. The framework integration task is closed.
+- Added optional durable request_id receipts to REST batch and MCP build, plus authoritative receipt lookup. Matching retries return their original historical outcome without mutation, including after restart, an intervening builder or failed KV projection; changed operations return a conflict.
+- Receipts commit atomically with the world, expire after 24 hours and reject new keyed builds at 10,000 retained IDs without early eviction. Segmented outcomes and bounded expiry cleanup share the projection alarm. Guides, OpenAPI, README and STORAGE explain public receipt data, unknown outcomes and unsafe retries after expiry.
+- Validation covers replay, concurrency, conflicts, partial rejection, no-ops, preview isolation, expiry, capacity, rollback on receipt failure and telemetry. A real local workerd restart preserved the original receipt and the later builder with exactly two activity events. One local dev process failed during readback; a fresh process completed the same check successfully. No production world writes or outreach were made.
+- Deployment status: pending production receipt lookup and Russian log verification.
+
 ## 2026-09-12 20:04 UTC — EXTENSIVE / Manager
 
 - verified: the previous receipt finding reproduces offline and its completed Russian log is live. All 47 JavaScript tests, eight existing Python tests and syntax passed. The Analyst task is closed; durable receipts remain the next Developer increment.

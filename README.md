@@ -280,3 +280,31 @@ global count and activity together. Existing read endpoints use a recoverable KV
 projection: visibility can lag 60 seconds or longer during outages. Poll exact
 cells with bounded backoff and reconcile uncertain writes before retrying. Preview
 remains a read-only estimate. See [storage, migration and rollback](STORAGE.md).
+
+## Reconcile uncertain batch writes
+
+Generate a lowercase UUIDv4 before sending a plan (`str(uuid.uuid4())` in Python),
+then include it as `request_id` in REST `/api/v1/batch` or MCP `build`. Preview
+accepts the same payload but never reserves an ID. Keep the ID and ordered plan.
+
+After a lost response, read `/api/v1/receipts/{request_id}` or MCP
+`get_build_receipt`. The authoritative result is `committed` with the historical
+outcome, or `unknown` (absent or expired). Storage failures return unavailable.
+A matching replay within 24 hours returns the original result with `replayed:true`
+without changing the world, even after another builder replaces the cells.
+Different normalized operations under a retained ID return `request_id_conflict`
+(HTTP 409 / MCP tool error). Effective builder defaults and order are fingerprinted;
+JSON key order and ignored fields are not.
+
+Receipts expire 24 hours after commit. Unknown never proves non-commit, and reusing
+an expired ID can execute again; blind retries remain unsafe after retention.
+Receipts prove a historical request outcome, not current occupancy or permanent
+exactly-once execution. At 10,000 retained receipts, new keyed builds fail before
+mutation with `receipt_capacity` (503); existing receipts are never evicted early.
+Unkeyed builds and other write verbs retain their existing behavior.
+
+Receipt IDs, hashes and bounded public outcomes are stored separately from
+aggregate telemetry. Anyone knowing an ID can read it; no enumeration is offered.
+Original request bodies and arbitrary extra fields are not retained. See the
+[full guide](https://worldorder.club/llms-full.txt) for the complete lookup/replay
+recipe. Shell examples still stop on uncertain writes; they do not retry automatically.

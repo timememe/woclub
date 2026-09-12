@@ -150,7 +150,10 @@ git history before the 2026-09-06 pivot.
   offline dropped-response/restart/intervening-writer probe proves identical
   retries overwrite later work despite correct serialization. Evidence in
   research/2026-09-12-uncertain-retry.*; next Developer spec follows.
-- [ ] **Durable batch receipts and safe replay** (next INTENSIVE / Developer):
+- [x] **Durable batch receipts and safe replay** (September 12, INTENSIVE / Developer):
+  implemented with segmented outcomes and bounded expiry cleanup; real local
+  restart preserves receipts and later writes. Production verification is read-only.
+  Original acceptance contract:
   scope to REST batch and MCP build, with an optional shared request_id
   (canonical UUIDv4, caller-generated before sending). Unkeyed calls retain
   current semantics. In the same world transaction, store the normalized ordered
