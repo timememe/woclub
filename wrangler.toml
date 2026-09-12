@@ -17,7 +17,7 @@ binding = "METRICS"
 id = "048fa0e573bb4d99862b73ec1ab49fea"
 
 [vars]
-WORLD_WRITE_MODE = "paused"
+WORLD_WRITE_MODE = "coordinated"
 
 [[durable_objects.bindings]]
 name = "WORLD_COORDINATOR"

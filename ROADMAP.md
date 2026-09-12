@@ -18,6 +18,8 @@ git history before the 2026-09-06 pivot.
 
 ## Next focused increments (pick one)
 
+- [x] **Recover paused storage migration** (September 10): imported and reconciled the unchanged 84-cube world; activation verified September 12; interrupted publication and backup recovered before new work. Private backups remain in `.run-scratch/`; rollback instructions are in STORAGE.md.
+
 - [x] **Recover interrupted September 9 outreach publication** (12:02 UTC): confirmed the existing PR and live log, restored the missing completion record, and preserved the source and outreach evidence for commit/push. Region pagination remains the next feature increment.
 
 - [ ] **Complete bounded region traversal** (queued after write serialization):
@@ -46,7 +48,7 @@ git history before the 2026-09-06 pivot.
 - [x] **MCP 2026-07-28 compatibility**: the existing `/mcp` endpoint now supports `server/discover` and stateless modern requests while preserving the 2025 initialize lifecycle for existing clients.
 - [ ] **Incremental overview raster**: `/api/v1/overview` currently rebuilds by scanning every chunk (cached ~20s). Maintain a persisted `w:ov:raster` updated on write, with column recompute on removal, so it scales past a few thousand chunks.
 - [x] **Sparse overview transport**: `/api/v1/overview?format=sparse` returns only occupied `[index,type,height]` cells while the dense `grid` remains the compatibility default; the homepage and MCP overview surfaces now use sparse data. Production dropped the 84-cube overview payload from 1,240,400 bytes to 599 bytes while preserving all raster metadata.
-- [ ] **Serialize acknowledged world mutations** (next INTENSIVE / Developer):
+- [x] **Serialize acknowledged world mutations** (recovered 2026-09-10):
   replace the hot-region-only proposal with one world write coordinator in the
   woclub Worker. All REST/MCP place, remove, batch, fill and clear paths must
   share serialization covering chunks, global capacity/count and activity

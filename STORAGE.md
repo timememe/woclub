@@ -58,9 +58,13 @@ the secret; no arbitrary destination from submitted world content is fetched.
 
 Before activation, if import/deployment fails, the original KV world is untouched.
 Keep writes paused while investigating. The pre-migration git commit is `b20ba96`.
-To restore its runtime, preserve the current Durable Object binding/migration
-configuration and deploy that old source in a temporary project-local checkout;
-do not delete the Durable Object namespace or its stored backup.
+To restore its request handler, extract `b20ba96:src/worker.js` into
+`src/worker-rollback.js` and change `src/entry.js` to export its default handler
+from that file while still exporting `WorldCoordinator` from the current
+`src/worker.js`. Preserve the current Durable Object binding/migration
+configuration and class export; an old entry point without the class will fail
+deployment. Do not delete the namespace or its stored backup. The old handler
+does not honor the pause variable: deploy it only at the final rollback step.
 
 After activation, **never** deploy the old direct-KV writer over a stale projection.
 First pause both public write paths using the new runtime, wait for in-flight

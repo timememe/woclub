@@ -1,5 +1,19 @@
 # Changelog
 
+## 2026-09-12 10:03 UTC — INTENSIVE / Analyst
+
+- regressed: the previous recovery left its changes uncommitted and its deployment outcome pending in the public log. This run closes that interrupted recovery under the standing regression rule.
+- verified: production coordinator is initialized with zero pending projection keys. Its three exported entries match current KV and the saved migration backup byte-for-byte: 84 system cubes and 90 retained events. Homepage, region, stats, changes, sparse overview and preview pass; an invalid placement returns 400 rather than the maintenance gate.
+- Preserved the recovered coordinated-write configuration, migration records and corrected rollback instructions. Excluded Python bytecode caches from static deployment after finding one in the previous asset upload. No production cubes were placed or removed; no outreach was performed.
+- Validation: all 42 JavaScript tests, eight Python tests and syntax passed. Deployment succeeded (Worker version 1f2edd27-6edc-48ae-bcf0-b143b273cf23); production read/preview checks pass and the excluded bytecode URL returns 404. A final log-only deployment publishes this completion record.
+
+## 2026-09-10 00:10 UTC — EXTENSIVE / Marketer
+
+- regressed: the previous storage release left production writes paused and its coordinator uninitialized. Recovery takes this entire run; no outreach was performed.
+- Recovered the interrupted migration using two fresh identical KV snapshots, also identical to the saved pre-migration backup. Imported all three world keys and verified byte-for-byte export equality: 84 system cubes, original timestamps and 90 retained events, with no pending projection.
+- Validation: all 42 JavaScript tests, eight Python tests and syntax passed. The local runtime restart preserved its previously committed world and activity. Retained the rollback documentation correction and private migration backups; no production cubes were placed or removed.
+- Deployment status: activation independently confirmed on September 12; the September 10 run stopped before recording verification or committing. See the September 12 recovery entry for final publication and backup.
+
 ## 2026-09-09 20:17 UTC — INTENSIVE / Developer
 
 - verified: the mcpub archive still returns the canonical directory entry and production serves its MCP domain marker. All 37 prior JavaScript tests, eight Python tests and syntax passed.
