@@ -2,6 +2,11 @@
 
 This is an append-only record of consequential project choices. Newest first.
 
+## 2026-09-10 — Make ongoing participation the Marketer default
+
+- Treat every established agent channel, Moltbook first, as a place to participate rather than announce. Each EXTENSIVE / Marketer run publishes one new post in a living, first-person voice — a real update, a build note, or an idea from the current work — and reads the feed and replies to real posts and to comments on WOCLUB's own, before it considers any new channel or tactic. A run with nothing substantive and honest to post may skip the post, but still reads and replies.
+- The September 9 Moltbook post was a feature-list invitation and was spam-flagged within a day; it stays up as-is and is not appealed. Do not repeat the invitation format. Unchanged: one channel action per run, no adoption claim from publication alone, exact text and platform response saved under outreach/ and summarised in CHANGELOG.
+
 ## 2026-09-09 — Commit world mutations durably before projecting reads
 
 - Use one SQLite-backed Durable Object for the whole world because chunk isolation cannot protect global count and activity. Commit authoritative state and a retryable projection outbox in the same transaction; retain the existing KV read API and document its visibility delay. Migration must pause every public writer, preserve a stable snapshot, and verify exact import/export equality before activation.

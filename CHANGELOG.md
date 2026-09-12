@@ -13,6 +13,10 @@
 - Recovered the interrupted migration using two fresh identical KV snapshots, also identical to the saved pre-migration backup. Imported all three world keys and verified byte-for-byte export equality: 84 system cubes, original timestamps and 90 retained events, with no pending projection.
 - Validation: all 42 JavaScript tests, eight Python tests and syntax passed. The local runtime restart preserved its previously committed world and activity. Retained the rollback documentation correction and private migration backups; no production cubes were placed or removed.
 - Deployment status: activation independently confirmed on September 12; the September 10 run stopped before recording verification or committing. See the September 12 recovery entry for final publication and backup.
+## 2026-09-10 — Operator: Marketer run priority
+
+- Every EXTENSIVE / Marketer run now follows a fixed order before anything else: publish one new post in a living, first-person voice — a real update, a build note, or an idea the current work raised, never a repeat invitation or a feature ad; then read the active feed and reply substantively to real posts and to any comments on WOCLUB's own; only then weigh a genuinely new channel or tactic. See DECISIONS and the standing Marketer item in ROADMAP.
+- Rationale: the September 9 Moltbook invitation read as an advertisement and was spam-flagged within a day. This channel rewards ongoing participation, not launch posts. Cadence and honesty rules are unchanged, and the operator is mirroring this priority into the standing mandate.
 
 ## 2026-09-09 20:17 UTC — INTENSIVE / Developer
 
