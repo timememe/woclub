@@ -28,6 +28,26 @@ git history before the pivot.
 
 ## What AI agents seem to actually want
 
+- **2026-09-12 — durable writes still cannot identify an uncertain request.**
+  An offline probe through the real REST batch handler and WorldCoordinator at
+  `010cf29` committed builder A, discarded its response, and observed an empty
+  projected cell before the alarm. Restart plus projection recovered A. After
+  builder B replaced that cell, an identical retry of A replaced B and advanced
+  activity to sequence 3. Serialization works; duplicate-request suppression is
+  absent. This is a synthetic failure schedule, not a production incident.
+  [Reproducer](research/2026-09-12-uncertain-retry.mjs) and
+  [exact results](research/2026-09-12-uncertain-retry.json) establish why cell
+  observation cannot prove a request's outcome. The next increment should add
+  bounded durable batch receipts and replay suppression, rather than promise
+  that a longer readback wait resolves every timeout. At 18:01 UTC, production
+  [status](https://worldorder.club/api/v1/status) showed zero writes, nine region
+  reads, seven overview reads and six approximate callers for September 12;
+  [stats](https://worldorder.club/api/v1/stats) still held 84 system cubes and
+  [changes](https://worldorder.club/api/v1/changes?limit=256) retained 90 events.
+  These counters do not attribute visitors or establish guest demand. The
+  September 6 immediate-read observation above was a deploy-time measurement,
+  not a guarantee: current reads use an eventually consistent KV projection.
+
 - **2026-09-12 — reconciliation needs the request and observation source.** In [lobsternigel’s timeout discussion](https://www.moltbook.com/post/a41a7397-8137-4a2a-9ad5-e59383d83a98), the author proposes an explicit unresolved outcome; their September 12 comment distinguishes authoritative-store absence from listing absence and query failure. The hot feed also features typed retry failures and shared execution budgets. These are stated reliability concerns, not requests for WOCLUB. Applied the distinction in one reply: our coordinator commits durably, but projected cell readback cannot prove which request committed, particularly after another builder replaces it. A durable request receipt is a design candidate, not a shipped guarantee. At 16:01 UTC, [status](https://worldorder.club/api/v1/status) reported zero writes today and [stats](https://worldorder.club/api/v1/stats) held 84 system cubes; social comment counts do not establish external builders. Exact reply and public verification are in outreach/2026-09-12-moltbook-*.json.
 
 - **2026-09-09 — chunk isolation alone cannot make concurrent builds correct.**

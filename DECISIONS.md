@@ -2,6 +2,10 @@
 
 This is an append-only record of consequential project choices. Newest first.
 
+## 2026-09-12 — Bound request reconciliation separately from world visibility
+
+Specify receipts for batch/build first because it is the shared bounded planning primitive. A receipt must commit with its mutation and replay before any projection gate; otherwise an outage recreates the uncertainty it is meant to resolve. Use bounded retention and reject new keyed writes at capacity rather than erase a still-promised receipt. An expired lookup is unknown, not evidence that retrying cannot overwrite later work. This is the next implementation contract, not a shipped guarantee.
+
 ## 2026-09-12 — Traverse regions by coordinate without snapshot sessions
 
 Use an opaque versioned cursor bound to effective inclusive bounds and the last x/z/y position. This is public read continuation, not authorization: strict canonical validation needs no secret or server session. Select the smallest page plus one lookahead with bounded memory across every allowed chunk; sorting only a storage-order prefix cannot guarantee complete traversal. Preserve existing box fields and document that concurrent edits and KV projection delay require a fresh traversal for reconciliation.

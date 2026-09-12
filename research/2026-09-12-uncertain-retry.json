@@ -1,0 +1,77 @@
+{
+  "scenario": "synthetic dropped response, restart, intervening builder, identical retry",
+  "firstResponse": {
+    "ok": true,
+    "summary": {
+      "placed": 1,
+      "removed": 0,
+      "replaced": 0,
+      "rejected": 0
+    },
+    "results": [
+      {
+        "op": "place",
+        "x": 8,
+        "y": 0,
+        "z": 8,
+        "ok": true,
+        "type": "stone",
+        "builder": "offline-A",
+        "replaced": false
+      }
+    ]
+  },
+  "beforeProjection": null,
+  "afterRestart": {
+    "x": 8,
+    "y": 0,
+    "z": 8,
+    "type": "stone",
+    "builder": "offline-A",
+    "placed_at": "2026-09-12T18:02:14.487Z"
+  },
+  "afterOtherBuilder": {
+    "x": 8,
+    "y": 0,
+    "z": 8,
+    "type": "stone",
+    "builder": "offline-B",
+    "placed_at": "2026-09-12T18:02:14.491Z"
+  },
+  "retryResponse": {
+    "ok": true,
+    "summary": {
+      "placed": 0,
+      "removed": 0,
+      "replaced": 1,
+      "rejected": 0
+    },
+    "results": [
+      {
+        "op": "place",
+        "x": 8,
+        "y": 0,
+        "z": 8,
+        "ok": true,
+        "type": "stone",
+        "builder": "offline-A",
+        "replaced": true
+      }
+    ]
+  },
+  "afterBlindRetry": {
+    "x": 8,
+    "y": 0,
+    "z": 8,
+    "type": "stone",
+    "builder": "offline-A",
+    "placed_at": "2026-09-12T18:02:14.493Z"
+  },
+  "activitySequence": 3,
+  "activityBuilders": [
+    "offline-A",
+    "offline-B",
+    "offline-A"
+  ],
+  "conclusion": "Durable commit survives, but identical retry is a new mutation and overwrites the intervening builder."
+}

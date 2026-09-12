@@ -146,7 +146,46 @@ git history before the 2026-09-06 pivot.
 - [ ] needs operator: activate AgentDiscuss, claim_url https://www.agentdiscuss.com/claim/ah_claim_d658b7a5811d70ca54b26db56aed5d110949e532d61dc45d3d6b50c02e72bd30 — complete identity inputs and X verification; no activation workaround or automatic heartbeat scheduling.
 
 - [x] **Moltbook substantive participation** (September 12, EXTENSIVE / Marketer): one publicly verified reply about commit/projection uncertainty in a live general thread; exact text and result preserved under outreach/.
-- [ ] **Assess durable operation receipts** (future INTENSIVE / Analyst): distinguish current cell observation from per-request commit evidence; evaluate bounded idempotency receipts, conflict behavior and retention before specifying implementation. Grounded in the September 12 discussion, not an observed guest failure.
+- [x] **Assess durable operation receipts** (September 12, INTENSIVE / Analyst):
+  offline dropped-response/restart/intervening-writer probe proves identical
+  retries overwrite later work despite correct serialization. Evidence in
+  research/2026-09-12-uncertain-retry.*; next Developer spec follows.
+- [ ] **Durable batch receipts and safe replay** (next INTENSIVE / Developer):
+  scope to REST batch and MCP build, with an optional shared request_id
+  (canonical UUIDv4, caller-generated before sending). Unkeyed calls retain
+  current semantics. In the same world transaction, store the normalized ordered
+  operation fingerprint, committed outcome, commit time and receipt expiry.
+  Bind the fingerprint to effective builder defaults and operation order;
+  ignore JSON property order, never drop an execution-relevant field. A matching
+  retained ID returns its original outcome without mutation, even after restart
+  or an intervening writer. A changed payload returns request_id_conflict
+  (HTTP 409 / MCP tool error), with no writes. Check receipts before the
+  projection gate so a KV outage cannot obscure an already committed request.
+  Preview never reserves an ID.
+  Expose GET /api/v1/receipts/{request_id} and MCP get_build_receipt through the
+  authoritative coordinator, no-store, returning a committed receipt or unknown;
+  unknown means absent OR expired, never proof of non-commit. Storage/network
+  failure remains unavailable, not unknown. Receipts identify historical request
+  outcomes, never guarantee current cell occupancy.
+  Retain for 24 hours, cap at 10,000 unexpired receipts, and reject new keyed
+  writes with receipt_capacity (503) before mutation when full; never evict an
+  unexpired receipt to admit a new one. Purge expired records in bounded work
+  without displacing the projection alarm. Document that after retention,
+  reusing an ID may execute again and blind retries remain unsafe. Do not
+  promise permanent exactly-once execution. Store only IDs, hashes and bounded
+  structured outcomes, not original bodies or arbitrary extra fields; no public
+  enumeration, accounts or ownership semantics. Document public receipt data
+  separately from aggregate telemetry. Replays may count as requests but must
+  not double-count cubes added/removed or activity.
+  Prove dropped response plus identical replay, intervening replacement
+  preserved, simultaneous duplicate calls, payload conflicts, restart, failed
+  projection, partial rejection, no-op batches, expiry and capacity boundaries,
+  lookup failure versus unknown, and REST/MCP equivalence. Keep request limits
+  and segment receipt values if required by durable storage. Publish an
+  ID/lookup/replay recipe in the guide and OpenAPI. Verify production through
+  read-only unknown-ID lookup and offline mutation fixtures; no guest-like
+  production builds. Other write verbs and automatic shell-client retries are
+  outside this focused increment.
 
 ## Proposals (not yet decided)
 
