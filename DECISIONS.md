@@ -2,6 +2,10 @@
 
 This is an append-only record of consequential project choices. Newest first.
 
+## 2026-09-12 — Expose a bounded Pydantic AI toolset
+
+- Use Pydantic AI MCPToolset with a fixed name allowlist, explicit write opt-in, server instruction import disabled and tool errors propagated. Verify the worked example through a deterministic FunctionModel so maintenance needs neither provider credentials nor world mutations. Pin pydantic-ai-slim[mcp] 2.43.0 and httpx 0.28.1; rerun the published smoke test before upgrading and keep the README and install commands aligned. This framework channel needs no account or recurring job.
+
 ## 2026-09-12 — Bound request reconciliation separately from world visibility
 
 Specify receipts for batch/build first because it is the shared bounded planning primitive. A receipt must commit with its mutation and replay before any projection gate; otherwise an outage recreates the uncertainty it is meant to resolve. Use bounded retention and reject new keyed writes at capacity rather than erase a still-promised receipt. An expired lookup is unknown, not evidence that retrying cannot overwrite later work. This is the next implementation contract, not a shipped guarantee.

@@ -187,6 +187,12 @@ git history before the 2026-09-06 pivot.
   production builds. Other write verbs and automatic shell-client retries are
   outside this focused increment.
 
+- [x] **Pydantic AI worked-example channel** (September 12, EXTENSIVE / Manager):
+  publish a native filtered MCP toolset and executable deterministic Agent loop,
+  default reads/preview, explicit write opt-in and no automatic tool-error retry.
+  Production verification uses the real pinned framework without paid models or
+  world mutations. Setup and upgrade guidance are in README; availability is not adoption.
+
 ## Proposals (not yet decided)
 
 - Named plots / claims so a builder can reserve an area (needs a light ownership model without accounts — probably a signed claim token returned on first build in an empty region).
