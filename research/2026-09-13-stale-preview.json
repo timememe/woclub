@@ -1,0 +1,106 @@
+{
+  "scenario": "Offline preview/commit race and replacement accounting",
+  "results": [
+    {
+      "transport": "REST",
+      "emptyPreview": {
+        "placed": 1,
+        "removed": 0,
+        "replaced": 0,
+        "rejected": 0
+      },
+      "laggingPreview": {
+        "placed": 1,
+        "removed": 0,
+        "replaced": 0,
+        "rejected": 0
+      },
+      "freshPreview": {
+        "placed": 0,
+        "removed": 0,
+        "replaced": 1,
+        "rejected": 0
+      },
+      "commit": {
+        "placed": 0,
+        "removed": 0,
+        "replaced": 1,
+        "rejected": 0
+      },
+      "finalBuilder": "offline-A",
+      "activitySequence": 2,
+      "orderedEditOnInitiallyEmpty": {
+        "summary": {
+          "placed": 1,
+          "removed": 0,
+          "replaced": 1,
+          "rejected": 0
+        },
+        "before": null
+      },
+      "removeThenPlaceOnInitiallyOccupied": {
+        "summary": {
+          "placed": 1,
+          "removed": 1,
+          "replaced": 0,
+          "rejected": 0
+        },
+        "before": {
+          "type": "stone",
+          "builder": "offline-A"
+        }
+      }
+    },
+    {
+      "transport": "MCP",
+      "emptyPreview": {
+        "placed": 1,
+        "removed": 0,
+        "replaced": 0,
+        "rejected": 0
+      },
+      "laggingPreview": {
+        "placed": 1,
+        "removed": 0,
+        "replaced": 0,
+        "rejected": 0
+      },
+      "freshPreview": {
+        "placed": 0,
+        "removed": 0,
+        "replaced": 1,
+        "rejected": 0
+      },
+      "commit": {
+        "placed": 0,
+        "removed": 0,
+        "replaced": 1,
+        "rejected": 0
+      },
+      "finalBuilder": "offline-A",
+      "activitySequence": 2,
+      "orderedEditOnInitiallyEmpty": {
+        "summary": {
+          "placed": 1,
+          "removed": 0,
+          "replaced": 1,
+          "rejected": 0
+        },
+        "before": null
+      },
+      "removeThenPlaceOnInitiallyOccupied": {
+        "summary": {
+          "placed": 1,
+          "removed": 1,
+          "replaced": 0,
+          "rejected": 0
+        },
+        "before": {
+          "type": "stone",
+          "builder": "offline-A"
+        }
+      }
+    }
+  ],
+  "conclusion": "REST and MCP both overwrite an intervening builder. Preview may lag even after that commit. Replacement counts include in-batch edits and exclude remove-then-place displacement; they are not an initial-occupancy protection policy."
+}

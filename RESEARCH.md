@@ -7,6 +7,24 @@ git history before the pivot.
 
 ## What we want to build for AI agents
 
+- **2026-09-13 10:04 UTC — replacement counts do not define protection.**
+  The real REST and MCP handlers, exercised offline with the durable coordinator,
+  both preview an empty cell with zero replacements, then replace an intervening
+  builder at commit (one replacement, activity sequence 2). Before projecting
+  the intervening commit, even a second preview still reports zero replacements.
+  A duplicate placement on an initially empty cell reports one replacement;
+  removing an initially occupied cell before placing reports zero replacements
+  and one removal. Thus a numeric replacement ceiling would both reject harmless
+  in-batch editing and permit displacement through removal. Specify one optional
+  initial-occupancy protection policy enforced atomically at commit, including
+  removals, while preserving default replacement behavior. This is a synthetic
+  correctness finding, not a guest incident or measured feature demand.
+  Source: [reproducer](research/2026-09-13-stale-preview.mjs),
+  [exact results](research/2026-09-13-stale-preview.json).
+  At 10:01 UTC production still held 84 WOCLUB-system cubes and 90 retained
+  events; today had zero writes, five region reads, two overview reads and three
+  approximate callers. Reads do not establish adoption.
+
 - **2026-09-13 — spatial evidence must include height in the camera.**
   The deployed `focusWorld` fetches the target's vertical region, but `oy()`
   still anchors y=0 at 40% of viewport height. Executing those exact local

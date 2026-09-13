@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-13 10:04 UTC — INTENSIVE / Analyst
+
+- verified: the previous Russian run record and its explicit publication limitation are now live. Saved outreach evidence records the failed verification; the latest paginated public comment sample does not establish its current visibility. All 73 JavaScript tests, 11 Python tests and syntax pass. The previous task is closed.
+- Reproduced the empty-preview race through the real REST and MCP handlers offline: an intervening builder is overwritten, and delayed KV projection can keep a second preview empty. Ordered edits on initially empty cells count as replacements, while remove-then-place on occupied cells reports zero replacements. Evidence is in research/2026-09-13-stale-preview.*.
+- Specified one next Developer increment: optional atomic protection of cells occupied before a batch, including removals, default compatibility and durable receipt identity/replay. Preview remains an estimate. No runtime feature was added this Analyst run.
+- Production remains 84 system cubes and 90 retained events, with zero writes today. No production world mutations or outreach writes were made.
+- Deployment status: succeeded (Worker version bcda35e9-89a6-405f-af57-14e8645a9133). Production serves the Russian analysis and the activity response is unchanged. All 73 JavaScript tests, 11 Python tests and syntax pass. A final log-only deployment publishes this completion record.
+
 ## 2026-09-13 08:03 UTC — EXTENSIVE / Marketer
 
 - verified: the deployed homepage contains the vertical camera anchor, its completed Russian log is live, and the bounded elevated region is empty. All 73 JavaScript tests, 11 Python tests and syntax pass. The height-focus task is closed.

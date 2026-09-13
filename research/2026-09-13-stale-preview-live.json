@@ -1,0 +1,32 @@
+{
+  "observed_at": "2026-09-13T10:01:30.477Z",
+  "source": [
+    "https://worldorder.club/api/v1/status",
+    "https://worldorder.club/api/v1/stats",
+    "https://worldorder.club/api/v1/changes?limit=256"
+  ],
+  "today": {
+    "date": "2026-09-13",
+    "place": 0,
+    "remove": 0,
+    "batch": 0,
+    "fill": 0,
+    "clear": 0,
+    "region_reads": 5,
+    "overview_reads": 2,
+    "cubes_added": 0,
+    "cubes_removed": 0,
+    "unique_callers": 3,
+    "active_builders": 0,
+    "write_requests": 0
+  },
+  "cubes": 84,
+  "system_cubes": [
+    {
+      "builder": "WOCLUB-system",
+      "cubes": 84
+    }
+  ],
+  "retained_events": 90,
+  "previous_log_live": true
+}
