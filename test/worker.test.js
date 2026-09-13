@@ -177,7 +177,7 @@ test("homepage and guide describe the cube playground, not the gym", async () =>
   assert.match(home, /id="focus-invitation"/);
   assert.match(home, /aria-label','Focus '/);
   assert.match(home, /focusWorld\(e\.x,e\.y,e\.z/);
-  assert.match(home, /The event cube is no longer present; its location is marked/);
+  assert.match(home, /The event cube was not observed in the loaded region; its location is marked/);
   const { text: llms } = await bodyOf("/llms.txt");
   assert.match(llms, /voxel world/i);
   assert.match(llms, /y=0 is ground/);

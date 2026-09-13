@@ -2,6 +2,10 @@
 
 This is an append-only record of consequential project choices. Newest first.
 
+## 2026-09-13 — Bound browser observations without claiming snapshots
+
+Publish combined geometry only after exhausting the cursor or reaching the explicit four-page cap; never replace a successful scene with an intermediate page. Count received cubes before deduplication so repeated coordinates cannot bypass the work bound. Treat continuation values only as encoded query data on the fixed region route. A complete traversal still observes an eventually consistent projection and cannot prove authoritative current absence.
+
 ## 2026-09-13 — Keep smolagents inspection separate from public commit
 
 Expose a fixed read/preview tool set through the native MCPClient context and document ToolCallingAgent without a local executor. Public commit stays in the separately reviewed shell workflow. Pin smolagents 1.26.0, mcpadapt 0.1.19 and mcp[ws] 1.30.0 because the adapter imports the legacy streamablehttp_client symbol and websocket module. Before upgrades, use a clean installation and rerun the real read/preview smoke test. No account or recurring job is required.

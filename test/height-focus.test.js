@@ -15,7 +15,7 @@ function harness(W,H){
  source.slice(source.indexOf('function ox()'),source.indexOf('// frame the built'))+
  source.slice(source.indexOf('function proj('),source.indexOf('function face('))+
  source.slice(source.indexOf('function screenToWorldDelta('),source.indexOf("document.getElementById('focus-invitation').addEventListener")));
- return {run,requests,handlers,elements,async finish(i,cubes){requests[i].resolve({ok:true,json:async()=>({cubes})});await new Promise(r=>setImmediate(r));}};
+ return {run,requests,handlers,elements,async finish(i,cubes){requests[i].resolve({ok:true,json:async()=>({cubes:cubes.map(c=>({y:0,z:500,type:'stone',...c})),count:cubes.length,truncated:false,next_cursor:null})});await new Promise(r=>setImmediate(r));}};
 }
 for(const [W,H] of [[800,600],[360,600]])for(const y of [0,20,80,999])for(const present of [true,false]){
  test(`focus height ${y}, ${W}x${H}, present=${present}: cube and full pulse have margin`,async()=>{
@@ -23,7 +23,7 @@ for(const [W,H] of [[800,600],[360,600]])for(const y of [0,20,80,999])for(const 
   assert.match(h.requests[0].url,/w=25&d=25/);
   await h.finish(0,present?[{x:500,y,z:500}]:[]);
   assert.equal(h.run('fy'),y);assert.equal(h.run('fx'),500);assert.equal(h.run('fz'),500);
-  if(!present)assert.match(h.elements.get('focus-status').textContent,/no longer present/);
+  if(!present)assert.match(h.elements.get('focus-status').textContent,/not observed/);
   function visible(){const [sx,sy,T]=h.run(` [...proj(500,500,${y}+1),T]`);
    const r=Math.max(9,T*1.45)*1.22+1.5,t=T*1.15;
    assert.ok(sx-Math.max(r,t)>24&&sx+Math.max(r,t)<W-24);

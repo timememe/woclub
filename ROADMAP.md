@@ -19,7 +19,7 @@ git history before the 2026-09-06 pivot.
 ## Next focused increments (pick one)
 
 - [x] **Analyze dense browser coverage** (September 13 18:04 UTC, INTENSIVE / Analyst): actual browser/REST probe omits 6,808 of 15,000 focus-region cubes and falsely labels an existing edge target absent. Evidence: research/2026-09-13-view-pagination.*.
-- [ ] **Bounded complete browser region loading** (next INTENSIVE / Developer):
+- [x] **Bounded complete browser region loading** (September 13 22:04 UTC, INTENSIVE / Developer): shipped four-page traversal, coordinate deduplication, partial/stale coverage and observation-scoped target wording. Dense offline REST fixtures and navigation/failure tests cover the original spec below:
   teach loadRegion to follow the existing next_cursor for the identical box,
   sequentially, at most four pages / 32,768 received cubes per refresh. Never
   fetch a cursor as a URL: append its encoded value to the fixed same-origin

@@ -1356,11 +1356,34 @@ async function loadRegion(url,onSuccess){
   const controller=new AbortController();regionController=controller;
   const status=document.getElementById('region-status');
   try{
-    const response=await fetch(url,{signal:controller.signal});
-    if(!response.ok)throw Error('HTTP '+response.status);
-    const j=await response.json();if(j.error||!Array.isArray(j.cubes))throw Error('Invalid region');
-    if(generation!==regionGeneration)return;
-    region=j;activeRegionUrl=url;status.textContent='Exact view updated';
+    activeRegionUrl=url;
+    const cubes=new Map(),seen=new Set();let next=null,j,received=0;
+    for(let page=0;page<4;page++){
+      const pageUrl=url+(next?'&cursor='+encodeURIComponent(next):'');
+      const response=await fetch(pageUrl,{signal:controller.signal});
+      if(generation!==regionGeneration)return;
+      if(!response.ok)throw Error('HTTP '+response.status);
+      j=await response.json();
+      if(generation!==regionGeneration)return;
+      if(!j||j.error||!Array.isArray(j.cubes)||j.cubes.length>8192||j.count!==j.cubes.length||
+        typeof j.truncated!=='boolean'||(j.next_cursor!==null&&
+        (typeof j.next_cursor!=='string'||!j.next_cursor.length||j.next_cursor.length>1024))||
+        j.truncated!==(j.next_cursor!==null))throw Error('Invalid region');
+      received+=j.cubes.length;if(received>32768)throw Error('Region limit');
+      for(const c of j.cubes){
+        if(!c||!['x','y','z'].every(k=>Number.isInteger(c[k])&&c[k]>=0&&c[k]<WORLD)||
+          typeof c.type!=='string')throw Error('Invalid cube');
+        cubes.set(c.x+','+c.y+','+c.z,c);
+      }
+      next=j.next_cursor;
+      if(!next)break;
+      if(seen.has(next)||!j.cubes.length)throw Error('Invalid continuation');
+      seen.add(next);
+    }
+    j={...j,cubes:[...cubes.values()],count:cubes.size,truncated:next!==null,next_cursor:next};
+    region=j;activeRegionUrl=url;
+    status.textContent=(next?'Partial view updated — zoom in for more coverage. ':'Region view updated — all pages observed. ')+
+      'Eventually consistent observation, not a snapshot.';
     if(onSuccess)onSuccess(j);draw();
   }catch(e){
     if(generation!==regionGeneration)return;
@@ -1388,7 +1411,7 @@ async function focusWorld(x,y,z,label){
   const url='/api/v1/region?x='+rx+'&z='+rz+'&w='+span+'&d='+span+'&y='+Math.max(0,y-6)+'&h=24';
   await loadRegion(url,j=>{
     fx=x;fy=y;fz=z;fitted=true;T=Math.max(8,Math.min(18,Math.min(W,H)/32));target={x,y,z,since:performance.now()};
-    status.textContent='Focused '+label+' at '+x+','+y+','+z+(j.cubes.some(c=>c.x===x&&c.y===y&&c.z===z)?'.':'. The event cube is no longer present; its location is marked.');
+    status.textContent='Focused '+label+' at '+x+','+y+','+z+(j.cubes.some(c=>c.x===x&&c.y===y&&c.z===z)?'.':'. The event cube was not observed in the loaded region; its location is marked.');
   });
   if(status.textContent==='Loading '+label+'…')status.textContent='Could not focus '+label+'. Try again.';
 }

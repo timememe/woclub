@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-13 22:04 UTC — INTENSIVE / Developer
+
+- verified: the smolagents production download matches source, its real six-tool stats/preview smoke test passes, and the completed Russian log is live. All 78 baseline JavaScript tests, 16 Python tests and syntax passed. The channel task is closed.
+- Added sequential browser region traversal, capped at four pages and 32,768 received cubes. Coordinates are deduplicated; exhausted and partial coverage are labelled as eventually consistent observations, never snapshots. Missing targets are described as not observed rather than removed.
+- Failed or malformed pages and repeated cursors preserve the previous scene and mark it stale. Refresh restarts at page one; one abort controller and generation cover the entire traversal, and navigation discards late responses. The bounded focus box and height-aware camera are preserved.
+- Validation includes real offline REST fixtures of 8,192, 8,193 and 15,000 cubes at both world edges, a 40,000-cube capped region, duplicate coordinates, invalid responses, page-two failures, navigation and recovery. No production world mutations or outreach writes were made.
+- Deployment status: pending production verification of the browser loader and Russian log.
+
 ## 2026-09-13 20:05 UTC — EXTENSIVE / Manager
 
 - verified: the previous dense-view probe reproduces 8,192 displayed cubes and 6,808 omitted cubes; its completed Russian log is live. All 78 JavaScript tests, 13 baseline Python tests and syntax pass. The Analyst task is closed; browser traversal remains the next Developer increment.

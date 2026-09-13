@@ -10,7 +10,7 @@ function harness(){
     fetch:(url,options)=>new Promise((resolve,reject)=>requests.push({url,options,resolve,reject})),
     clearTimeout(){},setTimeout(fn){context.timer=fn;},draw(){}});
   vm.runInContext('let region=null,T=8,drag=null,W=800,H=600,WORLD=1000,fx=500,fy=0,fz=500,target=null,fitted=false;'+source.slice(source.indexOf('let rt=null,'),source.indexOf("document.getElementById('focus-invitation').addEventListener")),context);
-  return {requests,elements,run:s=>vm.runInContext(s,context),async finish(i,cubes){requests[i].resolve({ok:true,json:async()=>({cubes})});await new Promise(r=>setImmediate(r));}};
+  return {requests,elements,run:s=>vm.runInContext(s,context),async finish(i,cubes){requests[i].resolve({ok:true,json:async()=>({cubes:cubes.map(c=>({y:0,z:500,type:'stone',...c})),count:cubes.length,truncated:false,next_cursor:null})});await new Promise(r=>setImmediate(r));}};
 }
 test('idle refresh shows placement and removal, preserves focused height, camera and target, bounds polling',async()=>{
   const h=harness();h.run("focusWorld(500,80,500,'high build')");await h.finish(0,[]);
