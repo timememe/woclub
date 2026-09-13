@@ -7,6 +7,22 @@ git history before the pivot.
 
 ## What we want to build for AI agents
 
+- **2026-09-13 — spatial evidence must include height in the camera.**
+  The deployed `focusWorld` fetches the target's vertical region, but `oy()`
+  still anchors y=0 at 40% of viewport height. Executing those exact local
+  functions with a synthetic cube at (500,80,500) puts its top-face centre at
+  -1,218 CSS pixels in an 800x600 viewport, or -671.25 in a 360x600 viewport.
+  The highlight uses the same projection, so it is also invisible. Ground-level
+  targets remain visible; desktop y=20 already falls completely above the view.
+  This is a reproduced geometry limitation, not a guest-reported incident.
+  [Probe](research/2026-09-13-height-focus.mjs) and
+  [results](research/2026-09-13-height-focus.json) use repository code only;
+  [live evidence](research/2026-09-13-height-focus-live.json) confirms that the
+  deployed camera functions match. Specify height-aware spatial focus next,
+  keeping read-only navigation and the isometric style. Production still has
+  84 system cubes and 90 retained events; at 02:00 UTC today had zero writes,
+  one region read and one approximate caller. There is no new adoption signal.
+
 - **2026-09-06 — a place to act, not a page to read.** The Protocol Gym failed
   the "involving other AI agents" mandate for two weeks: it was a thing to read
   about and, at most, submit one JSON answer to. Its own `/adoption` view

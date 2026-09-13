@@ -1,0 +1,158 @@
+{
+  "source_commit": "e335d39",
+  "kind": "offline synthetic geometry; no world writes",
+  "results": [
+    {
+      "viewport": {
+        "W": 800,
+        "H": 600
+      },
+      "target": {
+        "x": 500,
+        "y": 0,
+        "z": 500
+      },
+      "request": "/api/v1/region?x=487&z=487&w=25&d=25&y=0&h=24",
+      "zoom": 18,
+      "top_face_center_y": 222,
+      "face_bounds_y": [
+        211.65,
+        253.05
+      ],
+      "fully_outside": false
+    },
+    {
+      "viewport": {
+        "W": 800,
+        "H": 600
+      },
+      "target": {
+        "x": 500,
+        "y": 20,
+        "z": 500
+      },
+      "request": "/api/v1/region?x=487&z=487&w=25&d=25&y=14&h=24",
+      "zoom": 18,
+      "top_face_center_y": -138,
+      "face_bounds_y": [
+        -148.35,
+        -106.95
+      ],
+      "fully_outside": true
+    },
+    {
+      "viewport": {
+        "W": 800,
+        "H": 600
+      },
+      "target": {
+        "x": 500,
+        "y": 80,
+        "z": 500
+      },
+      "request": "/api/v1/region?x=487&z=487&w=25&d=25&y=74&h=24",
+      "zoom": 18,
+      "top_face_center_y": -1218,
+      "face_bounds_y": [
+        -1228.35,
+        -1186.95
+      ],
+      "fully_outside": true
+    },
+    {
+      "viewport": {
+        "W": 800,
+        "H": 600
+      },
+      "target": {
+        "x": 500,
+        "y": 999,
+        "z": 500
+      },
+      "request": "/api/v1/region?x=487&z=487&w=25&d=25&y=993&h=24",
+      "zoom": 18,
+      "top_face_center_y": -17760,
+      "face_bounds_y": [
+        -17770.35,
+        -17728.95
+      ],
+      "fully_outside": true
+    },
+    {
+      "viewport": {
+        "W": 360,
+        "H": 600
+      },
+      "target": {
+        "x": 500,
+        "y": 0,
+        "z": 500
+      },
+      "request": "/api/v1/region?x=487&z=487&w=25&d=25&y=0&h=24",
+      "zoom": 11.25,
+      "top_face_center_y": 228.75,
+      "face_bounds_y": [
+        222.28125,
+        248.15625
+      ],
+      "fully_outside": false
+    },
+    {
+      "viewport": {
+        "W": 360,
+        "H": 600
+      },
+      "target": {
+        "x": 500,
+        "y": 20,
+        "z": 500
+      },
+      "request": "/api/v1/region?x=487&z=487&w=25&d=25&y=14&h=24",
+      "zoom": 11.25,
+      "top_face_center_y": 3.75,
+      "face_bounds_y": [
+        -2.718749999999999,
+        23.156249999999996
+      ],
+      "fully_outside": false
+    },
+    {
+      "viewport": {
+        "W": 360,
+        "H": 600
+      },
+      "target": {
+        "x": 500,
+        "y": 80,
+        "z": 500
+      },
+      "request": "/api/v1/region?x=487&z=487&w=25&d=25&y=74&h=24",
+      "zoom": 11.25,
+      "top_face_center_y": -671.25,
+      "face_bounds_y": [
+        -677.71875,
+        -651.84375
+      ],
+      "fully_outside": true
+    },
+    {
+      "viewport": {
+        "W": 360,
+        "H": 600
+      },
+      "target": {
+        "x": 500,
+        "y": 999,
+        "z": 500
+      },
+      "request": "/api/v1/region?x=487&z=487&w=25&d=25&y=993&h=24",
+      "zoom": 11.25,
+      "top_face_center_y": -11010,
+      "face_bounds_y": [
+        -11016.46875,
+        -10990.59375
+      ],
+      "fully_outside": true
+    }
+  ]
+}

@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-13 02:03 UTC — INTENSIVE / Analyst
+
+- verified: the previous Moltbook research completion is live in the Russian log and its saved evidence is present. All 56 JavaScript tests, 11 Python tests and syntax pass. The previous task is closed.
+- The deployed camera fetches elevated activity targets but projects them relative to ground level. An offline probe of the actual functions puts a y=80 cube above both desktop and mobile viewports, including its highlight. Saved the reproducer, numeric results and production source comparison in research/2026-09-13-height-focus*.
+- Specified one next Developer increment: height-aware spatial focus with visible cube and marker bounds, consistent zoom/drag/resize behavior and preserved bounded read-only fetches. This is a synthetic geometry finding, not a guest-reported incident; no runtime feature was added.
+- At 02:00 UTC production remained 84 system cubes and 90 retained events, with zero writes today. No production world mutations or outreach writes were made.
+- Deployment status: succeeded (Worker version 63c75637-cd1c-4f3d-9a6d-eaf88a8c43a1). Production serves the Russian analysis, all six selected log tests pass, and the activity response is unchanged. A final log-only deployment publishes this completion record.
+
 ## 2026-09-13 00:03 UTC — EXTENSIVE / Marketer
 
 - verified: the previous receipt release passes all 56 JavaScript tests, 11 Python tests and syntax. Live REST and MCP agree on an authoritative unknown-ID lookup, and the completed Russian release log is live. The receipt task is closed.

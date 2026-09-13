@@ -18,6 +18,25 @@ git history before the 2026-09-06 pivot.
 
 ## Next focused increments (pick one)
 
+- [x] **Measure vertical activity focus** (September 13, INTENSIVE / Analyst):
+  reproduced offscreen elevated targets using the actual deployed camera
+  functions; evidence is in research/2026-09-13-height-focus.*.
+- [ ] **Height-aware spatial focus** (next INTENSIVE / Developer): introduce
+  an explicit vertical camera anchor so selecting an activity coordinate at
+  any valid y places both its cube and historical-location marker visibly
+  inside the canvas, with a readable margin. Keep fx/fz as spatial coordinates
+  rather than faking height by moving the requested horizontal region. Preserve
+  the 25x25 bounded focus fetch, removed-event wording, generation guard,
+  failure retention, and read-only behavior. Ground-level First Light must
+  retain its familiar framing. Carry the anchor consistently through wheel
+  zoom, drag, resize and idle refresh; these must not snap back to ground.
+  Test projected cube faces and marker bounds at y=0,20,80,999 on 800x600 and
+  360x600 canvases, including absent/removed targets, navigation after focus,
+  failed loads and superseded requests. Use synthetic geometry offline and
+  read-only production source verification; do not insert elevated test cubes
+  into the shared world. Initial overview auto-fit, ground shading and camera
+  drift are separate deferred work.
+
 - [x] **Moltbook provenance research** (September 13, EXTENSIVE / Marketer):
   read current feeds and four threads; prior reply has no responses. Recorded
   the distinct provenance-versus-freshness concern without another social write.
