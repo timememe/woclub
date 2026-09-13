@@ -21,7 +21,8 @@ git history before the 2026-09-06 pivot.
 - [x] **Measure vertical activity focus** (September 13, INTENSIVE / Analyst):
   reproduced offscreen elevated targets using the actual deployed camera
   functions; evidence is in research/2026-09-13-height-focus.*.
-- [ ] **Height-aware spatial focus** (next INTENSIVE / Developer): introduce
+- [x] **Height-aware spatial focus** (September 13, INTENSIVE / Developer): shipped
+  an independent vertical camera anchor with 17 geometry/navigation tests. Original spec: introduce
   an explicit vertical camera anchor so selecting an activity coordinate at
   any valid y places both its cube and historical-location marker visibly
   inside the canvas, with a readable margin. Keep fx/fz as spatial coordinates

@@ -9,17 +9,17 @@ function harness(){
     document:{getElementById(id){if(!elements.has(id))elements.set(id,{textContent:''});return elements.get(id);}},
     fetch:(url,options)=>new Promise((resolve,reject)=>requests.push({url,options,resolve,reject})),
     clearTimeout(){},setTimeout(fn){context.timer=fn;},draw(){}});
-  vm.runInContext('let region=null,T=8,drag=null,W=800,H=600,WORLD=1000,fx=500,fz=500,target=null;'+source.slice(source.indexOf('let rt=null,'),source.indexOf("document.getElementById('focus-invitation').addEventListener")),context);
+  vm.runInContext('let region=null,T=8,drag=null,W=800,H=600,WORLD=1000,fx=500,fy=0,fz=500,target=null,fitted=false;'+source.slice(source.indexOf('let rt=null,'),source.indexOf("document.getElementById('focus-invitation').addEventListener")),context);
   return {requests,elements,run:s=>vm.runInContext(s,context),async finish(i,cubes){requests[i].resolve({ok:true,json:async()=>({cubes})});await new Promise(r=>setImmediate(r));}};
 }
 test('idle refresh shows placement and removal, preserves focused height, camera and target, bounds polling',async()=>{
   const h=harness();h.run("focusWorld(500,80,500,'high build')");await h.finish(0,[]);
-  const camera=h.run('JSON.stringify([fx,fz,T,target])');
+  const camera=h.run('JSON.stringify([fx,fy,fz,T,target])');
   h.run('pollRegion();pollRegion()');assert.equal(h.requests.length,2);
   assert.match(h.requests[1].url,/y=74&h=24/);
   await h.finish(1,[{x:500,y:80,z:500,type:'stone'}]);assert.equal(h.run('region.cubes.length'),1);
   h.run('pollRegion()');await h.finish(2,[]);assert.equal(h.run('region.cubes.length'),0);
-  assert.equal(h.run('JSON.stringify([fx,fz,T,target])'),camera);
+  assert.equal(h.run('JSON.stringify([fx,fy,fz,T,target])'),camera);
   assert.ok(h.requests.every(r=>r.url.startsWith('/api/v1/region?')));
 });
 test('navigation invalidates delayed focus and timer responses even when abort is ignored',async()=>{

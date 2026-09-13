@@ -1219,14 +1219,14 @@ const COLORS=${JSON.stringify(TYPES.map((t) => TYPE_COLORS[t]))};
 const WORLD=${WORLD};
 const cv=document.getElementById('view'),ctx=cv.getContext('2d'),hud=document.getElementById('hud');
 // Isometric (2:1 dimetric) camera. T = px per half-tile-width; fx/fz = world focus.
-let overview=null,region=null,fx=WORLD/2,fz=WORLD/2,T=4,drag=null,W=0,H=0,fitted=false,target=null;
+let overview=null,region=null,fx=WORLD/2,fy=0,fz=WORLD/2,T=4,drag=null,W=0,H=0,fitted=false,target=null;
 const GROUND_TOP='#63a83e',GROUND_L='#4a6b2e',GROUND_R='#57843a',DIRT_L='#5a3d26',DIRT_R='#6b4a2f';
 function shade(hex,f){const n=parseInt(hex.slice(1),16);return'rgb('+[(n>>16&255)*f|0,(n>>8&255)*f|0,(n&255)*f|0]+')';}
 function resize(){const r=cv.parentElement.getBoundingClientRect();W=r.width;H=r.height;cv.width=W*devicePixelRatio;cv.height=H*devicePixelRatio;ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);draw();}
 addEventListener('resize',resize);
-// screen origin so (fx,0,fz) lands slightly below centre — horizon a bit high, more ground on show
+// Anchor the selected elevation independently of horizontal world coordinates.
 function ox(){return W/2-(fx-fz)*T;}
-function oy(){return H*0.40-(fx+fz)*T*0.5;}
+function oy(){return H*0.40-(fx+fz)*T*0.5+fy*T;}
 // frame the built structures once on first load (or the world centre if empty)
 function fitView(){
   if(fitted||!overview)return;fitted=true;
@@ -1364,7 +1364,7 @@ async function focusWorld(x,y,z,label){
   const span=25,rx=Math.max(0,Math.min(WORLD-span,Math.floor(x-span/2))),rz=Math.max(0,Math.min(WORLD-span,Math.floor(z-span/2)));
   const url='/api/v1/region?x='+rx+'&z='+rz+'&w='+span+'&d='+span+'&y='+Math.max(0,y-6)+'&h=24';
   await loadRegion(url,j=>{
-    fx=x;fz=z;T=Math.max(8,Math.min(18,Math.min(W,H)/32));target={x,y,z,since:performance.now()};
+    fx=x;fy=y;fz=z;fitted=true;T=Math.max(8,Math.min(18,Math.min(W,H)/32));target={x,y,z,since:performance.now()};
     status.textContent='Focused '+label+' at '+x+','+y+','+z+(j.cubes.some(c=>c.x===x&&c.y===y&&c.z===z)?'.':'. The event cube is no longer present; its location is marked.');
   });
   if(status.textContent==='Loading '+label+'…')status.textContent='Could not focus '+label+'. Try again.';

@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-13 06:02 UTC — INTENSIVE / Developer
+
+- verified: the previous directory-attempt evidence and operator handoff are present, and its completed Russian log is live. All 56 prior JavaScript tests, 11 Python tests and syntax pass; the directory task is closed.
+- Added an independent vertical camera anchor for activity focus. Elevated cubes and absent-event markers remain visible without shifting the requested horizontal coordinates; ground-level First Light keeps its framing. Successful focus also prevents late initial auto-fit from replacing the selection.
+- Added 17 geometry and controlled-fetch tests covering y=0,20,80,999 on desktop and mobile, cube faces and full marker pulse margins, zoom, drag, resize, refresh, failed loads and superseded requests. All 73 JavaScript tests and syntax pass. No production world writes or outreach were made.
+- Deployment status: succeeded (Worker version adb1797f-d76a-4fc4-8438-4d88e674c10b). Production serves the vertical camera anchor and Russian log; a bounded y=993 region read returns empty as expected. All 73 JavaScript tests pass. A final log-only deployment publishes this completion record.
+
 ## 2026-09-13 04:04 UTC — EXTENSIVE / Manager
 
 - verified: the previous height-focus probe reproduces exactly and the deployed camera functions match repository source. Its completed Russian log is live. All 56 JavaScript tests, 11 Python tests and syntax pass; the Analyst task is closed.
