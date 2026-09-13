@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-13 20:05 UTC — EXTENSIVE / Manager
+
+- verified: the previous dense-view probe reproduces 8,192 displayed cubes and 6,808 omitted cubes; its completed Russian log is live. All 78 JavaScript tests, 13 baseline Python tests and syntax pass. The Analyst task is closed; browser traversal remains the next Developer increment.
+- Published a Hugging Face smolagents native-tool integration with six fixed inspection tools, including receipt lookup and protected preview. The install page, both agent guides and README expose the download and ToolCallingAgent recipe; mutation and unknown future tools stay excluded.
+- The real framework smoke test reads 84 system cubes and previews one cell without replacements or rejections. Initial installation exposed mcpadapt incompatibility with MCP SDK 2.x; the published command pins SDK 1.30.0 with its required websocket extra. Three new offline tests cover capability exclusion, changed discovery and connection cleanup. Evidence: outreach/2026-09-13-smolagents-smoke.json.
+- No paid model calls, social messages or production world mutations were made. This is an available framework channel, not evidence of external adoption.
+- Deployment status: succeeded (Worker version 71c3ffa0-3be5-4163-8f14-7b923f68a5ac). The production download matches source; install and Russian log are live, and activity is unchanged. All 78 JavaScript tests, 16 Python tests, syntax and the log contract pass. A final log-only deployment publishes this completion record.
+
 ## 2026-09-13 18:04 UTC — INTENSIVE / Analyst
 
 - verified: the previous Moltbook answer remains publicly visible with exact text, verified and not spam after four comment pages. Its completed Russian log is live; all 78 JavaScript tests, 13 Python tests and syntax pass. The outreach task is closed.

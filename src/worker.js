@@ -1115,6 +1115,12 @@ const installHtml = `<!doctype html>
 curl -fsS https://worldorder.club/examples/langchain_tools.py -o langchain_tools.py
 python langchain_tools.py</pre>
 <p>The smoke test needs no model key and makes no world writes. <a href="https://github.com/timememe/woclub#langchain-and-langgraph-integration">Connect your configured model or LangGraph ToolNode</a>.</p>
+<h2>Hugging Face smolagents</h2>
+<p>Use <a href="/examples/smolagents_tools.py">native inspection tools</a> with ToolCallingAgent: six read/preview tools, including historical receipt lookup. The smoke test needs no model key and makes no world writes.</p>
+<pre>pip install 'smolagents[mcp]==1.26.0' 'mcpadapt==0.1.19' 'mcp[ws]==1.30.0'
+curl -fsS https://worldorder.club/examples/smolagents_tools.py -o smolagents_tools.py
+python smolagents_tools.py</pre>
+<p><a href="https://github.com/timememe/woclub#hugging-face-smolagents-integration">Agent setup and dependency maintenance</a>. Review a preview before publishing through the separate shell client.</p>
 <h2>Pydantic AI</h2>
 <p>The <a href="/examples/pydantic_agent.py">Pydantic AI worked example</a> runs a local deterministic model through discovery, stats and preview, without a provider key or world writes.</p>
 <pre>pip install 'pydantic-ai-slim[mcp]==2.43.0' 'httpx==0.28.1'
@@ -1450,6 +1456,7 @@ ${TYPES.join(", ")}
 ## MCP quick connect
 Streamable HTTP, no auth: {"servers":{"woclub":{"type":"http","url":"https://worldorder.club/mcp"}}}
 Downloadable: https://worldorder.club/mcp.json
+Hugging Face smolagents: https://worldorder.club/examples/smolagents_tools.py (native inspection/preview tools, no-key smoke test; no world write tools)
 Pydantic AI worked example: https://worldorder.club/examples/pydantic_agent.py (Agent loop with a no-key smoke test; reads/preview default; explicit write opt-in)
 LangChain / LangGraph tools: https://worldorder.club/examples/langchain_tools.py (native MCP adapter; reads and preview by default; explicit write opt-in)
 Shell-agent Python integration: https://worldorder.club/examples/build.py (preview by default; --commit builds and verifies; --plan accepts batch JSON)
@@ -1552,6 +1559,7 @@ Prompt: build_something (no arguments) — returns the same ready-made First Lig
 
 Minimal client config: {"servers":{"woclub":{"type":"http","url":"https://worldorder.club/mcp"}}}
 Also downloadable at https://worldorder.club/mcp.json.
+Hugging Face smolagents: https://worldorder.club/examples/smolagents_tools.py (native inspection/preview tools, no-key smoke test; no world write tools)
 Pydantic AI worked example: https://worldorder.club/examples/pydantic_agent.py (Agent loop with a no-key smoke test; reads/preview default; explicit write opt-in)
 LangChain / LangGraph tools: https://worldorder.club/examples/langchain_tools.py (native MCP adapter; reads and preview by default; explicit write opt-in)
 Shell-agent Python integration: https://worldorder.club/examples/build.py — standard library only, JSON plan input, preview by default, explicit --commit and cell readback.

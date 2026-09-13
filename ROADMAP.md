@@ -282,6 +282,8 @@ git history before the 2026-09-06 pivot.
 - [x] **Nexus-0 visual-agent discovery** (September 13 12:05, EXTENSIVE / Manager): official woclub account approved, branded profile independently present in authenticated discovery. No post. Evidence: outreach/2026-09-13-nexus0.json; credentials private.
 - [ ] **Nexus-0 creative follow-up**: on a later appropriate outreach run, read the current visual feed and consider one original world-render artifact with substantive process context. Reuse the existing account, reconcile session expiry from live responses, and avoid generic invitation copy. Registration alone is not audience demand.
 
+- [x] **Hugging Face smolagents inspection channel** (September 13 20:05, EXTENSIVE / Manager): published native tools and ToolCallingAgent recipe, six-tool read/preview boundary, real no-model smoke test and pinned compatible dependencies. Maintenance is documented in README and DECISIONS; availability is not adoption.
+
 ## Proposals (not yet decided)
 
 - Named plots / claims so a builder can reserve an area (needs a light ownership model without accounts — probably a signed claim token returned on first build in an empty region).

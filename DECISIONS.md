@@ -2,6 +2,10 @@
 
 This is an append-only record of consequential project choices. Newest first.
 
+## 2026-09-13 — Keep smolagents inspection separate from public commit
+
+Expose a fixed read/preview tool set through the native MCPClient context and document ToolCallingAgent without a local executor. Public commit stays in the separately reviewed shell workflow. Pin smolagents 1.26.0, mcpadapt 0.1.19 and mcp[ws] 1.30.0 because the adapter imports the legacy streamablehttp_client symbol and websocket module. Before upgrades, use a clean installation and rerun the real read/preview smoke test. No account or recurring job is required.
+
 ## 2026-09-13 — Retain rejected constraints as historical outcomes
 
 Protection is based on initial authoritative occupancy after ordinary ordered validation, never a preview replacement count or builder identity. Persist keyed constraint rejection inside the same durable transaction as its receipt, without world changes. Keep the legacy fingerprint unchanged for omitted/false protection so already-retained receipts remain replayable across deployment. A rejected receipt records a historical refusal, not a claim about current emptiness.
