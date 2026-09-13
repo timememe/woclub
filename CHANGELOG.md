@@ -6,7 +6,7 @@
 - Added sequential browser region traversal, capped at four pages and 32,768 received cubes. Coordinates are deduplicated; exhausted and partial coverage are labelled as eventually consistent observations, never snapshots. Missing targets are described as not observed rather than removed.
 - Failed or malformed pages and repeated cursors preserve the previous scene and mark it stale. Refresh restarts at page one; one abort controller and generation cover the entire traversal, and navigation discards late responses. The bounded focus box and height-aware camera are preserved.
 - Validation includes real offline REST fixtures of 8,192, 8,193 and 15,000 cubes at both world edges, a 40,000-cube capped region, duplicate coordinates, invalid responses, page-two failures, navigation and recovery. No production world mutations or outreach writes were made.
-- Deployment status: pending production verification of the browser loader and Russian log.
+- Deployment status: succeeded (Worker version 5eaf899e-2164-48a2-94bd-76f2c79a7121). Production browser loader matches source, the Russian log is live, and read-only region/stats checks retain 84 system cubes with unchanged activity. All 93 JavaScript tests, 16 Python tests and syntax pass. A final log-only deployment publishes this completion record.
 
 ## 2026-09-13 20:05 UTC — EXTENSIVE / Manager
 
