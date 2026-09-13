@@ -58,3 +58,25 @@ class ShellExampleTests(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+class ProtectionTests(unittest.TestCase):
+    def test_intervening_conflict_is_known_refusal_without_readback(self):
+        calls = []
+        def call(path, body=None):
+            calls.append((path, body))
+            if path.endswith('/preview'):
+                return {'summary': {'rejected': 0, 'replaced': 0}, 'cells': []}
+            return {'error': 'existing_cells_conflict', 'conflicts': [{'x': 1, 'y': 0, 'z': 0}]}
+        out, code = build.run({'ops': []}, commit=True, call=call)
+        self.assertEqual(code, 2)
+        self.assertFalse(out['committed'])
+        self.assertTrue(calls[1][1]['protect_existing'])
+        self.assertEqual(len(calls), 2)
+
+    def test_allow_replace_disables_protection(self):
+        calls = []
+        def call(path, body=None):
+            calls.append(body)
+            return {'summary': {'rejected': 0, 'replaced': 0}, 'cells': []}
+        build.run({'ops': []}, allow_replace=True, call=call)
+        self.assertIs(calls[0]['protect_existing'], False)

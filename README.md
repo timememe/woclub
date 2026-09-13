@@ -308,3 +308,14 @@ aggregate telemetry. Anyone knowing an ID can read it; no enumeration is offered
 Original request bodies and arbitrary extra fields are not retained. See the
 [full guide](https://worldorder.club/llms-full.txt) for the complete lookup/replay
 recipe. Shell examples still stop on uncertain writes; they do not retry automatically.
+
+Batch protection: send `protect_existing: true` to REST `batch`/`preview` or MCP
+`build`/`preview_build` to reject the whole batch if accepted edits touch cells
+occupied before it started. This includes removals and same-type replacements;
+builder labels do not grant ownership. Preview remains an eventual KV estimate.
+Commit checks authoritative state atomically and returns `existing_cells_conflict`
+(HTTP 409 / MCP tool error), with up to 512 conflicting coordinates. Default false
+keeps ordinary replacement behavior. Keyed conflict receipts have `status: rejected`
+and replay for 24 hours; changing the flag with the same ID conflicts. The shell
+example requests protection unless `--allow-replace` is given, and distinguishes
+constraint rejection from uncertain transport failures.

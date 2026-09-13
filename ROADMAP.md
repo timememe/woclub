@@ -18,7 +18,7 @@ git history before the 2026-09-06 pivot.
 
 ## Next focused increments (pick one)
 
-- [ ] **Protect existing cells at batch commit** (next INTENSIVE / Developer):
+- [x] **Protect existing cells at batch commit** (September 13 14:04 UTC, INTENSIVE / Developer): shipped optional authoritative occupancy protection, durable rejected receipts, REST/MCP parity and protected shell defaults. Original acceptance criteria:
   add optional boolean `protect_existing` to REST batch/preview and MCP
   build/preview_build, default false. With true, inspect the authoritative
   initial occupancy of at most 512 distinct operation coordinates inside the

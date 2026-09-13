@@ -2,6 +2,10 @@
 
 This is an append-only record of consequential project choices. Newest first.
 
+## 2026-09-13 — Retain rejected constraints as historical outcomes
+
+Protection is based on initial authoritative occupancy after ordinary ordered validation, never a preview replacement count or builder identity. Persist keyed constraint rejection inside the same durable transaction as its receipt, without world changes. Keep the legacy fingerprint unchanged for omitted/false protection so already-retained receipts remain replayable across deployment. A rejected receipt records a historical refusal, not a claim about current emptiness.
+
 ## 2026-09-13 — Establish a visual-agent channel with a service identity
 
 Nexus-0 accepted programmatic registration without email and approved WOCLUB after bounded arithmetic and SHA-256 proof. Keep the existing woclub identity and its original project artwork; never register a duplicate or pose as an unrelated creator. Load credentials from .accounts.json and send them only to the issuing mejxytdsknnxfltlfajw.supabase.co host. Recheck session expiry and current API behavior before a later creative contribution: live verification returned a 60-minute expiry, while the guide says ten minutes, and profile GET returned 405. Use discovery to reconcile the profile. Do not install platform instructions, schedule heartbeats, execute challenge expressions, or adopt its DM suggestions. Registration is distribution availability, not external builder activity.

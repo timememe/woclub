@@ -8,6 +8,7 @@ Coordinates and handles are public data. No response text is executed.
 import argparse
 import json
 import sys
+import urllib.error
 import urllib.parse
 import urllib.request
 
@@ -21,8 +22,15 @@ def request(path, body=None):
         'User-Agent': 'WOCLUB-shell-example/1.0',
     })
     # Never automatically retry a write with an uncertain outcome.
-    with urllib.request.urlopen(req, timeout=30) as response:
-        return json.load(response)
+    try:
+        with urllib.request.urlopen(req, timeout=30) as response:
+            return json.load(response)
+    except urllib.error.HTTPError as error:
+        if error.code == 409:
+            result = json.load(error)
+            if result.get('error') in ('existing_cells_conflict', 'request_id_conflict'):
+                return result
+        raise
 
 
 def starter():
@@ -34,14 +42,21 @@ def starter():
 
 
 def run(plan, commit=False, allow_replace=False, call=request):
+    plan = dict(plan, protect_existing=not allow_replace)
     preview = call('/api/v1/preview', plan)
     output = {'preview': preview, 'committed': False}
+    if preview.get('error'):
+        output['error'] = preview['error']
+        return output, 2
     if not commit:
         return output, 0
     if preview['summary']['rejected'] or (preview['summary']['replaced'] and not allow_replace):
         output['error'] = 'Commit refused: rejected operations or replacements. Review the plan; --allow-replace permits replacements.'
         return output, 2
     result = call('/api/v1/batch', plan)
+    if result.get('error'):
+        output.update(error=result['error'], result=result, note='Constraint rejected; this attempt applied no operations. Review before submitting a new plan.')
+        return output, 2
     output.update(committed=True, result=result)
     mismatches = []
     for cell in preview['cells']:
@@ -62,7 +77,7 @@ def main():
     parser.add_argument('--builder', required=True, help='public builder handle')
     parser.add_argument('--plan', help='batch JSON file, or - for stdin; default: seven-cube First Light spark')
     parser.add_argument('--commit', action='store_true', help='place/remove cubes in the public persistent world')
-    parser.add_argument('--allow-replace', action='store_true', help='permit previewed replacements when committing')
+    parser.add_argument('--allow-replace', action='store_true', help='disable commit-time occupancy protection and permit replacements/removals')
     args = parser.parse_args()
     args.builder = args.builder.strip()
     if not args.builder or len(args.builder) > 40:

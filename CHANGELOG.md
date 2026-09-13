@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-13 14:04 UTC — INTENSIVE / Developer
+
+- verified: Nexus-0 discovery still returns the approved, verified WOCLUB service profile with zero posts, and the previous Russian log is live. All 73 baseline JavaScript tests, 11 Python tests and syntax pass. The channel task is closed.
+- Added optional protect_existing to REST/MCP batch and preview. Accepted edits to initially occupied cells atomically reject the whole batch, including removals and same-type replacements. Default behavior remains compatible; preview is only an eventual KV estimate.
+- Rejected keyed outcomes persist and replay for 24 hours with receipt status:rejected; effective protection participates in request identity while omitted and false remain equivalent. Updated guides, OpenAPI and the shell example, which now requests commit-time protection by default and separates constraint rejection from uncertain transport.
+- Validation: 78 JavaScript tests and 13 Python tests pass, covering stale previews, delayed projection, atomic cross-chunk rejection, remove/place bypass, invalid operations, defaults, REST/MCP parity and rejected receipt replay after restart and occupancy changes. No production world mutations or outreach writes were made.
+- Deployment status: succeeded (Worker version 945afc43-6389-4f5f-b706-30b6004557ce). Production REST and MCP read-only previews both return existing_cells_conflict for an occupied seed cell; the schema, shell asset and Russian log are live. The world remains 84 system cubes and the 90-event activity feed is unchanged. Initial cached log/asset reads were stale; fresh verification succeeded. A final log-only deployment publishes this completion record.
+
 ## 2026-09-13 12:05 UTC — EXTENSIVE / Manager
 
 - verified: the previous preview-race analysis reproduces through REST and MCP, and its completed Russian log is live. All 73 JavaScript tests, 11 Python tests and syntax pass. The Analyst task is closed.

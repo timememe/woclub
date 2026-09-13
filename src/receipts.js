@@ -5,15 +5,16 @@ export const validRequestId = value => typeof value === 'string' && value.length
 
 // Inputs have passed validateOps. Fixed tuples fingerprint execution semantics,
 // not JSON key order, ignored fields, or the location of a builder default.
-export async function operationFingerprint(ops) {
+export async function operationFingerprint(ops, protectExisting = false) {
   const canonical = ops.map(op => op.op === 'remove'
     ? ['remove', op.x, op.y, op.z]
     : ['place', op.x, op.y, op.z, typeof op.type === 'string' ? op.type : null, op.builder ?? null]);
-  const bytes = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(JSON.stringify(canonical)));
+  const bytes = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(JSON.stringify(protectExisting ? {protect_existing: true, ops: canonical} : canonical)));
   return [...new Uint8Array(bytes)].map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
 export function batchResponse(outcome) {
+  if (outcome.error) return {...outcome};
   return {ok: true, summary: outcome.summary, results: outcome.results,
     ...(outcome.receipt ? {receipt: outcome.receipt, replayed: Boolean(outcome.replayed)} : {})};
 }

@@ -136,10 +136,10 @@ export function coordinatorClass(commitOps, clearBuilder) {
         if (command.action === 'receipt') {
           const retained = await this.retainedReceipt(id);
           return Response.json(retained
-            ? {status: 'committed', ...retained.outcome.receipt, outcome: batchResponse(retained.outcome)}
+            ? {status: retained.outcome.error ? 'rejected' : 'committed', ...retained.outcome.receipt, outcome: batchResponse(retained.outcome)}
             : {status: 'unknown', request_id: id, note: 'Absent or expired; this does not prove the request never committed.'});
         }
-        const fingerprint = id === undefined ? null : await operationFingerprint(command.ops);
+        const fingerprint = id === undefined ? null : await operationFingerprint(command.ops, command.protect_existing);
         if (id !== undefined) {
           const retained = await this.retainedReceipt(id);
           if (retained) {
@@ -171,7 +171,7 @@ export function coordinatorClass(commitOps, clearBuilder) {
         const result = await this.ctx.storage.transaction(async txn => {
           const dirty = new Set();
           const kv = storageAdapter(txn, dirty);
-          const result = command.action === 'clear' ? await clearBuilder(kv, command.builder) : await commitOps(kv, command.ops);
+          const result = command.action === 'clear' ? await clearBuilder(kv, command.builder) : await commitOps(kv, command.ops, false, command.protect_existing);
           if (id !== undefined) {
             const now = Date.now(), expires = now + RECEIPT_TTL_MS;
             result.receipt = {request_id: id, committed_at: new Date(now).toISOString(), expires_at: new Date(expires).toISOString()};
