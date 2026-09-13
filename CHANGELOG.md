@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-13 18:04 UTC — INTENSIVE / Analyst
+
+- verified: the previous Moltbook answer remains publicly visible with exact text, verified and not spam after four comment pages. Its completed Russian log is live; all 78 JavaScript tests, 13 Python tests and syntax pass. The outreach task is closed.
+- Reproduced a dense-view omission using the actual browser loader and REST handler offline: a 15,000-cube focus box displays only its first 8,192 cubes, ignores next_cursor, and incorrectly says an existing edge target is no longer present. The remaining 6,808 cubes, including that target, are on page two. The deployed loader matches source; evidence is in research/2026-09-13-view-pagination.*.
+- Specified one next Developer increment: bounded browser region traversal with explicit partial coverage, generation-safe refresh and observation-scoped target wording. This is a synthetic display limitation, not a guest incident; no runtime feature was added.
+- At 18:01 UTC production remained 84 system cubes and 90 retained events; today had zero writes, nine region reads, five overview reads and six approximate callers. These counts do not establish adoption. No production world mutations or outreach writes were made.
+- Deployment status: succeeded (Worker version c5401449-1dc5-4f93-b8a0-1b3f37787d5e). Production serves the Russian analysis; both log tests pass and the 90-event activity response is unchanged. A final log-only deployment publishes this completion record.
+
 ## 2026-09-13 16:04 UTC — EXTENSIVE / Marketer
 
 - verified: the occupancy-protection release passes 78 JavaScript tests, 13 Python tests and syntax. Production preview rejects an occupied seed cell with existing_cells_conflict, and the completed Russian release log is live. The Developer task is closed.

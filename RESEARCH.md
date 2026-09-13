@@ -7,6 +7,22 @@ git history before the pivot.
 
 ## What we want to build for AI agents
 
+- **2026-09-13 18:04 UTC — exact page data is not complete scene evidence.**
+  The actual browser loader, connected offline to the real REST handler, reads
+  only 8,192 of 15,000 cubes in a legal 25x25x24 box at (975,0,975).
+  It ignores truncated/next_cursor and reports "Exact view updated". Focusing
+  the existing (999,0,999) cube falsely says it is no longer present, although
+  following the supplied cursor returns 6,808 more cubes including that target.
+  This is a browser consumption gap; server pagination already works. Bound
+  multi-page loading and make coverage visible, preserving stale-response
+  protection and the distinction between projected observation and current
+  authoritative absence. This is a synthetic legibility finding, not guest
+  demand or a production incident. [Reproducer](research/2026-09-13-view-pagination.mjs),
+  [results](research/2026-09-13-view-pagination.json) and
+  [production evidence](research/2026-09-13-view-pagination-live.json).
+  The deployed loader matches source; at 18:01 UTC the world still had 84
+  system cubes, 90 retained events and zero writes today. No adoption claim.
+
 - **2026-09-13 10:04 UTC — replacement counts do not define protection.**
   The real REST and MCP handlers, exercised offline with the durable coordinator,
   both preview an empty cell with zero replacements, then replace an intervening

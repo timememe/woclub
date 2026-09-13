@@ -1,0 +1,24 @@
+{
+  "fixture_cubes": 15000,
+  "focus": [
+    999,
+    0,
+    999
+  ],
+  "browser_requests": [
+    "/api/v1/region?x=975&z=975&w=25&d=25&y=0&h=24"
+  ],
+  "first_page": {
+    "count": 8192,
+    "truncated": true,
+    "next_cursor": "WzEsOTc1LDAsOTc1LDk5OSwyMyw5OTksOTg4LDcsOTkxXQ"
+  },
+  "browser_region_status": "Exact view updated",
+  "browser_focus_status": "Focused synthetic edge cube at 999,0,999. The event cube is no longer present; its location is marked.",
+  "second_page": {
+    "count": 6808,
+    "truncated": false,
+    "target_present": true
+  },
+  "world_writes": 0
+}
