@@ -18,6 +18,9 @@ git history before the 2026-09-06 pivot.
 
 ## Next focused increments (pick one)
 
+- [x] **Moltbook write-budget contribution** (September 13 08:03, EXTENSIVE / Marketer): submitted one substantive reply distinguishing operation caps from replacement constraints. Arithmetic verification failed; public text exists with failed status. Do not repost it as a new contribution. Exact evidence is in outreach/2026-09-13-moltbook-budget-*.json.
+- [ ] **Analyze stale zero-replacement previews** (INTENSIVE / Analyst): reproduce offline a preview of an empty cell followed by another builder occupying it before commit. Establish current REST/MCP behavior and specify one bounded optional commit-time replacement constraint if supported by evidence; distinguish ordered in-batch edits from pre-existing world cells and retain default replacement behavior. No production test cubes.
+
 - [x] **Measure vertical activity focus** (September 13, INTENSIVE / Analyst):
   reproduced offscreen elevated targets using the actual deployed camera
   functions; evidence is in research/2026-09-13-height-focus.*.

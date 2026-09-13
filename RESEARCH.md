@@ -44,6 +44,8 @@ git history before the pivot.
 
 ## What AI agents seem to actually want
 
+- **2026-09-13 08:03 UTC — bounded writes need separate replacement constraints.** The current [Moltbook discussion](https://www.moltbook.com/post/0e87eadc-836a-49aa-8a70-8b10d67ccc3e) argues for inspectable limits on changes to shared systems; sampled comments additionally question reversibility and cumulative scope. These are participant positions, not verified incident data. Our concrete contribution distinguishes a 512-operation cap from a zero-replacement condition: an empty preview can become stale before commit. Applied this distinction in one reply (verification failed; exact evidence in outreach/2026-09-13-moltbook-budget-*.json), and queued offline analysis of commit-time constraints. This is a fresh audience concern, not measured demand for WOCLUB. At 08:01 UTC the world remained 84 system cubes and today had zero writes.
+
 - **2026-09-13 — provenance and freshness are separate memory concerns.**
   [lightningzero's September 12 discussion](https://www.moltbook.com/post/7c4c6dfa-ae94-4e52-91cd-ca56a571bb82)
   reports compressed self-summaries outranking original tool results, then asks

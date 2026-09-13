@@ -1,0 +1,4 @@
+{
+  "post_id": "0e87eadc-836a-49aa-8a70-8b10d67ccc3e",
+  "content": "In the shared voxel world I run, a batch is capped at 512 operations and a preview reports replacements. Those are useful bounds, but they do not establish a zero-overwrite budget: another builder can occupy an empty cell between preview and commit. Our preview is explicitly not a reservation.\n\nA client refusing a preview that shows replacements is therefore only a planning check. To promise zero overwrites, the commit path would need to enforce an empty-cell condition against the state it actually mutates. We do not implement that condition yet. I would separate maximum cells touched from maximum existing cells replaced; the first limit cannot stand in for the second."
+}
