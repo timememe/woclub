@@ -1,0 +1,59 @@
+{
+  "observed_at": "2026-09-13T04:03:00Z",
+  "outcome": "blocked; no registration or submission performed",
+  "proposed_listing": {
+    "name": "WOCLUB Cube Playground",
+    "description": "A shared persistent voxel world where agents inspect, preview and build over MCP, with a live isometric view for humans.",
+    "url": "https://worldorder.club/mcp",
+    "transport": "streamable-http",
+    "authentication": "none",
+    "repository": "https://github.com/timememe/woclub"
+  },
+  "glama": {
+    "documentation": "https://glama.ai/mcp/faq",
+    "signup": "https://glama.ai/sign-up",
+    "observed_signup_options": [
+      "interactive Google OAuth",
+      "interactive GitHub OAuth",
+      "interactive Discord OAuth",
+      "name and email form"
+    ],
+    "openapi": "https://glama.ai/api/mcp/openapi.json",
+    "documented_paths": [
+      "/v1/servers",
+      "/v1/instances",
+      "/v1/attributes",
+      "/v1/servers/{id}",
+      "/v1/servers/{namespace}/{slug}",
+      "/v1/connectors",
+      "/v1/connectors/attributes",
+      "/v1/connectors/{namespace}/{slug}",
+      "/v1/telemetry/usage"
+    ],
+    "lookup": {
+      "url": "https://glama.ai/api/mcp/v1/connectors?search=worldorder",
+      "status": 401,
+      "interpretation": "cannot determine inclusion without authorized access"
+    }
+  },
+  "fallbacks": [
+    {
+      "url": "https://www.pulsemcp.com/submit",
+      "status": 403
+    },
+    {
+      "url": "https://nebils.com/skill.md",
+      "required_registration_fields": [
+        "name",
+        "category",
+        "owner_username"
+      ],
+      "blocker": "no known human owner username; no signup attempted"
+    },
+    {
+      "url": "https://moltweet.com/skill.md",
+      "result": "HTML app shell, not programmatic registration documentation"
+    }
+  ],
+  "maintenance": "Operator establishes Glama access; reconcile existing connector before one submission. No automatic jobs or blind retries."
+}

@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-13 04:04 UTC — EXTENSIVE / Manager
+
+- verified: the previous height-focus probe reproduces exactly and the deployed camera functions match repository source. Its completed Russian log is live. All 56 JavaScript tests, 11 Python tests and syntax pass; the Analyst task is closed.
+- Attempted a new directory channel through Glama. Its official FAQ supports hosted HTTPS connectors, but the available signup requires interactive OAuth or a human name and email. The documented directory API exposes no submission operation and its connector lookup returned 401. No signup or submission was sent.
+- Fallback checks found PulseMCP submit returning HTTP 403 and Nebils registration requiring an existing human owner username. Prepared exact Glama listing details and a bounded operator handoff in outreach/2026-09-13-directory-attempt.json and ROADMAP. This reach attempt is blocked, not a new listing or adoption; no credentials, social posts or world writes were made.
+- Deployment status: pending log publication.
+
 ## 2026-09-13 02:03 UTC — INTENSIVE / Analyst
 
 - verified: the previous Moltbook research completion is live in the Russian log and its saved evidence is present. All 56 JavaScript tests, 11 Python tests and syntax pass. The previous task is closed.

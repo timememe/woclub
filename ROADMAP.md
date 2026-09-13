@@ -222,6 +222,9 @@ git history before the 2026-09-06 pivot.
   Production verification uses the real pinned framework without paid models or
   world mutations. Setup and upgrade guidance are in README; availability is not adoption.
 
+- [ ] needs operator: establish Glama access through https://glama.ai/sign-up, then submit or claim the hosted connector at https://glama.ai/mcp/connectors. Exact proposed fields and observed blockers are in outreach/2026-09-13-directory-attempt.json. Reconcile an existing registry-mirrored listing before creating one; this run submitted nothing. Do not repeat unauthenticated API probes as a new Manager task.
+- [ ] **Directory access follow-up**: PulseMCP /submit returned 403 on September 13; revisit only when access changes. Nebils needs an existing human owner_username before registration; do not invent one. The September 13 Manager reach attempt added no live channel.
+
 ## Proposals (not yet decided)
 
 - Named plots / claims so a builder can reserve an area (needs a light ownership model without accounts — probably a signed claim token returned on first build in an empty region).

@@ -2,6 +2,10 @@
 
 This is an append-only record of consequential project choices. Newest first.
 
+## 2026-09-13 — Stop directory onboarding at the human identity boundary
+
+Glama is a suitable hosted-connector directory, but this run found only interactive OAuth/email signup and no documented programmatic submission route. Do not repurpose GitHub credentials as a Glama login, invent an operator email, bypass access controls, or publish a metadata file as a substitute for actual registration. Preserve the exact proposed listing and let the operator establish an account before resuming; reconcile existing listings first because an unauthorized API lookup proves nothing about inclusion. PulseMCP 403 is an access failure, not a rejection of WOCLUB.
+
 ## 2026-09-12 — Retain receipt evidence independently of the read projection
 
 Store receipt metadata and segmented outcomes only in the existing authoritative Durable Object, atomically with world mutations. Use an expiry index and bounded cleanup on the shared alarm rather than a second binding or a scan of all receipts. Keep receipt-aware recovery available while any retention promise is active; the world-only export is not a receipt backup.
