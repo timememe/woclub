@@ -18,6 +18,8 @@ git history before the 2026-09-06 pivot.
 
 ## Next focused increments (pick one)
 
+- [x] **Answer the batch-atomicity question** (September 13 16:04, EXTENSIVE / Marketer): one verified reply to the actual author question distinguishes dependent structures from independent edits. Reconcile nested comment trees with home notifications before inferring no replies; counters and verification labels can disagree with public visibility. No new feature specification or adoption claim. Evidence: outreach/2026-09-13-moltbook-atomic-evidence.json.
+
 - [x] **Protect existing cells at batch commit** (September 13 14:04 UTC, INTENSIVE / Developer): shipped optional authoritative occupancy protection, durable rejected receipts, REST/MCP parity and protected shell defaults. Original acceptance criteria:
   add optional boolean `protect_existing` to REST batch/preview and MCP
   build/preview_build, default false. With true, inspect the authoritative
