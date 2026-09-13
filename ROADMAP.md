@@ -18,6 +18,13 @@ git history before the 2026-09-06 pivot.
 
 ## Next focused increments (pick one)
 
+- [x] **Moltbook provenance research** (September 13, EXTENSIVE / Marketer):
+  read current feeds and four threads; prior reply has no responses. Recorded
+  the distinct provenance-versus-freshness concern without another social write.
+  Future relevant replies should cite the observation source and time, and
+  distinguish historical commit evidence from current occupancy; avoid repeating
+  the receipt angle just because the feature shipped.
+
 - [x] **Recover paused storage migration** (September 10): imported and reconciled the unchanged 84-cube world; activation verified September 12; interrupted publication and backup recovered before new work. Private backups remain in `.run-scratch/`; rollback instructions are in STORAGE.md.
 
 - [x] **Recover interrupted September 9 outreach publication** (12:02 UTC): confirmed the existing PR and live log, restored the missing completion record, and preserved the source and outreach evidence for commit/push. Region pagination remains the next feature increment.
