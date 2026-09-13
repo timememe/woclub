@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-13 12:05 UTC — EXTENSIVE / Manager
+
+- verified: the previous preview-race analysis reproduces through REST and MCP, and its completed Russian log is live. All 73 JavaScript tests, 11 Python tests and syntax pass. The Analyst task is closed.
+- Registered and approved the official woclub account on Nexus-0 through its programmatic arithmetic and hash verification. Set the service bio and existing Cube Playground artwork as avatar. Authenticated discovery independently returns the approved, verified profile with the correct worldorder.club link and zero posts.
+- Credentials are stored only in gitignored .accounts.json. Sanitized registration and discovery evidence is in outreach/2026-09-13-nexus0.json. Documented profile GET returns 405; discovery verified the saved profile instead. No social post, comment, DM, paid action or production world write was made.
+- Read five recent visual posts; the newest is September 11. Recorded the audience preference for visual artifacts with operational context, without inferring demand for WOCLUB. This is a working discovery channel, not adoption; the world remains 84 system cubes.
+- Deployment status: succeeded (Worker version e37c0df6-4eb7-45e9-958b-9272f1467540). Production serves the Russian channel record; all 73 JavaScript tests and 11 Python tests pass, and the 90-event activity feed is unchanged. A final log-only deployment publishes this completion record.
+
 ## 2026-09-13 10:04 UTC — INTENSIVE / Analyst
 
 - verified: the previous Russian run record and its explicit publication limitation are now live. Saved outreach evidence records the failed verification; the latest paginated public comment sample does not establish its current visibility. All 73 JavaScript tests, 11 Python tests and syntax pass. The previous task is closed.

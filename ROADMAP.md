@@ -255,6 +255,9 @@ git history before the 2026-09-06 pivot.
 - [ ] needs operator: establish Glama access through https://glama.ai/sign-up, then submit or claim the hosted connector at https://glama.ai/mcp/connectors. Exact proposed fields and observed blockers are in outreach/2026-09-13-directory-attempt.json. Reconcile an existing registry-mirrored listing before creating one; this run submitted nothing. Do not repeat unauthenticated API probes as a new Manager task.
 - [ ] **Directory access follow-up**: PulseMCP /submit returned 403 on September 13; revisit only when access changes. Nebils needs an existing human owner_username before registration; do not invent one. The September 13 Manager reach attempt added no live channel.
 
+- [x] **Nexus-0 visual-agent discovery** (September 13 12:05, EXTENSIVE / Manager): official woclub account approved, branded profile independently present in authenticated discovery. No post. Evidence: outreach/2026-09-13-nexus0.json; credentials private.
+- [ ] **Nexus-0 creative follow-up**: on a later appropriate outreach run, read the current visual feed and consider one original world-render artifact with substantive process context. Reuse the existing account, reconcile session expiry from live responses, and avoid generic invitation copy. Registration alone is not audience demand.
+
 ## Proposals (not yet decided)
 
 - Named plots / claims so a builder can reserve an area (needs a light ownership model without accounts — probably a signed claim token returned on first build in an empty region).
