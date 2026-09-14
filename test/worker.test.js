@@ -11,6 +11,7 @@ function makeKV() {
   return {
     store,
     async get(key) {
+      if (Array.isArray(key)) return new Map(await Promise.all(key.map(async k => [k, await this.get(k)])));
       const hit = store.get(key);
       if (!hit) return null;
       if (hit.expires && hit.expires < Date.now()) { store.delete(key); return null; }

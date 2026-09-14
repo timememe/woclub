@@ -617,36 +617,51 @@ async function readRegion(kv, params) {
     cubes: cubes.map(({ x, y, z, cell }) => cubeOut(x, y, z, cell)) };
 }
 
+// Four text values per request bound both KV operations and response bytes.
+// See STORAGE.md for the worst-case escaped payload calculation.
+async function* globalChunks(kv, scan) {
+  let cursor;
+  do {
+    const list = await kv.list({ prefix: "w:c:", limit: 1000, cursor });
+    for (let start = 0; start < list.keys.length; start += 4) {
+      const remaining = OVERVIEW_SCAN_CHUNKS - scan.scanned;
+      if (remaining <= 0) { scan.truncated = true; return; }
+      const names = list.keys.slice(start, start + Math.min(4, remaining)).map(entry => entry.name);
+      const values = await kv.get(names, "text");
+      // Iterate the listing, not the Map: equal-height raster ties depend on order.
+      for (const name of names) {
+        scan.scanned += 1;
+        const raw = values.get(name);
+        values.delete(name); // Release each serialized chunk before parsing the next.
+        if (raw) yield JSON.parse(raw);
+      }
+      if (scan.scanned >= OVERVIEW_SCAN_CHUNKS) {
+        scan.truncated = start + names.length < list.keys.length || !list.list_complete;
+        return;
+      }
+    }
+    cursor = list.list_complete ? undefined : list.cursor;
+  } while (cursor);
+}
+
 async function buildOverview(kv) {
   const cached = await kv.get("w:ov");
   if (cached) return { ...JSON.parse(cached), cached: true };
   const res = OVERVIEW_RES;
   const top = new Int16Array(res * res).fill(-1);   // top cube type index, -1 = empty
   const height = new Int16Array(res * res);         // y of that top cube
-  let cursor;
-  let scanned = 0;
-  let truncated = false;
+  const scan = { scanned: 0, truncated: false };
   let cubes = 0;
-  do {
-    const list = await kv.list({ prefix: "w:c:", limit: 1000, cursor });
-    for (const entry of list.keys) {
-      if (scanned >= OVERVIEW_SCAN_CHUNKS) { truncated = true; break; }
-      scanned += 1;
-      const raw = await kv.get(entry.name);
-      if (!raw) continue;
-      const chunk = JSON.parse(raw);
-      for (const [key, cell] of Object.entries(chunk)) {
-        cubes += 1;
-        const [x, yy, z] = key.split(",").map(Number);
-        const gx = Math.min(res - 1, Math.floor(x / OVERVIEW_UNIT));
-        const gz = Math.min(res - 1, Math.floor(z / OVERVIEW_UNIT));
-        const gi = gz * res + gx;
-        if (yy >= height[gi]) { height[gi] = yy; top[gi] = cell[0]; }
-      }
+  for await (const chunk of globalChunks(kv, scan)) {
+    for (const [key, cell] of Object.entries(chunk)) {
+      cubes += 1;
+      const [x, yy, z] = key.split(",").map(Number);
+      const gx = Math.min(res - 1, Math.floor(x / OVERVIEW_UNIT));
+      const gz = Math.min(res - 1, Math.floor(z / OVERVIEW_UNIT));
+      const gi = gz * res + gx;
+      if (yy >= height[gi]) { height[gi] = yy; top[gi] = cell[0]; }
     }
-    cursor = list.list_complete ? undefined : list.cursor;
-    if (scanned >= OVERVIEW_SCAN_CHUNKS) break;
-  } while (cursor);
+  }
   const grid = [];
   for (let i = 0; i < top.length; i += 1) grid.push(top[i] < 0 ? [-1, 0] : [top[i], height[i]]);
   const overview = {
@@ -656,8 +671,8 @@ async function buildOverview(kv) {
     types: TYPES,
     generated_at: new Date().toISOString(),
     cubes,
-    chunks_scanned: scanned,
-    truncated,
+    chunks_scanned: scan.scanned,
+    truncated: scan.truncated,
     grid
   };
   try {
@@ -705,28 +720,16 @@ async function worldStats(kv) {
   const meta = await readMeta(kv);
   const perType = Object.fromEntries(TYPES.map((t) => [t, 0]));
   const perBuilder = new Map();
-  let cursor;
-  let scanned = 0;
+  const scan = { scanned: 0, truncated: false };
   let counted = 0;
-  let truncated = false;
-  do {
-    const list = await kv.list({ prefix: "w:c:", limit: 1000, cursor });
-    for (const entry of list.keys) {
-      if (scanned >= OVERVIEW_SCAN_CHUNKS) { truncated = true; break; }
-      scanned += 1;
-      const raw = await kv.get(entry.name);
-      if (!raw) continue;
-      const chunk = JSON.parse(raw);
-      for (const cell of Object.values(chunk)) {
-        counted += 1;
-        perType[TYPES[cell[0]] || "stone"] += 1;
-        const b = cell[1] || "(anonymous)";
-        perBuilder.set(b, (perBuilder.get(b) || 0) + 1);
-      }
+  for await (const chunk of globalChunks(kv, scan)) {
+    for (const cell of Object.values(chunk)) {
+      counted += 1;
+      perType[TYPES[cell[0]] || "stone"] += 1;
+      const b = cell[1] || "(anonymous)";
+      perBuilder.set(b, (perBuilder.get(b) || 0) + 1);
     }
-    cursor = list.list_complete ? undefined : list.cursor;
-    if (scanned >= OVERVIEW_SCAN_CHUNKS) break;
-  } while (cursor);
+  }
   const topBuilders = [...perBuilder.entries()]
     .sort((a, b) => b[1] - a[1])
     .slice(0, 20)
@@ -735,8 +738,8 @@ async function worldStats(kv) {
     world: { size: WORLD, ground_y: GROUND_Y, chunk_size: CHUNK },
     cubes: counted,
     approximate_total: meta.n || counted,
-    chunks_active: scanned,
-    truncated,
+    chunks_active: scan.scanned,
+    truncated: scan.truncated,
     blocks: TYPES,
     per_type: perType,
     builders: perBuilder.size,

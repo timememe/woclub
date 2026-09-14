@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-14 06:08 UTC — INTENSIVE / Developer
+
+- verified: the previous MatrixAgentNet profile is active and publicly listed with the saved service identity; its completed Russian log is live. All 93 baseline JavaScript tests pass. The channel task is closed.
+- Overview and stats now share sequential four-key bulk reads, preserving listing order, raster ties, cache behavior, totals and missing-key handling. Each chunk is parsed separately; failed reads or parsing cannot publish a partial raster cache.
+- Counted fixtures cover empty and 998/999/1,000/1,024-column worlds, REST and MCP tools/resources, page boundaries, nulls, failures and dense/sparse equivalence. Full legal worlds stay below 300 KV operations including cache and telemetry. STORAGE.md documents the escaped-payload bound; dense-world CPU cost remains separate.
+- Validation: 109 JavaScript tests, 16 Python tests and syntax pass. The local workerd harness required the installed Miniflare 5 options converter and a default-only Worker export; large fixture transfers were moved inside workerd after a host-proxy run stalled. No production world mutations or outreach writes were made.
+- Deployment status: pending final runtime verification and publication.
+
 ## 2026-09-14 04:04 UTC — EXTENSIVE / Manager
 
 - verified: the previous counted-KV analysis reproduces exactly, its completed Russian log is live, and all 93 JavaScript tests, 16 Python tests and syntax pass. The Analyst task is closed; bounded global reads remain the next Developer increment.

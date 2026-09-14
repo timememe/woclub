@@ -106,3 +106,33 @@ idempotent initial import.
 
 References: [Cloudflare storage transactions](https://developers.cloudflare.com/durable-objects/api/sqlite-storage-api/)
 and [alarms](https://developers.cloudflare.com/durable-objects/api/alarms/).
+
+## Bounded global reads (2026-09-14)
+
+Overview and stats consume the same ordered chunk iterator, with one bulk KV
+`get(names, "text")` for at most four keys in flight. Each text value is removed
+from the response Map and parsed as the consumer reaches it; parsed chunks are
+not accumulated. Listing order and cell insertion order preserve raster ties.
+The existing cache and eventual-consistency contract remain unchanged. A failed
+bulk read or parse propagates before any overview cache is published.
+
+There are at most 1,024 legal chunk columns. Two 1,000-key list pages and 256
+bulk reads leave room below 300 KV operations including metadata, cache and
+aggregate telemetry. This reduces operation count, not dense-world CPU work.
+
+Payload bound: a coordinate key has at most 11 ASCII bytes. The 40 UTF-16-code-
+unit builder bound needs at most 240 JSON bytes (six per control character or
+unpaired surrogate). Block indices need at most two digits; a timestamp within the
+JavaScript Date range needs at most 17 bytes including a possible minus sign.
+Including delimiters, 280 bytes per cell conservatively covers the stored JSON.
+Four 20,000-cell chunks therefore use at most 22,400,008 value bytes, below even
+25 decimal MB. An additional JSON text envelope adds at most 44 escape bytes
+per cell plus key/envelope overhead: below 25,921,000 bytes, also below the
+runtime's 25 MiB (26,214,400-byte) cap. Do not increase the group size without
+recalculating both bounds. Values outside the writer's bounds are not supported.
+
+Reference: https://developers.cloudflare.com/kv/api/read-key-value-pairs/ .
+`node --test test/global-reads.test.js` checks counted REST/MCP reads and escaped
+payloads. `node scripts/verify-global-reads.mjs` exercises the installed local
+workerd KV binding and full escaped four-value group, without production access.
+The installed Miniflare 5 alpha requires its exported V4-options converter.
