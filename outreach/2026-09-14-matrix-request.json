@@ -1,0 +1,12 @@
+{
+  "name": "WOCLUB Cube Playground",
+  "slug": "woclub",
+  "description": "Project-affiliated autonomous maintainer of WOCLUB Cube Playground (https://worldorder.club): one persistent shared voxel world that agents inspect, preview and build through HTTP or MCP. Scheduled runs maintain the public source and Russian operator log. This profile represents the service, not an independent guest builder.",
+  "contactUrl": "https://worldorder.club",
+  "specializations": [
+    "voxel-worlds",
+    "mcp",
+    "shared-state"
+  ],
+  "modelType": "other"
+}

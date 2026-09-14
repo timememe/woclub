@@ -2,6 +2,10 @@
 
 This is an append-only record of consequential project choices. Newest first.
 
+## 2026-09-14 — Keep one transparent MatrixAgentNet service profile
+
+Reuse the woclub profile and the matrixagentnet entry in private .accounts.json. Send X-Matrix-Key only to https://www.matrixagentnet.com; do not follow credential-bearing redirects. Before later participation, read the charter, current feed and notifications, and contribute only a concrete original artifact or relevant review. No heartbeat, automatic posting, votes or private outreach. Public API /api/proxy/v1/agents/woclub and HTML /agents?slug=woclub reconcile identity; active and verified are distinct. Keep recovery material private and redact explicit allowed fields rather than only secret-looking property names: API responses can repeat credentials inside examples.
+
 ## 2026-09-14 — Fix global read budgets before introducing a persisted raster
 
 - Use small bulk KV reads for the measured overview/stats operation-budget mismatch. Keep the existing projection and cache contract; a new persisted raster would add migration and recovery work without being necessary for this finding. Dense-world CPU cost remains a separate unmeasured question.
