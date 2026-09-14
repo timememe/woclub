@@ -1,0 +1,230 @@
+{
+  "observed_at": "2026-09-14T02:04:02.746145+00:00",
+  "previous_research_source_public": true,
+  "previous_russian_log_live": true,
+  "stats": {
+    "world": {
+      "size": 1000,
+      "ground_y": 0,
+      "chunk_size": 32
+    },
+    "cubes": 84,
+    "approximate_total": 84,
+    "chunks_active": 1,
+    "truncated": false,
+    "blocks": [
+      "stone",
+      "dirt",
+      "grass",
+      "sand",
+      "water",
+      "wood",
+      "leaves",
+      "glass",
+      "metal",
+      "light",
+      "obsidian",
+      "snow",
+      "brick",
+      "gold",
+      "moss"
+    ],
+    "per_type": {
+      "stone": 0,
+      "dirt": 0,
+      "grass": 0,
+      "sand": 0,
+      "water": 0,
+      "wood": 0,
+      "leaves": 0,
+      "glass": 0,
+      "metal": 0,
+      "light": 32,
+      "obsidian": 0,
+      "snow": 0,
+      "brick": 0,
+      "gold": 52,
+      "moss": 0
+    },
+    "builders": 1,
+    "top_builders": [
+      {
+        "builder": "WOCLUB-system",
+        "cubes": 84
+      }
+    ],
+    "limits": {
+      "max_cubes": 750000,
+      "max_batch_ops": 512,
+      "max_fill_cells": 4096,
+      "single_body_bytes": 8192,
+      "bulk_body_bytes": 262144,
+      "region_max_cubes": 8192
+    },
+    "generated_at": "2026-09-14T02:01:41.489Z"
+  },
+  "status": {
+    "generated_at": "2026-09-14T02:01:40.836Z",
+    "window_days": 7,
+    "days": [
+      {
+        "date": "2026-09-14",
+        "place": 0,
+        "remove": 0,
+        "batch": 0,
+        "fill": 0,
+        "clear": 0,
+        "region_reads": 1,
+        "overview_reads": 0,
+        "cubes_added": 0,
+        "cubes_removed": 0,
+        "unique_callers": 1,
+        "active_builders": 0,
+        "write_requests": 0
+      },
+      {
+        "date": "2026-09-13",
+        "place": 0,
+        "remove": 0,
+        "batch": 0,
+        "fill": 0,
+        "clear": 0,
+        "region_reads": 11,
+        "overview_reads": 5,
+        "cubes_added": 0,
+        "cubes_removed": 0,
+        "unique_callers": 7,
+        "active_builders": 0,
+        "write_requests": 0
+      },
+      {
+        "date": "2026-09-12",
+        "place": 0,
+        "remove": 0,
+        "batch": 0,
+        "fill": 0,
+        "clear": 0,
+        "region_reads": 10,
+        "overview_reads": 7,
+        "cubes_added": 0,
+        "cubes_removed": 0,
+        "unique_callers": 7,
+        "active_builders": 0,
+        "write_requests": 0
+      },
+      {
+        "date": "2026-09-11",
+        "place": 0,
+        "remove": 0,
+        "batch": 0,
+        "fill": 0,
+        "clear": 0,
+        "region_reads": 2,
+        "overview_reads": 1,
+        "cubes_added": 0,
+        "cubes_removed": 0,
+        "unique_callers": 1,
+        "active_builders": 0,
+        "write_requests": 0
+      },
+      {
+        "date": "2026-09-10",
+        "place": 0,
+        "remove": 0,
+        "batch": 0,
+        "fill": 0,
+        "clear": 0,
+        "region_reads": 31,
+        "overview_reads": 58,
+        "cubes_added": 0,
+        "cubes_removed": 0,
+        "unique_callers": 9,
+        "active_builders": 0,
+        "write_requests": 0
+      },
+      {
+        "date": "2026-09-09",
+        "place": 0,
+        "remove": 0,
+        "batch": 0,
+        "fill": 0,
+        "clear": 0,
+        "region_reads": 58,
+        "overview_reads": 71,
+        "cubes_added": 0,
+        "cubes_removed": 0,
+        "unique_callers": 8,
+        "active_builders": 0,
+        "write_requests": 0
+      },
+      {
+        "date": "2026-09-08",
+        "place": 0,
+        "remove": 0,
+        "batch": 0,
+        "fill": 0,
+        "clear": 0,
+        "region_reads": 9,
+        "overview_reads": 138,
+        "cubes_added": 0,
+        "cubes_removed": 0,
+        "unique_callers": 8,
+        "active_builders": 0,
+        "write_requests": 0
+      }
+    ],
+    "privacy": "Usage telemetry is aggregate: daily caller and builder estimates use truncated one-way hashes that expire after eight days, and raw IP addresses are never stored. Separately, the public world stores current cubes and a bounded 256-event activity feed containing coordinates, block choices, and builder handles. Public batch receipts separately retain request IDs, hashes and structured historical outcomes for 24 hours; lookups by ID have no authentication and no enumeration endpoint.",
+    "accuracy": "Counts are approximate: Workers KV counters update independently and eventually, so totals may not sum exactly."
+  },
+  "overview": {
+    "world": 1000,
+    "resolution": 200,
+    "unit": 5,
+    "types": [
+      "stone",
+      "dirt",
+      "grass",
+      "sand",
+      "water",
+      "wood",
+      "leaves",
+      "glass",
+      "metal",
+      "light",
+      "obsidian",
+      "snow",
+      "brick",
+      "gold",
+      "moss"
+    ],
+    "generated_at": "2026-09-14T02:02:04.485Z",
+    "cubes": 84,
+    "chunks_scanned": 1,
+    "truncated": false,
+    "cached": false,
+    "format": "sparse",
+    "cells": [
+      [
+        19899,
+        9,
+        6
+      ],
+      [
+        19900,
+        9,
+        6
+      ],
+      [
+        20099,
+        9,
+        6
+      ],
+      [
+        20100,
+        9,
+        6
+      ]
+    ]
+  },
+  "retained_events": 90
+}

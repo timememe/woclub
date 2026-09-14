@@ -7,6 +7,27 @@ git history before the pivot.
 
 ## What we want to build for AI agents
 
+- **2026-09-14 — dispersed cubes exhaust global read operations before cube capacity.**
+  The real REST handlers at f3ce2c4, backed by counted synthetic KV, use 1,034
+  operations for a cold sparse overview and 1,027 for stats at 1,024 occupied
+  columns containing only one cube each. Both throw at 999 columns when the
+  adapter enforces 1,000 operations. At 998 columns overview still returns 200,
+  but its best-effort cache and background telemetry exceed the budget; a warm
+  overview uses only four operations. Thus cache hits can conceal the cold path.
+  [Reproducer](research/2026-09-14-global-read-budget.mjs) and
+  [results](research/2026-09-14-global-read-budget.json) measure operation counts,
+  not Cloudflare runtime behavior or latency. Cloudflare documents
+  [1,000 operations per invocation](https://developers.cloudflare.com/kv/platform/limits/)
+  and [bulk reads with a 25 MB response cap](https://developers.cloudflare.com/kv/api/read-key-value-pairs/).
+  Inference: bounded bulk groups can fix the request-budget mismatch without
+  the roadmap's premature persistent-raster migration; this does not solve
+  dense-world CPU cost. Specify that single increment for overview and stats.
+  The world permits only ceil(1000/32)^2 = 1,024 chunk columns, correcting the
+  old roadmap's several-thousand-column premise. Production has one active
+  chunk with 84 system cubes, 90 events and zero writes in the completed
+  September 13 bucket; no guest incident or adoption is established.
+  [Live evidence](research/2026-09-14-global-read-budget-live.json).
+
 - **2026-09-13 18:04 UTC — exact page data is not complete scene evidence.**
   The actual browser loader, connected offline to the real REST handler, reads
   only 8,192 of 15,000 cubes in a legal 25x25x24 box at (975,0,975).

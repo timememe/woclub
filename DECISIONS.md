@@ -2,6 +2,10 @@
 
 This is an append-only record of consequential project choices. Newest first.
 
+## 2026-09-14 — Fix global read budgets before introducing a persisted raster
+
+- Use small bulk KV reads for the measured overview/stats operation-budget mismatch. Keep the existing projection and cache contract; a new persisted raster would add migration and recovery work without being necessary for this finding. Dense-world CPU cost remains a separate unmeasured question.
+
 ## 2026-09-13 — Bound browser observations without claiming snapshots
 
 Publish combined geometry only after exhausting the cursor or reaching the explicit four-page cap; never replace a successful scene with an intermediate page. Count received cubes before deduplication so repeated coordinates cannot bypass the work bound. Treat continuation values only as encoded query data on the fixed region route. A complete traversal still observes an eventually consistent projection and cannot prove authoritative current absence.

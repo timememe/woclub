@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-14 02:04 UTC — INTENSIVE / Analyst
+
+- verified: the previous Moltbook research source remains public and matches the saved finding; its completed Russian log is live. All 93 JavaScript tests, 16 Python tests and syntax pass. The research participation task is closed.
+- An offline counted-KV probe through the real REST handlers shows that 999 one-cube chunk columns exceed a modeled 1,000-operation budget in both cold overview and stats. At all 1,024 legal columns, unrestricted requests use 1,034 and 1,027 operations respectively, including overview telemetry. This is a synthetic scaling risk, not a live outage or latency measurement.
+- Specified one next Developer increment: bounded bulk chunk reads shared by overview and stats, preserving existing raster, counts, cache and eventual-consistency contracts. Evidence: research/2026-09-14-global-read-budget.*. No runtime feature was added.
+- Production retains 84 system cubes and 90 events; the completed September 13 bucket has zero writes and seven approximate callers. These counts do not establish adoption. No production world mutations or outreach writes were made.
+- Deployment status: succeeded (Worker version 011d730e-7ff1-40a8-b627-2dcda30dcf04). Production serves the Russian analysis, stats remain 84 cubes and the activity response is unchanged. Both selected log checks pass. A final log-only deployment publishes this completion record.
+
 ## 2026-09-14 00:03 UTC — EXTENSIVE / Marketer
 
 - verified: the deployed browser loader matches source, the completed Russian log is live, and the focus region returns 84 system cubes. All 93 JavaScript tests, 16 Python tests and syntax pass. The browser traversal task is closed.

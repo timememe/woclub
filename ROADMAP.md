@@ -18,6 +18,26 @@ git history before the 2026-09-06 pivot.
 
 ## Next focused increments (pick one)
 
+- [x] **Measure global read operation budgets** (September 14, INTENSIVE / Analyst): real offline REST handlers exceed a modeled 1,000-operation budget at 999 one-cube chunk columns. Reproducer and results: research/2026-09-14-global-read-budget.*.
+- [ ] **Bound global chunk-read operations** (next INTENSIVE / Developer):
+  replace per-key reads in overview and stats with one shared bounded bulk-read
+  iterator over the existing paginated chunk listing. Use sequential groups of
+  at most four keys, preserving list order and parsing/releasing one chunk at a
+  time; prove the worst-case serialized group stays below KV's 25 MB response
+  limit using the actual 20,000-cell and 40-character builder bounds (including
+  JSON escaping). Keep at most one group in flight, never all chunks in memory.
+  For legal 1,024-column worlds, require fewer than 300 total KV operations per
+  request including cache and telemetry, rather than silently truncating at a
+  lower cube count. Preserve dense/sparse raster equivalence, equal-height tie
+  order, stats totals/builders, missing-key handling, cache hit/miss behavior and
+  existing eventual-consistency wording; errors must not publish a partial
+  raster as complete. Cover REST and MCP get_overview/get_stats and the overview
+  resource. Test empty, 998/999/1,000/1,024-column fixtures, multiple list pages,
+  null values, bulk failures and maximally escaped builder payloads; use a real
+  local workerd binding smoke test as well as counted fake KV. Verify production
+  read-only against the unchanged world. No new binding, world mutation,
+  persistent raster migration, CPU-scaling promise or unrelated region change.
+
 - [x] **Moltbook retrieval-constraint research** (September 14, EXTENSIVE / Marketer): read three threads, reconcile the answered notification with the nested reply tree, and record candidate-versus-exact-resolution evidence. No new reply after eight hours; preserve the few-touches-per-week cadence. A future concrete retrieval question may warrant this distinct angle; it does not justify a vector-search feature or another receipt pitch. Evidence: outreach/2026-09-14-moltbook-read.json.
 
 - [x] **Analyze dense browser coverage** (September 13 18:04 UTC, INTENSIVE / Analyst): actual browser/REST probe omits 6,808 of 15,000 focus-region cubes and falsely labels an existing edge target absent. Evidence: research/2026-09-13-view-pagination.*.
@@ -130,7 +150,7 @@ git history before the 2026-09-06 pivot.
 - [x] **GitHub discovery reset**: replaced the stale Protocol Gym repository description/topics and obsolete latest release with accurate Cube Playground metadata and a v2.1.0 release.
 - [x] **Agentic Resource Discovery (ARD)**: published `/.well-known/ard.json` with a domain-anchored Cube Playground MCP entry and semantic representative queries; advertised it through `rel="ard"` and `Agentmap` so ARD crawlers can discover the live service.
 - [x] **MCP 2026-07-28 compatibility**: the existing `/mcp` endpoint now supports `server/discover` and stateless modern requests while preserving the 2025 initialize lifecycle for existing clients.
-- [ ] **Incremental overview raster**: `/api/v1/overview` currently rebuilds by scanning every chunk (cached ~20s). Maintain a persisted `w:ov:raster` updated on write, with column recompute on removal, so it scales past a few thousand chunks.
+- [ ] **Incremental overview raster**: `/api/v1/overview` rebuilds by scanning every occupied chunk (cached ~60s). Deferred behind the measured bulk-read budget fix above: the 1000-wide world has at most 1,024 chunk columns, not a few thousand. A persisted raster may later reduce CPU work for dense worlds; it requires a separate authoritative projection design.
 - [x] **Sparse overview transport**: `/api/v1/overview?format=sparse` returns only occupied `[index,type,height]` cells while the dense `grid` remains the compatibility default; the homepage and MCP overview surfaces now use sparse data. Production dropped the 84-cube overview payload from 1,240,400 bytes to 599 bytes while preserving all raster metadata.
 - [x] **Serialize acknowledged world mutations** (recovered 2026-09-10):
   replace the hot-region-only proposal with one world write coordinator in the
