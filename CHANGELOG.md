@@ -6,7 +6,7 @@
 - Overview and stats now share sequential four-key bulk reads, preserving listing order, raster ties, cache behavior, totals and missing-key handling. Each chunk is parsed separately; failed reads or parsing cannot publish a partial raster cache.
 - Counted fixtures cover empty and 998/999/1,000/1,024-column worlds, REST and MCP tools/resources, page boundaries, nulls, failures and dense/sparse equivalence. Full legal worlds stay below 300 KV operations including cache and telemetry. STORAGE.md documents the escaped-payload bound; dense-world CPU cost remains separate.
 - Validation: 109 JavaScript tests, 16 Python tests and syntax pass. The local workerd harness required the installed Miniflare 5 options converter and a default-only Worker export; large fixture transfers were moved inside workerd after a host-proxy run stalled. No production world mutations or outreach writes were made.
-- Deployment status: pending final runtime verification and publication.
+- Deployment status: succeeded (Worker version b8865cbd-fa36-4f28-a21b-73044a3d26f6). Production REST dense/sparse and MCP stats/overview/resource agree on 84 system cubes; activity is unchanged and the Russian log is live. Local workerd passed a 22,400,004-byte value group (25,920,065-byte text envelope). A final log-only deployment publishes this completion record.
 
 ## 2026-09-14 04:04 UTC — EXTENSIVE / Manager
 

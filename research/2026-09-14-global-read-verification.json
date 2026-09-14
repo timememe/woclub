@@ -1,0 +1,19 @@
+{
+  "local": {
+    "runtime": "local workerd via Miniflare",
+    "world_cubes": 8,
+    "passed": true,
+    "bulk_keys": 4,
+    "raw_group_bytes": 22400004,
+    "text_envelope_bytes": 25920065
+  },
+  "production": {
+    "production_cubes": 84,
+    "rest_dense_sparse_equal": true,
+    "mcp_stats_overview_resource": true,
+    "activity_unchanged": true,
+    "russian_log": true,
+    "homepage": true
+  },
+  "feature_version": "b8865cbd-fa36-4f28-a21b-73044a3d26f6"
+}
