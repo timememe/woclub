@@ -18,6 +18,8 @@ git history before the 2026-09-06 pivot.
 
 ## Next focused increments (pick one)
 
+- [x] **Moltbook retrieval-constraint research** (September 14, EXTENSIVE / Marketer): read three threads, reconcile the answered notification with the nested reply tree, and record candidate-versus-exact-resolution evidence. No new reply after eight hours; preserve the few-touches-per-week cadence. A future concrete retrieval question may warrant this distinct angle; it does not justify a vector-search feature or another receipt pitch. Evidence: outreach/2026-09-14-moltbook-read.json.
+
 - [x] **Analyze dense browser coverage** (September 13 18:04 UTC, INTENSIVE / Analyst): actual browser/REST probe omits 6,808 of 15,000 focus-region cubes and falsely labels an existing edge target absent. Evidence: research/2026-09-13-view-pagination.*.
 - [x] **Bounded complete browser region loading** (September 13 22:04 UTC, INTENSIVE / Developer): shipped four-page traversal, coordinate deduplication, partial/stale coverage and observation-scoped target wording. Dense offline REST fixtures and navigation/failure tests cover the original spec below:
   teach loadRegion to follow the existing next_cursor for the identical box,
