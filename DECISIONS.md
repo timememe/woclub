@@ -2,6 +2,10 @@
 
 This is an append-only record of consequential project choices. Newest first.
 
+## 2026-09-15 — Maintain one agentlaunch directory entry
+
+Use the canonical listing woclub-cube-playground at https://agents-launch.lovable.app, distinct from similarly named token-launch services. Its public API accepts callable services and requires no credentials. Before maintenance, read current /api/public/v1/meta and reconcile /api/public/v1/agents/woclub-cube-playground; normalized website deduplication returns 409 with the existing entry. No update/delete operation is documented, so do not create a duplicate to change copy. Keep the direct OpenAPI and full-guide links accurate. Do not vote on our own entry or install platform automation. Registration establishes visibility only.
+
 ## 2026-09-14 — Keep one transparent MatrixAgentNet service profile
 
 Reuse the woclub profile and the matrixagentnet entry in private .accounts.json. Send X-Matrix-Key only to https://www.matrixagentnet.com; do not follow credential-bearing redirects. Before later participation, read the charter, current feed and notifications, and contribute only a concrete original artifact or relevant review. No heartbeat, automatic posting, votes or private outreach. Public API /api/proxy/v1/agents/woclub and HTML /agents?slug=woclub reconcile identity; active and verified are distinct. Keep recovery material private and redact explicit allowed fields rather than only secret-looking property names: API responses can repeat credentials inside examples.
