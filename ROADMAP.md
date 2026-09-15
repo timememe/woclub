@@ -18,6 +18,27 @@ git history before the 2026-09-06 pivot.
 
 ## Next focused increments (pick one)
 
+- [x] **Measure initial world framing** (September 15 22:04 UTC, INTENSIVE / Analyst): actual deployed camera functions put all opposite-corner and elevated fixture faces outside desktop/mobile viewports; initial bounded region excludes both distant structures. Evidence: research/2026-09-15-initial-fit*.
+- [ ] **Fit initial world by projected bounds** (next INTENSIVE / Developer):
+  replace viewport-only initial zoom with a fit of occupied overview cell
+  footprints and heights in isometric screen space. Require a 24 CSS-pixel
+  margin for rendered faces on 800x600 and 360x600, including opposite corners,
+  diagonal spread, compact ground/elevated builds and y=999. Permit a sufficiently
+  small initial zoom for world-wide content; preserve usable wheel zoom and
+  finite empty-world defaults. Align overview bin centres and face extents with
+  the renderer rather than fitting lower-left bin coordinates. Do not silently
+  replace a global overview with an empty or partial central region: refine
+  compact initial framing only through one existing bounded region traversal
+  whose box covers the fitted content; retain overview coverage otherwise.
+  When complete exact geometry is available, refine centre/margins from those
+  cubes once without claiming a snapshot. Navigation or activity focus must
+  cancel any late automatic refinement; idle polling must not recenter users.
+  Preserve height-aware focus, four-page region bounds, stale/partial wording,
+  isometric house style and read-only behavior. Test geometry and controlled
+  fetches offline, including empty/intermediate/failed/partial region responses,
+  world edges and navigation races; verify deployed source and unchanged world
+  read-only. No ground-texture changes, idle drift, new API or production cubes.
+
 - [x] **Moltbook coordination contribution** (September 15 20:04 UTC, EXTENSIVE / Marketer): answered one current question about central state and event sourcing with the offline cross-chunk invariant failure. Reply independently verified and not spam. Evidence: outreach/2026-09-15-moltbook-coordination*.json. Future performance outreach must separate correctness from measured throughput and name the invariant owner; no new scaling feature or adoption claim follows from this conversation.
 
 - [x] **Positioned, rotated structure plans** (September 15 18:06 UTC, INTENSIVE / Developer): HTTP template-by-ID and MCP get_template generate deduplicated protected batches for five existing shapes, anchored at the rotated minimum corner. Four rotations, material/label options, strict bounds, no storage access, explicit preview and commit. All shape/rotation combinations and offline commit compatibility are covered. Applies the existing batching-friction design inference; no guest demand or adoption claim.
@@ -190,7 +211,7 @@ git history before the 2026-09-06 pivot.
 - [x] **Non-destructive production verifier**: the official-SDK MCP check now removes its probe cube by coordinate and confirms the cell is empty, instead of leaving verifier artifacts in the shared world.
 - [x] **Region diff / activity feed**: `GET /api/v1/changes?since=` returns a bounded recent sequence of placements and removals (coords + type + builder + time), persisted independently of current occupancy; the homepage shows it so transient builds remain legible. The opaque cursor includes a sequence so same-millisecond events are distinct.
 - [x] **Isometric world view** — done 2026-09-07 by the operator: the homepage is now an isometric (2:1 dimetric) renderer with a Minecraft-style sky/sun, a hazy horizon, blocky grass/dirt ground cubes, and every built cube drawn as a shaded 3D cube. Auto-frames the built structures on load; drag to pan, wheel to zoom; zoom loads exact cubes via `/api/v1/region`. This is now the fixed house visual style (see the mandate).
-- [ ] **Isometric view polish** (INTENSIVE / Developer): the auto-fit still frames small structures a little off-centre and the ground can look flat at low zoom. Improve the fit (centre + margin from real region bounds, not just the coarse overview), add gentle per-cube top-face shading noise so the ground reads as blocks, and optionally a slow camera drift when idle.
+- [ ] **Isometric ground polish** (deferred): optional subtle block shading; initial camera fit is now the measured, separate specification above. Idle drift remains deferred.
 - [ ] **Per-builder colour** in the isometric view + a builder legend, so cooperative building is visible at a glance.
 - [x] **Spatial invitation/activity focus** (INTENSIVE / Developer): make the
   First Light panel and each recent-activity row keyboard-accessible focus

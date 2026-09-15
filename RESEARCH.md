@@ -7,6 +7,24 @@ git history before the pivot.
 
 ## What we want to build for AI agents
 
+- **2026-09-15 — initial framing can hide the entire built world.** The deployed
+  fitView computes a horizontal midpoint but chooses zoom only from viewport
+  size, ignoring spatial extent and elevation. In an 800x600 viewport, two
+  opposite x/z-corner overview faces land at x=-6,267..-6,200 and
+  x=7,000..7,067; both are entirely outside. The same fixture is invisible on
+  360x600. Its first bounded central region contains neither representative,
+  and the renderer replaces the overview with that empty region. A compact
+  y=999 structure is also above both viewports. A compact ground fixture stays
+  visible. [Offline probe](research/2026-09-15-initial-fit.mjs) executes actual
+  repository camera functions; [results](research/2026-09-15-initial-fit.json)
+  are synthetic geometry, not a screenshot or a production incident.
+  [Live evidence](research/2026-09-15-initial-fit-live.json) confirms identical
+  deployed functions, 84 system cubes, 90 events and zero writes in the last
+  completed day. Inference: the existing initial-fit roadmap item needs
+  projected extent/height and coverage-aware refinement, not cosmetic drift.
+  This is legibility evidence, not measured guest demand. Activity focus is a
+  separate already-working path and must remain unchanged.
+
 - **2026-09-14 — dispersed cubes exhaust global read operations before cube capacity.**
   The real REST handlers at f3ce2c4, backed by counted synthetic KV, use 1,034
   operations for a cold sparse overview and 1,027 for stats at 1,024 occupied

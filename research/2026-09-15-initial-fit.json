@@ -1,0 +1,326 @@
+{
+  "baseline": "22142ec",
+  "method": "Actual fitView/ox/oy/proj, overview face geometry and initial-region formula; synthetic data only",
+  "results": [
+    {
+      "fixture": "compact-ground",
+      "viewport": {
+        "W": 800,
+        "H": 600
+      },
+      "camera": {
+        "fx": 500,
+        "fy": 0,
+        "fz": 500,
+        "T": 6.666666666666667
+      },
+      "faces": [
+        {
+          "x": 502.5,
+          "y": 0,
+          "z": 502.5,
+          "bounds": {
+            "left": 366.6666666666667,
+            "right": 433.3333333333333,
+            "top": 233.3333333333332,
+            "bottom": 299.9999999999999
+          },
+          "fullyOutside": false
+        }
+      ],
+      "initialRegion": {
+        "x": 395,
+        "z": 395,
+        "w": 210,
+        "d": 210,
+        "representativesInside": 1
+      }
+    },
+    {
+      "fixture": "compact-elevated",
+      "viewport": {
+        "W": 800,
+        "H": 600
+      },
+      "camera": {
+        "fx": 500,
+        "fy": 0,
+        "fz": 500,
+        "T": 6.666666666666667
+      },
+      "faces": [
+        {
+          "x": 502.5,
+          "y": 999,
+          "z": 502.5,
+          "bounds": {
+            "left": 366.6666666666667,
+            "right": 433.3333333333333,
+            "top": -6426.666666666667,
+            "bottom": -6360
+          },
+          "fullyOutside": true
+        }
+      ],
+      "initialRegion": {
+        "x": 395,
+        "z": 395,
+        "w": 210,
+        "d": 210,
+        "representativesInside": 1
+      }
+    },
+    {
+      "fixture": "opposite-xz-corners",
+      "viewport": {
+        "W": 800,
+        "H": 600
+      },
+      "camera": {
+        "fx": 497.5,
+        "fy": 0,
+        "fz": 497.5,
+        "T": 6.666666666666667
+      },
+      "faces": [
+        {
+          "x": 997.5,
+          "y": 0,
+          "z": 2.5,
+          "bounds": {
+            "left": 7000.000000000001,
+            "right": 7066.666666666667,
+            "top": 233.3333333333332,
+            "bottom": 299.9999999999999
+          },
+          "fullyOutside": true
+        },
+        {
+          "x": 2.5,
+          "y": 0,
+          "z": 997.5,
+          "bounds": {
+            "left": -6266.666666666667,
+            "right": -6200.000000000001,
+            "top": 233.3333333333332,
+            "bottom": 299.9999999999999
+          },
+          "fullyOutside": true
+        }
+      ],
+      "initialRegion": {
+        "x": 392,
+        "z": 392,
+        "w": 210,
+        "d": 210,
+        "representativesInside": 0
+      }
+    },
+    {
+      "fixture": "opposite-diagonal-corners",
+      "viewport": {
+        "W": 800,
+        "H": 600
+      },
+      "camera": {
+        "fx": 497.5,
+        "fy": 0,
+        "fz": 497.5,
+        "T": 6.666666666666667
+      },
+      "faces": [
+        {
+          "x": 2.5,
+          "y": 0,
+          "z": 2.5,
+          "bounds": {
+            "left": 366.6666666666667,
+            "right": 433.3333333333333,
+            "top": -3083.3333333333335,
+            "bottom": -3016.666666666667
+          },
+          "fullyOutside": true
+        },
+        {
+          "x": 997.5,
+          "y": 0,
+          "z": 997.5,
+          "bounds": {
+            "left": 366.6666666666667,
+            "right": 433.3333333333333,
+            "top": 3550,
+            "bottom": 3616.6666666666665
+          },
+          "fullyOutside": true
+        }
+      ],
+      "initialRegion": {
+        "x": 392,
+        "z": 392,
+        "w": 210,
+        "d": 210,
+        "representativesInside": 0
+      }
+    },
+    {
+      "fixture": "compact-ground",
+      "viewport": {
+        "W": 360,
+        "H": 600
+      },
+      "camera": {
+        "fx": 500,
+        "fy": 0,
+        "fz": 500,
+        "T": 4
+      },
+      "faces": [
+        {
+          "x": 502.5,
+          "y": 0,
+          "z": 502.5,
+          "bounds": {
+            "left": 160,
+            "right": 200,
+            "top": 236,
+            "bottom": 276
+          },
+          "fullyOutside": false
+        }
+      ],
+      "initialRegion": {
+        "x": 380,
+        "z": 380,
+        "w": 240,
+        "d": 240,
+        "representativesInside": 1
+      }
+    },
+    {
+      "fixture": "compact-elevated",
+      "viewport": {
+        "W": 360,
+        "H": 600
+      },
+      "camera": {
+        "fx": 500,
+        "fy": 0,
+        "fz": 500,
+        "T": 4
+      },
+      "faces": [
+        {
+          "x": 502.5,
+          "y": 999,
+          "z": 502.5,
+          "bounds": {
+            "left": 160,
+            "right": 200,
+            "top": -3760,
+            "bottom": -3720
+          },
+          "fullyOutside": true
+        }
+      ],
+      "initialRegion": {
+        "x": 380,
+        "z": 380,
+        "w": 240,
+        "d": 240,
+        "representativesInside": 1
+      }
+    },
+    {
+      "fixture": "opposite-xz-corners",
+      "viewport": {
+        "W": 360,
+        "H": 600
+      },
+      "camera": {
+        "fx": 497.5,
+        "fy": 0,
+        "fz": 497.5,
+        "T": 4
+      },
+      "faces": [
+        {
+          "x": 997.5,
+          "y": 0,
+          "z": 2.5,
+          "bounds": {
+            "left": 4140,
+            "right": 4180,
+            "top": 236,
+            "bottom": 276
+          },
+          "fullyOutside": true
+        },
+        {
+          "x": 2.5,
+          "y": 0,
+          "z": 997.5,
+          "bounds": {
+            "left": -3820,
+            "right": -3780,
+            "top": 236,
+            "bottom": 276
+          },
+          "fullyOutside": true
+        }
+      ],
+      "initialRegion": {
+        "x": 377,
+        "z": 377,
+        "w": 240,
+        "d": 240,
+        "representativesInside": 0
+      }
+    },
+    {
+      "fixture": "opposite-diagonal-corners",
+      "viewport": {
+        "W": 360,
+        "H": 600
+      },
+      "camera": {
+        "fx": 497.5,
+        "fy": 0,
+        "fz": 497.5,
+        "T": 4
+      },
+      "faces": [
+        {
+          "x": 2.5,
+          "y": 0,
+          "z": 2.5,
+          "bounds": {
+            "left": 160,
+            "right": 200,
+            "top": -1754,
+            "bottom": -1714
+          },
+          "fullyOutside": true
+        },
+        {
+          "x": 997.5,
+          "y": 0,
+          "z": 997.5,
+          "bounds": {
+            "left": 160,
+            "right": 200,
+            "top": 2226,
+            "bottom": 2266
+          },
+          "fullyOutside": true
+        }
+      ],
+      "initialRegion": {
+        "x": 377,
+        "z": 377,
+        "w": 240,
+        "d": 240,
+        "representativesInside": 0
+      }
+    }
+  ]
+}
