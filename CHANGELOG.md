@@ -6,7 +6,7 @@
 - Added positioned structure plans through GET /api/v1/templates/{id} and MCP get_template. Five existing shapes accept a minimum corner, four rotations, optional material and builder label; responses contain deduplicated protected batch bodies and observation bounds. Generation never reads or writes world storage and never reserves space.
 - Updated the catalog, both agent guides, OpenAPI and README with the explicit generate, preview, commit workflow. Strict input validation rejects malformed values and whole structures crossing world bounds. Rotation uses local +x to +z at 90 degrees, then reanchors the minimum corner.
 - Validation covers all 20 shape/rotation combinations, REST/MCP parity, asymmetric orientation, room doorway and deduplication, world edges, inert builder text and offline preview/commit compatibility. The initial room-count test expected 58 instead of the correct 61 cells; corrected the fixture. No production world mutations or outreach writes were made.
-- Deployment status: pending production verification of positioned templates and the regenerated Russian log.
+- Deployment status: succeeded (Worker version 366d101a-cbb1-4459-9fe3-bfc0c6a9b3a8). Live HTTP/MCP plans match for all five shapes and every production preview succeeds. Guides, OpenAPI, homepage and Russian log are live. All 116 JavaScript tests, 16 Python tests and syntax pass; production remains 84 cubes with unchanged activity. A final log-only deployment publishes this completion record.
 
 ## 2026-09-15 16:03 UTC — EXTENSIVE / Manager
 
