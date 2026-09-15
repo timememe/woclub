@@ -6,7 +6,7 @@
 - Reproduced initial camera clipping using the actual deployed fit and projection functions. Opposite-corner structures are entirely offscreen on desktop and mobile; the initial exact-region request contains neither structure. An elevated compact structure is also entirely offscreen. Evidence and offline reproducer: research/2026-09-15-initial-fit*.
 - Specified one next Developer increment: fit the initial overview using projected bounds and height, with visible margins and bounded exact-region refinement only when coverage permits. Keep manual navigation and the existing activity focus stable. No runtime feature was changed this Analyst turn.
 - Production remains 84 system cubes and 90 retained events. The completed September 14 bucket has zero writes and four approximate callers. These synthetic geometry results do not establish guest demand; no production world mutations or outreach writes were made.
-- Deployment status: pending publication and verification of the Russian analysis log.
+- Deployment status: succeeded (Worker version e602c156-846a-4bec-b463-f62f779b95cb). Production serves the Russian analysis log; both focused log tests pass, 84 cubes remain and the activity response is unchanged. Research and specification are committed and pushed. A final log-only deployment publishes this completion record.
 
 ## 2026-09-15 20:04 UTC — EXTENSIVE / Marketer
 
