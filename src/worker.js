@@ -86,7 +86,7 @@ function structureTemplates() {
   for (const [x, y] of [[521, 1], [522, 0], [523, 1], [524, 2], [525, 1], [526, 0], [527, 1]]) letterW.push([x, y, 520]);
   return {
     version: 1,
-    note: "Each body is ready to POST to /api/v1/batch. Change coordinates, block types, and the placeholder builder before posting if you want a different location or identity.",
+    note: "Each body is ready to POST to /api/v1/batch. For a deduplicated protected plan at your chosen minimum corner, use GET /api/v1/templates/{id}?x=600&y=0&z=600&rotation=90 or MCP get_template. Preview before explicitly committing.",
     templates: [
       { id: "pillar", description: "An 8-cube vertical marker.", body: { ops: templateOps(pillar, "gold") } },
       { id: "arch", description: "A 7-wide, 7-high freestanding arch.", body: { ops: templateOps(arch, "brick") } },
@@ -98,6 +98,51 @@ function structureTemplates() {
 }
 
 const templates = structureTemplates();
+
+// Pure plan generation: neither reads world state nor reserves or writes cells.
+function instantiateTemplate(args) {
+  const allowed = ["id", "x", "y", "z", "rotation", "type", "builder"];
+  if (!args || typeof args !== "object" || Array.isArray(args) || Object.keys(args).some(k => !allowed.includes(k))) return {error: "invalid_template_arguments"};
+  const template = templates.templates.find(t => t.id === args.id);
+  if (!template) return {error: "unknown_template"};
+  if (![args.x, args.y, args.z].every(validCoord)) return {error: "out_of_bounds", world: WORLD};
+  const rotation = args.rotation === undefined ? 0 : args.rotation;
+  if (![0, 90, 180, 270].includes(rotation)) return {error: "invalid_rotation"};
+  if (args.type !== undefined && !TYPES.includes(args.type)) return {error: "unknown_type", allowed: TYPES};
+  if (args.builder !== undefined && (typeof args.builder !== "string" || args.builder.length > BUILDER_MAX)) return {error: "invalid_builder", max_length: BUILDER_MAX};
+  const source = template.body.ops;
+  const minX = Math.min(...source.map(p => p.x)), minY = Math.min(...source.map(p => p.y)), minZ = Math.min(...source.map(p => p.z));
+  const points = source.map(p => {
+    const x = p.x - minX, z = p.z - minZ;
+    const [rx, rz] = rotation === 90 ? [-z, x] : rotation === 180 ? [-x, -z] : rotation === 270 ? [z, -x] : [x, z];
+    return {...p, x: rx, y: p.y - minY, z: rz};
+  });
+  const offsetX = Math.min(...points.map(p => p.x)), offsetZ = Math.min(...points.map(p => p.z));
+  const unique = new Map();
+  for (const p of points) {
+    const op = {op: "place", x: args.x + p.x - offsetX, y: args.y + p.y, z: args.z + p.z - offsetZ, type: args.type ?? p.type};
+    if (![op.x, op.y, op.z].every(validCoord)) return {error: "template_out_of_bounds", world: WORLD};
+    unique.set(`${op.x},${op.y},${op.z}`, op);
+  }
+  const ops = [...unique.values()];
+  const region = {x: args.x, y: args.y, z: args.z, w: Math.max(...ops.map(p => p.x)) - args.x + 1, h: Math.max(...ops.map(p => p.y)) - args.y + 1, d: Math.max(...ops.map(p => p.z)) - args.z + 1};
+  return {id: template.id, rotation, cube_count: ops.length, observation_region: region,
+    body: {builder: args.builder === undefined ? "your-handle" : (normalizeBuilder(args.builder) ?? ""), protect_existing: true, ops},
+    note: "Plan only: no world read, write or reservation. Set your builder label, preview body with POST /api/v1/preview or preview_build, then explicitly commit the identical body with POST /api/v1/batch or build. Protection rejects conflicts at commit. For retry reconciliation, add a caller-generated request_id before preview and commit."};
+}
+
+function templateQuery(url) {
+  const args = {id: url.pathname.slice("/api/v1/templates/".length)};
+  for (const key of url.searchParams.keys()) {
+    if (!["x", "y", "z", "rotation", "type", "builder"].includes(key) || url.searchParams.getAll(key).length !== 1) return {error: "invalid_template_arguments"};
+    const value = url.searchParams.get(key);
+    if (["x", "y", "z", "rotation"].includes(key)) {
+      if (!/^(0|[1-9][0-9]{0,2})$/.test(value)) return {error: "invalid_template_arguments"};
+      args[key] = Number(value);
+    } else args[key] = value;
+  }
+  return instantiateTemplate(args);
+}
 
 // Block palette. Order is the wire format: a stored cube keeps its type index.
 // Appending new types is safe; never reorder or remove an entry.
@@ -885,7 +930,14 @@ async function mutateWorld(env, action, payload) {
 // ---------------------------------------------------------------------------
 
 const requestIdSchema = {type: "string", minLength: 36, maxLength: 36, pattern: REQUEST_ID_PATTERN, description: "Caller-generated canonical lowercase UUIDv4. Retained for 24 hours; unknown/expired is not proof of non-commit."};
+const templateInputSchema = {type: "object", properties: {
+  id: {type: "string", enum: templates.templates.map(t => t.id)},
+  x: {type: "integer", minimum: 0, maximum: 999}, y: {type: "integer", minimum: 0, maximum: 999}, z: {type: "integer", minimum: 0, maximum: 999},
+  rotation: {type: "integer", enum: [0, 90, 180, 270], default: 0, description: "Rotate around y: 90 maps local +x to +z; then anchor the minimum corner at x,y,z."},
+  type: {type: "string", enum: TYPES}, builder: {type: "string", maxLength: BUILDER_MAX}
+}, required: ["id", "x", "y", "z"], additionalProperties: false};
 const mcpTools = [
+  {name: "get_template", title: "Plan a positioned structure", description: "Generate a rotated pillar, arch, staircase, room-5x5 or letter-w at a minimum corner. Returns a deduplicated protected batch body; no world read, reservation or mutation. Preview then explicitly build.", annotations: {readOnlyHint: true}, inputSchema: templateInputSchema},
   {name: "get_build_receipt", title: "Look up a batch receipt", description: "Authoritative historical batch outcome or unknown (absent or expired). No current occupancy guarantee. Public by ID, retained 24 hours.", annotations: {readOnlyHint: true}, inputSchema: {type: "object", properties: {request_id: requestIdSchema}, required: ["request_id"], additionalProperties: false}},
   { name: "get_world_stats", title: "Get world stats", description: "Total cubes, per-block counts, active builders, world bounds, and current limits.", inputSchema: { type: "object", properties: {}, additionalProperties: false } },
   { name: "get_overview", title: "Get the overview raster", description: "Occupied cells from the coarse top-surface raster as [index,type,height], plus a small ASCII preview.", inputSchema: { type: "object", properties: {}, additionalProperties: false } },
@@ -979,6 +1031,10 @@ async function handleMcpRpc(request, env, context) {
   const args = message.params?.arguments || {};
   const kv = env.METRICS;
 
+  if (name === "get_template") {
+    const plan = instantiateTemplate(args);
+    return mcpResponse(message.id, mcpToolResult(plan, Boolean(plan.error)));
+  }
   if (name === "get_build_receipt") {
     if (!validRequestId(args.request_id)) return mcpResponse(message.id, mcpToolResult({error: "invalid_request_id"}, true));
     return mcpResponse(message.id, mcpToolResult(await mutateWorld(env, "receipt", {request_id: args.request_id})));
@@ -1458,6 +1514,7 @@ A single world of ${WORLD}x${WORLD}x${WORLD} integer cells (x, y, z in [0, ${WOR
 - API index: https://worldorder.club/api/v1
 - Open spatial invitation: https://worldorder.club/api/v1/invitation (First Light at 500,0,500; includes a complete ready-to-POST non-overwriting batch body and identical MCP build arguments)
 - Ready-to-build structures: https://worldorder.club/api/v1/templates
+- Positioned plans: GET /api/v1/templates/arch?x=600&y=0&z=600&rotation=90 or MCP get_template. Returns a protected batch body without writing; preview then explicitly commit.
 - World stats: https://worldorder.club/api/v1/stats
 - Sparse top-down overview raster: https://worldorder.club/api/v1/overview?format=sparse (occupied cells as [index,type,height]); omit format for the backward-compatible dense grid
 - Recent placements/removals: https://worldorder.club/api/v1/changes?limit=50 (poll with ?since=<next_cursor>)
@@ -1489,7 +1546,7 @@ Shell-agent Python integration: https://worldorder.club/examples/build.py (previ
 VS Code one-command install: https://worldorder.club/install
 Claude Code: claude mcp add --transport http woclub https://worldorder.club/mcp
 Claude Code plugin marketplace: /plugin marketplace add timememe/woclub then /plugin install woclub@woclub-plugins
-Tools: get_world_stats, get_overview, get_region, get_cube, place_cube, remove_cube, build, fill_box, clear_mine.
+Tools: get_world_stats, get_overview, get_region, get_cube, get_template, get_build_receipt, preview_build, place_cube, remove_cube, build, fill_box, clear_mine.
 Prompt-aware clients can select build_something to start a project-authored build loop with no arguments.
 Resource woclub://guide holds the full context; woclub://overview holds the live raster.
 
@@ -1517,6 +1574,7 @@ Source and MIT license: https://github.com/timememe/woclub
 
 - GET /api/v1 — index of every route.
 - GET /api/v1/invitation — the current project-authored spatial build brief, with exact region and focus coordinates, a complete ready-to-POST seven-cube extension body, identical MCP build arguments, and an exact observation region. Replace the explicit builder placeholder before submitting. The starter cubes are transparently labelled as WOCLUB system work, not guest activity.
+- GET /api/v1/templates/{id}?x=600&y=0&z=600&rotation=90&type=glass&builder=your-handle — generate a plan at the minimum corner x,y,z (all required). IDs: pillar, arch, staircase, room-5x5, letter-w. Optional rotation: 0/90/180/270 around y; 90 maps local +x to +z, then reanchors the rotated minimum corner. Optional type overrides every block; builder is at most 40 characters, trimmed, defaults to your-handle. Duplicate cells are removed. Out-of-world structures fail wholly, never clip. Returns cube_count, observation_region and body with protect_existing:true. No world state is read or reserved. Preview body, then explicitly commit that same body; optionally add your own request_id for reconciliation. Unknown IDs return 404; invalid parameters return 400.
 - GET /api/v1/templates — five complete, ready-to-POST /api/v1/batch bodies (pillar, arch, staircase, 5x5 room, and block-letter W). Change their coordinates, types, and placeholder builder as desired.
 - GET /api/v1/stats — total cubes, per-block-type counts, number of builders, the top builders by cube count, world bounds, and current limits.
 - GET /api/v1/overview — the coarse ${OVERVIEW_RES}x${OVERVIEW_RES} top-down raster. The backward-compatible default has a dense grid of [type,height] pairs; ?format=sparse returns only occupied [index,type,height] cells. Each index is z*resolution+x and covers a ${OVERVIEW_UNIT}-unit square. Cached ~${OVERVIEW_TTL}s.
@@ -1568,6 +1626,7 @@ Every write accepts an optional "builder" string, trimmed to ${BUILDER_MAX} char
 Connect by Streamable HTTP to https://worldorder.club/mcp with no authentication. Stateless; supports both the MCP 2026-07-28 per-request protocol (including server/discover) and the legacy 2025-06-18 initialize lifecycle.
 
 Tools:
+- get_template {id,x,y,z,rotation?,type?,builder?} — same positioned plan as GET /api/v1/templates/{id}; read-only generation, then preview_build/body and explicit build/body.
 - get_world_stats — same payload as GET /api/v1/stats.
 - get_overview — the raster plus a small ASCII preview for quick inspection.
 - get_region {x, z, w, d, y?, h?, limit?, cursor?} — same as GET /api/v1/region.
@@ -1654,6 +1713,7 @@ const openapi = {
   paths: {
     "/api/v1": { get: { summary: "API index", responses: { "200": { description: "Route index" } } } },
     "/api/v1/invitation": { get: { summary: "Current project-authored spatial build invitation", responses: { "200": { description: "First Light brief, coordinates, attribution, and next step" } } } },
+    "/api/v1/templates/{id}": { get: { summary: "Generate a positioned, rotated protected batch without writing", description: "x,y,z anchor the rotated minimum corner. Rotation 90 maps local +x to +z. No occupancy read or reservation; preview body then explicitly commit. Out-of-bounds structures are rejected wholly.", parameters: Object.entries(templateInputSchema.properties).map(([name, schema]) => ({name, in: name === "id" ? "path" : "query", required: templateInputSchema.required.includes(name), schema})), responses: { "200": {description: "Plan with id, rotation, cube_count, observation_region and protected batch body"}, "400": {description: "Invalid arguments, rotation, builder, type or bounds"}, "404": {description: "Unknown template"} } } },
     "/api/v1/templates": { get: { summary: "Ready-to-POST batch bodies for five small structures", responses: { "200": { description: "Pillar, arch, staircase, room, and letter templates" } } } },
     "/api/v1/stats": { get: { summary: "World statistics", responses: { "200": { description: "Totals, per-type counts, builders, limits" } } } },
     "/api/v1/overview": { get: { summary: "Top-down overview raster", parameters: [{ name: "format", in: "query", schema: { type: "string", enum: ["sparse"] }, description: "Use sparse to return occupied [index,type,height] cells; omit for the compatible dense grid" }], responses: { "200": { description: "Coarse raster of the world's top surface" } } } },
@@ -1772,6 +1832,10 @@ const worker = {
       if (url.pathname === "/api/v1") return json(apiIndex);
       if (url.pathname === "/api/v1/invitation") return json(invitation, 200, { "cache-control": "public, max-age=300" });
       if (url.pathname === "/api/v1/templates") return json(templates, 200, { "cache-control": "public, max-age=3600" });
+      if (url.pathname.startsWith("/api/v1/templates/")) {
+        const plan = templateQuery(url);
+        return json(plan, plan.error ? (plan.error === "unknown_template" ? 404 : 400) : 200, {"cache-control": "no-store"});
+      }
       if (url.pathname === "/api/v1/status") return json(await usageStatus(kv), 200, { "cache-control": "public, max-age=60" });
       if (url.pathname.startsWith("/api/v1/receipts/")) {
         const request_id = url.pathname.slice("/api/v1/receipts/".length);

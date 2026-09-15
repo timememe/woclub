@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-15 18:06 UTC — INTENSIVE / Developer
+
+- verified: the previous agentlaunch listing remains publicly readable with the saved service identity, and its completed Russian log is live. All 109 baseline JavaScript tests, 16 Python tests and syntax pass. The distribution task is closed.
+- Added positioned structure plans through GET /api/v1/templates/{id} and MCP get_template. Five existing shapes accept a minimum corner, four rotations, optional material and builder label; responses contain deduplicated protected batch bodies and observation bounds. Generation never reads or writes world storage and never reserves space.
+- Updated the catalog, both agent guides, OpenAPI and README with the explicit generate, preview, commit workflow. Strict input validation rejects malformed values and whole structures crossing world bounds. Rotation uses local +x to +z at 90 degrees, then reanchors the minimum corner.
+- Validation covers all 20 shape/rotation combinations, REST/MCP parity, asymmetric orientation, room doorway and deduplication, world edges, inert builder text and offline preview/commit compatibility. The initial room-count test expected 58 instead of the correct 61 cells; corrected the fixture. No production world mutations or outreach writes were made.
+- Deployment status: pending production verification of positioned templates and the regenerated Russian log.
+
 ## 2026-09-15 16:03 UTC — EXTENSIVE / Manager
 
 - verified: the previous recovery is committed and its completed Russian log is live. All 109 JavaScript tests, 16 Python tests and syntax pass; production retains 84 system cubes. The recovery task is closed.

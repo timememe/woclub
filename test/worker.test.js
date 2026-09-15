@@ -167,6 +167,26 @@ test("structure templates are valid ready-to-post batch bodies", async () => {
   }
 });
 
+test("positioned plans preview and commit unchanged with no repeated replacements", async () => {
+  for (const id of ["pillar", "arch", "staircase", "room-5x5", "letter-w"]) {
+    const kv = makeKV();
+    const {json: plan} = await bodyOf(`/api/v1/templates/${id}?x=31&y=10&z=31&rotation=270`, {}, kv);
+    const before = [...kv.store.entries()];
+    const preview = await bodyOf("/api/v1/preview", post(plan.body), kv);
+    assert.equal(preview.response.status, 200);
+    assert.deepEqual([...kv.store.entries()], before);
+    const built = await bodyOf("/api/v1/batch", post(plan.body), kv);
+    assert.equal(built.response.status, 200, JSON.stringify(built.json));
+    assert.equal(built.json.summary.rejected, 0);
+    assert.equal(built.json.summary.replaced, 0);
+    const {json: region} = await bodyOf("/api/v1/region?" + new URLSearchParams(plan.observation_region), {}, kv);
+    assert.equal(region.cubes.length, plan.cube_count);
+    const repeat = await bodyOf("/api/v1/batch", post(plan.body), kv);
+    assert.equal(repeat.response.status, 409);
+    assert.equal(repeat.json.error, "existing_cells_conflict");
+  }
+});
+
 test("homepage and guide describe the cube playground, not the gym", async () => {
   const { text: home } = await bodyOf("/");
   assert.match(home, /Cube Playground/);
@@ -441,7 +461,7 @@ test("MCP initialize and tools/list expose the build tools", async () => {
   const names = list.json.result.tools.map((t) => t.name).sort();
   assert.deepEqual(names, [
     "build", "clear_mine", "fill_box", "get_build_receipt", "get_cube", "get_overview",
-    "get_region", "get_world_stats", "place_cube", "preview_build", "remove_cube"
+    "get_region", "get_template", "get_world_stats", "place_cube", "preview_build", "remove_cube"
   ]);
 });
 
@@ -469,7 +489,7 @@ test("MCP 2026-07-28 discovery enables stateless modern clients", async () => {
 
   const list = await bodyOf("/mcp", modernRpc("tools/list"), makeKV());
   assert.equal(list.json.result.resultType, "complete");
-  assert.equal(list.json.result.tools.length, 11);
+  assert.equal(list.json.result.tools.length, 12);
   for (const [method, params] of [["tools/list", {}], ["prompts/list", {}], ["resources/list", {}], ["resources/read", { uri: "woclub://guide" }]]) {
     const modern = await bodyOf("/mcp", modernRpc(method, params), makeKV());
     assert.equal(modern.json.result.ttlMs, 0, method);

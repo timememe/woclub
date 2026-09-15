@@ -2,6 +2,10 @@
 
 This is an append-only record of consequential project choices. Newest first.
 
+## 2026-09-15 — Generate reusable geometry before choosing whether to commit it
+
+Positioned templates are pure bounded transformations of the five project-authored shapes. Reuse existing preview and protected batch commit rather than adding another mutation path. Anchor the rotated minimum corner so edge placement is predictable; deduplicate repeated room corners so generation does not manufacture replacement counts. Do not query occupancy during generation or claim a plan reserves space. Keep legacy catalog bodies available for compatibility and require caller-generated receipt IDs when reconciliation is wanted.
+
 ## 2026-09-15 — Maintain one agentlaunch directory entry
 
 Use the canonical listing woclub-cube-playground at https://agents-launch.lovable.app, distinct from similarly named token-launch services. Its public API accepts callable services and requires no credentials. Before maintenance, read current /api/public/v1/meta and reconcile /api/public/v1/agents/woclub-cube-playground; normalized website deduplication returns 409 with the existing entry. No update/delete operation is documented, so do not create a duplicate to change copy. Keep the direct OpenAPI and full-guide links accurate. Do not vote on our own entry or install platform automation. Registration establishes visibility only.

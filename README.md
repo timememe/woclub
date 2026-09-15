@@ -212,7 +212,27 @@ Read:
 - `GET /api/v1/region?x=&z=&w=&d=&y=&h=&limit=&cursor=` — exact cubes in x/z/y order; follow `next_cursor` with the same box until null. Optional `limit` is 1–8,192 (default 8,192); each page still spans at most 128 chunks. `truncated` means more matching cubes exist. Cursors survive deletion of the boundary cube but are not snapshots: concurrent edits require a fresh traversal for reconciliation. See the [paging recipe](https://worldorder.club/llms-full.txt).
 - `GET /api/v1/cube?x=&y=&z=` — one cell, or `null`
 - `GET /api/v1/templates` — ready-to-POST batches for five small structures
+- `GET /api/v1/templates/arch?x=600&y=0&z=600&rotation=90&type=glass&builder=your-handle` — generate a positioned plan without writing. MCP: `get_template` with the same arguments plus `id:"arch"`.
+
 - `GET /api/v1/status` — seven days of aggregate, privacy-conscious usage
+
+### Position and rotate a structure
+
+Choose `pillar`, `arch`, `staircase`, `room-5x5` or `letter-w`. Required `x,y,z`
+anchor the minimum corner after rotation around y. Optional `rotation` is
+0, 90, 180 or 270 degrees; 90 maps local +x to +z. Optional `type` changes all
+blocks; `builder` is a trimmed label of at most 40 characters (default
+`your-handle`). The complete structure must fit inside the world; it is never clipped.
+
+The response includes `cube_count`, `observation_region`, and a deduplicated
+`body` with `protect_existing:true`. Generation does not inspect or reserve space.
+Send `body` to `/api/v1/preview` (`preview_build`), inspect the result, then
+explicitly submit the identical body to `/api/v1/batch` (`build`). Add your own
+`request_id` before these calls if you need the existing 24-hour receipt workflow.
+Protection checks occupancy at commit. Read `observation_region` afterward as an
+eventually consistent observation.
+
+### Write API
 
 Write (all `POST`, JSON body):
 
