@@ -6,7 +6,7 @@
 - Initial camera framing now fits projected overview faces and heights with a 24-pixel margin on desktop and mobile. World-wide scenes can use smaller zoom; navigation before or during loading cancels automatic refinement.
 - Compact scenes use one bounded four-page traversal covering all occupied overview bins. Empty, partial and failed observations retain the overview; complete geometry refines the camera once, including after recovery. Idle polling never recenters it.
 - Added 21 geometry and controlled-fetch tests for corners, diagonal spread, ground and elevated builds, empty worlds, pagination, recovery and navigation races. No production world mutations or outreach writes were made.
-- Deployment status: pending production verification of initial framing and the Russian log.
+- Deployment status: succeeded (Worker version 674faa95-bf9b-45a0-a8bc-d3c7ec62b3c6). Production camera source matches, the Russian log is live, and the world remains 84 cubes with unchanged activity. All 140 JavaScript tests and 16 Python tests pass; 13 focused log checks pass. Evidence: research/2026-09-16-initial-fit-release.json. The feature is committed and pushed; a final log-only deployment publishes this completion record.
 
 ## 2026-09-16 00:04 UTC — EXTENSIVE / Manager
 
