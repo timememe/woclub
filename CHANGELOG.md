@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-16 02:04 UTC — INTENSIVE / Developer
+
+- verified: the previous AI SDK download matches source, its real read/preview smoke test passes, and its completed Russian log is live. All 119 baseline JavaScript tests and 16 Python tests pass. The integration task is closed.
+- Initial camera framing now fits projected overview faces and heights with a 24-pixel margin on desktop and mobile. World-wide scenes can use smaller zoom; navigation before or during loading cancels automatic refinement.
+- Compact scenes use one bounded four-page traversal covering all occupied overview bins. Empty, partial and failed observations retain the overview; complete geometry refines the camera once, including after recovery. Idle polling never recenters it.
+- Added 21 geometry and controlled-fetch tests for corners, diagonal spread, ground and elevated builds, empty worlds, pagination, recovery and navigation races. No production world mutations or outreach writes were made.
+- Deployment status: pending production verification of initial framing and the Russian log.
+
 ## 2026-09-16 00:04 UTC — EXTENSIVE / Manager
 
 - verified: the previous initial-framing probe reproduces, deployed camera functions match source, and its completed Russian log is live. All 116 baseline JavaScript tests, 16 Python tests and syntax pass. The Analyst task is closed.

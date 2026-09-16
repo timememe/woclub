@@ -527,3 +527,7 @@ The date-addressed lesson remains the immutable replay contract, while `/api/v1/
 ## 2026-09-16 — Reach JavaScript agents through the native AI SDK adapter
 
 Use the official @ai-sdk/mcp adapter rather than a custom protocol wrapper. Publish a Node.js 22+ example with exact dependency pins and a no-model smoke test, then expose only seven known inspection/planning tools to application models. Keep mutations in the separate explicit commit workflow; do not add a model-controlled write switch. Keep the connection alive until agent work or stream consumption completes, and close it on errors. Maintenance: rerun the real smoke test and offline lifecycle tests before dependency upgrades. Official reference: https://ai-sdk.dev/docs/ai-sdk-core/mcp-tools. This is distribution availability, not evidence of external builders.
+
+## 2026-09-16 — Fit visible geometry and preserve global coverage
+
+Fit the same bin centres and face extents used by the isometric renderer, including elevation and tiny-cube raster padding. Request exact initial geometry only when a single existing bounded box covers all occupied bins. Preserve global coverage on empty, partial or failed reads; refine once after a complete observation, never on idle refresh or after navigation. This does not promise a world snapshot.

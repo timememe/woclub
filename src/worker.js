@@ -1316,20 +1316,36 @@ addEventListener('resize',resize);
 function ox(){return W/2-(fx-fz)*T;}
 function oy(){return H*0.40-(fx+fz)*T*0.5+fy*T;}
 // frame the built structures once on first load (or the world centre if empty)
+function fitGeometry(cubes,scale){
+  let left=Infinity,right=-Infinity,top=Infinity,bottom=-Infinity,minx=Infinity,maxx=-Infinity,minz=Infinity,maxz=-Infinity;
+  for(const c of cubes){
+    minx=Math.min(minx,c.x);maxx=Math.max(maxx,c.x);minz=Math.min(minz,c.z);maxz=Math.max(maxz,c.z);
+    const u=c.x-c.z,v=(c.x+c.z)*.5-c.y-1;
+    left=Math.min(left,u-scale);right=Math.max(right,u+scale);
+    top=Math.min(top,v-scale*.5);bottom=Math.max(bottom,v+scale*1.5);
+  }
+  if(!cubes.length)return;
+  // Extra two pixels cover the tiny-cube raster fallback at very small zoom.
+  T=Math.min(14,Math.max(1,W-52)/(right-left),Math.max(1,H-52)/(bottom-top));
+  const u=(left+right)/2,v=(top+bottom)/2;
+  const sum=(minx+maxx+minz+maxz)/2;
+  fx=(sum+u)/2;fz=(sum-u)/2;
+  fy=(fx+fz)*.5-v+H*.1/T;
+}
 function fitView(){
   if(fitted||!overview)return;fitted=true;
   const res=overview.resolution,unit=overview.unit;
-  let minx=1e9,maxx=-1e9,minz=1e9,maxz=-1e9,any=false;
-  for(const cell of overview.cells){const i=cell[0];any=true;
-    const gx=(i%res)*unit,gz=((i/res)|0)*unit;
-    if(gx<minx)minx=gx;if(gx>maxx)maxx=gx;if(gz<minz)minz=gz;if(gz>maxz)maxz=gz;}
-  if(any){
-    fx=(minx+maxx)/2;fz=(minz+maxz)/2;
-    // frame ~180 world units around the content: structure reads as a build,
-    // with ground + sky context, and /region can load the exact cubes
-    T=Math.max(4,Math.min(14,Math.min(W,H)/90));
-  }else{fx=fz=WORLD/2;T=Math.max(2,Math.min(4,Math.min(W,H)/320));}
-  maybeRegion();
+  const cubes=overview.cells.map(([i,type,y])=>({x:(i%res)*unit+unit/2,z:Math.floor(i/res)*unit+unit/2,y}));
+  if(!cubes.length){fx=fz=WORLD/2;fy=0;T=Math.max(2,Math.min(4,Math.min(W,H)/320));return;}
+  fitGeometry(cubes,unit);
+  // Only replace the global overview with a traversal covering every occupied bin.
+  const xs=cubes.map(c=>c.x),zs=cubes.map(c=>c.z);
+  const x=Math.max(0,Math.floor(Math.min(...xs)-unit/2)),z=Math.max(0,Math.floor(Math.min(...zs)-unit/2));
+  const w=Math.min(WORLD,Math.ceil(Math.max(...xs)+unit/2))-x;
+  const d=Math.min(WORLD,Math.ceil(Math.max(...zs)+unit/2))-z;
+  if(w>300||d>300)return;
+  const url='/api/v1/region?x='+x+'&z='+z+'&w='+w+'&d='+d+'&y=0&h=1000';
+  loadRegion(url,null,{initial:true,refine:j=>fitGeometry(j.cubes,1.15),refined:false});
 }
 // top-face centre for the slab whose top sits at height 'lvl'
 function proj(x,z,lvl){return[ox()+(x-z)*T, oy()+(x+z)*T*0.5-lvl*T];}
@@ -1382,7 +1398,7 @@ function draw(){
   ctx.fillStyle=fg;ctx.fillRect(0,hy-28,W,88);
   // built cubes
   const cubes=[];
-  if(region&&T>=2.5){
+  if(region&&(T>=2.5||region.initialComplete)){
     for(const c of region.cubes)cubes.push([c.x,c.y,c.z,TYPES.indexOf(c.type)]);
   }else if(overview){
     const res=overview.resolution,unit=overview.unit;
@@ -1390,7 +1406,7 @@ function draw(){
       const gx=(i%res)*unit+unit/2,gz=((i/res)|0)*unit+unit/2;cubes.push([gx,cell[2],gz,cell[1]]);}
   }
   cubes.sort((a,b)=>(a[0]+a[2]-b[0]-b[2])||(a[1]-b[1]));
-  const csize=(region&&T>=2.5)?T*1.15:Math.max(T*(overview?overview.unit:1),1);
+  const csize=(region&&(T>=2.5||region.initialComplete))?T*1.15:Math.max(T*(overview?overview.unit:1),1);
   for(const [x,y,z,ci] of cubes)builtCube(x,y,z,ci,csize);
   if(target){
     const age=performance.now()-target.since;
@@ -1405,23 +1421,23 @@ function draw(){
 }
 // ---- interaction ----
 function screenToWorldDelta(dsx,dsy){return[(dsx/T+dsy*2/T)/2,(dsy*2/T-dsx/T)/2];}
-cv.addEventListener('pointerdown',e=>{invalidateRegion();drag={x:e.clientX,y:e.clientY,fx,fz};cv.setPointerCapture(e.pointerId);});
+cv.addEventListener('pointerdown',e=>{fitted=true;invalidateRegion();drag={x:e.clientX,y:e.clientY,fx,fz};cv.setPointerCapture(e.pointerId);});
 cv.addEventListener('pointermove',e=>{if(!drag)return;const[dx,dz]=screenToWorldDelta(e.clientX-drag.x,e.clientY-drag.y);
   fx=Math.max(0,Math.min(WORLD,drag.fx-dx));fz=Math.max(0,Math.min(WORLD,drag.fz-dz));draw();});
 cv.addEventListener('pointerup',()=>{drag=null;maybeRegion();});
-cv.addEventListener('wheel',e=>{e.preventDefault();T=Math.max(0.5,Math.min(24,T*(e.deltaY>0?0.86:1.16)));draw();maybeRegion();},{passive:false});
-let rt=null,regionGeneration=0,regionController=null,activeRegionUrl=null;
+cv.addEventListener('wheel',e=>{e.preventDefault();fitted=true;T=Math.max(0.01,Math.min(24,T*(e.deltaY>0?0.86:1.16)));draw();maybeRegion();},{passive:false});
+let rt=null,regionGeneration=0,regionController=null,activeRegionUrl=null,activeRegionOptions=null;
 function invalidateRegion(){
-  clearTimeout(rt);regionGeneration++;activeRegionUrl=null;
+  clearTimeout(rt);regionGeneration++;activeRegionUrl=null;activeRegionOptions=null;
   if(regionController)regionController.abort();regionController=null;
 }
-async function loadRegion(url,onSuccess){
+async function loadRegion(url,onSuccess,options=null){
   const generation=++regionGeneration;
   if(regionController)regionController.abort();
   const controller=new AbortController();regionController=controller;
   const status=document.getElementById('region-status');
   try{
-    activeRegionUrl=url;
+    activeRegionUrl=url;activeRegionOptions=options;
     const cubes=new Map(),seen=new Set();let next=null,j,received=0;
     for(let page=0;page<4;page++){
       const pageUrl=url+(next?'&cursor='+encodeURIComponent(next):'');
@@ -1446,9 +1462,17 @@ async function loadRegion(url,onSuccess){
       seen.add(next);
     }
     j={...j,cubes:[...cubes.values()],count:cubes.size,truncated:next!==null,next_cursor:next};
+    if(options&&options.initial&&(next||!j.cubes.length)){
+      status.textContent=(next?'Partial region observation':'Empty region observation')+' — retaining global overview. Eventually consistent, not a snapshot.';
+      return;
+    }
+    if(options&&options.initial)j.initialComplete=true;
     region=j;activeRegionUrl=url;
     status.textContent=(next?'Partial view updated — zoom in for more coverage. ':'Region view updated — all pages observed. ')+
       'Eventually consistent observation, not a snapshot.';
+    if(options&&options.initial&&!options.refined){
+      options.refine(j);options.refined=true;
+    }
     if(onSuccess)onSuccess(j);draw();
   }catch(e){
     if(generation!==regionGeneration)return;
@@ -1467,10 +1491,10 @@ function maybeRegion(){
   },220);
 }
 function pollRegion(){
-  if(T>=2.5&&!drag&&activeRegionUrl&&!regionController)loadRegion(activeRegionUrl);
+  if((T>=2.5||activeRegionOptions)&&!drag&&activeRegionUrl&&!regionController)loadRegion(activeRegionUrl,null,activeRegionOptions);
 }
 async function focusWorld(x,y,z,label){
-  invalidateRegion();
+  fitted=true;invalidateRegion();
   const status=document.getElementById('focus-status');status.textContent='Loading '+label+'…';
   const span=25,rx=Math.max(0,Math.min(WORLD-span,Math.floor(x-span/2))),rz=Math.max(0,Math.min(WORLD-span,Math.floor(z-span/2)));
   const url='/api/v1/region?x='+rx+'&z='+rz+'&w='+span+'&d='+span+'&y='+Math.max(0,y-6)+'&h=24';
