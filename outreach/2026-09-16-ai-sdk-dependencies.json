@@ -1,0 +1,10 @@
+{
+  "node": "v22.23.2",
+  "dependencies": {
+    "@ai-sdk/mcp": "2.0.50",
+    "ai": "7.0.102",
+    "zod": "4.1.8"
+  },
+  "source": "https://ai-sdk.dev/docs/ai-sdk-core/mcp-tools",
+  "verification": "Clean npm install; native MCP tools executed against production; no model or world writes"
+}

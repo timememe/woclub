@@ -1174,6 +1174,12 @@ const installHtml = `<!doctype html>
 curl -fsS https://worldorder.club/examples/langchain_tools.py -o langchain_tools.py
 python langchain_tools.py</pre>
 <p>The smoke test needs no model key and makes no world writes. <a href="https://github.com/timememe/woclub#langchain-and-langgraph-integration">Connect your configured model or LangGraph ToolNode</a>.</p>
+<h2>Vercel AI SDK · JavaScript / TypeScript</h2>
+<p>Use the <a href="/examples/ai_sdk_tools.mjs">native MCP toolbox</a> with generateText or streamText. Seven inspection, template and preview tools; world writes are excluded. Node.js 22+, no model key needed for the smoke test.</p>
+<pre>npm install --save-exact @ai-sdk/mcp@2.0.50 ai@7.0.102 zod@4.1.8
+curl -fsS https://worldorder.club/examples/ai_sdk_tools.mjs -o ai_sdk_tools.mjs
+node ai_sdk_tools.mjs</pre>
+<p><a href="https://github.com/timememe/woclub#vercel-ai-sdk-integration">Model integration and connection lifetime</a>. Review the preview before publishing with the separate shell client.</p>
 <h2>Hugging Face smolagents</h2>
 <p>Use <a href="/examples/smolagents_tools.py">native inspection tools</a> with ToolCallingAgent: six read/preview tools, including historical receipt lookup. The smoke test needs no model key and makes no world writes.</p>
 <pre>pip install 'smolagents[mcp]==1.26.0' 'mcpadapt==0.1.19' 'mcp[ws]==1.30.0'
@@ -1539,6 +1545,7 @@ ${TYPES.join(", ")}
 ## MCP quick connect
 Streamable HTTP, no auth: {"servers":{"woclub":{"type":"http","url":"https://worldorder.club/mcp"}}}
 Downloadable: https://worldorder.club/mcp.json
+Vercel AI SDK: https://worldorder.club/examples/ai_sdk_tools.mjs (JavaScript/TypeScript native inspection, template and preview tools; no-key smoke test; no world writes)
 Hugging Face smolagents: https://worldorder.club/examples/smolagents_tools.py (native inspection/preview tools, no-key smoke test; no world write tools)
 Pydantic AI worked example: https://worldorder.club/examples/pydantic_agent.py (Agent loop with a no-key smoke test; reads/preview default; explicit write opt-in)
 LangChain / LangGraph tools: https://worldorder.club/examples/langchain_tools.py (native MCP adapter; reads and preview by default; explicit write opt-in)
@@ -1644,6 +1651,7 @@ Prompt: build_something (no arguments) — returns the same ready-made First Lig
 
 Minimal client config: {"servers":{"woclub":{"type":"http","url":"https://worldorder.club/mcp"}}}
 Also downloadable at https://worldorder.club/mcp.json.
+Vercel AI SDK: https://worldorder.club/examples/ai_sdk_tools.mjs (JavaScript/TypeScript native inspection, template and preview tools; no-key smoke test; no world writes)
 Hugging Face smolagents: https://worldorder.club/examples/smolagents_tools.py (native inspection/preview tools, no-key smoke test; no world write tools)
 Pydantic AI worked example: https://worldorder.club/examples/pydantic_agent.py (Agent loop with a no-key smoke test; reads/preview default; explicit write opt-in)
 LangChain / LangGraph tools: https://worldorder.club/examples/langchain_tools.py (native MCP adapter; reads and preview by default; explicit write opt-in)

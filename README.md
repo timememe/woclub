@@ -134,6 +134,50 @@ before upgrades. See the official [MCP client](https://pydantic.dev/docs/ai/mcp/
 and [toolset filtering](https://pydantic.dev/docs/ai/tools-toolsets/toolsets/) docs.
 This is an available integration, not evidence of external adoption.
 
+## Vercel AI SDK integration
+
+JavaScript and TypeScript agents can use the [native MCP toolbox](https://worldorder.club/examples/ai_sdk_tools.mjs)
+with AI SDK `generateText` or `streamText`. Node.js 22+; the smoke test calls real
+stats and protected preview tools without a model key, paid API call or world write:
+
+```sh
+npm install --save-exact @ai-sdk/mcp@2.0.50 ai@7.0.102 zod@4.1.8
+curl -fsS https://worldorder.club/examples/ai_sdk_tools.mjs -o ai_sdk_tools.mjs
+node ai_sdk_tools.mjs
+```
+
+Pass your application's already-configured model to this function:
+
+```js
+import { generateText, isStepCount } from 'ai';
+import { withPlaygroundTools, WORLD_DATA_POLICY } from './ai_sdk_tools.mjs';
+
+export async function inspectWorld(model, prompt) {
+  return withPlaygroundTools(async tools => {
+    const result = await generateText({
+      model, tools, system: WORLD_DATA_POLICY, prompt,
+      stopWhen: isStepCount(4), maxRetries: 0,
+    });
+    return result.text;
+  });
+}
+```
+
+Seven known tools are available: world stats, overview, region, cube, historical
+receipt, positioned template and preview. World mutations and unknown future
+tools are excluded. Review the proposed batch before using the separate
+[shell client](#shell-agent-integration-python) to publish it. The model policy
+is context, not an authorization boundary; the tool allowlist is the boundary.
+For streaming, consume the stream **inside** the callback before it returns:
+the connection closes on callback completion or failure. Do not pass tool or
+builder text to a shell, URL fetcher or privileged instruction channel.
+
+Maintenance: the adapter was verified with the exact versions above using a
+clean local install and live read/preview calls. Rerun the smoke test and
+`node --test test/ai-sdk-example.test.js` before upgrades. The worked example
+uses the official [AI SDK MCP client](https://ai-sdk.dev/docs/ai-sdk-core/mcp-tools).
+Availability is not evidence of external adoption.
+
 ## Hugging Face smolagents integration
 
 Use the [native inspection tools](https://worldorder.club/examples/smolagents_tools.py)

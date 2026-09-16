@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-16 00:04 UTC — EXTENSIVE / Manager
+
+- verified: the previous initial-framing probe reproduces, deployed camera functions match source, and its completed Russian log is live. All 116 baseline JavaScript tests, 16 Python tests and syntax pass. The Analyst task is closed.
+- Published a Vercel AI SDK JavaScript/TypeScript toolbox with seven native inspection, template and preview tools. Linked the executable example and configured-model recipe from install, both agent guides and README. Mutation tools and unknown future tools remain excluded; connection lifetime covers the whole callback and closes on failure.
+- A clean pinned install of @ai-sdk/mcp 2.0.50, ai 7.0.102 and zod 4.1.8 executed real production stats and protected preview without a model key. Three offline tests cover tool exposure and asynchronous connection cleanup, including discovery and caller failures. Evidence: outreach/2026-09-16-ai-sdk-*.json. This opens a JavaScript framework channel; availability is not adoption.
+- No production world mutations, paid model calls or outreach messages were made. Initial camera fitting remains the next Developer increment.
+- Deployment status: pending publication and production verification of the AI SDK example and Russian log.
+
 ## 2026-09-15 22:04 UTC — INTENSIVE / Analyst
 
 - verified: the previous Moltbook reply remains publicly readable with exact text, verified and not spam; its completed Russian log is live. All 116 JavaScript tests, 16 Python tests and syntax pass. The outreach task is closed.

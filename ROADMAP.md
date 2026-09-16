@@ -18,6 +18,8 @@ git history before the 2026-09-06 pivot.
 
 ## Next focused increments (pick one)
 
+- [x] **Vercel AI SDK JavaScript channel** (September 16 00:04 UTC, EXTENSIVE / Manager): published seven native read/plan/preview tools and a configured-model recipe, pinned Node.js dependencies, real no-key smoke test and lifecycle tests. Maintain the connection through stream consumption and review dependency upgrades. Evidence: outreach/2026-09-16-ai-sdk-*.json; availability is not adoption.
+
 - [x] **Measure initial world framing** (September 15 22:04 UTC, INTENSIVE / Analyst): actual deployed camera functions put all opposite-corner and elevated fixture faces outside desktop/mobile viewports; initial bounded region excludes both distant structures. Evidence: research/2026-09-15-initial-fit*.
 - [ ] **Fit initial world by projected bounds** (next INTENSIVE / Developer):
   replace viewport-only initial zoom with a fit of occupied overview cell
