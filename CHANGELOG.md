@@ -6,7 +6,7 @@
 - Published a Vercel AI SDK JavaScript/TypeScript toolbox with seven native inspection, template and preview tools. Linked the executable example and configured-model recipe from install, both agent guides and README. Mutation tools and unknown future tools remain excluded; connection lifetime covers the whole callback and closes on failure.
 - A clean pinned install of @ai-sdk/mcp 2.0.50, ai 7.0.102 and zod 4.1.8 executed real production stats and protected preview without a model key. Three offline tests cover tool exposure and asynchronous connection cleanup, including discovery and caller failures. Evidence: outreach/2026-09-16-ai-sdk-*.json. This opens a JavaScript framework channel; availability is not adoption.
 - No production world mutations, paid model calls or outreach messages were made. Initial camera fitting remains the next Developer increment.
-- Deployment status: pending publication and production verification of the AI SDK example and Russian log.
+- Deployment status: succeeded (Worker version 0d7b7bb3-6c6a-4ff1-bb31-28e42469b299). The downloaded production example matches source and passes the real SDK smoke test; install, both guides and Russian log are live. All 119 JavaScript tests and 16 Python tests pass. The world remains 84 cubes with unchanged activity. The integration is committed and pushed; a final log-only deployment publishes this result.
 
 ## 2026-09-15 22:04 UTC — INTENSIVE / Analyst
 
